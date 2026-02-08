@@ -11,7 +11,7 @@ Build an internal company portal for THCO — a professional services firm. This
 - **Email Service**: Resend (for password reset)
 
 ## User Personas
-1. **Super Admin** - Full access, can manage users, configure webhooks, view all activity
+1. **Super Admin** - Full access, can manage users, configure webhooks, view all activity and login records
 2. **Mini Admin** - Can manage team members within assigned units
 3. **Team Member** - Can access assigned units and use tools
 
@@ -21,8 +21,10 @@ Build an internal company portal for THCO — a professional services firm. This
 - Webhook integration for n8n workflows
 - Responsive design (desktop, tablet, mobile)
 - Activity logging
+- Login tracking with device locking
 
 ## What's Been Implemented (Feb 8, 2026)
+
 ### Authentication
 - [x] Email/Password login
 - [x] Google OAuth integration
@@ -49,6 +51,19 @@ Build an internal company portal for THCO — a professional services firm. This
 ### Settings (Super Admin)
 - [x] Webhook Configuration (Sourcing + Database Search)
 - [x] User Management (Add/Edit/Disable/Delete users)
+- [x] **Login Records** - NEW: Track all logins with:
+  - Login time
+  - IP address
+  - Location (country, city via IP geolocation)
+  - Device type (Desktop, Mobile, Tablet)
+  - Browser & OS
+  - Login method (Email or Google)
+  - Success/Failure status with reasons
+- [x] **Device Locking** - NEW:
+  - Lock users to their current device
+  - Block login attempts from unauthorized devices
+  - Update allowed device if user changes device
+  - Per-user device lock toggle
 - [x] Activity Log viewer
 
 ### UI/UX
@@ -79,6 +94,28 @@ Build an internal company portal for THCO — a professional services firm. This
 2. Connect n8n webhook URLs in Settings
 3. Add additional team members via User Management
 4. Build out remaining tools for Talent unit
+
+## Login Tracking & Device Lock Feature Details
+
+### Login Records Captured:
+- `record_id`: Unique identifier
+- `user_id`, `user_name`, `user_email`: User info
+- `login_time`: Timestamp
+- `ip_address`: Client IP
+- `location`, `country`, `city`: Geolocation from IP
+- `device_type`: Desktop/Mobile/Tablet
+- `device_os`: Operating system
+- `browser`: Browser name and version
+- `user_agent`: Full user agent string
+- `device_fingerprint`: Hash for device identification
+- `login_method`: email_password or google_oauth
+- `success`: Boolean
+- `failure_reason`: If failed, why
+
+### Device Lock Actions:
+- **Lock Device**: Enables device lock, sets current device as allowed
+- **Unlock Device**: Disables device lock, allows login from any device
+- **Update Device**: Changes allowed device to most recent login device
 
 ## Seeded Admin Credentials
 - Email: joshua@thcohq.com
