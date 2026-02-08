@@ -9,7 +9,8 @@ const TOOLS = [
     icon: Search,
     path: "/talent/sourcing",
     active: true,
-    description: "Source candidates from the open web using AI. Generates 50-100+ scored candidates from LinkedIn and professional networks."
+    description: "Source candidates from the open web using AI. Generates 50-100+ scored candidates from LinkedIn and professional networks.",
+    gradient: "from-purple-500 to-indigo-600"
   },
   {
     name: "Database Search",
@@ -17,7 +18,8 @@ const TOOLS = [
     icon: Database,
     path: "/talent/database-search",
     active: true,
-    description: "Search our internal candidate database for matching profiles using AI-powered resume analysis."
+    description: "Search our internal candidate database for matching profiles using AI-powered resume analysis.",
+    gradient: "from-blue-500 to-cyan-600"
   },
   {
     name: "Email & Outreach Templates",
@@ -25,7 +27,8 @@ const TOOLS = [
     icon: Mail,
     path: "/talent/email-templates",
     active: false,
-    description: "Create and manage personalized email templates for candidate outreach."
+    description: "Create and manage personalized email templates for candidate outreach.",
+    gradient: "from-pink-500 to-rose-600"
   },
   {
     name: "Interview Scheduling",
@@ -33,7 +36,8 @@ const TOOLS = [
     icon: Calendar,
     path: "/talent/interview-scheduling",
     active: false,
-    description: "Automate interview scheduling with calendar integration."
+    description: "Automate interview scheduling with calendar integration.",
+    gradient: "from-emerald-500 to-teal-600"
   },
   {
     name: "Candidate Pipeline",
@@ -41,7 +45,8 @@ const TOOLS = [
     icon: GitBranch,
     path: "/talent/candidate-pipeline",
     active: false,
-    description: "Track candidates through your hiring pipeline with visual Kanban boards."
+    description: "Track candidates through your hiring pipeline with visual Kanban boards.",
+    gradient: "from-amber-500 to-orange-600"
   },
 ];
 
@@ -53,25 +58,25 @@ const TalentUnit = () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/dashboard" className="text-[#8B8AA0] hover:text-white">Dashboard</Link>
+              <Link to="/dashboard" className="text-gray-500 hover:text-gray-900">Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-[#5A596E]" />
+          <BreadcrumbSeparator className="text-gray-300" />
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-white">Talent & Human Capital</BreadcrumbPage>
+            <BreadcrumbPage className="text-gray-900 font-medium">Talent & Human Capital</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       {/* Unit Header */}
-      <div className="thco-card p-8">
+      <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
         <div className="flex items-start gap-6">
-          <div className="w-16 h-16 rounded-xl bg-[#7C64FF]/10 flex items-center justify-center">
-            <Users className="w-8 h-8 text-[#7C64FF]" />
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+            <Users className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Talent & Human Capital</h1>
-            <p className="text-[#8B8AA0] text-lg">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Talent & Human Capital</h1>
+            <p className="text-gray-500 text-lg">
               AI-powered recruiting, sourcing, and talent operations
             </p>
           </div>
@@ -90,30 +95,33 @@ const TalentUnit = () => {
                 <Link
                   key={tool.slug}
                   to={tool.path}
-                  className="thco-card p-6 group hover:border-[#7C64FF]/50 hover:shadow-[0_0_30px_-10px_rgba(124,100,255,0.2)] transition-all duration-300"
+                  className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-lg transition-all duration-300"
                   data-testid={`tool-card-${tool.slug}`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#7C64FF]/10 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-[#7C64FF]" />
+                  <div className={`h-2 bg-gradient-to-r ${tool.gradient}`}></div>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.gradient} flex items-center justify-center shadow-lg`}>
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+                        ACTIVE
+                      </span>
                     </div>
-                    <span className="badge-active text-[10px] font-mono px-2 py-1 rounded">
-                      ACTIVE
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#9B85FF] transition-colors">
-                    {tool.name}
-                  </h3>
-                  <p className="text-sm text-[#8B8AA0] mb-4">
-                    {tool.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-end pt-4 border-t border-white/5">
-                    <span className="text-sm text-[#7C64FF] flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Open Tool
-                      <ChevronRight className="w-4 h-4" />
-                    </span>
+                    
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
+                      {tool.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      {tool.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-end pt-4 border-t border-gray-100">
+                      <span className="text-sm text-purple-600 flex items-center gap-1 group-hover:gap-2 transition-all font-medium">
+                        Open Tool
+                        <ChevronRight className="w-4 h-4" />
+                      </span>
+                    </div>
                   </div>
                 </Link>
               );
@@ -122,29 +130,32 @@ const TalentUnit = () => {
             return (
               <div
                 key={tool.slug}
-                className="thco-card p-6 opacity-50"
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden opacity-60"
                 data-testid={`tool-card-${tool.slug}`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-[#5A596E]" />
+                <div className="h-2 bg-gray-200"></div>
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                      COMING SOON
+                    </span>
                   </div>
-                  <span className="badge-coming-soon text-[10px] font-mono px-2 py-1 rounded">
-                    COMING SOON
-                  </span>
-                </div>
-                
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  {tool.name}
-                </h3>
-                <p className="text-sm text-[#8B8AA0] mb-4">
-                  {tool.description}
-                </p>
-                
-                <div className="pt-4 border-t border-white/5">
-                  <span className="text-sm text-[#5A596E]">
-                    Under development
-                  </span>
+                  
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                    {tool.name}
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-4">
+                    {tool.description}
+                  </p>
+                  
+                  <div className="pt-4 border-t border-gray-100">
+                    <span className="text-sm text-gray-400">
+                      Under development
+                    </span>
+                  </div>
                 </div>
               </div>
             );
@@ -155,7 +166,7 @@ const TalentUnit = () => {
       {/* Back to Dashboard */}
       <Link 
         to="/dashboard" 
-        className="inline-flex items-center gap-2 text-[#8B8AA0] hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
         data-testid="back-to-dashboard-link"
       >
         <ArrowLeft className="w-4 h-4" />
