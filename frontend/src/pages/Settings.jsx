@@ -295,7 +295,7 @@ const Settings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-[#7C64FF] animate-spin" />
+        <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
       </div>
     );
   }
@@ -304,21 +304,21 @@ const Settings = () => {
     <div className="space-y-6" data-testid="settings-page">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-[#7C64FF]/10 flex items-center justify-center">
-          <SettingsIcon className="w-6 h-6 text-[#7C64FF]" />
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+          <SettingsIcon className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Settings</h1>
-          <p className="text-[#8B8AA0]">Manage webhooks, users, and view activity logs</p>
+          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+          <p className="text-gray-500">Manage webhooks, users, and view activity logs</p>
         </div>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="webhooks" className="w-full">
-        <TabsList className="bg-[#151828] border border-white/10 p-1">
+        <TabsList className="bg-gray-100 border border-gray-200 p-1 rounded-xl">
           <TabsTrigger 
             value="webhooks" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="webhooks-tab"
           >
             <Webhook className="w-4 h-4 mr-2" />
@@ -326,7 +326,7 @@ const Settings = () => {
           </TabsTrigger>
           <TabsTrigger 
             value="users" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="users-tab"
           >
             <Users className="w-4 h-4 mr-2" />
@@ -334,7 +334,7 @@ const Settings = () => {
           </TabsTrigger>
           <TabsTrigger 
             value="login-records" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="login-records-tab"
           >
             <Shield className="w-4 h-4 mr-2" />
@@ -342,7 +342,7 @@ const Settings = () => {
           </TabsTrigger>
           <TabsTrigger 
             value="activity" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="activity-tab"
           >
             <Activity className="w-4 h-4 mr-2" />
