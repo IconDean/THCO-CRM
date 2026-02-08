@@ -17,7 +17,8 @@ import {
   Search, 
   ChevronDown,
   LogOut,
-  User
+  User,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -74,9 +75,9 @@ const DashboardLayout = ({ children, user }) => {
 
   const getRoleBadge = (role) => {
     const styles = {
-      super_admin: "bg-[#7C64FF]/20 text-[#9B85FF] border-[#7C64FF]/30",
-      mini_admin: "bg-[#34D399]/20 text-[#34D399] border-[#34D399]/30",
-      team_member: "bg-white/10 text-[#8B8AA0] border-white/10",
+      super_admin: "bg-purple-50 text-purple-700 border-purple-200",
+      mini_admin: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      team_member: "bg-gray-50 text-gray-600 border-gray-200",
     };
     const labels = {
       super_admin: "Super Admin",
@@ -84,7 +85,7 @@ const DashboardLayout = ({ children, user }) => {
       team_member: "Team Member",
     };
     return (
-      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${styles[role] || styles.team_member}`}>
+      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles[role] || styles.team_member}`}>
         {labels[role] || "Member"}
       </span>
     );
@@ -101,36 +102,33 @@ const DashboardLayout = ({ children, user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0F1A] flex">
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/20 z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside 
-        className={`fixed lg:static inset-y-0 left-0 z-50 bg-[#0D0F1A] border-r border-white/5 transition-all duration-300 flex flex-col
+        className={`fixed lg:static inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300 flex flex-col
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           ${sidebarOpen ? 'w-64' : 'w-20'}`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-white/5">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
           <Link to="/dashboard" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#7C64FF] flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-              </svg>
-            </div>
-            {sidebarOpen && (
-              <span className="font-mono text-lg font-bold text-white tracking-tight">THCO</span>
-            )}
+            <img 
+              src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
+              alt="THCO" 
+              className={`${sidebarOpen ? 'h-8' : 'h-7'} transition-all`}
+            />
           </Link>
           <button 
             onClick={() => setMobileMenuOpen(false)}
-            className="lg:hidden p-1 text-[#8B8AA0] hover:text-white"
+            className="lg:hidden p-1 text-gray-400 hover:text-gray-600"
           >
             <X size={20} />
           </button>
@@ -142,13 +140,13 @@ const DashboardLayout = ({ children, user }) => {
           <Link
             to="/dashboard"
             data-testid="nav-dashboard"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2 transition-colors
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all
               ${isActive("/dashboard") 
-                ? "bg-[#7C64FF]/10 text-white border-l-[3px] border-[#7C64FF] -ml-[3px]" 
-                : "text-[#8B8AA0] hover:text-white hover:bg-white/5"}`}
+                ? "bg-purple-50 text-purple-700 font-medium" 
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
           >
             <LayoutDashboard size={20} />
-            {sidebarOpen && <span className="text-sm font-medium">Dashboard</span>}
+            {sidebarOpen && <span className="text-sm">Dashboard</span>}
           </Link>
 
           {/* Units Section */}
@@ -168,21 +166,21 @@ const DashboardLayout = ({ children, user }) => {
                   key={unit.slug}
                   to={unit.path}
                   data-testid={`nav-unit-${unit.slug}`}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                     ${isActive(unit.path) 
-                      ? "bg-[#7C64FF]/10 text-white border-l-[3px] border-[#7C64FF] -ml-[3px]" 
+                      ? "bg-purple-50 text-purple-700 font-medium" 
                       : hasAccess 
-                        ? "text-[#8B8AA0] hover:text-white hover:bg-white/5" 
-                        : "text-[#5A596E] hover:bg-white/5 cursor-pointer"}`}
+                        ? "text-gray-600 hover:text-gray-900 hover:bg-gray-50" 
+                        : "text-gray-400 hover:bg-gray-50 cursor-pointer"}`}
                 >
                   <Icon size={20} className={!hasAccess ? "opacity-50" : ""} />
                   {sidebarOpen && (
                     <div className="flex-1 flex items-center justify-between">
-                      <span className={`text-sm font-medium ${!hasAccess ? "opacity-50" : ""}`}>
+                      <span className={`text-sm ${!hasAccess ? "opacity-50" : ""}`}>
                         {unit.name}
                       </span>
                       {!unit.active && hasAccess && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 bg-[#FBBF24]/10 text-[#FBBF24] rounded">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded-full border border-amber-200">
                           SOON
                         </span>
                       )}
@@ -204,30 +202,30 @@ const DashboardLayout = ({ children, user }) => {
               <Link
                 to="/settings"
                 data-testid="nav-settings"
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                   ${isActive("/settings") 
-                    ? "bg-[#7C64FF]/10 text-white border-l-[3px] border-[#7C64FF] -ml-[3px]" 
-                    : "text-[#8B8AA0] hover:text-white hover:bg-white/5"}`}
+                    ? "bg-purple-50 text-purple-700 font-medium" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
               >
                 <Settings size={20} />
-                {sidebarOpen && <span className="text-sm font-medium">Settings</span>}
+                {sidebarOpen && <span className="text-sm">Settings</span>}
               </Link>
             </>
           )}
         </nav>
 
         {/* User Profile at Bottom */}
-        <div className="p-3 border-t border-white/5">
-          <div className={`flex items-center gap-3 px-2 py-2 rounded-lg ${sidebarOpen ? "" : "justify-center"}`}>
-            <Avatar className="w-9 h-9 border border-white/10">
+        <div className="p-3 border-t border-gray-100">
+          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl bg-gray-50 ${sidebarOpen ? "" : "justify-center"}`}>
+            <Avatar className="w-9 h-9 border-2 border-white shadow-sm">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-[#1C2035] text-[#7C64FF] text-sm font-medium">
+              <AvatarFallback className="bg-purple-100 text-purple-700 text-sm font-medium">
                 {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
                 {getRoleBadge(user?.role)}
               </div>
             )}
@@ -243,7 +241,7 @@ const DashboardLayout = ({ children, user }) => {
             {/* Mobile Menu Toggle */}
             <button 
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-[#8B8AA0] hover:text-white"
+              className="lg:hidden p-2 text-gray-500 hover:text-gray-700"
               data-testid="mobile-menu-toggle"
             >
               <Menu size={24} />
@@ -252,23 +250,23 @@ const DashboardLayout = ({ children, user }) => {
             {/* Sidebar Toggle (Desktop) */}
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden lg:flex p-2 text-[#8B8AA0] hover:text-white rounded-lg hover:bg-white/5"
+              className="hidden lg:flex p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
               data-testid="sidebar-toggle"
             >
               <Menu size={20} />
             </button>
 
             {/* Page Title */}
-            <h1 className="text-lg font-semibold text-white">{getPageTitle()}</h1>
+            <h1 className="text-lg font-semibold text-gray-900">{getPageTitle()}</h1>
           </div>
 
           <div className="flex items-center gap-3">
             {/* Search */}
             <div className="hidden md:block relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A596E]" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <Input 
                 placeholder="Search tools..." 
-                className="w-64 pl-10 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                className="w-64 pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-purple-300 rounded-xl"
                 data-testid="search-input"
               />
             </div>
@@ -277,11 +275,11 @@ const DashboardLayout = ({ children, user }) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="relative text-[#8B8AA0] hover:text-white hover:bg-white/5"
+              className="relative text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl"
               data-testid="notifications-btn"
             >
               <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#F87171] rounded-full"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
             </Button>
 
             {/* User Dropdown */}
@@ -289,28 +287,28 @@ const DashboardLayout = ({ children, user }) => {
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="flex items-center gap-2 text-[#8B8AA0] hover:text-white hover:bg-white/5"
+                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl"
                   data-testid="user-dropdown-trigger"
                 >
-                  <Avatar className="w-8 h-8 border border-white/10">
+                  <Avatar className="w-8 h-8 border border-gray-200">
                     <AvatarImage src={user?.picture} />
-                    <AvatarFallback className="bg-[#1C2035] text-[#7C64FF] text-sm">
+                    <AvatarFallback className="bg-purple-100 text-purple-700 text-sm">
                       {user?.name?.charAt(0)?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden sm:inline text-sm">{user?.name?.split(" ")[0]}</span>
+                  <span className="hidden sm:inline text-sm font-medium">{user?.name?.split(" ")[0]}</span>
                   <ChevronDown size={16} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-[#151828] border-white/10">
-                <DropdownMenuItem className="text-[#E8E6F0] focus:bg-white/5 focus:text-white cursor-pointer">
+              <DropdownMenuContent align="end" className="w-48 bg-white border-gray-200 shadow-lg rounded-xl">
+                <DropdownMenuItem className="text-gray-700 focus:bg-gray-50 focus:text-gray-900 cursor-pointer rounded-lg">
                   <User size={16} className="mr-2" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuSeparator className="bg-gray-100" />
                 <DropdownMenuItem 
                   onClick={handleLogout}
-                  className="text-[#F87171] focus:bg-[#F87171]/10 focus:text-[#F87171] cursor-pointer"
+                  className="text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer rounded-lg"
                   data-testid="logout-btn"
                 >
                   <LogOut size={16} className="mr-2" />
