@@ -36,30 +36,29 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0F1A] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-[#7C64FF] flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-            </svg>
-          </div>
-          <span className="font-mono text-2xl font-bold text-white">THCO</span>
+        <div className="flex justify-center mb-8">
+          <img 
+            src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
+            alt="THCO" 
+            className="h-10"
+          />
         </div>
 
-        <div className="thco-card p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           {emailSent ? (
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#34D399]/10 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-8 h-8 text-[#34D399]" />
+              <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-8 h-8 text-emerald-600" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Check your email</h2>
-              <p className="text-[#8B8AA0] mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h2>
+              <p className="text-gray-500 mb-6">
                 We've sent a password reset link to your email address. The link will expire in 1 hour.
               </p>
               <Link to="/login">
-                <Button className="w-full h-12 bg-[#7C64FF] hover:bg-[#6B54E8] text-white font-medium" data-testid="back-to-login-btn">
+                <Button className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl" data-testid="back-to-login-btn">
                   Back to Login
                 </Button>
               </Link>
@@ -67,32 +66,32 @@ const ForgotPassword = () => {
           ) : (
             <>
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Forgot password?</h2>
-                <p className="text-[#8B8AA0]">Enter your email and we'll send you a reset link</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Forgot password?</h2>
+                <p className="text-gray-500">Enter your email and we'll send you a reset link</p>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-[#E8E6F0]">Email</Label>
+                  <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A596E]" size={18} />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <Input
                       id="email"
                       type="email"
                       placeholder="Enter your email"
-                      className="pl-10 h-12 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                      className="pl-10 h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl"
                       {...register("email")}
                       data-testid="forgot-email-input"
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-[#F87171] text-sm">{errors.email.message}</p>
+                    <p className="text-red-500 text-sm">{errors.email.message}</p>
                   )}
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-[#7C64FF] hover:bg-[#6B54E8] text-white font-medium"
+                  className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl"
                   disabled={isLoading}
                   data-testid="forgot-submit-btn"
                 >
@@ -109,7 +108,7 @@ const ForgotPassword = () => {
 
               <Link 
                 to="/login" 
-                className="flex items-center justify-center gap-2 text-[#8B8AA0] hover:text-white mt-6 text-sm"
+                className="flex items-center justify-center gap-2 text-gray-500 hover:text-gray-900 mt-6 text-sm"
                 data-testid="back-to-login-link"
               >
                 <ArrowLeft size={16} />
