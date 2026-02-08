@@ -917,6 +917,179 @@ async def delete_user(user_id: str, request: Request):
     
     return {"message": "User deleted successfully"}
 
+# ==================== LOGIN RECORDS ROUTES ====================
+
+@api_router.get("/login-records")
+async def get_login_records(
+    request: Request, 
+    limit: int = 50, 
+    skip: int = 0, 
+    user_id: str = None,
+    success_only: bool = None
+):
+    """Get all login records (Super Admin only)"""
+    current_user = await get_current_user(request)
+    if current_user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can view login records")
+    
+    query = {}
+    if user_id:
+        query["user_id"] = user_id
+    if success_only is not None:
+        query["success"] = success_only
+    
+    records = await db.login_records.find(query, {"_id": 0}).sort("login_time", -1).skip(skip).limit(limit).to_list(limit)
+    
+    for record in records:
+        if isinstance(record.get("login_time"), str):
+            record["login_time"] = datetime.fromisoformat(record["login_time"])
+    
+    return records
+
+@api_router.get("/login-records/count")
+async def get_login_records_count(request: Request):
+    """Get total login records count"""
+    current_user = await get_current_user(request)
+    if current_user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can view login records")
+    
+    total = await db.login_records.count_documents({})
+    successful = await db.login_records.count_documents({"success": True})
+    failed = await db.login_records.count_documents({"success": False})
+    
+    return {"total": total, "successful": successful, "failed": failed}
+
+@api_router.get("/login-records/user/{user_id}")
+async def get_user_login_records(user_id: str, request: Request, limit: int = 20):
+    """Get login records for a specific user"""
+    current_user = await get_current_user(request)
+    if current_user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can view login records")
+    
+    records = await db.login_records.find({"user_id": user_id}, {"_id": 0}).sort("login_time", -1).limit(limit).to_list(limit)
+    
+    for record in records:
+        if isinstance(record.get("login_time"), str):
+            record["login_time"] = datetime.fromisoformat(record["login_time"])
+    
+    return records
+
+@api_router.post("/users/{user_id}/lock-device")
+async def lock_user_device(user_id: str, request: Request):
+    """Enable device lock for a user and set their current device as allowed"""
+    current_user = await get_current_user(request)
+    if current_user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can manage device locks")
+    
+    target_user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get the user's most recent successful login to get their device fingerprint
+    last_login = await db.login_records.find_one(
+        {"user_id": user_id, "success": True},
+        {"_id": 0},
+        sort=[("login_time", -1)]
+    )
+    
+    if not last_login:
+        raise HTTPException(status_code=400, detail="No successful login found for this user")
+    
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "device_lock_enabled": True,
+            "allowed_device_fingerprint": last_login["device_fingerprint"]
+        }}
+    )
+    
+    await log_activity(
+        current_user["user_id"],
+        current_user["name"],
+        f"Enabled device lock for {target_user['name']}",
+        details=f"Locked to device: {last_login['device_type']} - {last_login['browser']}"
+    )
+    
+    return {
+        "message": "Device lock enabled",
+        "locked_device": {
+            "device_type": last_login["device_type"],
+            "browser": last_login["browser"],
+            "device_os": last_login["device_os"]
+        }
+    }
+
+@api_router.post("/users/{user_id}/unlock-device")
+async def unlock_user_device(user_id: str, request: Request):
+    """Disable device lock for a user"""
+    current_user = await get_current_user(request)
+    if current_user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can manage device locks")
+    
+    target_user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "device_lock_enabled": False,
+            "allowed_device_fingerprint": None
+        }}
+    )
+    
+    await log_activity(
+        current_user["user_id"],
+        current_user["name"],
+        f"Disabled device lock for {target_user['name']}"
+    )
+    
+    return {"message": "Device lock disabled"}
+
+@api_router.post("/users/{user_id}/update-device")
+async def update_user_device(user_id: str, request: Request):
+    """Update the allowed device for a user to their most recent login"""
+    current_user = await get_current_user(request)
+    if current_user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can manage device locks")
+    
+    target_user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get the user's most recent login (even if failed due to device lock)
+    last_login = await db.login_records.find_one(
+        {"user_id": user_id},
+        {"_id": 0},
+        sort=[("login_time", -1)]
+    )
+    
+    if not last_login:
+        raise HTTPException(status_code=400, detail="No login records found for this user")
+    
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "allowed_device_fingerprint": last_login["device_fingerprint"]
+        }}
+    )
+    
+    await log_activity(
+        current_user["user_id"],
+        current_user["name"],
+        f"Updated allowed device for {target_user['name']}",
+        details=f"New device: {last_login['device_type']} - {last_login['browser']}"
+    )
+    
+    return {
+        "message": "Allowed device updated",
+        "new_device": {
+            "device_type": last_login["device_type"],
+            "browser": last_login["browser"],
+            "device_os": last_login["device_os"]
+        }
+    }
+
 # ==================== SOURCING REQUESTS ROUTES ====================
 
 @api_router.post("/sourcing-requests")
