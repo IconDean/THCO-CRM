@@ -264,6 +264,142 @@ async def get_webhook_url(key: str) -> str:
         return settings.get(key, "")
     return ""
 
+# ==================== LOGIN TRACKING HELPERS ====================
+
+def parse_device_info(user_agent_string: str) -> dict:
+    """Parse user agent string to extract device information"""
+    try:
+        ua = parse_user_agent(user_agent_string)
+        device_type = "Desktop"
+        if ua.is_mobile:
+            device_type = "Mobile"
+        elif ua.is_tablet:
+            device_type = "Tablet"
+        elif ua.is_bot:
+            device_type = "Bot"
+        
+        return {
+            "device_type": device_type,
+            "device_os": f"{ua.os.family} {ua.os.version_string}".strip(),
+            "browser": f"{ua.browser.family} {ua.browser.version_string}".strip(),
+            "device_family": ua.device.family,
+            "is_mobile": ua.is_mobile,
+            "is_tablet": ua.is_tablet,
+            "is_pc": ua.is_pc
+        }
+    except Exception as e:
+        logger.error(f"Failed to parse user agent: {e}")
+        return {
+            "device_type": "Unknown",
+            "device_os": "Unknown",
+            "browser": "Unknown",
+            "device_family": "Unknown",
+            "is_mobile": False,
+            "is_tablet": False,
+            "is_pc": True
+        }
+
+def generate_device_fingerprint(user_agent: str, ip_address: str) -> str:
+    """Generate a device fingerprint based on user agent and IP"""
+    # Use only user agent for fingerprint so same device can login from different networks
+    fingerprint_data = f"{user_agent}"
+    return hashlib.sha256(fingerprint_data.encode()).hexdigest()[:32]
+
+async def get_ip_location(ip_address: str) -> dict:
+    """Get location information from IP address using free API"""
+    try:
+        # Skip for localhost/private IPs
+        if ip_address in ["127.0.0.1", "localhost", "::1"] or ip_address.startswith("192.168.") or ip_address.startswith("10."):
+            return {"country": "Local", "city": "Local", "location": "Local Network"}
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"http://ip-api.com/json/{ip_address}?fields=status,country,city,regionName,isp", timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("status") == "success":
+                    return {
+                        "country": data.get("country", "Unknown"),
+                        "city": data.get("city", "Unknown"),
+                        "region": data.get("regionName", ""),
+                        "isp": data.get("isp", ""),
+                        "location": f"{data.get('city', '')}, {data.get('country', '')}"
+                    }
+    except Exception as e:
+        logger.error(f"Failed to get IP location: {e}")
+    
+    return {"country": "Unknown", "city": "Unknown", "location": "Unknown"}
+
+def get_client_ip(request: Request) -> str:
+    """Extract the real client IP from request headers"""
+    # Check for forwarded headers (in case of proxy/load balancer)
+    forwarded_for = request.headers.get("x-forwarded-for")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    
+    real_ip = request.headers.get("x-real-ip")
+    if real_ip:
+        return real_ip
+    
+    return request.client.host if request.client else "Unknown"
+
+async def record_login_attempt(
+    user_id: str,
+    user_name: str,
+    user_email: str,
+    request: Request,
+    login_method: str,
+    success: bool,
+    failure_reason: str = None
+) -> dict:
+    """Record a login attempt with full device and location tracking"""
+    user_agent = request.headers.get("user-agent", "Unknown")
+    ip_address = get_client_ip(request)
+    device_info = parse_device_info(user_agent)
+    location_info = await get_ip_location(ip_address)
+    device_fingerprint = generate_device_fingerprint(user_agent, ip_address)
+    
+    login_record = {
+        "record_id": f"login_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "user_name": user_name,
+        "user_email": user_email,
+        "login_time": datetime.now(timezone.utc).isoformat(),
+        "ip_address": ip_address,
+        "location": location_info.get("location", "Unknown"),
+        "country": location_info.get("country", "Unknown"),
+        "city": location_info.get("city", "Unknown"),
+        "device_type": device_info.get("device_type", "Unknown"),
+        "device_os": device_info.get("device_os", "Unknown"),
+        "browser": device_info.get("browser", "Unknown"),
+        "user_agent": user_agent,
+        "device_fingerprint": device_fingerprint,
+        "login_method": login_method,
+        "success": success,
+        "failure_reason": failure_reason
+    }
+    
+    await db.login_records.insert_one(login_record)
+    return login_record
+
+async def check_device_lock(user: dict, request: Request) -> tuple:
+    """Check if user is allowed to login from this device"""
+    if not user.get("device_lock_enabled", False):
+        return True, None
+    
+    allowed_fingerprint = user.get("allowed_device_fingerprint")
+    if not allowed_fingerprint:
+        return True, None  # No device registered yet
+    
+    user_agent = request.headers.get("user-agent", "Unknown")
+    ip_address = get_client_ip(request)
+    current_fingerprint = generate_device_fingerprint(user_agent, ip_address)
+    
+    if current_fingerprint != allowed_fingerprint:
+        device_info = parse_device_info(user_agent)
+        return False, f"Login blocked: Device not authorized. Current device: {device_info['device_type']} - {device_info['browser']} on {device_info['device_os']}"
+    
+    return True, None
+
 # ==================== AUTH ROUTES ====================
 
 @api_router.post("/auth/register")
