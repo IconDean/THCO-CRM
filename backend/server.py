@@ -14,7 +14,9 @@ import jwt
 import asyncio
 import httpx
 import resend
+import hashlib
 from datetime import datetime, timezone, timedelta
+from user_agents import parse as parse_user_agent
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
