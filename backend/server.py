@@ -82,6 +82,28 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     accessible_units: Optional[List[str]] = None
     status: Optional[str] = None
+    device_lock_enabled: Optional[bool] = None
+    allowed_device_fingerprint: Optional[str] = None
+
+class LoginRecordResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    record_id: str
+    user_id: str
+    user_name: str
+    user_email: str
+    login_time: datetime
+    ip_address: str
+    location: Optional[str] = None
+    country: Optional[str] = None
+    city: Optional[str] = None
+    device_type: str
+    device_os: str
+    browser: str
+    user_agent: str
+    device_fingerprint: str
+    login_method: str
+    success: bool
+    failure_reason: Optional[str] = None
 
 class PasswordResetRequest(BaseModel):
     email: EmailStr
