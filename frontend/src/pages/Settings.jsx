@@ -34,7 +34,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Checkbox } from "../components/ui/checkbox";
-import { Badge } from "../components/ui/badge";
 import { settingsAPI, usersAPI, activityAPI, authAPI, loginRecordsAPI } from "../lib/api";
 import { toast } from "sonner";
 
