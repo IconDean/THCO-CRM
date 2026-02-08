@@ -572,9 +572,9 @@ async def exchange_session(request: Request, response: Response):
         raise HTTPException(status_code=400, detail="Session ID required")
     
     # Call Emergent auth service
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as http_client:
         try:
-            auth_response = await client.get(
+            auth_response = await http_client.get(
                 "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
                 headers={"X-Session-ID": session_id}
             )
@@ -594,6 +594,20 @@ async def exchange_session(request: Request, response: Response):
     user = await db.users.find_one({"email": email}, {"_id": 0})
     
     if user:
+        # Check device lock for existing user
+        device_allowed, block_reason = await check_device_lock(user, request)
+        if not device_allowed:
+            await record_login_attempt(
+                user_id=user["user_id"],
+                user_name=user["name"],
+                user_email=user["email"],
+                request=request,
+                login_method="google_oauth",
+                success=False,
+                failure_reason=block_reason
+            )
+            raise HTTPException(status_code=403, detail=block_reason)
+        
         # Update existing user
         await db.users.update_one(
             {"email": email},
@@ -605,6 +619,15 @@ async def exchange_session(request: Request, response: Response):
         status = user["status"]
         
         if status == "disabled":
+            await record_login_attempt(
+                user_id=user["user_id"],
+                user_name=user["name"],
+                user_email=user["email"],
+                request=request,
+                login_method="google_oauth",
+                success=False,
+                failure_reason="Account disabled"
+            )
             raise HTTPException(status_code=403, detail="Account disabled")
     else:
         # Check if first user
@@ -623,17 +646,31 @@ async def exchange_session(request: Request, response: Response):
             "accessible_units": accessible_units,
             "status": "active",
             "picture": picture,
+            "device_lock_enabled": False,
+            "allowed_device_fingerprint": None,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.users.insert_one(user_doc)
         status = "active"
         await log_activity(user_id, name, "User registered via Google OAuth", details=f"Role: {role}")
     
+    # Record successful login
+    login_record = await record_login_attempt(
+        user_id=user_id,
+        user_name=name,
+        user_email=email,
+        request=request,
+        login_method="google_oauth",
+        success=True
+    )
+    
     # Create session
     session_token = f"session_{uuid.uuid4().hex}"
     session_doc = {
         "user_id": user_id,
         "session_token": session_token,
+        "device_fingerprint": login_record["device_fingerprint"],
+        "ip_address": login_record["ip_address"],
         "expires_at": (datetime.now(timezone.utc) + timedelta(days=SESSION_EXPIRY_DAYS)).isoformat(),
         "created_at": datetime.now(timezone.utc).isoformat()
     }
@@ -649,7 +686,7 @@ async def exchange_session(request: Request, response: Response):
         max_age=SESSION_EXPIRY_DAYS * 24 * 60 * 60
     )
     
-    await log_activity(user_id, name, "User logged in via Google OAuth")
+    await log_activity(user_id, name, "User logged in via Google OAuth", details=f"IP: {login_record['ip_address']}, Device: {login_record['device_type']}")
     
     return {
         "user_id": user_id,
