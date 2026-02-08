@@ -13,7 +13,8 @@ import {
   Activity,
   Clock,
   Lock,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
@@ -27,7 +28,8 @@ const UNITS = [
     path: "/talent", 
     active: true,
     description: "AI-powered recruiting, sourcing, and talent operations",
-    toolCount: 2
+    toolCount: 2,
+    gradient: "from-purple-500 to-indigo-600"
   },
   { 
     name: "Sales & Business Development", 
@@ -36,7 +38,8 @@ const UNITS = [
     path: "/sales", 
     active: false,
     description: "Pipeline management, proposals, and client engagement",
-    toolCount: 0
+    toolCount: 0,
+    gradient: "from-emerald-500 to-teal-600"
   },
   { 
     name: "Marketing & Brand", 
@@ -45,7 +48,8 @@ const UNITS = [
     path: "/marketing", 
     active: false,
     description: "Content creation, campaigns, and brand management",
-    toolCount: 0
+    toolCount: 0,
+    gradient: "from-pink-500 to-rose-600"
   },
   { 
     name: "Advisory & Consulting", 
@@ -54,7 +58,8 @@ const UNITS = [
     path: "/advisory", 
     active: false,
     description: "Project delivery, research, and client advisory tools",
-    toolCount: 0
+    toolCount: 0,
+    gradient: "from-blue-500 to-cyan-600"
   },
   { 
     name: "Technology & Build", 
@@ -63,7 +68,8 @@ const UNITS = [
     path: "/technology", 
     active: false,
     description: "Product development, engineering, and AI tools",
-    toolCount: 0
+    toolCount: 0,
+    gradient: "from-violet-500 to-purple-600"
   },
   { 
     name: "Operations & Finance", 
@@ -72,7 +78,8 @@ const UNITS = [
     path: "/operations", 
     active: false,
     description: "Internal operations, HR, finance, and admin tools",
-    toolCount: 0
+    toolCount: 0,
+    gradient: "from-amber-500 to-orange-600"
   },
   { 
     name: "Academy & Learning", 
@@ -81,7 +88,8 @@ const UNITS = [
     path: "/academy", 
     active: false,
     description: "Training programs, assessments, and learning management",
-    toolCount: 0
+    toolCount: 0,
+    gradient: "from-cyan-500 to-blue-600"
   },
   { 
     name: "Client Delivery", 
@@ -90,7 +98,8 @@ const UNITS = [
     path: "/client-delivery", 
     active: false,
     description: "Managed services, SLA tracking, and delivery management",
-    toolCount: 0
+    toolCount: 0,
+    gradient: "from-red-500 to-rose-600"
   },
 ];
 
@@ -149,9 +158,9 @@ const Dashboard = () => {
 
   const getRoleBadge = (role) => {
     const styles = {
-      super_admin: "bg-[#7C64FF]/20 text-[#9B85FF] border-[#7C64FF]/30",
-      mini_admin: "bg-[#34D399]/20 text-[#34D399] border-[#34D399]/30",
-      team_member: "bg-white/10 text-[#8B8AA0] border-white/10",
+      super_admin: "bg-purple-100 text-purple-700 border-purple-200",
+      mini_admin: "bg-emerald-100 text-emerald-700 border-emerald-200",
+      team_member: "bg-gray-100 text-gray-600 border-gray-200",
     };
     const labels = {
       super_admin: "Super Admin",
@@ -177,10 +186,10 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="space-y-8 animate-pulse">
-        <div className="h-32 bg-[#151828] rounded-xl"></div>
+        <div className="h-32 bg-white rounded-2xl border border-gray-100"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1,2,3,4,5,6].map(i => (
-            <div key={i} className="h-48 bg-[#151828] rounded-xl"></div>
+            <div key={i} className="h-48 bg-white rounded-2xl border border-gray-100"></div>
           ))}
         </div>
       </div>
@@ -190,51 +199,55 @@ const Dashboard = () => {
   return (
     <div className="space-y-8" data-testid="dashboard-page">
       {/* Welcome Section */}
-      <div className="thco-card p-8">
+      <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <p className="text-[#8B8AA0] text-sm mb-1">{getCurrentDate()}</p>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <p className="text-gray-500 text-sm mb-1">{getCurrentDate()}</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
               Welcome back, {user?.name?.split(" ")[0]}
             </h1>
             <div className="flex items-center gap-3">
               {getRoleBadge(user?.role)}
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-purple-500" />
+            <span className="text-sm text-gray-500">AI-powered tools at your fingertips</span>
+          </div>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-4 mt-8">
-          <div className="bg-[#1C2035] rounded-xl p-4">
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#7C64FF]/10 flex items-center justify-center">
-                <Wrench className="w-5 h-5 text-[#7C64FF]" />
+              <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <Wrench className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.total_tools}</p>
-                <p className="text-xs text-[#8B8AA0]">Tools Available</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.total_tools}</p>
+                <p className="text-xs text-gray-500">Tools Available</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1C2035] rounded-xl p-4">
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#FBBF24]/10 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-[#FBBF24]" />
+              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                <Clock className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.pending_requests}</p>
-                <p className="text-xs text-[#8B8AA0]">Pending Requests</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.pending_requests}</p>
+                <p className="text-xs text-gray-500">Pending Requests</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1C2035] rounded-xl p-4">
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#34D399]/10 flex items-center justify-center">
-                <Activity className="w-5 h-5 text-[#34D399]" />
+              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <Activity className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.recent_activity}</p>
-                <p className="text-xs text-[#8B8AA0]">Recent Activity</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.recent_activity}</p>
+                <p className="text-xs text-gray-500">Recent Activity</p>
               </div>
             </div>
           </div>
@@ -254,48 +267,51 @@ const Dashboard = () => {
                 key={unit.slug}
                 to={unit.path}
                 onClick={(e) => handleUnitClick(unit, e)}
-                className={`thco-card p-6 group transition-all duration-300 ${
+                className={`group bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
                   hasAccess 
-                    ? "hover:border-[#7C64FF]/50 hover:shadow-[0_0_30px_-10px_rgba(124,100,255,0.2)]" 
-                    : "opacity-40 cursor-pointer"
+                    ? "border-gray-100 hover:border-gray-200 hover:shadow-lg" 
+                    : "border-gray-100 opacity-60 cursor-pointer"
                 }`}
                 data-testid={`unit-card-${unit.slug}`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                    unit.active ? "bg-[#7C64FF]/10" : "bg-white/5"
-                  }`}>
-                    <Icon className={`w-6 h-6 ${unit.active ? "text-[#7C64FF]" : "text-[#5A596E]"}`} />
-                  </div>
-                  {hasAccess ? (
-                    unit.active ? (
-                      <span className="badge-active text-[10px] font-mono px-2 py-1 rounded">
-                        ACTIVE
-                      </span>
+                {/* Gradient Header */}
+                <div className={`h-2 bg-gradient-to-r ${unit.gradient}`}></div>
+                
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${unit.gradient} flex items-center justify-center shadow-lg`}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    {hasAccess ? (
+                      unit.active ? (
+                        <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+                          ACTIVE
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                          COMING SOON
+                        </span>
+                      )
                     ) : (
-                      <span className="badge-coming-soon text-[10px] font-mono px-2 py-1 rounded">
-                        COMING SOON
-                      </span>
-                    )
-                  ) : (
-                    <Lock className="w-4 h-4 text-[#5A596E]" />
-                  )}
-                </div>
-                
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#9B85FF] transition-colors">
-                  {unit.name}
-                </h3>
-                <p className="text-sm text-[#8B8AA0] mb-4 line-clamp-2">
-                  {unit.description}
-                </p>
-                
-                <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                  <span className="text-xs text-[#5A596E]">
-                    {unit.toolCount} tool{unit.toolCount !== 1 ? 's' : ''}
-                  </span>
-                  {hasAccess && (
-                    <ChevronRight className="w-4 h-4 text-[#5A596E] group-hover:text-[#7C64FF] group-hover:translate-x-1 transition-all" />
-                  )}
+                      <Lock className="w-4 h-4 text-gray-400" />
+                    )}
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
+                    {unit.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                    {unit.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <span className="text-xs text-gray-400">
+                      {unit.toolCount} tool{unit.toolCount !== 1 ? 's' : ''}
+                    </span>
+                    {hasAccess && (
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
+                    )}
+                  </div>
                 </div>
               </Link>
             );
@@ -306,27 +322,27 @@ const Dashboard = () => {
       {/* Recent Activity */}
       <div>
         <h2 className="thco-section-label mb-4">Recent Activity</h2>
-        <div className="thco-card overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           {activities.length > 0 ? (
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-gray-100">
               {activities.map((activity, index) => (
-                <div key={activity.log_id || index} className="p-4 hover:bg-white/5 transition-colors">
+                <div key={activity.log_id || index} className="p-4 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#7C64FF]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Activity className="w-4 h-4 text-[#7C64FF]" />
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Activity className="w-4 h-4 text-purple-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-[#E8E6F0]">
+                      <p className="text-sm text-gray-900">
                         <span className="font-medium">{activity.user_name}</span>
                         {" "}{activity.action}
                       </p>
                       {activity.unit_slug && (
-                        <p className="text-xs text-[#8B8AA0] mt-1">
+                        <p className="text-xs text-gray-500 mt-1">
                           in {UNITS.find(u => u.slug === activity.unit_slug)?.name || activity.unit_slug}
                         </p>
                       )}
                     </div>
-                    <span className="text-xs text-[#5A596E] whitespace-nowrap">
+                    <span className="text-xs text-gray-400 whitespace-nowrap">
                       {formatTimeAgo(activity.created_at)}
                     </span>
                   </div>
@@ -335,8 +351,8 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <Activity className="w-12 h-12 text-[#5A596E] mx-auto mb-3" />
-              <p className="text-[#8B8AA0]">No recent activity</p>
+              <Activity className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No recent activity</p>
             </div>
           )}
         </div>
@@ -344,23 +360,23 @@ const Dashboard = () => {
 
       {/* Access Restricted Modal */}
       <Dialog open={accessModal.open} onOpenChange={(open) => setAccessModal({ ...accessModal, open })}>
-        <DialogContent className="bg-[#151828] border-white/10 max-w-md">
+        <DialogContent className="bg-white border-gray-200 max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#F87171]/10 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-[#F87171]" />
+            <DialogTitle className="text-gray-900 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                <Lock className="w-5 h-5 text-red-600" />
               </div>
               Access Restricted
             </DialogTitle>
-            <DialogDescription className="text-[#8B8AA0] pt-4">
-              You don't have access to <span className="text-white font-medium">{accessModal.unitName}</span>. 
+            <DialogDescription className="text-gray-500 pt-4">
+              You don't have access to <span className="text-gray-900 font-medium">{accessModal.unitName}</span>. 
               Contact your administrator to request access.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end mt-4">
             <Button 
               onClick={() => setAccessModal({ open: false, unitName: "" })}
-              className="bg-[#1C2035] hover:bg-white/10 text-white border border-white/10"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl"
               data-testid="access-modal-dismiss-btn"
             >
               Dismiss
