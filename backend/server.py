@@ -466,22 +466,76 @@ async def register(user_data: UserCreate, response: Response):
     }
 
 @api_router.post("/auth/login")
-async def login(credentials: UserLogin, response: Response):
+async def login(credentials: UserLogin, request: Request, response: Response):
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     if not user:
+        # Record failed login attempt
+        await record_login_attempt(
+            user_id="unknown",
+            user_name="Unknown",
+            user_email=credentials.email,
+            request=request,
+            login_method="email_password",
+            success=False,
+            failure_reason="Invalid credentials - user not found"
+        )
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not verify_password(credentials.password, user.get("password_hash", "")):
+        await record_login_attempt(
+            user_id=user["user_id"],
+            user_name=user["name"],
+            user_email=user["email"],
+            request=request,
+            login_method="email_password",
+            success=False,
+            failure_reason="Invalid credentials - wrong password"
+        )
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if user.get("status") == "disabled":
+        await record_login_attempt(
+            user_id=user["user_id"],
+            user_name=user["name"],
+            user_email=user["email"],
+            request=request,
+            login_method="email_password",
+            success=False,
+            failure_reason="Account disabled"
+        )
         raise HTTPException(status_code=403, detail="Account disabled")
+    
+    # Check device lock
+    device_allowed, block_reason = await check_device_lock(user, request)
+    if not device_allowed:
+        await record_login_attempt(
+            user_id=user["user_id"],
+            user_name=user["name"],
+            user_email=user["email"],
+            request=request,
+            login_method="email_password",
+            success=False,
+            failure_reason=block_reason
+        )
+        raise HTTPException(status_code=403, detail=block_reason)
+    
+    # Record successful login
+    login_record = await record_login_attempt(
+        user_id=user["user_id"],
+        user_name=user["name"],
+        user_email=user["email"],
+        request=request,
+        login_method="email_password",
+        success=True
+    )
     
     # Create new session
     session_token = f"session_{uuid.uuid4().hex}"
     session_doc = {
         "user_id": user["user_id"],
         "session_token": session_token,
+        "device_fingerprint": login_record["device_fingerprint"],
+        "ip_address": login_record["ip_address"],
         "expires_at": (datetime.now(timezone.utc) + timedelta(days=SESSION_EXPIRY_DAYS)).isoformat(),
         "created_at": datetime.now(timezone.utc).isoformat()
     }
@@ -497,7 +551,7 @@ async def login(credentials: UserLogin, response: Response):
         max_age=SESSION_EXPIRY_DAYS * 24 * 60 * 60
     )
     
-    await log_activity(user["user_id"], user["name"], "User logged in")
+    await log_activity(user["user_id"], user["name"], "User logged in", details=f"IP: {login_record['ip_address']}, Device: {login_record['device_type']}")
     
     return {
         "user_id": user["user_id"],
