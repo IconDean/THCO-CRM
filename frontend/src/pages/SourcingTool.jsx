@@ -38,7 +38,7 @@ const SourcingTool = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const [user, setUser] = useState(null);
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(sourcingSchema),
   });
 
@@ -66,7 +66,6 @@ const SourcingTool = () => {
       await sourcingAPI.create(data);
       toast.success("Sourcing request submitted successfully. Results will be delivered to your email within 10 minutes.");
       reset();
-      // Refresh history
       const updatedRequests = await sourcingAPI.getAll();
       setRequests(updatedRequests);
     } catch (error) {
@@ -79,13 +78,13 @@ const SourcingTool = () => {
 
   const getStatusBadge = (status) => {
     const styles = {
-      submitted: "bg-[#FBBF24]/10 text-[#FBBF24] border-[#FBBF24]/20",
-      processing: "bg-[#7C64FF]/10 text-[#7C64FF] border-[#7C64FF]/20",
-      completed: "bg-[#34D399]/10 text-[#34D399] border-[#34D399]/20",
-      failed: "bg-[#F87171]/10 text-[#F87171] border-[#F87171]/20",
+      submitted: "bg-amber-50 text-amber-600 border-amber-200",
+      processing: "bg-purple-50 text-purple-600 border-purple-200",
+      completed: "bg-emerald-50 text-emerald-600 border-emerald-200",
+      failed: "bg-red-50 text-red-600 border-red-200",
     };
     return (
-      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border ${styles[status] || styles.submitted}`}>
+      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-full border ${styles[status] || styles.submitted}`}>
         {status}
       </span>
     );
@@ -108,46 +107,46 @@ const SourcingTool = () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/dashboard" className="text-[#8B8AA0] hover:text-white">Dashboard</Link>
+              <Link to="/dashboard" className="text-gray-500 hover:text-gray-900">Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-[#5A596E]" />
+          <BreadcrumbSeparator className="text-gray-300" />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/talent" className="text-[#8B8AA0] hover:text-white">Talent & Human Capital</Link>
+              <Link to="/talent" className="text-gray-500 hover:text-gray-900">Talent & Human Capital</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-[#5A596E]" />
+          <BreadcrumbSeparator className="text-gray-300" />
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-white">AI Candidate Sourcing</BreadcrumbPage>
+            <BreadcrumbPage className="text-gray-900 font-medium">AI Candidate Sourcing</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       {/* Tool Header */}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-[#7C64FF]/10 flex items-center justify-center">
-          <Search className="w-6 h-6 text-[#7C64FF]" />
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+          <Search className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">AI Candidate Sourcing</h1>
-          <p className="text-[#8B8AA0]">Source candidates from the open web using AI</p>
+          <h1 className="text-2xl font-bold text-gray-900">AI Candidate Sourcing</h1>
+          <p className="text-gray-500">Source candidates from the open web using AI</p>
         </div>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="new-request" className="w-full">
-        <TabsList className="bg-[#151828] border border-white/10 p-1">
+        <TabsList className="bg-gray-100 border border-gray-200 p-1 rounded-xl">
           <TabsTrigger 
             value="new-request" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="new-request-tab"
           >
             New Request
           </TabsTrigger>
           <TabsTrigger 
             value="history" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="history-tab"
           >
             Request History
@@ -158,144 +157,144 @@ const SourcingTool = () => {
         <TabsContent value="new-request" className="mt-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Section 1: Role Details */}
-            <div className="form-section">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
               <h3 className="thco-section-label mb-6">Role Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Job Title *</Label>
+                  <Label className="text-gray-700 font-medium">Job Title *</Label>
                   <Input
                     placeholder="e.g., Senior Investment Associate"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("job_title")}
                     data-testid="job-title-input"
                   />
-                  {errors.job_title && <p className="text-[#F87171] text-sm">{errors.job_title.message}</p>}
+                  {errors.job_title && <p className="text-red-500 text-sm">{errors.job_title.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Hiring Locations *</Label>
+                  <Label className="text-gray-700 font-medium">Hiring Locations *</Label>
                   <Input
                     placeholder="e.g., Lagos, Nairobi, Remote"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("hiring_locations")}
                     data-testid="hiring-locations-input"
                   />
-                  {errors.hiring_locations && <p className="text-[#F87171] text-sm">{errors.hiring_locations.message}</p>}
+                  {errors.hiring_locations && <p className="text-red-500 text-sm">{errors.hiring_locations.message}</p>}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-[#E8E6F0]">Job Description *</Label>
+                  <Label className="text-gray-700 font-medium">Job Description *</Label>
                   <Textarea
                     placeholder="Paste the full job description here"
                     rows={6}
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF] resize-none"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
                     {...register("job_description")}
                     data-testid="job-description-input"
                   />
-                  {errors.job_description && <p className="text-[#F87171] text-sm">{errors.job_description.message}</p>}
+                  {errors.job_description && <p className="text-red-500 text-sm">{errors.job_description.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Salary Budget</Label>
+                  <Label className="text-gray-700 font-medium">Salary Budget</Label>
                   <Input
                     placeholder="e.g., $80,000 - $120,000 USD"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("salary_budget")}
                     data-testid="salary-budget-input"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Accept N-Minus-One Candidates *</Label>
+                  <Label className="text-gray-700 font-medium">Accept N-Minus-One Candidates *</Label>
                   <Select onValueChange={(value) => setValue("accept_n_minus_one", value)}>
-                    <SelectTrigger className="bg-[#1C2035] border-white/10 text-white" data-testid="n-minus-one-select">
+                    <SelectTrigger className="bg-white border-gray-200 text-gray-900 rounded-xl h-11" data-testid="n-minus-one-select">
                       <SelectValue placeholder="Select option" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1C2035] border-white/10">
-                      <SelectItem value="Yes — accept one level below with matching experience" className="text-white hover:bg-white/10">
-                        Yes — accept one level below with matching experience
+                    <SelectContent className="bg-white border-gray-200 rounded-xl">
+                      <SelectItem value="Yes — accept one level below with matching experience" className="text-gray-900 rounded-lg">
+                        Yes — accept one level below
                       </SelectItem>
-                      <SelectItem value="No — exact level only" className="text-white hover:bg-white/10">
+                      <SelectItem value="No — exact level only" className="text-gray-900 rounded-lg">
                         No — exact level only
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.accept_n_minus_one && <p className="text-[#F87171] text-sm">{errors.accept_n_minus_one.message}</p>}
+                  {errors.accept_n_minus_one && <p className="text-red-500 text-sm">{errors.accept_n_minus_one.message}</p>}
                 </div>
               </div>
             </div>
 
             {/* Section 2: Hiring Company */}
-            <div className="form-section">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
               <h3 className="thco-section-label mb-6">Hiring Company</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Company Name *</Label>
+                  <Label className="text-gray-700 font-medium">Company Name *</Label>
                   <Input
                     placeholder="e.g., Aruwa Capital"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("company_name")}
                     data-testid="company-name-input"
                   />
-                  {errors.company_name && <p className="text-[#F87171] text-sm">{errors.company_name.message}</p>}
+                  {errors.company_name && <p className="text-red-500 text-sm">{errors.company_name.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Company Website *</Label>
+                  <Label className="text-gray-700 font-medium">Company Website *</Label>
                   <Input
                     placeholder="e.g., https://aruwacapital.com"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("company_website")}
                     data-testid="company-website-input"
                   />
-                  {errors.company_website && <p className="text-[#F87171] text-sm">{errors.company_website.message}</p>}
+                  {errors.company_website && <p className="text-red-500 text-sm">{errors.company_website.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Company Location *</Label>
+                  <Label className="text-gray-700 font-medium">Company Location *</Label>
                   <Input
                     placeholder="e.g., Lagos, Nigeria"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("company_location")}
                     data-testid="company-location-input"
                   />
-                  {errors.company_location && <p className="text-[#F87171] text-sm">{errors.company_location.message}</p>}
+                  {errors.company_location && <p className="text-red-500 text-sm">{errors.company_location.message}</p>}
                 </div>
               </div>
             </div>
 
             {/* Section 3: Targeting Preferences */}
-            <div className="form-section">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
               <h3 className="thco-section-label mb-6">Targeting Preferences</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Target Companies to Hire From</Label>
+                  <Label className="text-gray-700 font-medium">Target Companies to Hire From</Label>
                   <Textarea
                     placeholder="Companies to actively target. One per line or comma-separated."
                     rows={3}
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF] resize-none"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
                     {...register("target_companies")}
                     data-testid="target-companies-input"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Companies to Exclude</Label>
+                  <Label className="text-gray-700 font-medium">Companies to Exclude</Label>
                   <Textarea
                     placeholder="Companies we should NOT source from"
                     rows={3}
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF] resize-none"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
                     {...register("companies_to_exclude")}
                     data-testid="exclude-companies-input"
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-[#E8E6F0]">Industry Segments</Label>
+                  <Label className="text-gray-700 font-medium">Industry Segments</Label>
                   <Textarea
                     placeholder="e.g., Include: private equity, venture capital. Exclude: commercial banking"
                     rows={2}
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF] resize-none"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
                     {...register("industry_segments")}
                     data-testid="industry-segments-input"
                   />
@@ -304,36 +303,36 @@ const SourcingTool = () => {
             </div>
 
             {/* Section 4: Additional */}
-            <div className="form-section">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
               <h3 className="thco-section-label mb-6">Additional</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Assigned Recruiter *</Label>
+                  <Label className="text-gray-700 font-medium">Assigned Recruiter *</Label>
                   <Input
                     placeholder="Recruiter name"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("assigned_recruiter")}
                     data-testid="assigned-recruiter-input"
                   />
-                  {errors.assigned_recruiter && <p className="text-[#F87171] text-sm">{errors.assigned_recruiter.message}</p>}
+                  {errors.assigned_recruiter && <p className="text-red-500 text-sm">{errors.assigned_recruiter.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Requester Email</Label>
+                  <Label className="text-gray-700 font-medium">Requester Email</Label>
                   <Input
                     value={user?.email || ""}
                     disabled
-                    className="bg-[#1C2035] border-white/10 text-[#8B8AA0] cursor-not-allowed"
+                    className="bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed rounded-xl h-11"
                     data-testid="requester-email-input"
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-[#E8E6F0]">Additional Notes</Label>
+                  <Label className="text-gray-700 font-medium">Additional Notes</Label>
                   <Textarea
                     placeholder="Any additional context or requirements"
                     rows={3}
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF] resize-none"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
                     {...register("additional_notes")}
                     data-testid="additional-notes-input"
                   />
@@ -345,7 +344,7 @@ const SourcingTool = () => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="bg-[#7C64FF] hover:bg-[#6B54E8] text-white px-8 h-12 font-medium"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 h-12 font-medium rounded-xl shadow-sm hover:shadow-md transition-all"
                 disabled={isLoading}
                 data-testid="submit-sourcing-btn"
               >
@@ -367,23 +366,23 @@ const SourcingTool = () => {
 
         {/* History Tab */}
         <TabsContent value="history" className="mt-6">
-          <div className="thco-card overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             {loadingHistory ? (
               <div className="p-8 text-center">
-                <Loader2 className="w-8 h-8 text-[#7C64FF] animate-spin mx-auto mb-3" />
-                <p className="text-[#8B8AA0]">Loading history...</p>
+                <Loader2 className="w-8 h-8 text-purple-600 animate-spin mx-auto mb-3" />
+                <p className="text-gray-500">Loading history...</p>
               </div>
             ) : requests.length > 0 ? (
               <Table>
                 <TableHeader>
-                  <TableRow className="border-white/5 hover:bg-transparent">
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Date</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Job Title</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Company</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Location</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Recruiter</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Status</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase"></TableHead>
+                  <TableRow className="border-gray-100 hover:bg-transparent">
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Date</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Job Title</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Company</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Location</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Recruiter</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Status</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -391,51 +390,51 @@ const SourcingTool = () => {
                     <>
                       <TableRow 
                         key={request.request_id} 
-                        className="border-white/5 hover:bg-white/5 cursor-pointer"
+                        className="border-gray-100 hover:bg-gray-50 cursor-pointer"
                         onClick={() => setExpandedRow(expandedRow === request.request_id ? null : request.request_id)}
                         data-testid={`history-row-${request.request_id}`}
                       >
-                        <TableCell className="text-[#E8E6F0]">{formatDate(request.created_at)}</TableCell>
-                        <TableCell className="text-[#E8E6F0] font-medium">{request.job_title}</TableCell>
-                        <TableCell className="text-[#8B8AA0]">{request.company_name}</TableCell>
-                        <TableCell className="text-[#8B8AA0]">{request.hiring_locations}</TableCell>
-                        <TableCell className="text-[#8B8AA0]">{request.assigned_recruiter}</TableCell>
+                        <TableCell className="text-gray-700">{formatDate(request.created_at)}</TableCell>
+                        <TableCell className="text-gray-900 font-medium">{request.job_title}</TableCell>
+                        <TableCell className="text-gray-600">{request.company_name}</TableCell>
+                        <TableCell className="text-gray-600">{request.hiring_locations}</TableCell>
+                        <TableCell className="text-gray-600">{request.assigned_recruiter}</TableCell>
                         <TableCell>{getStatusBadge(request.status)}</TableCell>
                         <TableCell>
                           {expandedRow === request.request_id ? (
-                            <ChevronUp className="w-4 h-4 text-[#8B8AA0]" />
+                            <ChevronUp className="w-4 h-4 text-gray-400" />
                           ) : (
-                            <ChevronDown className="w-4 h-4 text-[#8B8AA0]" />
+                            <ChevronDown className="w-4 h-4 text-gray-400" />
                           )}
                         </TableCell>
                       </TableRow>
                       {expandedRow === request.request_id && (
-                        <TableRow className="border-white/5 bg-[#1C2035]/50">
+                        <TableRow className="border-gray-100 bg-gray-50">
                           <TableCell colSpan={7} className="p-6">
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                               <div>
-                                <span className="text-[#5A596E] block mb-1">Company Website</span>
-                                <span className="text-[#E8E6F0]">{request.company_website}</span>
+                                <span className="text-gray-400 block mb-1">Company Website</span>
+                                <span className="text-gray-900">{request.company_website}</span>
                               </div>
                               <div>
-                                <span className="text-[#5A596E] block mb-1">Company Location</span>
-                                <span className="text-[#E8E6F0]">{request.company_location}</span>
+                                <span className="text-gray-400 block mb-1">Company Location</span>
+                                <span className="text-gray-900">{request.company_location}</span>
                               </div>
                               <div>
-                                <span className="text-[#5A596E] block mb-1">Salary Budget</span>
-                                <span className="text-[#E8E6F0]">{request.salary_budget || "Not specified"}</span>
+                                <span className="text-gray-400 block mb-1">Salary Budget</span>
+                                <span className="text-gray-900">{request.salary_budget || "Not specified"}</span>
                               </div>
                               <div>
-                                <span className="text-[#5A596E] block mb-1">N-Minus-One</span>
-                                <span className="text-[#E8E6F0]">{request.accept_n_minus_one}</span>
+                                <span className="text-gray-400 block mb-1">N-Minus-One</span>
+                                <span className="text-gray-900">{request.accept_n_minus_one}</span>
                               </div>
                               <div>
-                                <span className="text-[#5A596E] block mb-1">Requester</span>
-                                <span className="text-[#E8E6F0]">{request.requester_email}</span>
+                                <span className="text-gray-400 block mb-1">Requester</span>
+                                <span className="text-gray-900">{request.requester_email}</span>
                               </div>
                               <div className="md:col-span-3">
-                                <span className="text-[#5A596E] block mb-1">Job Description</span>
-                                <span className="text-[#E8E6F0] whitespace-pre-wrap">{request.job_description}</span>
+                                <span className="text-gray-400 block mb-1">Job Description</span>
+                                <span className="text-gray-900 whitespace-pre-wrap">{request.job_description}</span>
                               </div>
                             </div>
                           </TableCell>
@@ -447,8 +446,8 @@ const SourcingTool = () => {
               </Table>
             ) : (
               <div className="p-8 text-center">
-                <Search className="w-12 h-12 text-[#5A596E] mx-auto mb-3" />
-                <p className="text-[#8B8AA0]">No sourcing requests yet</p>
+                <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No sourcing requests yet</p>
               </div>
             )}
           </div>
@@ -458,7 +457,7 @@ const SourcingTool = () => {
       {/* Back Link */}
       <Link 
         to="/talent" 
-        className="inline-flex items-center gap-2 text-[#8B8AA0] hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
         data-testid="back-to-talent-link"
       >
         <ArrowLeft className="w-4 h-4" />
