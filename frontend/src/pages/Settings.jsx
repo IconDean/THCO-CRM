@@ -246,9 +246,9 @@ const Settings = () => {
 
   const getRoleBadge = (role) => {
     const styles = {
-      super_admin: "bg-[#7C64FF]/20 text-[#9B85FF] border-[#7C64FF]/30",
-      mini_admin: "bg-[#34D399]/20 text-[#34D399] border-[#34D399]/30",
-      team_member: "bg-white/10 text-[#8B8AA0] border-white/10",
+      super_admin: "bg-purple-50 text-purple-700 border-purple-200",
+      mini_admin: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      team_member: "bg-gray-50 text-gray-600 border-gray-200",
     };
     const labels = {
       super_admin: "Super Admin",
@@ -256,7 +256,7 @@ const Settings = () => {
       team_member: "Team Member",
     };
     return (
-      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${styles[role] || styles.team_member}`}>
+      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles[role] || styles.team_member}`}>
         {labels[role] || "Member"}
       </span>
     );
@@ -264,11 +264,11 @@ const Settings = () => {
 
   const getStatusBadge = (status) => {
     return status === "active" ? (
-      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#34D399]/10 text-[#34D399] border border-[#34D399]/20">
+      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
         Active
       </span>
     ) : (
-      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#F87171]/10 text-[#F87171] border border-[#F87171]/20">
+      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">
         Disabled
       </span>
     );
