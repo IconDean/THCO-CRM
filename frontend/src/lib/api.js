@@ -147,6 +147,24 @@ export const activityAPI = {
   },
 };
 
+// Login Records API
+export const loginRecordsAPI = {
+  getAll: async (params = {}) => {
+    const response = await apiClient.get('/login-records', { params });
+    return response.data;
+  },
+  
+  getCount: async () => {
+    const response = await apiClient.get('/login-records/count');
+    return response.data;
+  },
+  
+  getByUser: async (userId, limit = 20) => {
+    const response = await apiClient.get(`/login-records/user/${userId}?limit=${limit}`);
+    return response.data;
+  },
+};
+
 // Dashboard API
 export const dashboardAPI = {
   getStats: async () => {
