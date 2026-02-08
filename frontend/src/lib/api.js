@@ -73,6 +73,21 @@ export const usersAPI = {
     const response = await apiClient.delete(`/users/${userId}`);
     return response.data;
   },
+  
+  lockDevice: async (userId) => {
+    const response = await apiClient.post(`/users/${userId}/lock-device`);
+    return response.data;
+  },
+  
+  unlockDevice: async (userId) => {
+    const response = await apiClient.post(`/users/${userId}/unlock-device`);
+    return response.data;
+  },
+  
+  updateDevice: async (userId) => {
+    const response = await apiClient.post(`/users/${userId}/update-device`);
+    return response.data;
+  },
 };
 
 // Sourcing Requests API
