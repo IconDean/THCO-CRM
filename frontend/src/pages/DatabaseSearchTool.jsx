@@ -53,7 +53,6 @@ const DatabaseSearchTool = () => {
       await databaseSearchAPI.create(data);
       toast.success("Database search initiated. Results will be delivered to your email shortly.");
       reset();
-      // Refresh history
       const updatedSearches = await databaseSearchAPI.getAll();
       setSearches(updatedSearches);
     } catch (error) {
@@ -66,13 +65,13 @@ const DatabaseSearchTool = () => {
 
   const getStatusBadge = (status) => {
     const styles = {
-      submitted: "bg-[#FBBF24]/10 text-[#FBBF24] border-[#FBBF24]/20",
-      processing: "bg-[#7C64FF]/10 text-[#7C64FF] border-[#7C64FF]/20",
-      completed: "bg-[#34D399]/10 text-[#34D399] border-[#34D399]/20",
-      failed: "bg-[#F87171]/10 text-[#F87171] border-[#F87171]/20",
+      submitted: "bg-amber-50 text-amber-600 border-amber-200",
+      processing: "bg-purple-50 text-purple-600 border-purple-200",
+      completed: "bg-emerald-50 text-emerald-600 border-emerald-200",
+      failed: "bg-red-50 text-red-600 border-red-200",
     };
     return (
-      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border ${styles[status] || styles.submitted}`}>
+      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-full border ${styles[status] || styles.submitted}`}>
         {status}
       </span>
     );
@@ -95,46 +94,46 @@ const DatabaseSearchTool = () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/dashboard" className="text-[#8B8AA0] hover:text-white">Dashboard</Link>
+              <Link to="/dashboard" className="text-gray-500 hover:text-gray-900">Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-[#5A596E]" />
+          <BreadcrumbSeparator className="text-gray-300" />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/talent" className="text-[#8B8AA0] hover:text-white">Talent & Human Capital</Link>
+              <Link to="/talent" className="text-gray-500 hover:text-gray-900">Talent & Human Capital</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-[#5A596E]" />
+          <BreadcrumbSeparator className="text-gray-300" />
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-white">Database Search</BreadcrumbPage>
+            <BreadcrumbPage className="text-gray-900 font-medium">Database Search</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       {/* Tool Header */}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-[#7C64FF]/10 flex items-center justify-center">
-          <Database className="w-6 h-6 text-[#7C64FF]" />
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <Database className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Database Search</h1>
-          <p className="text-[#8B8AA0]">Search our internal candidate database using AI-powered resume analysis</p>
+          <h1 className="text-2xl font-bold text-gray-900">Database Search</h1>
+          <p className="text-gray-500">Search our internal candidate database using AI-powered resume analysis</p>
         </div>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="new-search" className="w-full">
-        <TabsList className="bg-[#151828] border border-white/10 p-1">
+        <TabsList className="bg-gray-100 border border-gray-200 p-1 rounded-xl">
           <TabsTrigger 
             value="new-search" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="new-search-tab"
           >
             New Search
           </TabsTrigger>
           <TabsTrigger 
             value="history" 
-            className="data-[state=active]:bg-[#7C64FF] data-[state=active]:text-white text-[#8B8AA0]"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="search-history-tab"
           >
             Search History
@@ -145,89 +144,73 @@ const DatabaseSearchTool = () => {
         <TabsContent value="new-search" className="mt-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Search Criteria Section */}
-            <div className="form-section">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
               <h3 className="thco-section-label mb-6">Search Criteria</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Job Title *</Label>
+                  <Label className="text-gray-700 font-medium">Job Title *</Label>
                   <Input
                     placeholder="e.g., Senior Data Engineer"
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
                     {...register("job_title")}
                     data-testid="search-job-title-input"
                   />
-                  {errors.job_title && <p className="text-[#F87171] text-sm">{errors.job_title.message}</p>}
+                  {errors.job_title && <p className="text-red-500 text-sm">{errors.job_title.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Seniority Level *</Label>
+                  <Label className="text-gray-700 font-medium">Seniority Level *</Label>
                   <Select onValueChange={(value) => setValue("seniority_level", value)}>
-                    <SelectTrigger className="bg-[#1C2035] border-white/10 text-white" data-testid="seniority-level-select">
+                    <SelectTrigger className="bg-white border-gray-200 text-gray-900 rounded-xl h-11" data-testid="seniority-level-select">
                       <SelectValue placeholder="Select seniority level" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1C2035] border-white/10">
-                      <SelectItem value="Junior (0-2 years)" className="text-white hover:bg-white/10">
-                        Junior (0-2 years)
-                      </SelectItem>
-                      <SelectItem value="Mid-Level (3-5 years)" className="text-white hover:bg-white/10">
-                        Mid-Level (3-5 years)
-                      </SelectItem>
-                      <SelectItem value="Senior (5-8 years)" className="text-white hover:bg-white/10">
-                        Senior (5-8 years)
-                      </SelectItem>
-                      <SelectItem value="Lead / Principal (8-12 years)" className="text-white hover:bg-white/10">
-                        Lead / Principal (8-12 years)
-                      </SelectItem>
-                      <SelectItem value="Executive / C-Suite (12+ years)" className="text-white hover:bg-white/10">
-                        Executive / C-Suite (12+ years)
-                      </SelectItem>
+                    <SelectContent className="bg-white border-gray-200 rounded-xl">
+                      <SelectItem value="Junior (0-2 years)" className="text-gray-900 rounded-lg">Junior (0-2 years)</SelectItem>
+                      <SelectItem value="Mid-Level (3-5 years)" className="text-gray-900 rounded-lg">Mid-Level (3-5 years)</SelectItem>
+                      <SelectItem value="Senior (5-8 years)" className="text-gray-900 rounded-lg">Senior (5-8 years)</SelectItem>
+                      <SelectItem value="Lead / Principal (8-12 years)" className="text-gray-900 rounded-lg">Lead / Principal (8-12 years)</SelectItem>
+                      <SelectItem value="Executive / C-Suite (12+ years)" className="text-gray-900 rounded-lg">Executive / C-Suite (12+ years)</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.seniority_level && <p className="text-[#F87171] text-sm">{errors.seniority_level.message}</p>}
+                  {errors.seniority_level && <p className="text-red-500 text-sm">{errors.seniority_level.message}</p>}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-[#E8E6F0]">Job Description *</Label>
+                  <Label className="text-gray-700 font-medium">Job Description *</Label>
                   <Textarea
                     placeholder="Paste the full JD here — responsibilities, requirements, qualifications..."
                     rows={6}
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF] resize-none"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
                     {...register("job_description")}
                     data-testid="search-job-description-input"
                   />
-                  {errors.job_description && <p className="text-[#F87171] text-sm">{errors.job_description.message}</p>}
+                  {errors.job_description && <p className="text-red-500 text-sm">{errors.job_description.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Company / Hiring Context</Label>
+                  <Label className="text-gray-700 font-medium">Company / Hiring Context</Label>
                   <Textarea
                     placeholder="Industry, team size, culture, budget range, location requirements..."
                     rows={3}
-                    className="bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF] resize-none"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
                     {...register("company_context")}
                     data-testid="company-context-input"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#E8E6F0]">Max Candidates to Evaluate *</Label>
+                  <Label className="text-gray-700 font-medium">Max Candidates to Evaluate *</Label>
                   <Select onValueChange={(value) => setValue("max_candidates", value)}>
-                    <SelectTrigger className="bg-[#1C2035] border-white/10 text-white" data-testid="max-candidates-select">
+                    <SelectTrigger className="bg-white border-gray-200 text-gray-900 rounded-xl h-11" data-testid="max-candidates-select">
                       <SelectValue placeholder="Select max candidates" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1C2035] border-white/10">
-                      <SelectItem value="10 (Quick Scan)" className="text-white hover:bg-white/10">
-                        10 (Quick Scan)
-                      </SelectItem>
-                      <SelectItem value="25 (Standard)" className="text-white hover:bg-white/10">
-                        25 (Standard)
-                      </SelectItem>
-                      <SelectItem value="50 (Deep Search)" className="text-white hover:bg-white/10">
-                        50 (Deep Search)
-                      </SelectItem>
+                    <SelectContent className="bg-white border-gray-200 rounded-xl">
+                      <SelectItem value="10 (Quick Scan)" className="text-gray-900 rounded-lg">10 (Quick Scan)</SelectItem>
+                      <SelectItem value="25 (Standard)" className="text-gray-900 rounded-lg">25 (Standard)</SelectItem>
+                      <SelectItem value="50 (Deep Search)" className="text-gray-900 rounded-lg">50 (Deep Search)</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.max_candidates && <p className="text-[#F87171] text-sm">{errors.max_candidates.message}</p>}
+                  {errors.max_candidates && <p className="text-red-500 text-sm">{errors.max_candidates.message}</p>}
                 </div>
               </div>
             </div>
@@ -236,7 +219,7 @@ const DatabaseSearchTool = () => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="bg-[#7C64FF] hover:bg-[#6B54E8] text-white px-8 h-12 font-medium"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 h-12 font-medium rounded-xl shadow-sm hover:shadow-md transition-all"
                 disabled={isLoading}
                 data-testid="submit-search-btn"
               >
@@ -258,22 +241,22 @@ const DatabaseSearchTool = () => {
 
         {/* History Tab */}
         <TabsContent value="history" className="mt-6">
-          <div className="thco-card overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             {loadingHistory ? (
               <div className="p-8 text-center">
-                <Loader2 className="w-8 h-8 text-[#7C64FF] animate-spin mx-auto mb-3" />
-                <p className="text-[#8B8AA0]">Loading history...</p>
+                <Loader2 className="w-8 h-8 text-purple-600 animate-spin mx-auto mb-3" />
+                <p className="text-gray-500">Loading history...</p>
               </div>
             ) : searches.length > 0 ? (
               <Table>
                 <TableHeader>
-                  <TableRow className="border-white/5 hover:bg-transparent">
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Date</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Job Title</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Seniority</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Max Candidates</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase">Status</TableHead>
-                    <TableHead className="text-[#8B8AA0] font-mono text-xs uppercase"></TableHead>
+                  <TableRow className="border-gray-100 hover:bg-transparent">
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Date</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Job Title</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Seniority</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Max Candidates</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase">Status</TableHead>
+                    <TableHead className="text-gray-500 font-mono text-xs uppercase"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -281,35 +264,35 @@ const DatabaseSearchTool = () => {
                     <>
                       <TableRow 
                         key={search.search_id} 
-                        className="border-white/5 hover:bg-white/5 cursor-pointer"
+                        className="border-gray-100 hover:bg-gray-50 cursor-pointer"
                         onClick={() => setExpandedRow(expandedRow === search.search_id ? null : search.search_id)}
                         data-testid={`search-history-row-${search.search_id}`}
                       >
-                        <TableCell className="text-[#E8E6F0]">{formatDate(search.created_at)}</TableCell>
-                        <TableCell className="text-[#E8E6F0] font-medium">{search.job_title}</TableCell>
-                        <TableCell className="text-[#8B8AA0]">{search.seniority_level}</TableCell>
-                        <TableCell className="text-[#8B8AA0]">{search.max_candidates}</TableCell>
+                        <TableCell className="text-gray-700">{formatDate(search.created_at)}</TableCell>
+                        <TableCell className="text-gray-900 font-medium">{search.job_title}</TableCell>
+                        <TableCell className="text-gray-600">{search.seniority_level}</TableCell>
+                        <TableCell className="text-gray-600">{search.max_candidates}</TableCell>
                         <TableCell>{getStatusBadge(search.status)}</TableCell>
                         <TableCell>
                           {expandedRow === search.search_id ? (
-                            <ChevronUp className="w-4 h-4 text-[#8B8AA0]" />
+                            <ChevronUp className="w-4 h-4 text-gray-400" />
                           ) : (
-                            <ChevronDown className="w-4 h-4 text-[#8B8AA0]" />
+                            <ChevronDown className="w-4 h-4 text-gray-400" />
                           )}
                         </TableCell>
                       </TableRow>
                       {expandedRow === search.search_id && (
-                        <TableRow className="border-white/5 bg-[#1C2035]/50">
+                        <TableRow className="border-gray-100 bg-gray-50">
                           <TableCell colSpan={6} className="p-6">
                             <div className="space-y-4 text-sm">
                               <div>
-                                <span className="text-[#5A596E] block mb-1">Job Description</span>
-                                <span className="text-[#E8E6F0] whitespace-pre-wrap">{search.job_description}</span>
+                                <span className="text-gray-400 block mb-1">Job Description</span>
+                                <span className="text-gray-900 whitespace-pre-wrap">{search.job_description}</span>
                               </div>
                               {search.company_context && (
                                 <div>
-                                  <span className="text-[#5A596E] block mb-1">Company / Hiring Context</span>
-                                  <span className="text-[#E8E6F0]">{search.company_context}</span>
+                                  <span className="text-gray-400 block mb-1">Company / Hiring Context</span>
+                                  <span className="text-gray-900">{search.company_context}</span>
                                 </div>
                               )}
                             </div>
@@ -322,8 +305,8 @@ const DatabaseSearchTool = () => {
               </Table>
             ) : (
               <div className="p-8 text-center">
-                <Database className="w-12 h-12 text-[#5A596E] mx-auto mb-3" />
-                <p className="text-[#8B8AA0]">No database searches yet</p>
+                <Database className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No database searches yet</p>
               </div>
             )}
           </div>
@@ -333,7 +316,7 @@ const DatabaseSearchTool = () => {
       {/* Back Link */}
       <Link 
         to="/talent" 
-        className="inline-flex items-center gap-2 text-[#8B8AA0] hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
         data-testid="back-to-talent-link"
       >
         <ArrowLeft className="w-4 h-4" />
