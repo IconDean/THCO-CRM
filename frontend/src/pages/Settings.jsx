@@ -353,11 +353,11 @@ const Settings = () => {
         {/* Webhooks Tab */}
         <TabsContent value="webhooks" className="mt-6 space-y-6">
           {/* AI Candidate Sourcing Webhook */}
-          <div className="thco-card p-6">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-white">AI Candidate Sourcing</h3>
-                <p className="text-sm text-[#8B8AA0]">Connected to n8n sourcing workflow</p>
+                <h3 className="text-lg font-semibold text-gray-900">AI Candidate Sourcing</h3>
+                <p className="text-sm text-gray-500">Connected to n8n sourcing workflow</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -365,14 +365,14 @@ const Settings = () => {
                 value={webhooks.sourcing_webhook_url}
                 onChange={(e) => setWebhooks({ ...webhooks, sourcing_webhook_url: e.target.value })}
                 placeholder="https://your-n8n.app.n8n.cloud/webhook/thco-sourcing"
-                className="flex-1 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                className="flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl"
                 data-testid="sourcing-webhook-input"
               />
               <Button
                 variant="outline"
                 onClick={() => handleTestWebhook("sourcing", webhooks.sourcing_webhook_url)}
                 disabled={testingWebhook === "sourcing"}
-                className="bg-[#1C2035] border-white/10 text-white hover:bg-white/5"
+                className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
                 data-testid="test-sourcing-webhook-btn"
               >
                 {testingWebhook === "sourcing" ? (
@@ -385,11 +385,11 @@ const Settings = () => {
           </div>
 
           {/* Database Search Webhook */}
-          <div className="thco-card p-6">
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-white">Database Search</h3>
-                <p className="text-sm text-[#8B8AA0]">Connected to n8n talent match workflow</p>
+                <h3 className="text-lg font-semibold text-gray-900">Database Search</h3>
+                <p className="text-sm text-gray-500">Connected to n8n talent match workflow</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -397,14 +397,14 @@ const Settings = () => {
                 value={webhooks.database_search_webhook_url}
                 onChange={(e) => setWebhooks({ ...webhooks, database_search_webhook_url: e.target.value })}
                 placeholder="https://your-n8n.app.n8n.cloud/webhook/thco-talent-match"
-                className="flex-1 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                className="flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl"
                 data-testid="database-search-webhook-input"
               />
               <Button
                 variant="outline"
                 onClick={() => handleTestWebhook("database", webhooks.database_search_webhook_url)}
                 disabled={testingWebhook === "database"}
-                className="bg-[#1C2035] border-white/10 text-white hover:bg-white/5"
+                className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
                 data-testid="test-database-webhook-btn"
               >
                 {testingWebhook === "database" ? (
@@ -417,9 +417,9 @@ const Settings = () => {
           </div>
 
           {/* Note */}
-          <div className="bg-[#1C2035] rounded-lg p-4 border border-white/5">
-            <p className="text-sm text-[#8B8AA0]">
-              <span className="text-[#9B85FF] font-medium">Note:</span> More webhooks will be added as new tools are built.
+          <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
+            <p className="text-sm text-purple-700">
+              <span className="font-medium">Note:</span> More webhooks will be added as new tools are built.
             </p>
           </div>
 
@@ -428,7 +428,7 @@ const Settings = () => {
             <Button
               onClick={handleSaveWebhooks}
               disabled={savingWebhooks}
-              className="bg-[#7C64FF] hover:bg-[#6B54E8] text-white px-8"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 rounded-xl"
               data-testid="save-webhooks-btn"
             >
               {savingWebhooks ? (
