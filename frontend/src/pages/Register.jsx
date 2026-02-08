@@ -49,61 +49,57 @@ const Register = () => {
   };
 
   const handleGoogleLogin = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
     const redirectUrl = window.location.origin + '/dashboard';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0F1A] flex">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#7C64FF] rounded-full blur-[150px]"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[#9B85FF] rounded-full blur-[100px]"></div>
+    <div className="min-h-screen bg-white flex">
+      {/* Left Side - Visual Brand Section */}
+      <div className="hidden lg:flex lg:w-1/2 login-visual-bg relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-white/5 blur-3xl"></div>
+          <div className="absolute bottom-32 right-16 w-96 h-96 rounded-full bg-purple-500/10 blur-3xl"></div>
         </div>
-        
-        <div className="relative z-10 text-center max-w-md">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-[#7C64FF] flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-              </svg>
-            </div>
-            <span className="font-mono text-3xl font-bold text-white tracking-tight">THCO</span>
+
+        <div className="relative z-10 flex flex-col justify-center items-center w-full p-12">
+          <div className="mb-12">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
+              alt="THCO" 
+              className="h-12 brightness-0 invert"
+            />
           </div>
           
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Join THCO Portal
+          <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 text-center leading-tight">
+            Join the team.
           </h1>
-          <p className="text-[#8B8AA0] text-lg">
+          <p className="text-white/70 text-lg text-center max-w-md">
             Access AI-powered tools to amplify your work across all business units.
           </p>
         </div>
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-gray-50">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-[#7C64FF] flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-              </svg>
-            </div>
-            <span className="font-mono text-2xl font-bold text-white">THCO</span>
+          <div className="lg:hidden flex justify-center mb-8">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
+              alt="THCO" 
+              className="h-10"
+            />
           </div>
 
-          <div className="thco-card p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-white mb-2">Create account</h2>
-              <p className="text-[#8B8AA0]">Get started with THCO Portal</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Create account</h2>
+              <p className="text-gray-500">Get started with THCO Portal</p>
             </div>
 
-            {/* Google Signup */}
             <Button 
               variant="outline" 
-              className="w-full mb-6 h-12 bg-[#1C2035] border-white/10 text-white hover:bg-white/5 hover:border-white/20"
+              className="w-full mb-6 h-12 bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-medium"
               onClick={handleGoogleLogin}
               data-testid="google-register-btn"
             >
@@ -118,104 +114,95 @@ const Register = () => {
 
             <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/10"></span>
+                <span className="w-full border-t border-gray-200"></span>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-[#151828] px-4 text-[#5A596E] font-mono uppercase tracking-wider">or</span>
+                <span className="bg-white px-4 text-gray-400 font-mono uppercase tracking-wider">or</span>
               </div>
             </div>
 
-            {/* Registration Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-[#E8E6F0]">Full Name</Label>
+                <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A596E]" size={18} />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <Input
                     id="name"
                     type="text"
                     placeholder="Enter your full name"
-                    className="pl-10 h-12 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="pl-10 h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl"
                     {...registerField("name")}
                     data-testid="register-name-input"
                   />
                 </div>
-                {errors.name && (
-                  <p className="text-[#F87171] text-sm">{errors.name.message}</p>
-                )}
+                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-[#E8E6F0]">Email</Label>
+                <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A596E]" size={18} />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <Input
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10 h-12 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="pl-10 h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl"
                     {...registerField("email")}
                     data-testid="register-email-input"
                   />
                 </div>
-                {errors.email && (
-                  <p className="text-[#F87171] text-sm">{errors.email.message}</p>
-                )}
+                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-[#E8E6F0]">Password</Label>
+                <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A596E]" size={18} />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a password"
-                    className="pl-10 pr-10 h-12 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="pl-10 pr-10 h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl"
                     {...registerField("password")}
                     data-testid="register-password-input"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A596E] hover:text-[#8B8AA0]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-[#F87171] text-sm">{errors.password.message}</p>
-                )}
+                {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-[#E8E6F0]">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Confirm Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A596E]" size={18} />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
-                    className="pl-10 pr-10 h-12 bg-[#1C2035] border-white/10 text-white placeholder:text-[#5A596E] focus:border-[#7C64FF]"
+                    className="pl-10 pr-10 h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl"
                     {...registerField("confirmPassword")}
                     data-testid="register-confirm-password-input"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A596E] hover:text-[#8B8AA0]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {errors.confirmPassword && (
-                  <p className="text-[#F87171] text-sm">{errors.confirmPassword.message}</p>
-                )}
+                {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-[#7C64FF] hover:bg-[#6B54E8] text-white font-medium mt-2"
+                className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-medium mt-2 rounded-xl"
                 disabled={isLoading}
                 data-testid="register-submit-btn"
               >
@@ -230,9 +217,9 @@ const Register = () => {
               </Button>
             </form>
 
-            <p className="text-center text-[#8B8AA0] text-sm mt-6">
+            <p className="text-center text-gray-500 text-sm mt-6">
               Already have an account?{" "}
-              <Link to="/login" className="text-[#9B85FF] hover:text-[#7C64FF]" data-testid="login-link">
+              <Link to="/login" className="text-purple-600 hover:text-purple-700 font-medium" data-testid="login-link">
                 Sign in
               </Link>
             </p>
