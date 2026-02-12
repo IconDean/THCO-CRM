@@ -18,7 +18,6 @@ import {
   ChevronDown,
   LogOut,
   User,
-  ChevronRight,
   FileText
 } from "lucide-react";
 import { Button } from "./ui/button";
@@ -77,9 +76,9 @@ const DashboardLayout = ({ children, user }) => {
 
   const getRoleBadge = (role) => {
     const styles = {
-      super_admin: "bg-purple-50 text-purple-700 border-purple-200",
-      mini_admin: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      team_member: "bg-gray-50 text-gray-600 border-gray-200",
+      super_admin: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+      mini_admin: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+      team_member: "bg-gray-500/20 text-gray-300 border-gray-500/30",
     };
     const labels = {
       super_admin: "Super Admin",
@@ -104,33 +103,33 @@ const DashboardLayout = ({ children, user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[#0f1219] flex">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/20 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside 
-        className={`fixed lg:static inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300 flex flex-col
+        className={`fixed lg:static inset-y-0 left-0 z-50 bg-[#1a1f36] border-r border-white/5 transition-all duration-300 flex flex-col
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           ${sidebarOpen ? 'w-64' : 'w-20'}`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-white/5">
           <Link to="/dashboard" className="flex items-center gap-3">
             <img 
               src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
               alt="THCO" 
-              className={`${sidebarOpen ? 'h-8' : 'h-7'} transition-all`}
+              className={`${sidebarOpen ? 'h-8' : 'h-7'} transition-all brightness-0 invert`}
             />
           </Link>
           <button 
             onClick={() => setMobileMenuOpen(false)}
-            className="lg:hidden p-1 text-gray-400 hover:text-gray-600"
+            className="lg:hidden p-1 text-gray-400 hover:text-white"
           >
             <X size={20} />
           </button>
@@ -144,8 +143,8 @@ const DashboardLayout = ({ children, user }) => {
             data-testid="nav-dashboard"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all
               ${isActive("/dashboard") 
-                ? "bg-purple-50 text-purple-700 font-medium" 
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
+                ? "bg-purple-500/20 text-purple-300 font-medium" 
+                : "text-gray-400 hover:text-white hover:bg-white/5"}`}
           >
             <LayoutDashboard size={20} />
             {sidebarOpen && <span className="text-sm">Dashboard</span>}
@@ -157,8 +156,8 @@ const DashboardLayout = ({ children, user }) => {
             data-testid="nav-proposals"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all
               ${isActive("/proposals") 
-                ? "bg-purple-50 text-purple-700 font-medium" 
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
+                ? "bg-purple-500/20 text-purple-300 font-medium" 
+                : "text-gray-400 hover:text-white hover:bg-white/5"}`}
           >
             <FileText size={20} />
             {sidebarOpen && <span className="text-sm">Proposals</span>}
@@ -183,10 +182,10 @@ const DashboardLayout = ({ children, user }) => {
                   data-testid={`nav-unit-${unit.slug}`}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                     ${isActive(unit.path) 
-                      ? "bg-purple-50 text-purple-700 font-medium" 
+                      ? "bg-purple-500/20 text-purple-300 font-medium" 
                       : hasAccess 
-                        ? "text-gray-600 hover:text-gray-900 hover:bg-gray-50" 
-                        : "text-gray-400 hover:bg-gray-50 cursor-pointer"}`}
+                        ? "text-gray-400 hover:text-white hover:bg-white/5" 
+                        : "text-gray-600 hover:bg-white/5 cursor-pointer"}`}
                 >
                   <Icon size={20} className={!hasAccess ? "opacity-50" : ""} />
                   {sidebarOpen && (
@@ -195,7 +194,7 @@ const DashboardLayout = ({ children, user }) => {
                         {unit.name}
                       </span>
                       {!unit.active && hasAccess && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded-full border border-amber-200">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded-full">
                           SOON
                         </span>
                       )}
@@ -219,8 +218,8 @@ const DashboardLayout = ({ children, user }) => {
                 data-testid="nav-settings"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                   ${isActive("/settings") 
-                    ? "bg-purple-50 text-purple-700 font-medium" 
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
+                    ? "bg-purple-500/20 text-purple-300 font-medium" 
+                    : "text-gray-400 hover:text-white hover:bg-white/5"}`}
               >
                 <Settings size={20} />
                 {sidebarOpen && <span className="text-sm">Settings</span>}
@@ -230,17 +229,17 @@ const DashboardLayout = ({ children, user }) => {
         </nav>
 
         {/* User Profile at Bottom */}
-        <div className="p-3 border-t border-gray-100">
-          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl bg-gray-50 ${sidebarOpen ? "" : "justify-center"}`}>
-            <Avatar className="w-9 h-9 border-2 border-white shadow-sm">
+        <div className="p-3 border-t border-white/5">
+          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl bg-white/5 ${sidebarOpen ? "" : "justify-center"}`}>
+            <Avatar className="w-9 h-9 border-2 border-purple-500/30">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-purple-100 text-purple-700 text-sm font-medium">
+              <AvatarFallback className="bg-purple-500/20 text-purple-300 text-sm font-medium">
                 {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
+                <p className="text-sm font-medium text-white truncate">{user?.name}</p>
                 {getRoleBadge(user?.role)}
               </div>
             )}
@@ -256,7 +255,7 @@ const DashboardLayout = ({ children, user }) => {
             {/* Mobile Menu Toggle */}
             <button 
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-gray-500 hover:text-gray-700"
+              className="lg:hidden p-2 text-gray-400 hover:text-white"
               data-testid="mobile-menu-toggle"
             >
               <Menu size={24} />
@@ -265,23 +264,23 @@ const DashboardLayout = ({ children, user }) => {
             {/* Sidebar Toggle (Desktop) */}
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden lg:flex p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+              className="hidden lg:flex p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5"
               data-testid="sidebar-toggle"
             >
               <Menu size={20} />
             </button>
 
             {/* Page Title */}
-            <h1 className="text-lg font-semibold text-gray-900">{getPageTitle()}</h1>
+            <h1 className="text-lg font-semibold text-white">{getPageTitle()}</h1>
           </div>
 
           <div className="flex items-center gap-3">
             {/* Search */}
             <div className="hidden md:block relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
               <Input 
                 placeholder="Search tools..." 
-                className="w-64 pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-purple-300 rounded-xl"
+                className="w-64 pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:bg-white/10 focus:border-purple-500/50 rounded-xl"
                 data-testid="search-input"
               />
             </div>
@@ -290,7 +289,7 @@ const DashboardLayout = ({ children, user }) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="relative text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl"
+              className="relative text-gray-400 hover:text-white hover:bg-white/5 rounded-xl"
               data-testid="notifications-btn"
             >
               <Bell size={20} />
@@ -302,12 +301,12 @@ const DashboardLayout = ({ children, user }) => {
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl"
+                  className="flex items-center gap-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl"
                   data-testid="user-dropdown-trigger"
                 >
-                  <Avatar className="w-8 h-8 border border-gray-200">
+                  <Avatar className="w-8 h-8 border border-purple-500/30">
                     <AvatarImage src={user?.picture} />
-                    <AvatarFallback className="bg-purple-100 text-purple-700 text-sm">
+                    <AvatarFallback className="bg-purple-500/20 text-purple-300 text-sm">
                       {user?.name?.charAt(0)?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -315,15 +314,15 @@ const DashboardLayout = ({ children, user }) => {
                   <ChevronDown size={16} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white border-gray-200 shadow-lg rounded-xl">
-                <DropdownMenuItem className="text-gray-700 focus:bg-gray-50 focus:text-gray-900 cursor-pointer rounded-lg">
+              <DropdownMenuContent align="end" className="w-48 bg-[#1a1f36] border-white/10 shadow-lg rounded-xl">
+                <DropdownMenuItem className="text-gray-300 focus:bg-white/10 focus:text-white cursor-pointer rounded-lg">
                   <User size={16} className="mr-2" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-100" />
+                <DropdownMenuSeparator className="bg-white/10" />
                 <DropdownMenuItem 
                   onClick={handleLogout}
-                  className="text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer rounded-lg"
+                  className="text-red-400 focus:bg-red-500/10 focus:text-red-300 cursor-pointer rounded-lg"
                   data-testid="logout-btn"
                 >
                   <LogOut size={16} className="mr-2" />
