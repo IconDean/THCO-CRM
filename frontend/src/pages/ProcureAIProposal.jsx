@@ -879,125 +879,233 @@ const RFQFlowSection = () => {
 };
 
 // Section 4: Vendor Onboarding
-const VendorOnboardingSection = () => (
-  <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
-    <div className="max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
-          Process Flow: Vendor Registration & Onboarding
-        </h2>
-        <p className="text-gray-500 mb-12">Self-service registration through to D365 sync</p>
-      </motion.div>
+const VendorOnboardingSection = () => {
+  // Horizontal Arrow between lanes
+  const LaneArrow = ({ delay = 0 }) => (
+    <motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay }}
+      className="absolute top-1/2 -right-8 transform -translate-y-1/2 z-10"
+    >
+      <svg width="60" height="40" viewBox="0 0 60 40">
+        <defs>
+          <linearGradient id={`laneArrow-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={colors.teal} />
+            <stop offset="100%" stopColor={colors.navy} />
+          </linearGradient>
+          <marker id={`laneHead-${delay}`} markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,0 L0,8 L8,4 z" fill={colors.navy} />
+          </marker>
+        </defs>
+        <motion.path
+          d="M5,20 L45,20"
+          stroke={`url(#laneArrow-${delay})`}
+          strokeWidth="4"
+          fill="none"
+          markerEnd={`url(#laneHead-${delay})`}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: delay + 0.2, duration: 0.5 }}
+        />
+        {/* Animated pulse dot */}
+        <motion.circle
+          r="5"
+          fill={colors.teal}
+          initial={{ cx: 5, cy: 20 }}
+          animate={{ cx: [5, 45, 5], cy: 20 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: delay + 0.8 }}
+        />
+      </svg>
+    </motion.div>
+  );
 
-      {/* Swimlane Diagram */}
-      <div className="grid grid-cols-3 gap-6">
-        {/* Lane 1 - Vendor Actions */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: "#2563EB" }}>
-            VENDOR ACTIONS
-          </div>
-          <div className="bg-white p-6 rounded-b-xl border border-gray-200 space-y-4">
-            {[
-              { num: 1, text: "Self-Registration (Portal / Invite Link)" },
-              { num: 2, text: "Upload Company Profile & Documents" },
-              { num: 3, text: "Complete Due Diligence Forms" },
-              { num: 4, text: "Accept Terms & Conditions" },
-            ].map((step, i) => (
-              <motion.div 
-                key={step.num}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className="flex items-center gap-3"
-              >
-                <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold text-sm">
-                  {step.num}
-                </span>
-                <span className="text-sm text-gray-700">{step.text}</span>
-              </motion.div>
-            ))}
-          </div>
+  // Vertical connector arrow within a lane
+  const VerticalArrow = ({ delay = 0 }) => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay }}
+      className="flex justify-center my-1"
+    >
+      <svg width="20" height="24" viewBox="0 0 20 24">
+        <motion.path
+          d="M10,2 L10,18"
+          stroke={colors.teal}
+          strokeWidth="2"
+          fill="none"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: delay + 0.1, duration: 0.3 }}
+        />
+        <motion.path
+          d="M5,14 L10,22 L15,14"
+          fill={colors.teal}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: delay + 0.3 }}
+        />
+      </svg>
+    </motion.div>
+  );
+
+  return (
+    <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+            Process Flow: Vendor Registration & Onboarding
+          </h2>
+          <p className="text-gray-500 mb-12">Self-service registration through to D365 sync</p>
         </motion.div>
 
-        {/* Lane 2 - Procure AI */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.teal }}>
-            PROCURE AI (AUTOMATED)
-          </div>
-          <div className="bg-white p-6 rounded-b-xl border border-gray-200 space-y-4">
-            {[
-              { num: 5, text: "AI Profile Enrichment" },
-              { num: 6, text: "Document Verification" },
-              { num: 7, text: "Risk & Compliance Screening" },
-              { num: 8, text: "Vendor Scoring & Classification" },
-            ].map((step, i) => (
-              <motion.div 
-                key={step.num}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                className="flex items-center gap-3"
-              >
-                <span className="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-semibold text-sm">
-                  {step.num}
-                </span>
-                <span className="text-sm text-gray-700">{step.text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        {/* Swimlane Diagram */}
+        <div className="grid grid-cols-3 gap-12 relative">
+          {/* Lane 1 - Vendor Actions */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.2 }}
+            className="relative"
+          >
+            <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: "#2563EB" }}>
+              VENDOR ACTIONS
+            </div>
+            <div className="bg-white p-6 rounded-b-xl border border-gray-200">
+              {[
+                { num: 1, text: "Self-Registration (Portal / Invite Link)" },
+                { num: 2, text: "Upload Company Profile & Documents" },
+                { num: 3, text: "Complete Due Diligence Forms" },
+                { num: 4, text: "Accept Terms & Conditions" },
+              ].map((step, i) => (
+                <div key={step.num}>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + i * 0.15 }}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                  >
+                    <motion.span 
+                      className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shadow-md"
+                      animate={{ boxShadow: ["0 0 0px rgba(37,99,235,0.3)", "0 0 15px rgba(37,99,235,0.3)", "0 0 0px rgba(37,99,235,0.3)"] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                    >
+                      {step.num}
+                    </motion.span>
+                    <span className="text-sm text-gray-700 font-medium">{step.text}</span>
+                  </motion.div>
+                  {i < 3 && <VerticalArrow delay={0.4 + i * 0.15} />}
+                </div>
+              ))}
+            </div>
+            <LaneArrow delay={0.8} />
+          </motion.div>
 
-        {/* Lane 3 - IHS Procurement */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.navy }}>
-            IHS PROCUREMENT
-          </div>
-          <div className="bg-white p-6 rounded-b-xl border border-gray-200 space-y-4">
-            {[
-              { num: 9, text: "Review & Approve Vendor Profile" },
-              { num: 10, text: "Category Assignment" },
-              { num: 11, text: "D365 Vendor Master Sync" },
-            ].map((step, i) => (
-              <motion.div 
-                key={step.num}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7 + i * 0.1 }}
-                className="flex items-center gap-3"
-              >
-                <span className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm text-white" style={{ backgroundColor: colors.navy }}>
-                  {step.num}
-                </span>
-                <span className="text-sm text-gray-700">{step.text}</span>
-              </motion.div>
-            ))}
+          {/* Lane 2 - Procure AI */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.4 }}
+            className="relative"
+          >
+            <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.teal }}>
+              PROCURE AI (AUTOMATED)
+            </div>
+            <div className="bg-white p-6 rounded-b-xl border border-gray-200">
+              {[
+                { num: 5, text: "AI Profile Enrichment" },
+                { num: 6, text: "Document Verification" },
+                { num: 7, text: "Risk & Compliance Screening" },
+                { num: 8, text: "Vendor Scoring & Classification" },
+              ].map((step, i) => (
+                <div key={step.num}>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + i * 0.15 }}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-teal-50 transition-colors"
+                  >
+                    <motion.span 
+                      className="w-10 h-10 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-sm shadow-md"
+                      animate={{ boxShadow: ["0 0 0px rgba(13,148,136,0.3)", "0 0 15px rgba(13,148,136,0.3)", "0 0 0px rgba(13,148,136,0.3)"] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                    >
+                      {step.num}
+                    </motion.span>
+                    <span className="text-sm text-gray-700 font-medium">{step.text}</span>
+                  </motion.div>
+                  {i < 3 && <VerticalArrow delay={0.6 + i * 0.15} />}
+                </div>
+              ))}
+            </div>
+            <LaneArrow delay={1.2} />
+          </motion.div>
+
+          {/* Lane 3 - IHS Procurement */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+            <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.navy }}>
+              IHS PROCUREMENT
+            </div>
+            <div className="bg-white p-6 rounded-b-xl border border-gray-200">
+              {[
+                { num: 9, text: "Review & Approve Vendor Profile" },
+                { num: 10, text: "Category Assignment" },
+                { num: 11, text: "D365 Vendor Master Sync" },
+              ].map((step, i) => (
+                <div key={step.num}>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 + i * 0.15 }}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 transition-colors"
+                  >
+                    <motion.span 
+                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white shadow-md"
+                      style={{ backgroundColor: colors.navy }}
+                      animate={{ boxShadow: ["0 0 0px rgba(30,39,97,0.3)", "0 0 15px rgba(30,39,97,0.3)", "0 0 0px rgba(30,39,97,0.3)"] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                    >
+                      {step.num}
+                    </motion.span>
+                    <span className="text-sm text-gray-700 font-medium">{step.text}</span>
+                  </motion.div>
+                  {i < 2 && <VerticalArrow delay={0.8 + i * 0.15} />}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Bottom Bar */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5 }}
+          whileHover={{ scale: 1.01 }}
+          className="mt-8 bg-white p-6 rounded-xl border border-gray-200"
+        >
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-2">Database Tables</h4>
+              <code className="text-sm text-gray-600">
+                vendors | vendor_contacts | vendor_documents | vendor_compliance | vendor_categories | vendor_risk_scores | vendor_bank_details
+              </code>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-2">Bulk Upload Pipeline</h4>
+              <p className="text-sm text-gray-600">
+                CSV/XLSX via Admin Portal → Validated against schema → Loaded to staging tables → Approved → Written to production
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>
-
-      {/* Bottom Bar */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
-        className="mt-8 bg-white p-6 rounded-xl border border-gray-200"
-      >
-        <div className="grid grid-cols-2 gap-8">
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-2">Database Tables</h4>
-            <code className="text-sm text-gray-600">
-              vendors | vendor_contacts | vendor_documents | vendor_compliance | vendor_categories | vendor_risk_scores | vendor_bank_details
-            </code>
-          </div>
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-2">Bulk Upload Pipeline</h4>
-            <p className="text-sm text-gray-600">
-              CSV/XLSX via Admin Portal → Validated against schema → Loaded to staging tables → Approved → Written to production
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </div>
+  );
+};
   </div>
 );
 
