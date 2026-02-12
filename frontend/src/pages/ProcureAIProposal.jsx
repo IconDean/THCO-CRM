@@ -59,6 +59,7 @@ const ProcureAIProposal = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const contentRef = useRef(null);
+  const navigate = useNavigate();
 
   const goToPage = (page) => {
     if (page >= 1 && page <= 8 && page !== currentPage) {
