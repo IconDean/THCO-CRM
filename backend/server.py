@@ -220,6 +220,36 @@ class ProposalResponse(BaseModel):
     uploaded_by_name: str
     created_at: datetime
 
+# ==================== ANALYTICS MODELS ====================
+
+class PageViewCreate(BaseModel):
+    page_path: str
+    page_title: Optional[str] = ""
+    referrer: Optional[str] = ""
+
+class UserActionCreate(BaseModel):
+    action_type: str  # click, form_submit, file_upload, etc.
+    action_target: str  # button name, form name, etc.
+    action_details: Optional[dict] = {}
+    page_path: str
+
+class SessionHeartbeat(BaseModel):
+    session_id: str
+    page_path: str
+    time_on_page: int  # seconds
+
+class AnalyticsSummary(BaseModel):
+    total_users: int
+    active_users_today: int
+    active_users_week: int
+    total_sessions: int
+    avg_session_duration: float
+    total_page_views: int
+    most_visited_pages: List[dict]
+    user_actions_summary: dict
+    device_breakdown: dict
+    browser_breakdown: dict
+
 # ==================== HELPER FUNCTIONS ====================
 
 def hash_password(password: str) -> str:
