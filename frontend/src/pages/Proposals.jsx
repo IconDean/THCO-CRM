@@ -438,7 +438,7 @@ const Proposals = () => {
                 <div className="flex items-center gap-2 text-xs text-white/60">
                   <span>8 Sections</span>
                   <span>•</span>
-                  <span>PDF + PPTX Export</span>
+                  <span>PDF Export</span>
                 </div>
                 <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
                   <ChevronRight className="w-4 h-4 text-white" />
