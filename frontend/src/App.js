@@ -174,6 +174,9 @@ const AppRouter = () => {
       {/* Public Procure AI Presentation - No Auth Required */}
       <Route path="/proposals/procure-ai" element={<ProcureAIProposal />} />
       
+      {/* Public Procure AI Scroll Presentation - No Auth Required */}
+      <Route path="/proposals/procure-ai-scroll" element={<ProcureAIScrollPresentation />} />
+      
       {/* Coming Soon Unit Routes */}
       <Route path="/sales" element={
         <ProtectedRoute>
