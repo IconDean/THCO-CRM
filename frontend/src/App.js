@@ -16,6 +16,7 @@ import UnitComingSoon from "./pages/UnitComingSoon";
 import Proposals from "./pages/Proposals";
 import ProposalView from "./pages/ProposalView";
 import ProcureAIProposal from "./pages/ProcureAIProposal";
+import ProcureAIScrollPresentation from "./pages/ProcureAIScrollPresentation";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
