@@ -1896,6 +1896,412 @@ async def download_shared_proposal(share_token: str):
         media_type=content_type
     )
 
+# ==================== ANALYTICS & USER TRACKING ROUTES ====================
+
+@api_router.post("/analytics/page-view")
+async def track_page_view_endpoint(data: PageViewCreate, request: Request):
+    """Track a page view"""
+    try:
+        user = await get_current_user(request)
+        session_token = request.cookies.get("session_token")
+        
+        await track_page_view(
+            user["user_id"],
+            user["name"],
+            session_token or "unknown",
+            data.page_path,
+            data.page_title,
+            data.referrer,
+            request
+        )
+        return {"status": "tracked"}
+    except:
+        return {"status": "skipped"}
+
+@api_router.post("/analytics/action")
+async def track_action_endpoint(data: UserActionCreate, request: Request):
+    """Track a user action"""
+    try:
+        user = await get_current_user(request)
+        session_token = request.cookies.get("session_token")
+        
+        await track_user_action(
+            user["user_id"],
+            user["name"],
+            session_token or "unknown",
+            data.action_type,
+            data.action_target,
+            data.action_details or {},
+            data.page_path
+        )
+        return {"status": "tracked"}
+    except:
+        return {"status": "skipped"}
+
+@api_router.post("/analytics/heartbeat")
+async def session_heartbeat_endpoint(data: SessionHeartbeat, request: Request):
+    """Update session activity (called periodically from frontend)"""
+    try:
+        user = await get_current_user(request)
+        await update_session_activity(data.session_id, data.page_path, data.time_on_page)
+        return {"status": "updated"}
+    except:
+        return {"status": "skipped"}
+
+@api_router.post("/analytics/session/start")
+async def start_session_endpoint(request: Request):
+    """Start a new analytics session"""
+    try:
+        user = await get_current_user(request)
+        session_id = await start_analytics_session(user["user_id"], user["name"], request)
+        return {"session_id": session_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/analytics/session/end")
+async def end_session_endpoint(request: Request):
+    """End an analytics session"""
+    try:
+        session_token = request.cookies.get("session_token")
+        if session_token:
+            await db.analytics_sessions.update_one(
+                {"session_id": session_token},
+                {"$set": {"is_active": False, "ended_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        return {"status": "ended"}
+    except:
+        return {"status": "skipped"}
+
+@api_router.get("/analytics/summary")
+async def get_analytics_summary(request: Request, days: int = 30):
+    """Get comprehensive analytics summary (Admin only)"""
+    user = await get_current_user(request)
+    if user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=days)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    week_start = now - timedelta(days=7)
+    
+    # Total users
+    total_users = await db.users.count_documents({})
+    
+    # Active users today
+    active_today = await db.analytics_sessions.distinct(
+        "user_id",
+        {"started_at": {"$gte": today_start.isoformat()}}
+    )
+    
+    # Active users this week
+    active_week = await db.analytics_sessions.distinct(
+        "user_id",
+        {"started_at": {"$gte": week_start.isoformat()}}
+    )
+    
+    # Total sessions in period
+    total_sessions = await db.analytics_sessions.count_documents(
+        {"started_at": {"$gte": start_date.isoformat()}}
+    )
+    
+    # Average session duration
+    pipeline = [
+        {"$match": {"started_at": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": None, "avg_duration": {"$avg": "$total_time_seconds"}}}
+    ]
+    avg_result = await db.analytics_sessions.aggregate(pipeline).to_list(1)
+    avg_session_duration = avg_result[0]["avg_duration"] if avg_result else 0
+    
+    # Total page views
+    total_page_views = await db.page_views.count_documents(
+        {"timestamp": {"$gte": start_date.isoformat()}}
+    )
+    
+    # Most visited pages
+    page_pipeline = [
+        {"$match": {"timestamp": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$page_path", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]
+    most_visited = await db.page_views.aggregate(page_pipeline).to_list(10)
+    
+    # User actions summary
+    actions_pipeline = [
+        {"$match": {"timestamp": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$action_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    actions_result = await db.user_actions.aggregate(actions_pipeline).to_list(20)
+    actions_summary = {item["_id"]: item["count"] for item in actions_result}
+    
+    # Device breakdown
+    device_pipeline = [
+        {"$match": {"started_at": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$device_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    device_result = await db.analytics_sessions.aggregate(device_pipeline).to_list(10)
+    device_breakdown = {item["_id"]: item["count"] for item in device_result}
+    
+    # Browser breakdown
+    browser_pipeline = [
+        {"$match": {"started_at": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$browser", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    browser_result = await db.analytics_sessions.aggregate(browser_pipeline).to_list(10)
+    browser_breakdown = {item["_id"]: item["count"] for item in browser_result}
+    
+    return {
+        "total_users": total_users,
+        "active_users_today": len(active_today),
+        "active_users_week": len(active_week),
+        "total_sessions": total_sessions,
+        "avg_session_duration": round(avg_session_duration or 0, 1),
+        "total_page_views": total_page_views,
+        "most_visited_pages": [{"page": item["_id"], "views": item["count"]} for item in most_visited],
+        "user_actions_summary": actions_summary,
+        "device_breakdown": device_breakdown,
+        "browser_breakdown": browser_breakdown,
+        "period_days": days
+    }
+
+@api_router.get("/analytics/users")
+async def get_user_analytics(request: Request, days: int = 30, limit: int = 50):
+    """Get detailed user analytics (Admin only)"""
+    user = await get_current_user(request)
+    if user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=days)
+    
+    # Get all users with their analytics
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+    
+    user_analytics = []
+    for u in users:
+        user_id = u["user_id"]
+        
+        # Get session stats
+        sessions = await db.analytics_sessions.find(
+            {"user_id": user_id, "started_at": {"$gte": start_date.isoformat()}}
+        ).to_list(1000)
+        
+        total_sessions = len(sessions)
+        total_time = sum(s.get("total_time_seconds", 0) for s in sessions)
+        total_pages = sum(s.get("page_count", 0) for s in sessions)
+        
+        # Get last activity
+        last_session = await db.analytics_sessions.find_one(
+            {"user_id": user_id},
+            sort=[("started_at", -1)]
+        )
+        
+        # Get action count
+        action_count = await db.user_actions.count_documents(
+            {"user_id": user_id, "timestamp": {"$gte": start_date.isoformat()}}
+        )
+        
+        # Get page view count
+        page_view_count = await db.page_views.count_documents(
+            {"user_id": user_id, "timestamp": {"$gte": start_date.isoformat()}}
+        )
+        
+        # Most visited pages by this user
+        user_pages_pipeline = [
+            {"$match": {"user_id": user_id, "timestamp": {"$gte": start_date.isoformat()}}},
+            {"$group": {"_id": "$page_path", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+            {"$limit": 5}
+        ]
+        top_pages = await db.page_views.aggregate(user_pages_pipeline).to_list(5)
+        
+        user_analytics.append({
+            "user_id": user_id,
+            "name": u.get("name", "Unknown"),
+            "email": u.get("email", ""),
+            "role": u.get("role", "team_member"),
+            "status": u.get("status", "active"),
+            "total_sessions": total_sessions,
+            "total_time_minutes": round(total_time / 60, 1),
+            "total_pages_viewed": total_pages,
+            "total_actions": action_count,
+            "avg_session_minutes": round((total_time / total_sessions / 60) if total_sessions > 0 else 0, 1),
+            "last_active": last_session.get("last_activity") if last_session else None,
+            "last_device": last_session.get("device_type") if last_session else None,
+            "last_browser": last_session.get("browser") if last_session else None,
+            "top_pages": [{"page": p["_id"], "views": p["count"]} for p in top_pages],
+            "created_at": u.get("created_at")
+        })
+    
+    # Sort by total time descending
+    user_analytics.sort(key=lambda x: x["total_time_minutes"], reverse=True)
+    
+    return user_analytics[:limit]
+
+@api_router.get("/analytics/sessions")
+async def get_session_history(request: Request, days: int = 7, limit: int = 100):
+    """Get session history (Admin only)"""
+    user = await get_current_user(request)
+    if user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=days)
+    
+    sessions = await db.analytics_sessions.find(
+        {"started_at": {"$gte": start_date.isoformat()}},
+        {"_id": 0}
+    ).sort("started_at", -1).limit(limit).to_list(limit)
+    
+    return sessions
+
+@api_router.get("/analytics/page-views")
+async def get_page_view_analytics(request: Request, days: int = 7):
+    """Get page view analytics (Admin only)"""
+    user = await get_current_user(request)
+    if user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=days)
+    
+    # Page views over time (by day)
+    pipeline = [
+        {"$match": {"timestamp": {"$gte": start_date.isoformat()}}},
+        {"$addFields": {
+            "date": {"$substr": ["$timestamp", 0, 10]}
+        }},
+        {"$group": {"_id": "$date", "views": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    daily_views = await db.page_views.aggregate(pipeline).to_list(days)
+    
+    # Page views by hour
+    hourly_pipeline = [
+        {"$match": {"timestamp": {"$gte": start_date.isoformat()}}},
+        {"$addFields": {
+            "hour": {"$substr": ["$timestamp", 11, 2]}
+        }},
+        {"$group": {"_id": "$hour", "views": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    hourly_views = await db.page_views.aggregate(hourly_pipeline).to_list(24)
+    
+    return {
+        "daily_views": [{"date": d["_id"], "views": d["views"]} for d in daily_views],
+        "hourly_views": [{"hour": h["_id"], "views": h["views"]} for h in hourly_views]
+    }
+
+@api_router.get("/analytics/actions")
+async def get_action_analytics(request: Request, days: int = 7, limit: int = 100):
+    """Get user action analytics (Admin only)"""
+    user = await get_current_user(request)
+    if user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=days)
+    
+    # Recent actions
+    recent_actions = await db.user_actions.find(
+        {"timestamp": {"$gte": start_date.isoformat()}},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    # Actions by type
+    type_pipeline = [
+        {"$match": {"timestamp": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$action_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    actions_by_type = await db.user_actions.aggregate(type_pipeline).to_list(20)
+    
+    # Actions by target (most clicked buttons, etc.)
+    target_pipeline = [
+        {"$match": {"timestamp": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$action_target", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 20}
+    ]
+    actions_by_target = await db.user_actions.aggregate(target_pipeline).to_list(20)
+    
+    return {
+        "recent_actions": recent_actions,
+        "actions_by_type": [{"type": a["_id"], "count": a["count"]} for a in actions_by_type],
+        "actions_by_target": [{"target": a["_id"], "count": a["count"]} for a in actions_by_target]
+    }
+
+@api_router.get("/analytics/user/{user_id}")
+async def get_single_user_analytics(user_id: str, request: Request, days: int = 30):
+    """Get detailed analytics for a single user (Admin only)"""
+    current_user = await get_current_user(request)
+    if current_user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get user info
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=days)
+    
+    # Get all sessions
+    sessions = await db.analytics_sessions.find(
+        {"user_id": user_id, "started_at": {"$gte": start_date.isoformat()}},
+        {"_id": 0}
+    ).sort("started_at", -1).to_list(100)
+    
+    # Get all page views
+    page_views = await db.page_views.find(
+        {"user_id": user_id, "timestamp": {"$gte": start_date.isoformat()}},
+        {"_id": 0}
+    ).sort("timestamp", -1).to_list(500)
+    
+    # Get all actions
+    actions = await db.user_actions.find(
+        {"user_id": user_id, "timestamp": {"$gte": start_date.isoformat()}},
+        {"_id": 0}
+    ).sort("timestamp", -1).to_list(500)
+    
+    # Page visit breakdown
+    page_pipeline = [
+        {"$match": {"user_id": user_id, "timestamp": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$page_path", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    page_breakdown = await db.page_views.aggregate(page_pipeline).to_list(20)
+    
+    # Action breakdown
+    action_pipeline = [
+        {"$match": {"user_id": user_id, "timestamp": {"$gte": start_date.isoformat()}}},
+        {"$group": {"_id": "$action_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    action_breakdown = await db.user_actions.aggregate(action_pipeline).to_list(20)
+    
+    # Calculate totals
+    total_time = sum(s.get("total_time_seconds", 0) for s in sessions)
+    
+    return {
+        "user": user,
+        "summary": {
+            "total_sessions": len(sessions),
+            "total_time_minutes": round(total_time / 60, 1),
+            "total_page_views": len(page_views),
+            "total_actions": len(actions),
+            "avg_session_minutes": round((total_time / len(sessions) / 60) if sessions else 0, 1)
+        },
+        "sessions": sessions[:20],
+        "recent_page_views": page_views[:50],
+        "recent_actions": actions[:50],
+        "page_breakdown": [{"page": p["_id"], "count": p["count"]} for p in page_breakdown],
+        "action_breakdown": [{"action": a["_id"], "count": a["count"]} for a in action_breakdown]
+    }
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
