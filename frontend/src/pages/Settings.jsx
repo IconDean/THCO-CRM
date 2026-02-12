@@ -24,7 +24,8 @@ import {
   Lock,
   Unlock,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  BarChart3
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -36,6 +37,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Checkbox } from "../components/ui/checkbox";
 import { settingsAPI, usersAPI, activityAPI, authAPI, loginRecordsAPI } from "../lib/api";
 import { toast } from "sonner";
+import Analytics from "../components/Analytics";
 
 const ALL_UNITS = [
   { slug: "talent", name: "Talent & Human Capital" },
