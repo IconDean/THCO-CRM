@@ -454,123 +454,223 @@ const HeroSection = () => (
 );
 
 // Section 2: Architecture
-const ArchitectureSection = () => (
-  <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
-    <div className="max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
-          High-Level System Architecture
-        </h2>
-        <p className="text-gray-500 mb-12">How Procure AI connects with IHS's existing infrastructure</p>
-      </motion.div>
+const ArchitectureSection = () => {
+  // Animated Bidirectional Arrow SVG
+  const BidirectionalArrow = ({ delay = 0 }) => (
+    <motion.svg 
+      width="120" height="60" 
+      viewBox="0 0 120 60"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay }}
+    >
+      <defs>
+        <linearGradient id="biArrowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor={colors.teal} />
+          <stop offset="100%" stopColor={colors.navy} />
+        </linearGradient>
+        <marker id="arrowRight" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L0,8 L8,4 z" fill={colors.navy} />
+        </marker>
+        <marker id="arrowLeft" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
+          <path d="M8,0 L8,8 L0,4 z" fill={colors.teal} />
+        </marker>
+      </defs>
+      {/* Right arrow */}
+      <motion.path
+        d="M10,25 L100,25"
+        stroke="url(#biArrowGrad)"
+        strokeWidth="3"
+        fill="none"
+        markerEnd="url(#arrowRight)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: delay + 0.3, duration: 0.6 }}
+      />
+      {/* Left arrow */}
+      <motion.path
+        d="M100,35 L10,35"
+        stroke="url(#biArrowGrad)"
+        strokeWidth="3"
+        fill="none"
+        markerEnd="url(#arrowLeft)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: delay + 0.6, duration: 0.6 }}
+      />
+      {/* Animated dots */}
+      <motion.circle
+        cx="55"
+        cy="25"
+        r="4"
+        fill={colors.teal}
+        initial={{ cx: 10 }}
+        animate={{ cx: [10, 100, 10] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: delay + 1 }}
+      />
+      <motion.circle
+        cx="55"
+        cy="35"
+        r="4"
+        fill={colors.navy}
+        initial={{ cx: 100 }}
+        animate={{ cx: [100, 10, 100] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: delay + 1.5 }}
+      />
+    </motion.svg>
+  );
 
-      <div className="grid grid-cols-3 gap-8 items-start">
-        {/* Left Column - IHS Systems */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-3"
-        >
-          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.navy }}>
-            IHS EXISTING SYSTEMS
-          </div>
-          {["D365 ERP", "ServiceNow", "Azure Data Lake", "Lumen Contracts", "Active Directory"].map((system, i) => (
-            <motion.div 
-              key={system}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 + i * 0.1 }}
-              className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3"
-            >
-              <Server className="w-5 h-5 text-gray-400" />
-              <span className="font-medium text-gray-700">{system}</span>
-            </motion.div>
-          ))}
+  return (
+    <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+            High-Level System Architecture
+          </h2>
+          <p className="text-gray-500 mb-12">How Procure AI connects with IHS's existing infrastructure</p>
         </motion.div>
 
-        {/* Center - API Hub */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-col items-center justify-center py-12"
-        >
-          <div className="relative">
-            <div className="w-40 h-40 rounded-2xl flex items-center justify-center text-white font-semibold text-center shadow-xl"
-              style={{ 
-                backgroundColor: colors.teal,
-                boxShadow: `0 0 60px ${colors.teal}40`
-              }}
-            >
-              <div>
-                <Zap className="w-8 h-8 mx-auto mb-2" />
-                API Integration Hub
+        <div className="grid grid-cols-5 gap-4 items-center">
+          {/* Left Column - IHS Systems */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="col-span-1 space-y-3"
+          >
+            <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.navy }}>
+              IHS EXISTING SYSTEMS
+            </div>
+            {["D365 ERP", "ServiceNow", "Azure Data Lake", "Lumen Contracts", "Active Directory"].map((system, i) => (
+              <motion.div 
+                key={system}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                whileHover={{ scale: 1.02, x: 5 }}
+                className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex items-center gap-2"
+              >
+                <Server className="w-4 h-4 text-gray-400" />
+                <span className="font-medium text-gray-700 text-sm">{system}</span>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Left Arrows */}
+          <div className="col-span-1 flex items-center justify-center">
+            <BidirectionalArrow delay={0.5} />
+          </div>
+
+          {/* Center - API Hub */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, type: "spring" }}
+            className="col-span-1 flex flex-col items-center justify-center"
+          >
+            <div className="relative">
+              <motion.div 
+                className="w-36 h-36 rounded-2xl flex items-center justify-center text-white font-semibold text-center shadow-xl"
+                style={{ backgroundColor: colors.teal }}
+                animate={{ 
+                  boxShadow: [
+                    `0 0 20px ${colors.teal}40`,
+                    `0 0 60px ${colors.teal}60`,
+                    `0 0 20px ${colors.teal}40`
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <div>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Zap className="w-8 h-8 mx-auto mb-2" />
+                  </motion.div>
+                  <span className="text-sm">API Integration Hub</span>
+                </div>
+              </motion.div>
+              {/* Pulse rings */}
+              <motion.div 
+                className="absolute inset-0 rounded-2xl border-2 border-teal-400"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <motion.div 
+                className="absolute inset-0 rounded-2xl border-2 border-teal-400"
+                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+              />
+            </div>
+          </motion.div>
+
+          {/* Right Arrows */}
+          <div className="col-span-1 flex items-center justify-center">
+            <BidirectionalArrow delay={0.7} />
+          </div>
+
+          {/* Right Column - Procure AI */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="col-span-1"
+          >
+            <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.teal }}>
+              PROCURE AI PLATFORM
+            </div>
+            <div className="bg-white p-3 rounded-b-xl border border-gray-200 shadow-sm">
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { name: "RFQ Engine", color: "#059669" },
+                  { name: "Vendor Portal", color: "#2563EB" },
+                  { name: "Auction System", color: "#EA580C" },
+                  { name: "AI/ML Service", color: colors.navy },
+                  { name: "Analytics", color: colors.teal },
+                  { name: "Contract Mgmt", color: "#64748B" },
+                ].map((module, i) => (
+                  <motion.div 
+                    key={module.name}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.8 + i * 0.1, type: "spring" }}
+                    whileHover={{ scale: 1.05, boxShadow: `0 5px 20px ${module.color}40` }}
+                    className="p-2 rounded-lg text-white text-xs font-medium text-center cursor-pointer"
+                    style={{ backgroundColor: module.color }}
+                  >
+                    {module.name}
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-3 p-2 bg-gray-50 rounded-lg text-xs text-gray-500 text-center">
+                Azure SQL | Cosmos DB | Redis | Blob
               </div>
             </div>
-            {/* Pulse Animation */}
-            <div className="absolute inset-0 rounded-2xl animate-ping opacity-20" style={{ backgroundColor: colors.teal }} />
-          </div>
-          <div className="flex items-center gap-4 mt-8 text-gray-400">
-            <ArrowRight className="w-6 h-6" />
-            <span className="text-sm">Bidirectional Sync</span>
-            <ArrowRight className="w-6 h-6 rotate-180" />
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
-        {/* Right Column - Procure AI */}
+        {/* External APIs */}
         <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          whileHover={{ scale: 1.01 }}
+          className="mt-8 p-4 rounded-xl text-center"
+          style={{ backgroundColor: '#FEF3C7' }}
         >
-          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.teal }}>
-            PROCURE AI PLATFORM
-          </div>
-          <div className="bg-white p-4 rounded-b-xl border border-gray-200 shadow-sm">
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { name: "RFQ Engine", color: "#059669" },
-                { name: "Vendor Portal", color: "#2563EB" },
-                { name: "Auction System", color: "#EA580C" },
-                { name: "AI/ML Service", color: colors.navy },
-                { name: "Analytics", color: colors.teal },
-                { name: "Contract Mgmt", color: "#64748B" },
-              ].map((module, i) => (
-                <motion.div 
-                  key={module.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + i * 0.1 }}
-                  className="p-3 rounded-lg text-white text-sm font-medium text-center"
-                  style={{ backgroundColor: module.color }}
-                >
-                  {module.name}
-                </motion.div>
-              ))}
-            </div>
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500 text-center">
-              Azure SQL | Cosmos DB | Redis Cache | Blob Storage
-            </div>
-          </div>
+          <motion.span 
+            className="text-orange-800 font-medium"
+            animate={{ opacity: [1, 0.7, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            🌐 External APIs: Alibaba | Global Sources | Dun & Bradstreet | Exchange Rates
+          </motion.span>
         </motion.div>
       </div>
-
-      {/* External APIs */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="mt-8 p-4 rounded-xl text-center"
-        style={{ backgroundColor: '#FEF3C7' }}
-      >
-        <span className="text-orange-800 font-medium">
-          External APIs: Alibaba | Global Sources | Dun & Bradstreet | Exchange Rates
-        </span>
-      </motion.div>
     </div>
-  </div>
-);
+  );
+};
 
 // Section 3: RFQ Flow
 const RFQFlowSection = () => {
