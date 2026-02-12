@@ -204,36 +204,44 @@ const ProcureAIProposal = () => {
       {/* Download Button */}
       <button
         onClick={handleDownload}
-        className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-lg hover:shadow-xl transition-all"
+        disabled={isGeneratingPdf}
+        className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-lg hover:shadow-xl transition-all disabled:opacity-70"
         style={{ background: `linear-gradient(135deg, ${colors.teal}, ${colors.navy})` }}
+        data-testid="download-pdf-btn"
       >
-        <Download className="w-4 h-4" />
-        Download
+        {isGeneratingPdf ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <Download className="w-4 h-4" />
+        )}
+        {isGeneratingPdf ? "Generating..." : "Download PDF"}
       </button>
 
       {/* Main Content */}
       <main className={`flex-1 ${sidebarExpanded ? 'ml-56' : 'ml-16'} transition-all duration-300`}>
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentPage}
-            custom={direction}
-            variants={pageVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="min-h-screen"
-          >
-            {currentPage === 1 && <HeroSection />}
-            {currentPage === 2 && <ArchitectureSection />}
-            {currentPage === 3 && <RFQFlowSection />}
-            {currentPage === 4 && <VendorOnboardingSection />}
-            {currentPage === 5 && <ReverseAuctionSection />}
-            {currentPage === 6 && <DatabaseSection />}
-            {currentPage === 7 && <DataUploadSection />}
-            {currentPage === 8 && <NextStepsSection />}
-          </motion.div>
-        </AnimatePresence>
+        <div ref={contentRef}>
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentPage}
+              custom={direction}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="min-h-screen"
+            >
+              {currentPage === 1 && <HeroSection />}
+              {currentPage === 2 && <ArchitectureSection />}
+              {currentPage === 3 && <RFQFlowSection />}
+              {currentPage === 4 && <VendorOnboardingSection />}
+              {currentPage === 5 && <ReverseAuctionSection />}
+              {currentPage === 6 && <DatabaseSection />}
+              {currentPage === 7 && <DataUploadSection />}
+              {currentPage === 8 && <NextStepsSection />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
 
       {/* Bottom Navigation */}
