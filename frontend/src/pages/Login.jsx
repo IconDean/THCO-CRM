@@ -59,8 +59,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Dark Branded Section */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #1a1f36 0%, #2d1f4e 100%)' }}>
+      {/* Left Side - Dark Branded Section with Gradient */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden" style={{ background: 'linear-gradient(145deg, #0f1219 0%, #1a1f36 30%, #2d1b4e 60%, #3d2066 100%)' }}>
         {/* Main Content */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full p-12">
           {/* Logo */}
