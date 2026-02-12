@@ -346,8 +346,9 @@ const ProcureAIProposal = () => {
                 : 'text-white'
             }`}
             style={{ 
-              background: currentPage === 8 ? '#e5e7eb' : `linear-gradient(135deg, ${colors.teal}, ${colors.navy})`
+              backgroundColor: currentPage === 8 ? '#e5e7eb' : colors.teal
             }}
+            data-testid="next-page-btn"
           >
             Next
             <ChevronRight className="w-5 h-5" />
