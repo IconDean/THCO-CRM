@@ -12,24 +12,14 @@ import {
   Upload,
   ArrowRight,
   Download,
-  ChevronDown,
   ArrowLeft,
   Loader2,
   Globe,
-  Shield,
   Zap,
   BarChart3,
   Package,
-  Clock,
-  AlertCircle,
-  Check
+  AlertCircle
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
 
 // Color palette
 const colors = {
