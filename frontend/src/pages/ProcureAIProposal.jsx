@@ -163,7 +163,14 @@ const ProcureAIProposal = () => {
         <div className="flex items-center gap-3">
           {/* Back Button */}
           <button
-            onClick={() => navigate('/proposals')}
+            onClick={() => {
+              // Try to go back in history, fallback to proposals page
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate('/proposals');
+              }
+            }}
             className="flex items-center gap-1 text-gray-500 hover:text-gray-700 transition-colors mr-2"
             data-testid="back-to-proposals-btn"
           >
