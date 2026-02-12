@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import html2pdf from "html2pdf.js";
-import pptxgen from "pptxgenjs";
 import { 
   Presentation,
   Server,
