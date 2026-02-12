@@ -331,6 +331,92 @@ async def get_webhook_url(key: str) -> str:
         return settings.get(key, "")
     return ""
 
+# ==================== ANALYTICS TRACKING HELPERS ====================
+
+async def track_page_view(user_id: str, user_name: str, session_id: str, page_path: str, page_title: str, referrer: str, request: Request):
+    """Track a page view for analytics"""
+    user_agent = request.headers.get("user-agent", "")
+    device_info = parse_device_info(user_agent)
+    
+    page_view_doc = {
+        "view_id": f"pv_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "user_name": user_name,
+        "session_id": session_id,
+        "page_path": page_path,
+        "page_title": page_title,
+        "referrer": referrer,
+        "device_type": device_info.get("device_type", "Unknown"),
+        "browser": device_info.get("browser", "Unknown"),
+        "os": device_info.get("device_os", "Unknown"),
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    await db.page_views.insert_one(page_view_doc)
+
+async def track_user_action(user_id: str, user_name: str, session_id: str, action_type: str, action_target: str, action_details: dict, page_path: str):
+    """Track a user action for analytics"""
+    action_doc = {
+        "action_id": f"act_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "user_name": user_name,
+        "session_id": session_id,
+        "action_type": action_type,
+        "action_target": action_target,
+        "action_details": action_details,
+        "page_path": page_path,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    await db.user_actions.insert_one(action_doc)
+
+async def update_session_activity(session_id: str, page_path: str, time_on_page: int):
+    """Update session activity and time tracking"""
+    now = datetime.now(timezone.utc)
+    
+    # Update session last activity
+    await db.analytics_sessions.update_one(
+        {"session_id": session_id},
+        {
+            "$set": {
+                "last_activity": now.isoformat(),
+                "last_page": page_path
+            },
+            "$inc": {
+                "total_time_seconds": time_on_page,
+                "page_count": 1
+            }
+        },
+        upsert=True
+    )
+
+async def start_analytics_session(user_id: str, user_name: str, request: Request) -> str:
+    """Start a new analytics session for a user"""
+    session_id = f"sess_{uuid.uuid4().hex[:16]}"
+    user_agent = request.headers.get("user-agent", "")
+    device_info = parse_device_info(user_agent)
+    
+    # Get IP address
+    ip_address = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown")
+    if "," in ip_address:
+        ip_address = ip_address.split(",")[0].strip()
+    
+    session_doc = {
+        "session_id": session_id,
+        "user_id": user_id,
+        "user_name": user_name,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "last_activity": datetime.now(timezone.utc).isoformat(),
+        "last_page": "/dashboard",
+        "total_time_seconds": 0,
+        "page_count": 0,
+        "device_type": device_info.get("device_type", "Unknown"),
+        "browser": device_info.get("browser", "Unknown"),
+        "os": device_info.get("device_os", "Unknown"),
+        "ip_address": ip_address,
+        "is_active": True
+    }
+    await db.analytics_sessions.insert_one(session_doc)
+    return session_id
+
 # ==================== LOGIN TRACKING HELPERS ====================
 
 def parse_device_info(user_agent_string: str) -> dict:
