@@ -335,6 +335,14 @@ const Settings = () => {
             Users
           </TabsTrigger>
           <TabsTrigger 
+            value="analytics" 
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
+            data-testid="analytics-tab"
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Analytics
+          </TabsTrigger>
+          <TabsTrigger 
             value="login-records" 
             className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
             data-testid="login-records-tab"
