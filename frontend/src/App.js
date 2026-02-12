@@ -13,6 +13,8 @@ import SourcingTool from "./pages/SourcingTool";
 import DatabaseSearchTool from "./pages/DatabaseSearchTool";
 import Settings from "./pages/Settings";
 import UnitComingSoon from "./pages/UnitComingSoon";
+import Proposals from "./pages/Proposals";
+import ProposalView from "./pages/ProposalView";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
