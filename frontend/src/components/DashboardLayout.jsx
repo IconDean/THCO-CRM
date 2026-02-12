@@ -74,24 +74,6 @@ const DashboardLayout = ({ children, user }) => {
     return unit?.name || "Dashboard";
   };
 
-  const getRoleBadge = (role) => {
-    const styles = {
-      super_admin: "bg-purple-100 text-purple-700 border-purple-200",
-      mini_admin: "bg-emerald-100 text-emerald-700 border-emerald-200",
-      team_member: "bg-gray-100 text-gray-700 border-gray-200",
-    };
-    const labels = {
-      super_admin: "Super Admin",
-      mini_admin: "Mini Admin",
-      team_member: "Team Member",
-    };
-    return (
-      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles[role] || styles.team_member}`}>
-        {labels[role] || "Member"}
-      </span>
-    );
-  };
-
   const isActive = (path) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
     return location.pathname.startsWith(path);
@@ -103,33 +85,33 @@ const DashboardLayout = ({ children, user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fb] flex">
+    <div className="min-h-screen bg-white flex">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
-      {/* Sidebar - Dark */}
+      {/* Sidebar - Light Gray */}
       <aside 
-        className={`fixed lg:static inset-y-0 left-0 z-50 bg-[#1a1f36] transition-all duration-300 flex flex-col
+        className={`fixed lg:static inset-y-0 left-0 z-50 bg-[#f8f9fb] border-r border-gray-200 transition-all duration-300 flex flex-col
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           ${sidebarOpen ? 'w-64' : 'w-20'}`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-white/10">
-          <Link to="/dashboard" className="flex items-center gap-3">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
+          <Link to="/dashboard" className="flex items-center gap-2">
             <img 
               src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
               alt="THCO" 
-              className={`${sidebarOpen ? 'h-8' : 'h-7'} transition-all brightness-0 invert`}
+              className={`${sidebarOpen ? 'h-8' : 'h-7'} transition-all`}
             />
           </Link>
           <button 
             onClick={() => setMobileMenuOpen(false)}
-            className="lg:hidden p-1 text-gray-400 hover:text-white"
+            className="lg:hidden p-1 text-gray-500 hover:text-gray-700"
           >
             <X size={20} />
           </button>
@@ -141,10 +123,10 @@ const DashboardLayout = ({ children, user }) => {
           <Link
             to="/dashboard"
             data-testid="nav-dashboard"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all
               ${isActive("/dashboard") 
-                ? "bg-purple-500/20 text-purple-300 font-medium" 
-                : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+                ? "bg-gray-200/70 text-gray-900 font-medium" 
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"}`}
           >
             <LayoutDashboard size={20} />
             {sidebarOpen && <span className="text-sm">Dashboard</span>}
@@ -154,10 +136,10 @@ const DashboardLayout = ({ children, user }) => {
           <Link
             to="/proposals"
             data-testid="nav-proposals"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all
               ${isActive("/proposals") 
-                ? "bg-purple-500/20 text-purple-300 font-medium" 
-                : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+                ? "bg-gray-200/70 text-gray-900 font-medium" 
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"}`}
           >
             <FileText size={20} />
             {sidebarOpen && <span className="text-sm">Proposals</span>}
@@ -166,7 +148,7 @@ const DashboardLayout = ({ children, user }) => {
           {/* Units Section */}
           {sidebarOpen && (
             <div className="mt-6 mb-3 px-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Units</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Units</span>
             </div>
           )}
 
@@ -182,10 +164,10 @@ const DashboardLayout = ({ children, user }) => {
                   data-testid={`nav-unit-${unit.slug}`}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                     ${isActive(unit.path) 
-                      ? "bg-purple-500/20 text-purple-300 font-medium" 
+                      ? "bg-gray-200/70 text-gray-900 font-medium" 
                       : hasAccess 
-                        ? "text-gray-400 hover:text-white hover:bg-white/5" 
-                        : "text-gray-600 hover:bg-white/5 cursor-pointer"}`}
+                        ? "text-gray-600 hover:text-gray-900 hover:bg-gray-100" 
+                        : "text-gray-400 hover:bg-gray-100 cursor-pointer"}`}
                 >
                   <Icon size={20} className={!hasAccess ? "opacity-50" : ""} />
                   {sidebarOpen && (
@@ -194,7 +176,7 @@ const DashboardLayout = ({ children, user }) => {
                         {unit.name}
                       </span>
                       {!unit.active && hasAccess && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded-full">
+                        <span className="text-[9px] font-semibold px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded">
                           SOON
                         </span>
                       )}
@@ -210,7 +192,7 @@ const DashboardLayout = ({ children, user }) => {
             <>
               {sidebarOpen && (
                 <div className="mt-6 mb-3 px-3">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Admin</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Admin</span>
                 </div>
               )}
               <Link
@@ -218,8 +200,8 @@ const DashboardLayout = ({ children, user }) => {
                 data-testid="nav-settings"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                   ${isActive("/settings") 
-                    ? "bg-purple-500/20 text-purple-300 font-medium" 
-                    : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+                    ? "bg-gray-200/70 text-gray-900 font-medium" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"}`}
               >
                 <Settings size={20} />
                 {sidebarOpen && <span className="text-sm">Settings</span>}
@@ -229,27 +211,27 @@ const DashboardLayout = ({ children, user }) => {
         </nav>
 
         {/* User Profile at Bottom */}
-        <div className="p-3 border-t border-white/10">
-          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl bg-white/5 ${sidebarOpen ? "" : "justify-center"}`}>
-            <Avatar className="w-9 h-9 border-2 border-purple-500/30">
+        <div className="p-3 border-t border-gray-200">
+          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl ${sidebarOpen ? "" : "justify-center"}`}>
+            <Avatar className="w-9 h-9 border border-gray-200">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-purple-500/20 text-purple-300 text-sm font-medium">
+              <AvatarFallback className="bg-purple-100 text-purple-700 text-sm font-medium">
                 {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-                <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
+                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
               </div>
             )}
           </div>
         </div>
       </aside>
 
-      {/* Main Content - Light/White */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar - White */}
+        {/* Top Bar */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
           <div className="flex items-center gap-4">
             {/* Mobile Menu Toggle */}
@@ -280,7 +262,7 @@ const DashboardLayout = ({ children, user }) => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <Input 
                 placeholder="Search tools..." 
-                className="w-64 pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-purple-500 rounded-xl"
+                className="w-64 pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-purple-500 rounded-full"
                 data-testid="search-input"
               />
             </div>
@@ -289,7 +271,7 @@ const DashboardLayout = ({ children, user }) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="relative text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl"
+              className="relative text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
               data-testid="notifications-btn"
             >
               <Bell size={20} />
@@ -301,7 +283,7 @@ const DashboardLayout = ({ children, user }) => {
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-xl"
+                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-full px-2"
                   data-testid="user-dropdown-trigger"
                 >
                   <Avatar className="w-8 h-8 border border-gray-200">
@@ -310,8 +292,7 @@ const DashboardLayout = ({ children, user }) => {
                       {user?.name?.charAt(0)?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden sm:inline text-sm font-medium">{user?.name?.split(" ")[0]}</span>
-                  <ChevronDown size={16} />
+                  <ChevronDown size={16} className="text-gray-400" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-white border-gray-200 shadow-lg rounded-xl">
@@ -333,8 +314,8 @@ const DashboardLayout = ({ children, user }) => {
           </div>
         </header>
 
-        {/* Page Content - Light Background */}
-        <main className="flex-1 p-4 lg:p-8 overflow-auto bg-[#f8f9fb]">
+        {/* Page Content */}
+        <main className="flex-1 p-4 lg:p-8 overflow-auto bg-white">
           {children}
         </main>
       </div>
