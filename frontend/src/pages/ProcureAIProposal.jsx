@@ -1,0 +1,1054 @@
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Download,
+  Server,
+  FileJson,
+  Cloud,
+  HardDrive,
+  Check,
+  ArrowRight,
+  Globe,
+  Database,
+  Users,
+  Shield,
+  Zap,
+  BarChart3,
+  Package,
+  Clock,
+  AlertCircle
+} from "lucide-react";
+
+const PAGES = [
+  { id: 1, title: "Overview", label: "Title" },
+  { id: 2, title: "Architecture", label: "System" },
+  { id: 3, title: "RFQ Flow", label: "Process" },
+  { id: 4, title: "Vendor Onboarding", label: "Onboard" },
+  { id: 5, title: "Reverse Auction", label: "Auction" },
+  { id: 6, title: "Database", label: "Data" },
+  { id: 7, title: "Data Upload", label: "Upload" },
+  { id: 8, title: "Next Steps", label: "Action" },
+];
+
+// Color palette
+const colors = {
+  navy: "#1E2761",
+  teal: "#0D9488",
+  iceBlue: "#CADCFC",
+  slate: "#0F172A",
+  lightGray: "#F8FAFC",
+  white: "#FFFFFF",
+};
+
+const ProcureAIProposal = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [direction, setDirection] = useState(0);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= 8 && page !== currentPage) {
+      setDirection(page > currentPage ? 1 : -1);
+      setCurrentPage(page);
+    }
+  };
+
+  const nextPage = useCallback(() => {
+    if (currentPage < 8) {
+      setDirection(1);
+      setCurrentPage(prev => prev + 1);
+    }
+  }, [currentPage]);
+
+  const prevPage = useCallback(() => {
+    if (currentPage > 1) {
+      setDirection(-1);
+      setCurrentPage(prev => prev - 1);
+    }
+  }, [currentPage]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowRight") nextPage();
+      if (e.key === "ArrowLeft") prevPage();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [nextPage, prevPage]);
+
+  const handleDownload = () => {
+    window.print();
+  };
+
+  const pageVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Sidebar */}
+      <aside 
+        className={`fixed left-0 top-0 h-full z-50 transition-all duration-300 ${sidebarExpanded ? 'w-56' : 'w-16'}`}
+        style={{ backgroundColor: colors.navy }}
+        onMouseEnter={() => setSidebarExpanded(true)}
+        onMouseLeave={() => setSidebarExpanded(false)}
+      >
+        <div className="flex flex-col h-full py-6">
+          {/* Logo */}
+          <div className="px-4 mb-8">
+            <div className={`text-white font-bold ${sidebarExpanded ? 'text-xl' : 'text-sm text-center'}`}>
+              {sidebarExpanded ? 'Procure AI' : 'P'}
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 space-y-1 px-2">
+            {PAGES.map((page) => (
+              <button
+                key={page.id}
+                onClick={() => goToPage(page.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                  currentPage === page.id 
+                    ? 'bg-white/10 border-l-2 border-teal-400' 
+                    : 'hover:bg-white/5'
+                }`}
+              >
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  currentPage === page.id 
+                    ? 'bg-teal-500 text-white' 
+                    : 'bg-white/10 text-white/60'
+                }`}>
+                  {page.id}
+                </span>
+                {sidebarExpanded && (
+                  <span className={`text-sm ${currentPage === page.id ? 'text-white' : 'text-white/60'}`}>
+                    {page.title}
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
+
+          {/* Footer */}
+          {sidebarExpanded && (
+            <div className="px-4 pt-4 border-t border-white/10">
+              <p className="text-white/40 text-xs">IHS Towers Nigeria</p>
+              <p className="text-white/30 text-xs">February 2026</p>
+            </div>
+          )}
+        </div>
+      </aside>
+
+      {/* Download Button */}
+      <button
+        onClick={handleDownload}
+        className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-lg hover:shadow-xl transition-all"
+        style={{ background: `linear-gradient(135deg, ${colors.teal}, ${colors.navy})` }}
+      >
+        <Download className="w-4 h-4" />
+        Download
+      </button>
+
+      {/* Main Content */}
+      <main className={`flex-1 ${sidebarExpanded ? 'ml-56' : 'ml-16'} transition-all duration-300`}>
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={currentPage}
+            custom={direction}
+            variants={pageVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="min-h-screen"
+          >
+            {currentPage === 1 && <HeroSection />}
+            {currentPage === 2 && <ArchitectureSection />}
+            {currentPage === 3 && <RFQFlowSection />}
+            {currentPage === 4 && <VendorOnboardingSection />}
+            {currentPage === 5 && <ReverseAuctionSection />}
+            {currentPage === 6 && <DatabaseSection />}
+            {currentPage === 7 && <DataUploadSection />}
+            {currentPage === 8 && <NextStepsSection />}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-6 py-4">
+        {/* Progress Bar */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gray-100">
+          <div 
+            className="h-full transition-all duration-300"
+            style={{ 
+              width: `${(currentPage / 8) * 100}%`,
+              background: `linear-gradient(90deg, ${colors.teal}, ${colors.navy})`
+            }}
+          />
+        </div>
+
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          {/* Previous */}
+          <button
+            onClick={prevPage}
+            disabled={currentPage === 1}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              currentPage === 1 
+                ? 'text-gray-300 cursor-not-allowed' 
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Previous
+          </button>
+
+          {/* Page Indicator */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              {PAGES.map((page) => (
+                <button
+                  key={page.id}
+                  onClick={() => goToPage(page.id)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    currentPage === page.id 
+                      ? 'w-6 bg-teal-500' 
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-gray-500">
+              {currentPage} / 8 · <span className="text-gray-700">{PAGES[currentPage - 1].title}</span>
+            </span>
+          </div>
+
+          {/* Next */}
+          <button
+            onClick={nextPage}
+            disabled={currentPage === 8}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              currentPage === 8 
+                ? 'text-gray-300 cursor-not-allowed' 
+                : 'text-white'
+            }`}
+            style={{ 
+              background: currentPage === 8 ? '#e5e7eb' : `linear-gradient(135deg, ${colors.teal}, ${colors.navy})`
+            }}
+          >
+            Next
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Section 1: Hero
+const HeroSection = () => (
+  <div className="min-h-screen flex items-center justify-center relative" style={{ backgroundColor: colors.navy }}>
+    {/* Top Accent Line */}
+    <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: colors.teal }} />
+    
+    {/* Decorative Circles */}
+    <div className="absolute top-20 left-20 w-64 h-64 rounded-full border border-teal-500/20" />
+    <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full border border-teal-500/10" />
+    
+    {/* Content */}
+    <div className="text-center z-10 px-8">
+      <motion.h1 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-7xl font-bold text-white mb-6"
+        style={{ fontFamily: "'Fraunces', serif" }}
+      >
+        Procure AI
+      </motion.h1>
+      
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="text-2xl mb-8"
+        style={{ color: colors.iceBlue }}
+      >
+        Process Flowcharts & Back-End Database Architecture
+      </motion.p>
+      
+      <motion.div 
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="w-20 h-1 mx-auto mb-8"
+        style={{ backgroundColor: colors.teal }}
+      />
+      
+      <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+        className="text-gray-400 mb-2"
+      >
+        IHS Towers Nigeria — Pre-Alignment Session
+      </motion.p>
+      
+      <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.7 }}
+        className="text-gray-500 text-sm"
+      >
+        February 2026
+      </motion.p>
+    </div>
+    
+    {/* Confidential Badge */}
+    <div className="absolute bottom-8 left-8 text-teal-500 text-xs tracking-widest uppercase">
+      Confidential
+    </div>
+    
+    {/* Keyboard Hint */}
+    <div className="absolute bottom-8 right-8 flex items-center gap-2 text-gray-500 text-sm">
+      Use
+      <kbd className="px-2 py-1 bg-white/10 rounded text-white text-xs">←</kbd>
+      <kbd className="px-2 py-1 bg-white/10 rounded text-white text-xs">→</kbd>
+      to navigate
+    </div>
+  </div>
+);
+
+// Section 2: Architecture
+const ArchitectureSection = () => (
+  <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+    <div className="max-w-7xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+          High-Level System Architecture
+        </h2>
+        <p className="text-gray-500 mb-12">How Procure AI connects with IHS's existing infrastructure</p>
+      </motion.div>
+
+      <div className="grid grid-cols-3 gap-8 items-start">
+        {/* Left Column - IHS Systems */}
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-3"
+        >
+          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.navy }}>
+            IHS EXISTING SYSTEMS
+          </div>
+          {["D365 ERP", "ServiceNow", "Azure Data Lake", "Lumen Contracts", "Active Directory"].map((system, i) => (
+            <motion.div 
+              key={system}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 + i * 0.1 }}
+              className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3"
+            >
+              <Server className="w-5 h-5 text-gray-400" />
+              <span className="font-medium text-gray-700">{system}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Center - API Hub */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4 }}
+          className="flex flex-col items-center justify-center py-12"
+        >
+          <div className="relative">
+            <div className="w-40 h-40 rounded-2xl flex items-center justify-center text-white font-semibold text-center shadow-xl"
+              style={{ 
+                backgroundColor: colors.teal,
+                boxShadow: `0 0 60px ${colors.teal}40`
+              }}
+            >
+              <div>
+                <Zap className="w-8 h-8 mx-auto mb-2" />
+                API Integration Hub
+              </div>
+            </div>
+            {/* Pulse Animation */}
+            <div className="absolute inset-0 rounded-2xl animate-ping opacity-20" style={{ backgroundColor: colors.teal }} />
+          </div>
+          <div className="flex items-center gap-4 mt-8 text-gray-400">
+            <ArrowRight className="w-6 h-6" />
+            <span className="text-sm">Bidirectional Sync</span>
+            <ArrowRight className="w-6 h-6 rotate-180" />
+          </div>
+        </motion.div>
+
+        {/* Right Column - Procure AI */}
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.teal }}>
+            PROCURE AI PLATFORM
+          </div>
+          <div className="bg-white p-4 rounded-b-xl border border-gray-200 shadow-sm">
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { name: "RFQ Engine", color: "#059669" },
+                { name: "Vendor Portal", color: "#2563EB" },
+                { name: "Auction System", color: "#EA580C" },
+                { name: "AI/ML Service", color: colors.navy },
+                { name: "Analytics", color: colors.teal },
+                { name: "Contract Mgmt", color: "#64748B" },
+              ].map((module, i) => (
+                <motion.div 
+                  key={module.name}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + i * 0.1 }}
+                  className="p-3 rounded-lg text-white text-sm font-medium text-center"
+                  style={{ backgroundColor: module.color }}
+                >
+                  {module.name}
+                </motion.div>
+              ))}
+            </div>
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500 text-center">
+              Azure SQL | Cosmos DB | Redis Cache | Blob Storage
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* External APIs */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="mt-8 p-4 rounded-xl text-center"
+        style={{ backgroundColor: '#FEF3C7' }}
+      >
+        <span className="text-orange-800 font-medium">
+          External APIs: Alibaba | Global Sources | Dun & Bradstreet | Exchange Rates
+        </span>
+      </motion.div>
+    </div>
+  </div>
+);
+
+// Section 3: RFQ Flow
+const RFQFlowSection = () => {
+  const row1Steps = [
+    { num: 1, label: "Business User Raises Request", color: "#2563EB" },
+    { num: 2, label: "Scope Validation", color: colors.teal },
+    { num: 3, label: "Budget & Approval Check", color: "#EA580C" },
+    { num: 4, label: "AI Vendor Discovery", color: "#059669" },
+    { num: 5, label: "RFQ Generation", color: colors.navy },
+  ];
+  
+  const row2Steps = [
+    { num: 6, label: "Vendor Bid Submission", color: "#2563EB" },
+    { num: 7, label: "AI Bid Evaluation", color: "#059669" },
+    { num: 8, label: "Technical & Financial Scoring", color: colors.teal },
+    { num: 9, label: "BAFO Round (if required)", color: "#EA580C" },
+    { num: 10, label: "Award & Contract", color: colors.navy },
+  ];
+
+  return (
+    <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+            Process Flow: RFQ / Tender Creation
+          </h2>
+          <p className="text-gray-500 mb-12">End-to-end flow from requirement to vendor award</p>
+        </motion.div>
+
+        {/* Flow Rows */}
+        <div className="space-y-8">
+          {/* Row 1 */}
+          <div className="flex items-center gap-4">
+            {row1Steps.map((step, i) => (
+              <motion.div
+                key={step.num}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="flex-1"
+              >
+                <div className="flex flex-col items-center">
+                  <div 
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mb-3"
+                    style={{ backgroundColor: step.color }}
+                  >
+                    {step.num}
+                  </div>
+                  <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center w-full">
+                    <span className="text-sm font-medium text-gray-700">{step.label}</span>
+                  </div>
+                </div>
+                {i < 4 && <div className="absolute right-0 top-1/2 w-8 h-0.5 bg-gray-300" />}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Connector */}
+          <div className="flex justify-end pr-12">
+            <div className="w-0.5 h-8 bg-gray-300" />
+          </div>
+
+          {/* Row 2 */}
+          <div className="flex items-center gap-4">
+            {row2Steps.map((step, i) => (
+              <motion.div
+                key={step.num}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+                className="flex-1"
+              >
+                <div className="flex flex-col items-center">
+                  <div 
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mb-3"
+                    style={{ backgroundColor: step.color }}
+                  >
+                    {step.num}
+                  </div>
+                  <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center w-full">
+                    <span className="text-sm font-medium text-gray-700">{step.label}</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Info Cards */}
+        <div className="grid grid-cols-2 gap-6 mt-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1 }}
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Database className="w-5 h-5" style={{ color: colors.teal }} />
+              Key Database Tables
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li><code className="bg-gray-100 px-1 rounded">rfq_requests</code> — Stores all RFQ/RFP metadata</li>
+              <li><code className="bg-gray-100 px-1 rounded">rfq_line_items</code> — Individual items per RFQ</li>
+              <li><code className="bg-gray-100 px-1 rounded">vendor_bids</code> — Submitted bid details and pricing</li>
+              <li><code className="bg-gray-100 px-1 rounded">bid_evaluations</code> — Scoring (technical, financial, risk)</li>
+              <li><code className="bg-gray-100 px-1 rounded">awards</code> — Final vendor selection and award details</li>
+            </ul>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.1 }}
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Globe className="w-5 h-5" style={{ color: colors.teal }} />
+              Integration Points
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>D365 → Budget validation, cost center lookup</li>
+              <li>Azure Data Lake → Historical pricing for AI scoring</li>
+              <li>External APIs → Vendor discovery (Alibaba, Global Sources)</li>
+              <li>Lumen → Contract generation after award</li>
+              <li>ServiceNow → Automated ticket creation on exceptions</li>
+            </ul>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Section 4: Vendor Onboarding
+const VendorOnboardingSection = () => (
+  <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+    <div className="max-w-7xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+          Process Flow: Vendor Registration & Onboarding
+        </h2>
+        <p className="text-gray-500 mb-12">Self-service registration through to D365 sync</p>
+      </motion.div>
+
+      {/* Swimlane Diagram */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* Lane 1 - Vendor Actions */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: "#2563EB" }}>
+            VENDOR ACTIONS
+          </div>
+          <div className="bg-white p-6 rounded-b-xl border border-gray-200 space-y-4">
+            {[
+              { num: 1, text: "Self-Registration (Portal / Invite Link)" },
+              { num: 2, text: "Upload Company Profile & Documents" },
+              { num: 3, text: "Complete Due Diligence Forms" },
+              { num: 4, text: "Accept Terms & Conditions" },
+            ].map((step, i) => (
+              <motion.div 
+                key={step.num}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                className="flex items-center gap-3"
+              >
+                <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold text-sm">
+                  {step.num}
+                </span>
+                <span className="text-sm text-gray-700">{step.text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Lane 2 - Procure AI */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.teal }}>
+            PROCURE AI (AUTOMATED)
+          </div>
+          <div className="bg-white p-6 rounded-b-xl border border-gray-200 space-y-4">
+            {[
+              { num: 5, text: "AI Profile Enrichment" },
+              { num: 6, text: "Document Verification" },
+              { num: 7, text: "Risk & Compliance Screening" },
+              { num: 8, text: "Vendor Scoring & Classification" },
+            ].map((step, i) => (
+              <motion.div 
+                key={step.num}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+                className="flex items-center gap-3"
+              >
+                <span className="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-semibold text-sm">
+                  {step.num}
+                </span>
+                <span className="text-sm text-gray-700">{step.text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Lane 3 - IHS Procurement */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+          <div className="text-center py-3 rounded-t-xl text-white font-semibold" style={{ backgroundColor: colors.navy }}>
+            IHS PROCUREMENT
+          </div>
+          <div className="bg-white p-6 rounded-b-xl border border-gray-200 space-y-4">
+            {[
+              { num: 9, text: "Review & Approve Vendor Profile" },
+              { num: 10, text: "Category Assignment" },
+              { num: 11, text: "D365 Vendor Master Sync" },
+            ].map((step, i) => (
+              <motion.div 
+                key={step.num}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 + i * 0.1 }}
+                className="flex items-center gap-3"
+              >
+                <span className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm text-white" style={{ backgroundColor: colors.navy }}>
+                  {step.num}
+                </span>
+                <span className="text-sm text-gray-700">{step.text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Bottom Bar */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        className="mt-8 bg-white p-6 rounded-xl border border-gray-200"
+      >
+        <div className="grid grid-cols-2 gap-8">
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-2">Database Tables</h4>
+            <code className="text-sm text-gray-600">
+              vendors | vendor_contacts | vendor_documents | vendor_compliance | vendor_categories | vendor_risk_scores | vendor_bank_details
+            </code>
+          </div>
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-2">Bulk Upload Pipeline</h4>
+            <p className="text-sm text-gray-600">
+              CSV/XLSX via Admin Portal → Validated against schema → Loaded to staging tables → Approved → Written to production
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  </div>
+);
+
+// Section 5: Reverse Auction
+const ReverseAuctionSection = () => {
+  const steps = [
+    { num: 1, label: "Asset Listed for Disposal", desc: "Finance team validates asset for sale", color: "#EA580C" },
+    { num: 2, label: "Vendor Invitation", desc: "Pre-qualified buyers notified via portal", color: "#2563EB" },
+    { num: 3, label: "Inspection Period", desc: "Vendors inspect assets onsite or via photos", color: colors.teal },
+    { num: 4, label: "Live Bidding Rounds", desc: "Real-time competitive bidding with AI floor", color: "#059669" },
+    { num: 5, label: "Winner Determination", desc: "Highest bid verified against reserve price", color: colors.navy },
+    { num: 6, label: "Payment & Collection", desc: "Invoice generated, asset handover", color: "#EA580C" },
+  ];
+
+  return (
+    <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+            Process Flow: Reverse Auction
+          </h2>
+          <p className="text-gray-500 mb-12">Asset disposal through competitive bidding</p>
+        </motion.div>
+
+        {/* Flow */}
+        <div className="grid grid-cols-6 gap-4 mb-12">
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.num}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="text-center"
+            >
+              <div 
+                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-3"
+                style={{ backgroundColor: step.color }}
+              >
+                {step.num}
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm h-32">
+                <h4 className="font-semibold text-gray-900 text-sm mb-2">{step.label}</h4>
+                <p className="text-xs text-gray-500">{step.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Info Cards */}
+        <div className="grid grid-cols-2 gap-6">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8 }}
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Database className="w-5 h-5" style={{ color: colors.teal }} />
+              Database Tables
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li><code className="bg-gray-100 px-1 rounded">auctions</code> — Auction metadata, status, dates</li>
+              <li><code className="bg-gray-100 px-1 rounded">auction_lots</code> — Individual assets/lots per auction</li>
+              <li><code className="bg-gray-100 px-1 rounded">auction_bids</code> — All bids with timestamps</li>
+              <li><code className="bg-gray-100 px-1 rounded">auction_results</code> — Winner, final price, settlement</li>
+            </ul>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.9 }}
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Zap className="w-5 h-5" style={{ color: colors.teal }} />
+              Real-Time Bidding Architecture
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>WebSocket connections for live bid updates</li>
+              <li>Azure SignalR Service for real-time broadcast</li>
+              <li>Redis cache for bid queue and leaderboard</li>
+              <li>AI-calculated reserve price from historical data</li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                Real-time updates enabled
+              </li>
+            </ul>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Section 6: Database
+const DatabaseSection = () => {
+  const databases = [
+    { name: "AZURE SQL DATABASE", color: "#2563EB", icon: Server, subtitle: "Transactional Data", tables: "vendors, items, rfq_requests, rfq_line_items, vendor_bids, awards, purchase_orders, contracts, approvals" },
+    { name: "AZURE COSMOS DB", color: colors.teal, icon: FileJson, subtitle: "Vendor Profiles & Documents", tables: "vendor_profiles (JSON), vendor_documents (metadata), audit_logs, activity_feeds, notifications, chat_history" },
+    { name: "AZURE DATA LAKE", color: "#059669", icon: Cloud, subtitle: "Analytics & ML Training", tables: "historical_po_data, spend_analytics, price_trends, vendor_performance_history, demand_forecasting_data" },
+    { name: "AZURE BLOB STORAGE", color: "#EA580C", icon: HardDrive, subtitle: "Files & Attachments", tables: "vendor_certificates (PDF), rfq_attachments, bid_docs, contract_documents, auction_asset_photos" },
+  ];
+
+  const pipeline = [
+    { num: 1, label: "CSV/XLSX Upload", color: "#2563EB" },
+    { num: 2, label: "Schema Validation", color: colors.teal },
+    { num: 3, label: "Staging Tables", color: "#EA580C" },
+    { num: 4, label: "Admin Review", color: colors.navy },
+    { num: 5, label: "Production Write", color: "#059669" },
+  ];
+
+  return (
+    <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+            Back-End Database Architecture
+          </h2>
+          <p className="text-gray-500 mb-12">Core data domains and storage strategy</p>
+        </motion.div>
+
+        {/* Database Cards */}
+        <div className="grid grid-cols-4 gap-4 mb-12">
+          {databases.map((db, i) => {
+            const Icon = db.icon;
+            return (
+              <motion.div
+                key={db.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+              >
+                <div className="p-4 text-white flex items-center gap-2" style={{ backgroundColor: db.color }}>
+                  <Icon className="w-5 h-5" />
+                  <span className="font-semibold text-sm">{db.name}</span>
+                </div>
+                <div className="p-4">
+                  <p className="text-sm text-gray-500 mb-3">{db.subtitle}</p>
+                  <p className="text-xs text-gray-600 leading-relaxed">{db.tables}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Pipeline */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-white p-6 rounded-xl border border-gray-200"
+        >
+          <h3 className="font-semibold text-gray-900 mb-6">Bulk Data Upload Pipeline</h3>
+          <div className="flex items-center justify-between">
+            {pipeline.map((step, i) => (
+              <div key={step.num} className="flex items-center">
+                <div className="text-center">
+                  <div 
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2"
+                    style={{ backgroundColor: step.color }}
+                  >
+                    {step.num}
+                  </div>
+                  <span className="text-sm text-gray-600">{step.label}</span>
+                </div>
+                {i < 4 && <ArrowRight className="w-6 h-6 text-gray-300 mx-4" />}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+// Section 7: Data Upload
+const DataUploadSection = () => {
+  const datasets = [
+    { name: "Vendor Master", format: "CSV / XLSX", volume: "2,000–5,000", source: "D365", priority: "P1", critical: true },
+    { name: "Category Master", format: "CSV / XLSX", volume: "100–300", source: "D365 / Manual", priority: "P1", critical: true },
+    { name: "Item Catalogue", format: "CSV / XLSX", volume: "5,000–15,000", source: "D365 / Readcube", priority: "P1", critical: true },
+    { name: "Historical POs", format: "CSV / XLSX", volume: "50,000–200,000", source: "D365", priority: "P2", critical: false },
+    { name: "Vendor Compliance", format: "CSV + PDF files", volume: "5,000–15,000", source: "Manual / Shared Drive", priority: "P2", critical: false },
+  ];
+
+  return (
+    <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
+            Bulk Data Upload: Format Requirements
+          </h2>
+          <p className="text-gray-500 mb-12">What IHS needs to prepare for initial data migration</p>
+        </motion.div>
+
+        {/* Table */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-8"
+        >
+          <table className="w-full">
+            <thead>
+              <tr style={{ backgroundColor: colors.navy }}>
+                <th className="text-left text-white text-sm font-semibold px-6 py-4">Data Set</th>
+                <th className="text-left text-white text-sm font-semibold px-6 py-4">Format</th>
+                <th className="text-left text-white text-sm font-semibold px-6 py-4">Est. Volume</th>
+                <th className="text-left text-white text-sm font-semibold px-6 py-4">Source System</th>
+                <th className="text-left text-white text-sm font-semibold px-6 py-4">Priority</th>
+              </tr>
+            </thead>
+            <tbody>
+              {datasets.map((row, i) => (
+                <tr key={row.name} className="border-b border-gray-100">
+                  <td className="px-6 py-4 text-gray-900 font-medium">{row.name}</td>
+                  <td className="px-6 py-4 text-gray-600">{row.format}</td>
+                  <td className="px-6 py-4 text-gray-600">{row.volume}</td>
+                  <td className="px-6 py-4 text-gray-600">{row.source}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                      row.critical ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                    }`}>
+                      {row.priority} — {row.critical ? 'Critical' : 'High'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </motion.div>
+
+        {/* Info Cards */}
+        <div className="grid grid-cols-2 gap-6">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <h3 className="font-semibold text-gray-900 mb-4">File Format Specifications</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>Encoding: UTF-8</li>
+              <li>Date format: YYYY-MM-DD</li>
+              <li>Decimal separator: period (.)</li>
+              <li>Boolean: TRUE / FALSE</li>
+              <li>Currency codes: ISO 4217 (NGN, USD, EUR)</li>
+              <li>Country codes: ISO 3166-1 Alpha-3 (NGA, GHA)</li>
+              <li>No thousands separators in numeric fields</li>
+            </ul>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <h3 className="font-semibold text-gray-900 mb-4">Upload Load Order</h3>
+            <ol className="space-y-2 text-sm text-gray-600 list-decimal list-inside">
+              <li>Category Master (no dependencies)</li>
+              <li>Vendor Master (refs: Category)</li>
+              <li>Item Catalogue (refs: Category, Vendor)</li>
+              <li>Historical POs (refs: Vendor, Item)</li>
+              <li>Vendor Compliance (refs: Vendor)</li>
+            </ol>
+          </motion.div>
+        </div>
+
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="mt-6 text-sm text-gray-500 italic flex items-center gap-2"
+        >
+          <AlertCircle className="w-4 h-4" />
+          Templates provided in accompanying Excel workbook
+        </motion.p>
+      </div>
+    </div>
+  );
+};
+
+// Section 8: Next Steps
+const NextStepsSection = () => {
+  const steps = [
+    { num: "01", title: "IHS to extract D365 vendor master data", desc: "Using provided CSV/XLSX templates" },
+    { num: "02", title: "IHS to compile category taxonomy", desc: "3-level hierarchy with CapEx/OpEx classification" },
+    { num: "03", title: "IHS IT to confirm API access", desc: "D365, ServiceNow, Azure Data Lake endpoints" },
+    { num: "04", title: "Joint session to validate flowcharts", desc: "Confirm process alignment with current operations" },
+    { num: "05", title: "Procure AI team to deliver staging environment", desc: "For test uploads and validation ahead of go-live" },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col justify-center relative" style={{ backgroundColor: colors.navy }}>
+      {/* Top Accent Line */}
+      <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: colors.teal }} />
+      
+      <div className="max-w-4xl mx-auto px-12">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h2 className="text-5xl font-bold text-white mb-4" style={{ fontFamily: "'Fraunces', serif" }}>
+            Next Steps
+          </h2>
+          <div className="w-20 h-1 mb-12" style={{ backgroundColor: colors.teal }} />
+        </motion.div>
+
+        <div className="space-y-8">
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.num}
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 + i * 0.1 }}
+              className="flex gap-6"
+            >
+              <span className="text-4xl font-bold" style={{ color: colors.teal }}>{step.num}</span>
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-1">{step.title}</h3>
+                <p className="text-gray-400">{step.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="mt-16 p-4 rounded-lg text-center italic"
+          style={{ color: colors.teal }}
+        >
+          Target: All data templates populated by 28 February 2026
+        </motion.div>
+      </div>
+
+      {/* Footer */}
+      <div className="absolute bottom-8 left-8 right-8 flex justify-between items-center text-sm">
+        <div className="flex items-center gap-4">
+          <span className="font-bold text-white">Procure AI</span>
+          <span className="text-gray-500">IHS Towers Nigeria — Pre-Alignment Session — February 2026</span>
+        </div>
+        <span className="text-teal-500 text-xs tracking-widest uppercase">Confidential</span>
+      </div>
+    </div>
+  );
+};
+
+export default ProcureAIProposal;
