@@ -190,6 +190,36 @@ class ActivityLogResponse(BaseModel):
     details: str
     created_at: datetime
 
+# ==================== PROPOSAL MODELS ====================
+
+class ClientCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+
+class ClientResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    client_id: str
+    name: str
+    description: str
+    proposal_count: int
+    created_by: str
+    created_at: datetime
+
+class ProposalResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    proposal_id: str
+    client_id: str
+    client_name: str
+    filename: str
+    original_filename: str
+    file_type: str
+    file_size: int
+    share_token: str
+    share_url: str
+    uploaded_by: str
+    uploaded_by_name: str
+    created_at: datetime
+
 # ==================== HELPER FUNCTIONS ====================
 
 def hash_password(password: str) -> str:
