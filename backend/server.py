@@ -1415,6 +1415,371 @@ async def seed_initial_admin():
         await db.users.insert_one(admin_doc)
         logger.info("Seeded initial super admin: joshua@thcohq.com")
 
+# ==================== PROPOSAL MANAGEMENT ROUTES ====================
+
+def get_share_url(share_token: str) -> str:
+    """Generate the full share URL for a proposal"""
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+    return f"{frontend_url}/proposals/view/{share_token}"
+
+@api_router.get("/clients")
+async def get_clients(request: Request):
+    """Get all clients with their proposal counts"""
+    user = await get_current_user(request)
+    
+    clients = await db.clients.find({}, {"_id": 0}).to_list(1000)
+    
+    # Get proposal counts for each client
+    for client in clients:
+        count = await db.proposals.count_documents({"client_id": client["client_id"]})
+        client["proposal_count"] = count
+        if isinstance(client.get("created_at"), str):
+            client["created_at"] = datetime.fromisoformat(client["created_at"])
+    
+    return clients
+
+@api_router.post("/clients")
+async def create_client(data: ClientCreate, request: Request):
+    """Create a new client folder"""
+    user = await get_current_user(request)
+    
+    # Check if client name already exists
+    existing = await db.clients.find_one({"name": {"$regex": f"^{data.name}$", "$options": "i"}}, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="A client with this name already exists")
+    
+    client_id = f"client_{uuid.uuid4().hex[:12]}"
+    client_doc = {
+        "client_id": client_id,
+        "name": data.name,
+        "description": data.description or "",
+        "created_by": user["user_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.clients.insert_one(client_doc)
+    
+    # Create client folder on disk
+    client_folder = UPLOADS_DIR / client_id
+    client_folder.mkdir(parents=True, exist_ok=True)
+    
+    await log_activity(
+        user["user_id"],
+        user["name"],
+        f"Created client folder '{data.name}'",
+        entity_type="client",
+        entity_id=client_id
+    )
+    
+    return {
+        "client_id": client_id,
+        "name": data.name,
+        "description": data.description or "",
+        "proposal_count": 0,
+        "created_by": user["user_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+
+@api_router.put("/clients/{client_id}")
+async def update_client(client_id: str, data: ClientCreate, request: Request):
+    """Update a client's details"""
+    user = await get_current_user(request)
+    
+    client = await db.clients.find_one({"client_id": client_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    await db.clients.update_one(
+        {"client_id": client_id},
+        {"$set": {"name": data.name, "description": data.description or ""}}
+    )
+    
+    await log_activity(
+        user["user_id"],
+        user["name"],
+        f"Updated client '{data.name}'",
+        entity_type="client",
+        entity_id=client_id
+    )
+    
+    return {"message": "Client updated successfully"}
+
+@api_router.delete("/clients/{client_id}")
+async def delete_client(client_id: str, request: Request):
+    """Delete a client and all their proposals"""
+    user = await get_current_user(request)
+    
+    if user["role"] != "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can delete clients")
+    
+    client = await db.clients.find_one({"client_id": client_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    # Delete all proposals for this client
+    await db.proposals.delete_many({"client_id": client_id})
+    
+    # Delete client folder from disk
+    client_folder = UPLOADS_DIR / client_id
+    if client_folder.exists():
+        shutil.rmtree(client_folder)
+    
+    # Delete client record
+    await db.clients.delete_one({"client_id": client_id})
+    
+    await log_activity(
+        user["user_id"],
+        user["name"],
+        f"Deleted client '{client['name']}' and all proposals",
+        entity_type="client",
+        entity_id=client_id
+    )
+    
+    return {"message": "Client and all proposals deleted successfully"}
+
+@api_router.get("/clients/{client_id}/proposals")
+async def get_client_proposals(client_id: str, request: Request):
+    """Get all proposals for a specific client"""
+    user = await get_current_user(request)
+    
+    client = await db.clients.find_one({"client_id": client_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    proposals = await db.proposals.find({"client_id": client_id}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    
+    for proposal in proposals:
+        proposal["share_url"] = get_share_url(proposal["share_token"])
+        if isinstance(proposal.get("created_at"), str):
+            proposal["created_at"] = datetime.fromisoformat(proposal["created_at"])
+    
+    return proposals
+
+@api_router.post("/clients/{client_id}/proposals")
+async def upload_proposal(
+    client_id: str,
+    request: Request,
+    file: UploadFile = File(...)
+):
+    """Upload a proposal file to a client's folder"""
+    user = await get_current_user(request)
+    
+    client = await db.clients.find_one({"client_id": client_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    # Validate file type
+    allowed_types = [
+        "application/pdf",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
+    
+    file_ext = Path(file.filename).suffix.lower()
+    allowed_extensions = [".pdf", ".ppt", ".pptx", ".doc", ".docx", ".xls", ".xlsx"]
+    
+    if file_ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"File type not allowed. Allowed types: {', '.join(allowed_extensions)}"
+        )
+    
+    # Generate unique filename
+    proposal_id = f"prop_{uuid.uuid4().hex[:12]}"
+    share_token = secrets.token_urlsafe(32)
+    filename = f"{proposal_id}{file_ext}"
+    
+    # Create client folder if it doesn't exist
+    client_folder = UPLOADS_DIR / client_id
+    client_folder.mkdir(parents=True, exist_ok=True)
+    
+    # Save file
+    file_path = client_folder / filename
+    content = await file.read()
+    file_size = len(content)
+    
+    with open(file_path, "wb") as f:
+        f.write(content)
+    
+    # Determine file type label
+    file_type_map = {
+        ".pdf": "PDF",
+        ".ppt": "PowerPoint",
+        ".pptx": "PowerPoint",
+        ".doc": "Word",
+        ".docx": "Word",
+        ".xls": "Excel",
+        ".xlsx": "Excel"
+    }
+    file_type = file_type_map.get(file_ext, "Document")
+    
+    # Save to database
+    proposal_doc = {
+        "proposal_id": proposal_id,
+        "client_id": client_id,
+        "client_name": client["name"],
+        "filename": filename,
+        "original_filename": file.filename,
+        "file_type": file_type,
+        "file_size": file_size,
+        "file_path": str(file_path),
+        "share_token": share_token,
+        "uploaded_by": user["user_id"],
+        "uploaded_by_name": user["name"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.proposals.insert_one(proposal_doc)
+    
+    await log_activity(
+        user["user_id"],
+        user["name"],
+        f"Uploaded proposal '{file.filename}' for {client['name']}",
+        entity_type="proposal",
+        entity_id=proposal_id
+    )
+    
+    return {
+        "proposal_id": proposal_id,
+        "client_id": client_id,
+        "client_name": client["name"],
+        "filename": filename,
+        "original_filename": file.filename,
+        "file_type": file_type,
+        "file_size": file_size,
+        "share_token": share_token,
+        "share_url": get_share_url(share_token),
+        "uploaded_by": user["user_id"],
+        "uploaded_by_name": user["name"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+
+@api_router.get("/proposals")
+async def get_all_proposals(request: Request, limit: int = 50, skip: int = 0):
+    """Get all proposals across all clients"""
+    user = await get_current_user(request)
+    
+    proposals = await db.proposals.find({}, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    for proposal in proposals:
+        proposal["share_url"] = get_share_url(proposal["share_token"])
+        if isinstance(proposal.get("created_at"), str):
+            proposal["created_at"] = datetime.fromisoformat(proposal["created_at"])
+    
+    return proposals
+
+@api_router.delete("/proposals/{proposal_id}")
+async def delete_proposal(proposal_id: str, request: Request):
+    """Delete a proposal"""
+    user = await get_current_user(request)
+    
+    proposal = await db.proposals.find_one({"proposal_id": proposal_id}, {"_id": 0})
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found")
+    
+    # Delete file from disk
+    file_path = Path(proposal.get("file_path", ""))
+    if file_path.exists():
+        file_path.unlink()
+    
+    # Delete from database
+    await db.proposals.delete_one({"proposal_id": proposal_id})
+    
+    await log_activity(
+        user["user_id"],
+        user["name"],
+        f"Deleted proposal '{proposal['original_filename']}'",
+        entity_type="proposal",
+        entity_id=proposal_id
+    )
+    
+    return {"message": "Proposal deleted successfully"}
+
+@api_router.post("/proposals/{proposal_id}/regenerate-link")
+async def regenerate_share_link(proposal_id: str, request: Request):
+    """Regenerate the share link for a proposal"""
+    user = await get_current_user(request)
+    
+    proposal = await db.proposals.find_one({"proposal_id": proposal_id}, {"_id": 0})
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found")
+    
+    new_token = secrets.token_urlsafe(32)
+    
+    await db.proposals.update_one(
+        {"proposal_id": proposal_id},
+        {"$set": {"share_token": new_token}}
+    )
+    
+    await log_activity(
+        user["user_id"],
+        user["name"],
+        f"Regenerated share link for '{proposal['original_filename']}'",
+        entity_type="proposal",
+        entity_id=proposal_id
+    )
+    
+    return {
+        "share_token": new_token,
+        "share_url": get_share_url(new_token)
+    }
+
+# Public endpoint - no auth required
+@api_router.get("/proposals/shared/{share_token}")
+async def get_shared_proposal(share_token: str):
+    """Get proposal details by share token (public endpoint)"""
+    proposal = await db.proposals.find_one({"share_token": share_token}, {"_id": 0})
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found or link has expired")
+    
+    # Get client info
+    client = await db.clients.find_one({"client_id": proposal["client_id"]}, {"_id": 0})
+    
+    return {
+        "proposal_id": proposal["proposal_id"],
+        "client_name": proposal["client_name"],
+        "filename": proposal["original_filename"],
+        "file_type": proposal["file_type"],
+        "file_size": proposal["file_size"],
+        "uploaded_at": proposal["created_at"]
+    }
+
+# Public endpoint - no auth required
+@api_router.get("/proposals/shared/{share_token}/download")
+async def download_shared_proposal(share_token: str):
+    """Download a proposal file by share token (public endpoint)"""
+    proposal = await db.proposals.find_one({"share_token": share_token}, {"_id": 0})
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found or link has expired")
+    
+    file_path = Path(proposal.get("file_path", ""))
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found on server")
+    
+    # Determine content type
+    content_types = {
+        ".pdf": "application/pdf",
+        ".ppt": "application/vnd.ms-powerpoint",
+        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ".doc": "application/msword",
+        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".xls": "application/vnd.ms-excel",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    }
+    
+    file_ext = file_path.suffix.lower()
+    content_type = content_types.get(file_ext, "application/octet-stream")
+    
+    return FileResponse(
+        path=str(file_path),
+        filename=proposal["original_filename"],
+        media_type=content_type
+    )
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/health")
