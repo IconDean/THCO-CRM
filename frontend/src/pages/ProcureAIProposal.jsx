@@ -284,7 +284,10 @@ const ProcureAIProposal = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-6 py-4">
+      <div 
+        className="fixed bottom-0 z-40 bg-white border-t border-gray-200 px-6 py-4"
+        style={{ left: sidebarExpanded ? '224px' : '64px', right: 0, transition: 'left 0.3s' }}
+      >
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gray-100">
           <div 
@@ -306,6 +309,7 @@ const ProcureAIProposal = () => {
                 ? 'text-gray-300 cursor-not-allowed' 
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
+            data-testid="prev-page-btn"
           >
             <ChevronLeft className="w-5 h-5" />
             Previous
@@ -323,11 +327,12 @@ const ProcureAIProposal = () => {
                       ? 'w-6 bg-teal-500' 
                       : 'bg-gray-300 hover:bg-gray-400'
                   }`}
+                  data-testid={`page-dot-${page.id}`}
                 />
               ))}
             </div>
             <span className="text-sm text-gray-500">
-              {currentPage} / 8 · <span className="text-gray-700">{PAGES[currentPage - 1].title}</span>
+              {currentPage}/{8}<span className="text-gray-400">·</span><span className="text-gray-700">{PAGES[currentPage - 1].title}</span>
             </span>
           </div>
 
