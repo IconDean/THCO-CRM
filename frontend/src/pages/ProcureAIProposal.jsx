@@ -590,8 +590,40 @@ const RFQFlowSection = () => {
     { num: 10, label: "Award & Contract", color: colors.navy },
   ];
 
+  // Animated Arrow Component
+  const AnimatedArrow = ({ delay = 0, direction = "right" }) => (
+    <motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.3 }}
+      className="flex items-center justify-center mx-1"
+    >
+      <svg width="40" height="24" viewBox="0 0 40 24" className={direction === "down" ? "rotate-90" : ""}>
+        <defs>
+          <linearGradient id={`arrowGrad-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={colors.teal} />
+            <stop offset="100%" stopColor={colors.navy} />
+          </linearGradient>
+          <marker id={`arrowHead-${delay}`} markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill={colors.teal} />
+          </marker>
+        </defs>
+        <motion.path
+          d="M5,12 L30,12"
+          stroke={`url(#arrowGrad-${delay})`}
+          strokeWidth="3"
+          fill="none"
+          markerEnd={`url(#arrowHead-${delay})`}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: delay + 0.2, duration: 0.5 }}
+        />
+      </svg>
+    </motion.div>
+  );
+
   return (
-    <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
+    <div className="min-h-screen p-12 pb-24 overflow-hidden" style={{ backgroundColor: colors.lightGray }}>
       <div className="max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h2 className="text-4xl font-bold mb-2" style={{ color: colors.navy, fontFamily: "'Fraunces', serif" }}>
@@ -601,60 +633,100 @@ const RFQFlowSection = () => {
         </motion.div>
 
         {/* Flow Rows */}
-        <div className="space-y-8">
+        <div className="space-y-4">
           {/* Row 1 */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center">
             {row1Steps.map((step, i) => (
-              <motion.div
-                key={step.num}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="flex-1"
-              >
-                <div className="flex flex-col items-center">
-                  <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mb-3"
+              <div key={step.num} className="flex items-center">
+                <motion.div
+                  initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: i * 0.15, type: "spring", stiffness: 200 }}
+                  className="flex flex-col items-center w-36"
+                >
+                  <motion.div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mb-3 shadow-lg"
                     style={{ backgroundColor: step.color }}
+                    whileHover={{ scale: 1.1, boxShadow: `0 0 20px ${step.color}60` }}
+                    animate={{ 
+                      boxShadow: [`0 0 0px ${step.color}40`, `0 0 15px ${step.color}40`, `0 0 0px ${step.color}40`]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
                   >
                     {step.num}
-                  </div>
-                  <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center w-full">
-                    <span className="text-sm font-medium text-gray-700">{step.label}</span>
-                  </div>
-                </div>
-                {i < 4 && <div className="absolute right-0 top-1/2 w-8 h-0.5 bg-gray-300" />}
-              </motion.div>
+                  </motion.div>
+                  <motion.div 
+                    className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm text-center w-full"
+                    whileHover={{ y: -3, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+                  >
+                    <span className="text-xs font-medium text-gray-700">{step.label}</span>
+                  </motion.div>
+                </motion.div>
+                {i < 4 && <AnimatedArrow delay={i * 0.15 + 0.3} />}
+              </div>
             ))}
           </div>
 
-          {/* Connector */}
-          <div className="flex justify-end pr-12">
-            <div className="w-0.5 h-8 bg-gray-300" />
+          {/* Curved Connector from Step 5 to Step 6 */}
+          <div className="flex justify-end pr-16">
+            <motion.svg 
+              width="60" height="60" 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9 }}
+            >
+              <defs>
+                <linearGradient id="curveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={colors.teal} />
+                  <stop offset="100%" stopColor={colors.navy} />
+                </linearGradient>
+                <marker id="curveArrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                  <path d="M0,0 L0,10 L10,5 z" fill={colors.navy} />
+                </marker>
+              </defs>
+              <motion.path
+                d="M30,5 L30,30 L5,30 L5,55"
+                stroke="url(#curveGrad)"
+                strokeWidth="3"
+                fill="none"
+                markerEnd="url(#curveArrow)"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ delay: 1, duration: 0.8 }}
+              />
+            </motion.svg>
           </div>
 
           {/* Row 2 */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center">
             {row2Steps.map((step, i) => (
-              <motion.div
-                key={step.num}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                className="flex-1"
-              >
-                <div className="flex flex-col items-center">
-                  <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mb-3"
+              <div key={step.num} className="flex items-center">
+                <motion.div
+                  initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 1.2 + i * 0.15, type: "spring", stiffness: 200 }}
+                  className="flex flex-col items-center w-36"
+                >
+                  <motion.div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mb-3 shadow-lg"
                     style={{ backgroundColor: step.color }}
+                    whileHover={{ scale: 1.1, boxShadow: `0 0 20px ${step.color}60` }}
+                    animate={{ 
+                      boxShadow: [`0 0 0px ${step.color}40`, `0 0 15px ${step.color}40`, `0 0 0px ${step.color}40`]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
                   >
                     {step.num}
-                  </div>
-                  <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center w-full">
-                    <span className="text-sm font-medium text-gray-700">{step.label}</span>
-                  </div>
-                </div>
-              </motion.div>
+                  </motion.div>
+                  <motion.div 
+                    className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm text-center w-full"
+                    whileHover={{ y: -3, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+                  >
+                    <span className="text-xs font-medium text-gray-700">{step.label}</span>
+                  </motion.div>
+                </motion.div>
+                {i < 4 && <AnimatedArrow delay={1.2 + i * 0.15 + 0.3} />}
+              </div>
             ))}
           </div>
         </div>
@@ -662,9 +734,10 @@ const RFQFlowSection = () => {
         {/* Info Cards */}
         <div className="grid grid-cols-2 gap-6 mt-12">
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1 }}
+            transition={{ delay: 2, type: "spring" }}
+            whileHover={{ scale: 1.02 }}
             className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
           >
             <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -681,9 +754,10 @@ const RFQFlowSection = () => {
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.1 }}
+            transition={{ delay: 2.1, type: "spring" }}
+            whileHover={{ scale: 1.02 }}
             className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
           >
             <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
