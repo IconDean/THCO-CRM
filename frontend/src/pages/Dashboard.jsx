@@ -13,7 +13,8 @@ import {
   Activity,
   Clock,
   Lock,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
@@ -28,7 +29,7 @@ const UNITS = [
     active: true,
     description: "AI-powered recruiting, sourcing, and talent operations",
     toolCount: 2,
-    gradient: "bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700"
+    gradient: "bg-gradient-to-br from-[#B855E8] to-[#DA67E4]"
   },
   { 
     name: "Sales & Business Development", 
@@ -38,7 +39,7 @@ const UNITS = [
     active: false,
     description: "Pipeline management, proposals, and client engagement",
     toolCount: 0,
-    gradient: "bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700"
+    gradient: "bg-gradient-to-br from-[#38D190] to-[#53E1A3]"
   },
   { 
     name: "Marketing & Brand", 
@@ -48,7 +49,7 @@ const UNITS = [
     active: false,
     description: "Content creation, campaigns, and brand management",
     toolCount: 0,
-    gradient: "bg-gradient-to-br from-pink-500 via-pink-600 to-pink-700"
+    gradient: "bg-gradient-to-br from-[#FF3D8D] to-[#FF7F7F]"
   },
   { 
     name: "Advisory & Consulting", 
@@ -58,7 +59,7 @@ const UNITS = [
     active: false,
     description: "Project delivery, research, and client advisory tools",
     toolCount: 0,
-    gradient: "bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700"
+    gradient: "bg-gradient-to-br from-[#3B82F6] to-[#60A5FA]"
   },
   { 
     name: "Technology & Build", 
@@ -68,7 +69,7 @@ const UNITS = [
     active: false,
     description: "Product development, engineering, and AI tools",
     toolCount: 0,
-    gradient: "bg-gradient-to-br from-cyan-500 via-cyan-600 to-cyan-700"
+    gradient: "bg-gradient-to-br from-[#06B6D4] to-[#22D3EE]"
   },
   { 
     name: "Operations & Finance", 
@@ -78,7 +79,7 @@ const UNITS = [
     active: false,
     description: "Internal operations, HR, finance, and admin tools",
     toolCount: 0,
-    gradient: "bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700"
+    gradient: "bg-gradient-to-br from-[#F97316] to-[#FB923C]"
   },
   { 
     name: "Academy & Learning", 
@@ -88,7 +89,7 @@ const UNITS = [
     active: false,
     description: "Training programs, assessments, and learning management",
     toolCount: 0,
-    gradient: "bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700"
+    gradient: "bg-gradient-to-br from-[#F59E0B] to-[#FBBF24]"
   },
   { 
     name: "Client Delivery", 
@@ -98,7 +99,7 @@ const UNITS = [
     active: false,
     description: "Managed services, SLA tracking, and delivery management",
     toolCount: 0,
-    gradient: "bg-gradient-to-br from-red-500 via-red-600 to-red-700"
+    gradient: "bg-gradient-to-br from-[#EF4444] to-[#F87171]"
   },
 ];
 
@@ -157,18 +158,18 @@ const Dashboard = () => {
 
   const getRoleBadge = (role) => {
     const styles = {
-      super_admin: "bg-purple-100 text-purple-700 border-purple-200",
-      mini_admin: "bg-emerald-100 text-emerald-700 border-emerald-200",
-      team_member: "bg-gray-100 text-gray-600 border-gray-200",
+      super_admin: "bg-gray-100 text-gray-600",
+      mini_admin: "bg-emerald-100 text-emerald-700",
+      team_member: "bg-gray-100 text-gray-600",
     };
     const labels = {
-      super_admin: "Super Admin",
-      mini_admin: "Mini Admin",
-      team_member: "Team Member",
+      super_admin: "SUPER ADMIN",
+      mini_admin: "MINI ADMIN",
+      team_member: "TEAM MEMBER",
     };
     return (
-      <span className={`text-xs font-mono uppercase tracking-wider px-3 py-1 rounded-full border ${styles[role] || styles.team_member}`}>
-        {labels[role] || "Member"}
+      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded ${styles[role] || styles.team_member}`}>
+        {labels[role] || "MEMBER"}
       </span>
     );
   };
@@ -185,10 +186,15 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="space-y-8 animate-pulse">
-        <div className="h-32 bg-white rounded-2xl border border-gray-100"></div>
+        <div className="h-32 bg-gray-100 rounded-2xl"></div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="h-24 bg-gray-100 rounded-2xl"></div>
+          <div className="h-24 bg-gray-100 rounded-2xl"></div>
+          <div className="h-24 bg-gray-100 rounded-2xl"></div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1,2,3,4,5,6].map(i => (
-            <div key={i} className="h-48 bg-white rounded-2xl border border-gray-100"></div>
+            <div key={i} className="h-48 bg-gray-100 rounded-2xl"></div>
           ))}
         </div>
       </div>
@@ -198,55 +204,54 @@ const Dashboard = () => {
   return (
     <div className="space-y-8" data-testid="dashboard-page">
       {/* Welcome Section */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <p className="text-gray-500 text-sm mb-1">{getCurrentDate()}</p>
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+      <div>
+        <p className="text-gray-500 text-sm mb-1">{getCurrentDate()}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold text-gray-900">
               Welcome back, {user?.name?.split(" ")[0]}
             </h1>
-            <div className="flex items-center gap-3">
-              {getRoleBadge(user?.role)}
-            </div>
+            {getRoleBadge(user?.role)}
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">AI-powered tools at your fingertips</span>
+          <div className="flex items-center gap-2 text-gray-500">
+            <Sparkles className="w-4 h-4 text-purple-500" />
+            <span className="text-sm">AI-powered tools at your fingertips</span>
           </div>
         </div>
+      </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4 mt-8">
-          <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center">
-                <Wrench className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.total_tools}</p>
-                <p className="text-xs text-gray-500">Tools Available</p>
-              </div>
+      {/* Quick Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-5 border border-gray-100">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
+              <Wrench className="w-6 h-6 text-gray-600" />
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-gray-900">{stats.total_tools}</p>
+              <p className="text-sm text-gray-500">Tools Available</p>
             </div>
           </div>
-          <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.pending_requests}</p>
-                <p className="text-xs text-gray-500">Pending Requests</p>
-              </div>
+        </div>
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-amber-200 flex items-center justify-center">
+              <Clock className="w-6 h-6 text-amber-700" />
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-gray-900">{stats.pending_requests}</p>
+              <p className="text-sm text-gray-500">Pending Requests</p>
             </div>
           </div>
-          <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
-                <Activity className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.recent_activity}</p>
-                <p className="text-xs text-gray-500">Recent Activity</p>
-              </div>
+        </div>
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-green-200 flex items-center justify-center">
+              <Activity className="w-6 h-6 text-green-700" />
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-gray-900">{stats.recent_activity}</p>
+              <p className="text-sm text-gray-500">Recent Activity</p>
             </div>
           </div>
         </div>
@@ -254,8 +259,8 @@ const Dashboard = () => {
 
       {/* Units Section */}
       <div>
-        <h2 className="text-[11px] font-mono uppercase tracking-widest text-gray-400 mb-4">Business Units</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-4">Business Units</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {UNITS.map((unit) => {
             const Icon = unit.icon;
             const hasAccess = hasUnitAccess(unit.slug);
@@ -265,25 +270,25 @@ const Dashboard = () => {
                 key={unit.slug}
                 to={unit.path}
                 onClick={(e) => handleUnitClick(unit, e)}
-                className={`group rounded-2xl transition-all duration-300 overflow-hidden shadow-lg ${
+                className={`group rounded-2xl transition-all duration-300 overflow-hidden shadow-md ${
                   hasAccess 
                     ? "hover:scale-[1.02] hover:shadow-xl" 
                     : "opacity-60 cursor-pointer"
                 } ${unit.gradient}`}
                 data-testid={`unit-card-${unit.slug}`}
               >
-                <div className="p-6 h-full flex flex-col">
+                <div className="p-6 h-full flex flex-col min-h-[200px]">
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     {hasAccess ? (
                       unit.active ? (
-                        <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-white/20 text-white">
+                        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-white/25 text-white">
                           ACTIVE
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-black/20 text-white/80">
+                        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-black/20 text-white/90">
                           COMING SOON
                         </span>
                       )
@@ -311,45 +316,6 @@ const Dashboard = () => {
               </Link>
             );
           })}
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div>
-        <h2 className="text-[11px] font-mono uppercase tracking-widest text-gray-400 mb-4">Recent Activity</h2>
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-          {activities.length > 0 ? (
-            <div className="divide-y divide-gray-100">
-              {activities.map((activity, index) => (
-                <div key={activity.log_id || index} className="p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Activity className="w-4 h-4 text-purple-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">
-                        <span className="font-medium">{activity.user_name}</span>
-                        {" "}{activity.action}
-                      </p>
-                      {activity.unit_slug && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          in {UNITS.find(u => u.slug === activity.unit_slug)?.name || activity.unit_slug}
-                        </p>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-400 whitespace-nowrap">
-                      {formatTimeAgo(activity.created_at)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-8 text-center">
-              <Activity className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No recent activity</p>
-            </div>
-          )}
         </div>
       </div>
 
