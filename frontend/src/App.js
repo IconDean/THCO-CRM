@@ -160,6 +160,15 @@ const AppRouter = () => {
         </ProtectedRoute>
       } />
       
+      <Route path="/proposals" element={
+        <ProtectedRoute>
+          <Proposals />
+        </ProtectedRoute>
+      } />
+      
+      {/* Public Proposal View - No Auth Required */}
+      <Route path="/proposals/view/:shareToken" element={<ProposalView />} />
+      
       {/* Coming Soon Unit Routes */}
       <Route path="/sales" element={
         <ProtectedRoute>
