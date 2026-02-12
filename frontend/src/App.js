@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import UnitComingSoon from "./pages/UnitComingSoon";
 import Proposals from "./pages/Proposals";
 import ProposalView from "./pages/ProposalView";
+import ProcureAIProposal from "./pages/ProcureAIProposal";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -168,6 +169,9 @@ const AppRouter = () => {
       
       {/* Public Proposal View - No Auth Required */}
       <Route path="/proposals/view/:shareToken" element={<ProposalView />} />
+      
+      {/* Public Procure AI Presentation - No Auth Required */}
+      <Route path="/proposals/procure-ai" element={<ProcureAIProposal />} />
       
       {/* Coming Soon Unit Routes */}
       <Route path="/sales" element={
