@@ -150,6 +150,19 @@ const DashboardLayout = ({ children, user }) => {
             {sidebarOpen && <span className="text-sm">Dashboard</span>}
           </Link>
 
+          {/* Proposals */}
+          <Link
+            to="/proposals"
+            data-testid="nav-proposals"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all
+              ${isActive("/proposals") 
+                ? "bg-purple-50 text-purple-700 font-medium" 
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
+          >
+            <FileText size={20} />
+            {sidebarOpen && <span className="text-sm">Proposals</span>}
+          </Link>
+
           {/* Units Section */}
           {sidebarOpen && (
             <div className="mt-6 mb-3 px-3">
