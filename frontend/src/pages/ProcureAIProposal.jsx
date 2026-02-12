@@ -155,6 +155,43 @@ const ProcureAIProposal = () => {
 
   return (
     <div className="min-h-screen bg-white flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Top Header Bar */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4" style={{ marginLeft: sidebarExpanded ? '224px' : '64px', transition: 'margin-left 0.3s' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ backgroundColor: colors.teal }}>
+            <span className="text-white font-bold text-sm">E</span>
+          </div>
+          <span className="text-gray-400">|</span>
+          <span className="text-gray-700 font-medium text-sm">Procure AI | Process Flowcharts</span>
+        </div>
+        
+        {/* Download Button with Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              disabled={isGeneratingPdf}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-70"
+              style={{ backgroundColor: colors.teal }}
+              data-testid="download-pdf-btn"
+            >
+              {isGeneratingPdf ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              {isGeneratingPdf ? "Generating..." : "Download"}
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={handleDownload} className="cursor-pointer">
+              <Download className="w-4 h-4 mr-2" />
+              Download as PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </header>
+
       {/* Sidebar */}
       <aside 
         className={`fixed left-0 top-0 h-full z-50 transition-all duration-300 ${sidebarExpanded ? 'w-56' : 'w-16'}`}
@@ -165,32 +202,43 @@ const ProcureAIProposal = () => {
         <div className="flex flex-col h-full py-6">
           {/* Logo */}
           <div className="px-4 mb-8">
-            <div className={`text-white font-bold ${sidebarExpanded ? 'text-xl' : 'text-sm text-center'}`}>
-              {sidebarExpanded ? 'Procure AI' : 'P'}
+            <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: colors.teal }}>
+              <span className="text-white font-bold text-sm">P</span>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-1 px-2">
+          <nav className="flex-1 space-y-1">
             {PAGES.map((page) => (
               <button
                 key={page.id}
                 onClick={() => goToPage(page.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                className={`w-full flex items-center gap-3 py-2.5 transition-all relative ${
                   currentPage === page.id 
-                    ? 'bg-white/10 border-l-2 border-teal-400' 
+                    ? 'bg-white/5' 
                     : 'hover:bg-white/5'
                 }`}
+                style={{ paddingLeft: sidebarExpanded ? '16px' : '20px' }}
               >
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                {/* Teal accent line for active page */}
+                {currentPage === page.id && (
+                  <div 
+                    className="absolute left-0 top-0 bottom-0 w-1 rounded-r"
+                    style={{ backgroundColor: colors.teal }}
+                  />
+                )}
+                <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
                   currentPage === page.id 
-                    ? 'bg-teal-500 text-white' 
-                    : 'bg-white/10 text-white/60'
-                }`}>
+                    ? 'text-white' 
+                    : 'text-white/50'
+                }`} style={{ 
+                  backgroundColor: currentPage === page.id ? colors.teal : 'transparent',
+                  border: currentPage === page.id ? 'none' : '1px solid rgba(255,255,255,0.2)'
+                }}>
                   {page.id}
                 </span>
                 {sidebarExpanded && (
-                  <span className={`text-sm ${currentPage === page.id ? 'text-white' : 'text-white/60'}`}>
+                  <span className={`text-sm ${currentPage === page.id ? 'text-white' : 'text-white/50'}`}>
                     {page.title}
                   </span>
                 )}
@@ -208,24 +256,8 @@ const ProcureAIProposal = () => {
         </div>
       </aside>
 
-      {/* Download Button */}
-      <button
-        onClick={handleDownload}
-        disabled={isGeneratingPdf}
-        className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-lg hover:shadow-xl transition-all disabled:opacity-70"
-        style={{ background: `linear-gradient(135deg, ${colors.teal}, ${colors.navy})` }}
-        data-testid="download-pdf-btn"
-      >
-        {isGeneratingPdf ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          <Download className="w-4 h-4" />
-        )}
-        {isGeneratingPdf ? "Generating..." : "Download PDF"}
-      </button>
-
       {/* Main Content */}
-      <main className={`flex-1 ${sidebarExpanded ? 'ml-56' : 'ml-16'} transition-all duration-300`}>
+      <main className={`flex-1 ${sidebarExpanded ? 'ml-56' : 'ml-16'} mt-12 transition-all duration-300`}>
         <div ref={contentRef}>
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -236,7 +268,7 @@ const ProcureAIProposal = () => {
               animate="center"
               exit="exit"
               transition={{ duration: 0.5, ease: "easeInOut" }}
-              className="min-h-screen"
+              className="min-h-[calc(100vh-48px)]"
             >
               {currentPage === 1 && <HeroSection />}
               {currentPage === 2 && <ArchitectureSection />}
