@@ -65,6 +65,7 @@ const DashboardLayout = ({ children, user }) => {
     const path = location.pathname;
     if (path === "/dashboard") return "Dashboard";
     if (path === "/settings") return "Settings";
+    if (path === "/proposals") return "Proposals";
     if (path.startsWith("/talent")) {
       if (path === "/talent") return "Talent & Human Capital";
       if (path === "/talent/sourcing") return "AI Candidate Sourcing";
