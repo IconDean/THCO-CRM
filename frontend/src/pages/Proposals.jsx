@@ -1,0 +1,685 @@
+import { useState, useEffect, useRef } from "react";
+import { 
+  FolderPlus, 
+  Upload, 
+  File, 
+  FileText, 
+  Presentation, 
+  Table2,
+  Trash2, 
+  Copy, 
+  Download, 
+  ExternalLink,
+  ChevronRight,
+  Search,
+  MoreHorizontal,
+  RefreshCw,
+  Plus,
+  ArrowLeft,
+  X,
+  Check,
+  FolderOpen
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog";
+import { Progress } from "../components/ui/progress";
+import { clientsAPI, proposalsAPI } from "../lib/api";
+import { toast } from "sonner";
+
+const Proposals = () => {
+  const [clients, setClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [proposals, setProposals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [proposalsLoading, setProposalsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // Modals
+  const [createClientModal, setCreateClientModal] = useState(false);
+  const [uploadModal, setUploadModal] = useState(false);
+  const [deleteClientDialog, setDeleteClientDialog] = useState({ open: false, client: null });
+  const [deleteProposalDialog, setDeleteProposalDialog] = useState({ open: false, proposal: null });
+  
+  // Form states
+  const [newClientName, setNewClientName] = useState("");
+  const [newClientDescription, setNewClientDescription] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
+
+  const fetchClients = async () => {
+    try {
+      setLoading(true);
+      const data = await clientsAPI.getAll();
+      setClients(data);
+    } catch (error) {
+      toast.error("Failed to load clients");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProposals = async (clientId) => {
+    try {
+      setProposalsLoading(true);
+      const data = await clientsAPI.getProposals(clientId);
+      setProposals(data);
+    } catch (error) {
+      toast.error("Failed to load proposals");
+    } finally {
+      setProposalsLoading(false);
+    }
+  };
+
+  const handleSelectClient = (client) => {
+    setSelectedClient(client);
+    fetchProposals(client.client_id);
+  };
+
+  const handleBackToClients = () => {
+    setSelectedClient(null);
+    setProposals([]);
+  };
+
+  const handleCreateClient = async () => {
+    if (!newClientName.trim()) {
+      toast.error("Client name is required");
+      return;
+    }
+
+    try {
+      const data = await clientsAPI.create({
+        name: newClientName.trim(),
+        description: newClientDescription.trim()
+      });
+      setClients([data, ...clients]);
+      setCreateClientModal(false);
+      setNewClientName("");
+      setNewClientDescription("");
+      toast.success(`Client "${data.name}" created successfully`);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create client");
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    if (!deleteClientDialog.client) return;
+    
+    try {
+      await clientsAPI.delete(deleteClientDialog.client.client_id);
+      setClients(clients.filter(c => c.client_id !== deleteClientDialog.client.client_id));
+      setDeleteClientDialog({ open: false, client: null });
+      toast.success("Client deleted successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to delete client");
+    }
+  };
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedClient) return;
+
+    const allowedExtensions = ['.pdf', '.ppt', '.pptx', '.doc', '.docx', '.xls', '.xlsx'];
+    const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExt)) {
+      toast.error(`File type not allowed. Allowed: ${allowedExtensions.join(', ')}`);
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      setUploadProgress(0);
+      
+      const data = await clientsAPI.uploadProposal(
+        selectedClient.client_id, 
+        file,
+        (progress) => setUploadProgress(progress)
+      );
+      
+      setProposals([data, ...proposals]);
+      // Update client proposal count
+      setClients(clients.map(c => 
+        c.client_id === selectedClient.client_id 
+          ? { ...c, proposal_count: (c.proposal_count || 0) + 1 }
+          : c
+      ));
+      setSelectedClient(prev => ({ ...prev, proposal_count: (prev.proposal_count || 0) + 1 }));
+      
+      toast.success("Proposal uploaded successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to upload proposal");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleDeleteProposal = async () => {
+    if (!deleteProposalDialog.proposal) return;
+    
+    try {
+      await proposalsAPI.delete(deleteProposalDialog.proposal.proposal_id);
+      setProposals(proposals.filter(p => p.proposal_id !== deleteProposalDialog.proposal.proposal_id));
+      // Update client proposal count
+      setClients(clients.map(c => 
+        c.client_id === selectedClient?.client_id 
+          ? { ...c, proposal_count: Math.max(0, (c.proposal_count || 1) - 1) }
+          : c
+      ));
+      setSelectedClient(prev => prev ? { ...prev, proposal_count: Math.max(0, (prev.proposal_count || 1) - 1) } : null);
+      setDeleteProposalDialog({ open: false, proposal: null });
+      toast.success("Proposal deleted successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to delete proposal");
+    }
+  };
+
+  const handleCopyLink = async (proposal) => {
+    try {
+      await navigator.clipboard.writeText(proposal.share_url);
+      toast.success("Link copied to clipboard");
+    } catch (error) {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  const handleRegenerateLink = async (proposal) => {
+    try {
+      const data = await proposalsAPI.regenerateLink(proposal.proposal_id);
+      setProposals(proposals.map(p => 
+        p.proposal_id === proposal.proposal_id 
+          ? { ...p, share_token: data.share_token, share_url: data.share_url }
+          : p
+      ));
+      toast.success("Link regenerated successfully");
+    } catch (error) {
+      toast.error("Failed to regenerate link");
+    }
+  };
+
+  const handleDownload = (proposal) => {
+    const downloadUrl = proposalsAPI.getDownloadUrl(proposal.share_token);
+    window.open(downloadUrl, '_blank');
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+  };
+
+  const getFileIcon = (fileType) => {
+    switch (fileType) {
+      case 'PDF':
+        return <FileText className="w-5 h-5 text-red-500" />;
+      case 'PowerPoint':
+        return <Presentation className="w-5 h-5 text-orange-500" />;
+      case 'Excel':
+        return <Table2 className="w-5 h-5 text-green-500" />;
+      case 'Word':
+        return <File className="w-5 h-5 text-blue-500" />;
+      default:
+        return <File className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  const filteredClients = clients.filter(client =>
+    client.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredProposals = proposals.filter(proposal =>
+    proposal.original_filename.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-20 bg-white rounded-2xl border border-gray-100"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="h-32 bg-white rounded-2xl border border-gray-100"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6" data-testid="proposals-page">
+      {/* Header */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            {selectedClient && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleBackToClients}
+                className="rounded-xl text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                data-testid="back-to-clients-btn"
+              >
+                <ArrowLeft size={20} />
+              </Button>
+            )}
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {selectedClient ? selectedClient.name : "Proposals"}
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                {selectedClient 
+                  ? `${proposals.length} proposal${proposals.length !== 1 ? 's' : ''} • ${selectedClient.description || 'No description'}`
+                  : `${clients.length} client${clients.length !== 1 ? 's' : ''}`}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Input
+                placeholder={selectedClient ? "Search proposals..." : "Search clients..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64 pl-10 bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-purple-300"
+                data-testid="search-input"
+              />
+            </div>
+            
+            {selectedClient ? (
+              <>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx"
+                  className="hidden"
+                  data-testid="file-input"
+                />
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+                  data-testid="upload-proposal-btn"
+                >
+                  <Upload size={18} className="mr-2" />
+                  Upload Proposal
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => setCreateClientModal(true)}
+                className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+                data-testid="create-client-btn"
+              >
+                <FolderPlus size={18} className="mr-2" />
+                New Client
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Upload Progress */}
+        {isUploading && (
+          <div className="mt-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
+            <div className="flex items-center gap-3 mb-2">
+              <Upload className="w-5 h-5 text-purple-600 animate-pulse" />
+              <span className="text-sm font-medium text-purple-700">Uploading...</span>
+              <span className="text-sm text-purple-600 ml-auto">{uploadProgress}%</span>
+            </div>
+            <Progress value={uploadProgress} className="h-2" />
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      {selectedClient ? (
+        // Proposals View
+        proposalsLoading ? (
+          <div className="grid grid-cols-1 gap-4 animate-pulse">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-20 bg-white rounded-2xl border border-gray-100"></div>
+            ))}
+          </div>
+        ) : filteredProposals.length > 0 ? (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="divide-y divide-gray-100">
+              {filteredProposals.map((proposal) => (
+                <div 
+                  key={proposal.proposal_id}
+                  className="p-4 hover:bg-gray-50 transition-colors"
+                  data-testid={`proposal-item-${proposal.proposal_id}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
+                      {getFileIcon(proposal.file_type)}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-gray-900 truncate">
+                        {proposal.original_filename}
+                      </h3>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                        <span>{proposal.file_type}</span>
+                        <span>•</span>
+                        <span>{formatFileSize(proposal.file_size)}</span>
+                        <span>•</span>
+                        <span>{formatDate(proposal.created_at)}</span>
+                        <span>•</span>
+                        <span>by {proposal.uploaded_by_name}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCopyLink(proposal)}
+                        className="rounded-lg border-gray-200 hover:bg-gray-50"
+                        data-testid={`copy-link-btn-${proposal.proposal_id}`}
+                      >
+                        <Copy size={14} className="mr-1.5" />
+                        Copy Link
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownload(proposal)}
+                        className="rounded-lg border-gray-200 hover:bg-gray-50"
+                        data-testid={`download-btn-${proposal.proposal_id}`}
+                      >
+                        <Download size={14} className="mr-1.5" />
+                        Download
+                      </Button>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          >
+                            <MoreHorizontal size={18} />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 bg-white border-gray-200 rounded-xl">
+                          <DropdownMenuItem 
+                            onClick={() => window.open(proposal.share_url, '_blank')}
+                            className="text-gray-700 focus:bg-gray-50 cursor-pointer rounded-lg"
+                          >
+                            <ExternalLink size={14} className="mr-2" />
+                            Open Share Link
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleRegenerateLink(proposal)}
+                            className="text-gray-700 focus:bg-gray-50 cursor-pointer rounded-lg"
+                          >
+                            <RefreshCw size={14} className="mr-2" />
+                            Regenerate Link
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-gray-100" />
+                          <DropdownMenuItem 
+                            onClick={() => setDeleteProposalDialog({ open: true, proposal })}
+                            className="text-red-600 focus:bg-red-50 cursor-pointer rounded-lg"
+                          >
+                            <Trash2 size={14} className="mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+              <File className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No proposals yet</h3>
+            <p className="text-gray-500 mb-6">Upload your first proposal to share with this client</p>
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+            >
+              <Upload size={18} className="mr-2" />
+              Upload Proposal
+            </Button>
+          </div>
+        )
+      ) : (
+        // Clients View
+        filteredClients.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredClients.map((client) => (
+              <div
+                key={client.client_id}
+                className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-gray-200 hover:shadow-lg transition-all cursor-pointer group"
+                onClick={() => handleSelectClient(client)}
+                data-testid={`client-card-${client.client_id}`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+                    <FolderOpen className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <MoreHorizontal size={18} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40 bg-white border-gray-200 rounded-xl">
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteClientDialog({ open: true, client });
+                        }}
+                        className="text-red-600 focus:bg-red-50 cursor-pointer rounded-lg"
+                      >
+                        <Trash2 size={14} className="mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                
+                <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors">
+                  {client.name}
+                </h3>
+                <p className="text-sm text-gray-500 line-clamp-2 mb-4">
+                  {client.description || "No description"}
+                </p>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <span className="text-xs text-gray-400">
+                    {client.proposal_count || 0} proposal{(client.proposal_count || 0) !== 1 ? 's' : ''}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+              <FolderOpen className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No clients yet</h3>
+            <p className="text-gray-500 mb-6">Create your first client folder to organize proposals</p>
+            <Button
+              onClick={() => setCreateClientModal(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+            >
+              <FolderPlus size={18} className="mr-2" />
+              New Client
+            </Button>
+          </div>
+        )
+      )}
+
+      {/* Create Client Modal */}
+      <Dialog open={createClientModal} onOpenChange={setCreateClientModal}>
+        <DialogContent className="bg-white border-gray-200 max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900">Create New Client</DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Create a folder to organize proposals for this client
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="client-name" className="text-gray-700">Client Name *</Label>
+              <Input
+                id="client-name"
+                value={newClientName}
+                onChange={(e) => setNewClientName(e.target.value)}
+                placeholder="e.g., Acme Corporation"
+                className="bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-purple-300"
+                data-testid="client-name-input"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="client-description" className="text-gray-700">Description</Label>
+              <Textarea
+                id="client-description"
+                value={newClientDescription}
+                onChange={(e) => setNewClientDescription(e.target.value)}
+                placeholder="Brief description of the client..."
+                rows={3}
+                className="bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-purple-300 resize-none"
+                data-testid="client-description-input"
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-3 pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setCreateClientModal(false)}
+              className="rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreateClient}
+              className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+              data-testid="create-client-submit-btn"
+            >
+              Create Client
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Client Confirmation */}
+      <AlertDialog 
+        open={deleteClientDialog.open} 
+        onOpenChange={(open) => setDeleteClientDialog({ open, client: deleteClientDialog.client })}
+      >
+        <AlertDialogContent className="bg-white border-gray-200 rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900">Delete Client?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
+              This will permanently delete <span className="font-medium text-gray-700">{deleteClientDialog.client?.name}</span> and all its proposals. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteClient}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl"
+              data-testid="confirm-delete-client-btn"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Proposal Confirmation */}
+      <AlertDialog 
+        open={deleteProposalDialog.open} 
+        onOpenChange={(open) => setDeleteProposalDialog({ open, proposal: deleteProposalDialog.proposal })}
+      >
+        <AlertDialogContent className="bg-white border-gray-200 rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900">Delete Proposal?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
+              This will permanently delete <span className="font-medium text-gray-700">{deleteProposalDialog.proposal?.original_filename}</span>. The share link will no longer work.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteProposal}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl"
+              data-testid="confirm-delete-proposal-btn"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+};
+
+export default Proposals;
