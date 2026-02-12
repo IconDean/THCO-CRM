@@ -19,6 +19,7 @@ import {
 import { Button } from "../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
 import { dashboardAPI, activityAPI, authAPI } from "../lib/api";
+import { useAnalytics } from "../context/AnalyticsContext";
 
 const UNITS = [
   { 
