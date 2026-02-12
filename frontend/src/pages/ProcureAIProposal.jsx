@@ -1106,8 +1106,6 @@ const VendorOnboardingSection = () => {
     </div>
   );
 };
-  </div>
-);
 
 // Section 5: Reverse Auction
 const ReverseAuctionSection = () => {
