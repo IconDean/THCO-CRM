@@ -90,7 +90,6 @@ const ProcureAIScrollPresentation = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const [isGeneratingPptx, setIsGeneratingPptx] = useState(false);
   const contentRef = useRef(null);
   const navigate = useNavigate();
 
@@ -126,7 +125,7 @@ const ProcureAIScrollPresentation = () => {
     
     const opt = {
       margin: 0.5,
-      filename: 'Procure-AI-Presentation.pdf',
+      filename: 'Procure-AI-Scroll-Presentation.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
