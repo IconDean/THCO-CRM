@@ -161,35 +161,21 @@ const ProcureAIScrollPresentation = () => {
           <span className="text-gray-700 font-medium text-sm">Procure AI | Scroll Presentation</span>
         </div>
         
-        {/* Download Buttons */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              disabled={isGeneratingPdf || isGeneratingPptx}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-70"
-              style={{ backgroundColor: colors.teal }}
-              data-testid="download-btn"
-            >
-              {(isGeneratingPdf || isGeneratingPptx) ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4" />
-              )}
-              Download
-              <ChevronDown className="w-4 h-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={handleDownloadPdf} disabled={isGeneratingPdf} className="cursor-pointer">
-              <Download className="w-4 h-4 mr-2" />
-              {isGeneratingPdf ? "Generating..." : "Download PDF"}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDownloadPptx} disabled={isGeneratingPptx} className="cursor-pointer">
-              <Presentation className="w-4 h-4 mr-2" />
-              {isGeneratingPptx ? "Generating..." : "Download PPTX"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Download Button */}
+        <button
+          onClick={handleDownloadPdf}
+          disabled={isGeneratingPdf}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-70"
+          style={{ backgroundColor: colors.teal }}
+          data-testid="download-btn"
+        >
+          {isGeneratingPdf ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Download className="w-4 h-4" />
+          )}
+          {isGeneratingPdf ? "Generating..." : "Download PDF"}
+        </button>
       </header>
 
       {/* Sidebar Navigation */}
