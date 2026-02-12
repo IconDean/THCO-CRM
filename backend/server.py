@@ -1,10 +1,12 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Response, Request, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Response, Request, status, UploadFile, File, Form
 from fastapi.security import HTTPBearer
+from fastapi.responses import FileResponse, StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import shutil
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import List, Optional
@@ -15,6 +17,7 @@ import asyncio
 import httpx
 import resend
 import hashlib
+import secrets
 from datetime import datetime, timezone, timedelta
 from user_agents import parse as parse_user_agent
 
