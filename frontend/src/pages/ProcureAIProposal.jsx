@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import html2pdf from "html2pdf.js";
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -18,7 +19,8 @@ import {
   BarChart3,
   Package,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 
 const PAGES = [
@@ -46,6 +48,8 @@ const ProcureAIProposal = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [direction, setDirection] = useState(0);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const contentRef = useRef(null);
 
   const goToPage = (page) => {
     if (page >= 1 && page <= 8 && page !== currentPage) {
@@ -78,8 +82,53 @@ const ProcureAIProposal = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [nextPage, prevPage]);
 
-  const handleDownload = () => {
-    window.print();
+  const handleDownload = async () => {
+    setIsGeneratingPdf(true);
+    
+    // Create a temporary container with all pages
+    const container = document.createElement('div');
+    container.style.width = '1200px';
+    container.style.background = '#fff';
+    
+    // Render all sections for PDF
+    const sections = [
+      { component: HeroSection, bg: colors.navy },
+      { component: ArchitectureSection, bg: colors.lightGray },
+      { component: RFQFlowSection, bg: colors.lightGray },
+      { component: VendorOnboardingSection, bg: colors.lightGray },
+      { component: ReverseAuctionSection, bg: colors.lightGray },
+      { component: DatabaseSection, bg: colors.lightGray },
+      { component: DataUploadSection, bg: colors.lightGray },
+      { component: NextStepsSection, bg: colors.navy },
+    ];
+    
+    // Use current page content for single-page PDF
+    const element = contentRef.current;
+    
+    const opt = {
+      margin: 0,
+      filename: 'Procure-AI-Presentation.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+      },
+      jsPDF: { 
+        unit: 'in', 
+        format: 'letter', 
+        orientation: 'landscape' 
+      },
+      pagebreak: { mode: 'avoid-all' }
+    };
+    
+    try {
+      await html2pdf().set(opt).from(element).save();
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+    }
+    
+    setIsGeneratingPdf(false);
   };
 
   const pageVariants = {
