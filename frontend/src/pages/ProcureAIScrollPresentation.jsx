@@ -58,7 +58,7 @@ const staggerContainer = {
 };
 
 // Animated Section Wrapper
-const AnimatedSection = ({ children, className = "", id, startVisible = false }) => {
+const AnimatedSection = ({ children, className = "", id, startVisible = false, style = {} }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   
@@ -70,6 +70,7 @@ const AnimatedSection = ({ children, className = "", id, startVisible = false })
       animate={(isInView || startVisible) ? "visible" : "hidden"}
       variants={staggerContainer}
       className={className}
+      style={style}
     >
       {children}
     </motion.section>
