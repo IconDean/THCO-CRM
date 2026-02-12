@@ -246,4 +246,87 @@ export const proposalsAPI = {
   },
 };
 
+// Analytics API
+export const analyticsAPI = {
+  getSummary: async (days = 30) => {
+    const response = await apiClient.get(`/analytics/summary?days=${days}`);
+    return response.data;
+  },
+  
+  getUsers: async (days = 30, limit = 50) => {
+    const response = await apiClient.get(`/analytics/users?days=${days}&limit=${limit}`);
+    return response.data;
+  },
+  
+  getSessions: async (days = 7, limit = 100) => {
+    const response = await apiClient.get(`/analytics/sessions?days=${days}&limit=${limit}`);
+    return response.data;
+  },
+  
+  getPageViews: async (days = 7) => {
+    const response = await apiClient.get(`/analytics/page-views?days=${days}`);
+    return response.data;
+  },
+  
+  getActions: async (days = 7, limit = 100) => {
+    const response = await apiClient.get(`/analytics/actions?days=${days}&limit=${limit}`);
+    return response.data;
+  },
+  
+  getUserDetails: async (userId, days = 30) => {
+    const response = await apiClient.get(`/analytics/user/${userId}?days=${days}`);
+    return response.data;
+  },
+  
+  trackPageView: async (pagePath, pageTitle = '', referrer = '') => {
+    try {
+      await apiClient.post('/analytics/page-view', { page_path: pagePath, page_title: pageTitle, referrer });
+    } catch (e) {
+      // Silently fail
+    }
+  },
+  
+  trackAction: async (actionType, actionTarget, actionDetails = {}, pagePath = '') => {
+    try {
+      await apiClient.post('/analytics/action', { 
+        action_type: actionType, 
+        action_target: actionTarget, 
+        action_details: actionDetails,
+        page_path: pagePath 
+      });
+    } catch (e) {
+      // Silently fail
+    }
+  },
+  
+  startSession: async () => {
+    try {
+      const response = await apiClient.post('/analytics/session/start');
+      return response.data.session_id;
+    } catch (e) {
+      return null;
+    }
+  },
+  
+  endSession: async () => {
+    try {
+      await apiClient.post('/analytics/session/end');
+    } catch (e) {
+      // Silently fail
+    }
+  },
+  
+  heartbeat: async (sessionId, pagePath, timeOnPage) => {
+    try {
+      await apiClient.post('/analytics/heartbeat', { 
+        session_id: sessionId, 
+        page_path: pagePath, 
+        time_on_page: timeOnPage 
+      });
+    } catch (e) {
+      // Silently fail
+    }
+  },
+};
+
 export default apiClient;
