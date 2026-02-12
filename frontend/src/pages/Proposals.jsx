@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { 
   FolderPlus, 
   Upload, 
@@ -15,7 +16,9 @@ import {
   MoreHorizontal,
   RefreshCw,
   ArrowLeft,
-  FolderOpen
+  FolderOpen,
+  Play,
+  Sparkles
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
