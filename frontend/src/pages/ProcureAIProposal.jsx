@@ -4,6 +4,7 @@ import html2pdf from "html2pdf.js";
 import { 
   ChevronLeft, 
   ChevronRight, 
+  ChevronDown,
   Download,
   Server,
   FileJson,
@@ -22,6 +23,12 @@ import {
   AlertCircle,
   Loader2
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 
 const PAGES = [
   { id: 1, title: "Overview", label: "Title" },
