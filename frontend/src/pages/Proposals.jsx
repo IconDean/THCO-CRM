@@ -14,10 +14,7 @@ import {
   Search,
   MoreHorizontal,
   RefreshCw,
-  Plus,
   ArrowLeft,
-  X,
-  Check,
   FolderOpen
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -62,7 +59,6 @@ const Proposals = () => {
   
   // Modals
   const [createClientModal, setCreateClientModal] = useState(false);
-  const [uploadModal, setUploadModal] = useState(false);
   const [deleteClientDialog, setDeleteClientDialog] = useState({ open: false, client: null });
   const [deleteProposalDialog, setDeleteProposalDialog] = useState({ open: false, proposal: null });
   
@@ -169,7 +165,6 @@ const Proposals = () => {
       );
       
       setProposals([data, ...proposals]);
-      // Update client proposal count
       setClients(clients.map(c => 
         c.client_id === selectedClient.client_id 
           ? { ...c, proposal_count: (c.proposal_count || 0) + 1 }
@@ -195,7 +190,6 @@ const Proposals = () => {
     try {
       await proposalsAPI.delete(deleteProposalDialog.proposal.proposal_id);
       setProposals(proposals.filter(p => p.proposal_id !== deleteProposalDialog.proposal.proposal_id));
-      // Update client proposal count
       setClients(clients.map(c => 
         c.client_id === selectedClient?.client_id 
           ? { ...c, proposal_count: Math.max(0, (c.proposal_count || 1) - 1) }
@@ -257,15 +251,15 @@ const Proposals = () => {
   const getFileIcon = (fileType) => {
     switch (fileType) {
       case 'PDF':
-        return <FileText className="w-5 h-5 text-red-500" />;
+        return <FileText className="w-5 h-5 text-red-400" />;
       case 'PowerPoint':
-        return <Presentation className="w-5 h-5 text-orange-500" />;
+        return <Presentation className="w-5 h-5 text-orange-400" />;
       case 'Excel':
-        return <Table2 className="w-5 h-5 text-green-500" />;
+        return <Table2 className="w-5 h-5 text-green-400" />;
       case 'Word':
-        return <File className="w-5 h-5 text-blue-500" />;
+        return <File className="w-5 h-5 text-blue-400" />;
       default:
-        return <File className="w-5 h-5 text-gray-500" />;
+        return <File className="w-5 h-5 text-gray-400" />;
     }
   };
 
@@ -280,10 +274,10 @@ const Proposals = () => {
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-20 bg-white rounded-2xl border border-gray-100"></div>
+        <div className="h-20 bg-[#1a1f36] rounded-2xl"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-32 bg-white rounded-2xl border border-gray-100"></div>
+            <div key={i} className="h-32 bg-[#1a1f36] rounded-2xl"></div>
           ))}
         </div>
       </div>
@@ -293,7 +287,7 @@ const Proposals = () => {
   return (
     <div className="space-y-6" data-testid="proposals-page">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+      <div className="bg-[#1a1f36] rounded-2xl border border-white/5 p-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
             {selectedClient && (
@@ -301,17 +295,17 @@ const Proposals = () => {
                 variant="ghost"
                 size="icon"
                 onClick={handleBackToClients}
-                className="rounded-xl text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                className="rounded-xl text-gray-400 hover:text-white hover:bg-white/5"
                 data-testid="back-to-clients-btn"
               >
                 <ArrowLeft size={20} />
               </Button>
             )}
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-white">
                 {selectedClient ? selectedClient.name : "Proposals"}
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 {selectedClient 
                   ? `${proposals.length} proposal${proposals.length !== 1 ? 's' : ''} • ${selectedClient.description || 'No description'}`
                   : `${clients.length} client${clients.length !== 1 ? 's' : ''}`}
@@ -321,12 +315,12 @@ const Proposals = () => {
           
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
               <Input
                 placeholder={selectedClient ? "Search proposals..." : "Search clients..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 pl-10 bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-purple-300"
+                className="w-64 pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 rounded-xl focus:bg-white/10 focus:border-purple-500/50"
                 data-testid="search-input"
               />
             </div>
@@ -366,11 +360,11 @@ const Proposals = () => {
 
         {/* Upload Progress */}
         {isUploading && (
-          <div className="mt-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
+          <div className="mt-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
             <div className="flex items-center gap-3 mb-2">
-              <Upload className="w-5 h-5 text-purple-600 animate-pulse" />
-              <span className="text-sm font-medium text-purple-700">Uploading...</span>
-              <span className="text-sm text-purple-600 ml-auto">{uploadProgress}%</span>
+              <Upload className="w-5 h-5 text-purple-400 animate-pulse" />
+              <span className="text-sm font-medium text-purple-300">Uploading...</span>
+              <span className="text-sm text-purple-400 ml-auto">{uploadProgress}%</span>
             </div>
             <Progress value={uploadProgress} className="h-2" />
           </div>
@@ -383,25 +377,25 @@ const Proposals = () => {
         proposalsLoading ? (
           <div className="grid grid-cols-1 gap-4 animate-pulse">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 bg-white rounded-2xl border border-gray-100"></div>
+              <div key={i} className="h-20 bg-[#1a1f36] rounded-2xl"></div>
             ))}
           </div>
         ) : filteredProposals.length > 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="divide-y divide-gray-100">
+          <div className="bg-[#1a1f36] rounded-2xl border border-white/5 overflow-hidden">
+            <div className="divide-y divide-white/5">
               {filteredProposals.map((proposal) => (
                 <div 
                   key={proposal.proposal_id}
-                  className="p-4 hover:bg-gray-50 transition-colors"
+                  className="p-4 hover:bg-white/5 transition-colors"
                   data-testid={`proposal-item-${proposal.proposal_id}`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
                       {getFileIcon(proposal.file_type)}
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-gray-900 truncate">
+                      <h3 className="font-medium text-white truncate">
                         {proposal.original_filename}
                       </h3>
                       <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
@@ -420,7 +414,7 @@ const Proposals = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => handleCopyLink(proposal)}
-                        className="rounded-lg border-gray-200 hover:bg-gray-50"
+                        className="rounded-lg bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white"
                         data-testid={`copy-link-btn-${proposal.proposal_id}`}
                       >
                         <Copy size={14} className="mr-1.5" />
@@ -431,7 +425,7 @@ const Proposals = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => handleDownload(proposal)}
-                        className="rounded-lg border-gray-200 hover:bg-gray-50"
+                        className="rounded-lg bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white"
                         data-testid={`download-btn-${proposal.proposal_id}`}
                       >
                         <Download size={14} className="mr-1.5" />
@@ -443,30 +437,30 @@ const Proposals = () => {
                           <Button 
                             variant="ghost" 
                             size="icon"
-                            className="rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                            className="rounded-lg text-gray-500 hover:text-white hover:bg-white/5"
                           >
                             <MoreHorizontal size={18} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 bg-white border-gray-200 rounded-xl">
+                        <DropdownMenuContent align="end" className="w-48 bg-[#1a1f36] border-white/10 rounded-xl">
                           <DropdownMenuItem 
                             onClick={() => window.open(proposal.share_url, '_blank')}
-                            className="text-gray-700 focus:bg-gray-50 cursor-pointer rounded-lg"
+                            className="text-gray-300 focus:bg-white/10 focus:text-white cursor-pointer rounded-lg"
                           >
                             <ExternalLink size={14} className="mr-2" />
                             Open Share Link
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => handleRegenerateLink(proposal)}
-                            className="text-gray-700 focus:bg-gray-50 cursor-pointer rounded-lg"
+                            className="text-gray-300 focus:bg-white/10 focus:text-white cursor-pointer rounded-lg"
                           >
                             <RefreshCw size={14} className="mr-2" />
                             Regenerate Link
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-gray-100" />
+                          <DropdownMenuSeparator className="bg-white/10" />
                           <DropdownMenuItem 
                             onClick={() => setDeleteProposalDialog({ open: true, proposal })}
-                            className="text-red-600 focus:bg-red-50 cursor-pointer rounded-lg"
+                            className="text-red-400 focus:bg-red-500/10 focus:text-red-300 cursor-pointer rounded-lg"
                           >
                             <Trash2 size={14} className="mr-2" />
                             Delete
@@ -480,11 +474,11 @@ const Proposals = () => {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <File className="w-8 h-8 text-gray-400" />
+          <div className="bg-[#1a1f36] rounded-2xl border border-white/5 p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
+              <File className="w-8 h-8 text-gray-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No proposals yet</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">No proposals yet</h3>
             <p className="text-gray-500 mb-6">Upload your first proposal to share with this client</p>
             <Button
               onClick={() => fileInputRef.current?.click()}
@@ -502,31 +496,31 @@ const Proposals = () => {
             {filteredClients.map((client) => (
               <div
                 key={client.client_id}
-                className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-gray-200 hover:shadow-lg transition-all cursor-pointer group"
+                className="bg-[#1a1f36] rounded-2xl border border-white/5 p-6 hover:border-purple-500/30 hover:bg-[#1e2442] transition-all cursor-pointer group"
                 onClick={() => handleSelectClient(client)}
                 data-testid={`client-card-${client.client_id}`}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                    <FolderOpen className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                    <FolderOpen className="w-6 h-6 text-purple-400" />
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                       <Button 
                         variant="ghost" 
                         size="icon"
-                        className="rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="rounded-lg text-gray-500 hover:text-white hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <MoreHorizontal size={18} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40 bg-white border-gray-200 rounded-xl">
+                    <DropdownMenuContent align="end" className="w-40 bg-[#1a1f36] border-white/10 rounded-xl">
                       <DropdownMenuItem 
                         onClick={(e) => {
                           e.stopPropagation();
                           setDeleteClientDialog({ open: true, client });
                         }}
-                        className="text-red-600 focus:bg-red-50 cursor-pointer rounded-lg"
+                        className="text-red-400 focus:bg-red-500/10 focus:text-red-300 cursor-pointer rounded-lg"
                       >
                         <Trash2 size={14} className="mr-2" />
                         Delete
@@ -535,28 +529,28 @@ const Proposals = () => {
                   </DropdownMenu>
                 </div>
                 
-                <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors">
+                <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-purple-300 transition-colors">
                   {client.name}
                 </h3>
                 <p className="text-sm text-gray-500 line-clamp-2 mb-4">
                   {client.description || "No description"}
                 </p>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <span className="text-xs text-gray-400">
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                  <span className="text-xs text-gray-500">
                     {client.proposal_count || 0} proposal{(client.proposal_count || 0) !== 1 ? 's' : ''}
                   </span>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
+                  <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <FolderOpen className="w-8 h-8 text-gray-400" />
+          <div className="bg-[#1a1f36] rounded-2xl border border-white/5 p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
+              <FolderOpen className="w-8 h-8 text-gray-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No clients yet</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">No clients yet</h3>
             <p className="text-gray-500 mb-6">Create your first client folder to organize proposals</p>
             <Button
               onClick={() => setCreateClientModal(true)}
@@ -571,36 +565,36 @@ const Proposals = () => {
 
       {/* Create Client Modal */}
       <Dialog open={createClientModal} onOpenChange={setCreateClientModal}>
-        <DialogContent className="bg-white border-gray-200 max-w-md rounded-2xl">
+        <DialogContent className="bg-[#1a1f36] border-white/10 max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-gray-900">Create New Client</DialogTitle>
-            <DialogDescription className="text-gray-500">
+            <DialogTitle className="text-white">Create New Client</DialogTitle>
+            <DialogDescription className="text-gray-400">
               Create a folder to organize proposals for this client
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 pt-4">
             <div className="space-y-2">
-              <Label htmlFor="client-name" className="text-gray-700">Client Name *</Label>
+              <Label htmlFor="client-name" className="text-gray-300">Client Name *</Label>
               <Input
                 id="client-name"
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
                 placeholder="e.g., Acme Corporation"
-                className="bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-purple-300"
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 rounded-xl focus:bg-white/10 focus:border-purple-500/50"
                 data-testid="client-name-input"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="client-description" className="text-gray-700">Description</Label>
+              <Label htmlFor="client-description" className="text-gray-300">Description</Label>
               <Textarea
                 id="client-description"
                 value={newClientDescription}
                 onChange={(e) => setNewClientDescription(e.target.value)}
                 placeholder="Brief description of the client..."
                 rows={3}
-                className="bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-purple-300 resize-none"
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 rounded-xl resize-none focus:bg-white/10 focus:border-purple-500/50"
                 data-testid="client-description-input"
               />
             </div>
@@ -610,7 +604,7 @@ const Proposals = () => {
             <Button 
               variant="outline" 
               onClick={() => setCreateClientModal(false)}
-              className="rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="rounded-xl bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white"
             >
               Cancel
             </Button>
@@ -630,15 +624,15 @@ const Proposals = () => {
         open={deleteClientDialog.open} 
         onOpenChange={(open) => setDeleteClientDialog({ open, client: deleteClientDialog.client })}
       >
-        <AlertDialogContent className="bg-white border-gray-200 rounded-2xl">
+        <AlertDialogContent className="bg-[#1a1f36] border-white/10 rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900">Delete Client?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-500">
-              This will permanently delete <span className="font-medium text-gray-700">{deleteClientDialog.client?.name}</span> and all its proposals. This action cannot be undone.
+            <AlertDialogTitle className="text-white">Delete Client?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              This will permanently delete <span className="font-medium text-white">{deleteClientDialog.client?.name}</span> and all its proposals. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50">
+            <AlertDialogCancel className="rounded-xl bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
@@ -657,15 +651,15 @@ const Proposals = () => {
         open={deleteProposalDialog.open} 
         onOpenChange={(open) => setDeleteProposalDialog({ open, proposal: deleteProposalDialog.proposal })}
       >
-        <AlertDialogContent className="bg-white border-gray-200 rounded-2xl">
+        <AlertDialogContent className="bg-[#1a1f36] border-white/10 rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900">Delete Proposal?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-500">
-              This will permanently delete <span className="font-medium text-gray-700">{deleteProposalDialog.proposal?.original_filename}</span>. The share link will no longer work.
+            <AlertDialogTitle className="text-white">Delete Proposal?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              This will permanently delete <span className="font-medium text-white">{deleteProposalDialog.proposal?.original_filename}</span>. The share link will no longer work.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50">
+            <AlertDialogCancel className="rounded-xl bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
