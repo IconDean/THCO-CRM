@@ -53,39 +53,39 @@ const ProposalView = () => {
     const iconClass = "w-16 h-16";
     switch (fileType) {
       case 'PDF':
-        return <FileText className={`${iconClass} text-red-500`} />;
+        return <FileText className={`${iconClass} text-red-400`} />;
       case 'PowerPoint':
-        return <Presentation className={`${iconClass} text-orange-500`} />;
+        return <Presentation className={`${iconClass} text-orange-400`} />;
       case 'Excel':
-        return <Table2 className={`${iconClass} text-green-500`} />;
+        return <Table2 className={`${iconClass} text-green-400`} />;
       case 'Word':
-        return <File className={`${iconClass} text-blue-500`} />;
+        return <File className={`${iconClass} text-blue-400`} />;
       default:
-        return <File className={`${iconClass} text-gray-500`} />;
+        return <File className={`${iconClass} text-gray-400`} />;
     }
   };
 
   const getFileColor = (fileType) => {
     switch (fileType) {
       case 'PDF':
-        return 'bg-red-50 border-red-100';
+        return 'bg-red-500/10 border-red-500/20';
       case 'PowerPoint':
-        return 'bg-orange-50 border-orange-100';
+        return 'bg-orange-500/10 border-orange-500/20';
       case 'Excel':
-        return 'bg-green-50 border-green-100';
+        return 'bg-green-500/10 border-green-500/20';
       case 'Word':
-        return 'bg-blue-50 border-blue-100';
+        return 'bg-blue-500/10 border-blue-500/20';
       default:
-        return 'bg-gray-50 border-gray-100';
+        return 'bg-gray-500/10 border-gray-500/20';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f1219] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading proposal...</p>
+          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading proposal...</p>
         </div>
       </div>
     );
@@ -93,33 +93,33 @@ const ProposalView = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 max-w-md w-full text-center shadow-lg">
-          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-[#0f1219] flex items-center justify-center p-4">
+        <div className="bg-[#1a1f36] rounded-2xl border border-white/10 p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Link Not Found</h1>
-          <p className="text-gray-500">{error}</p>
+          <h1 className="text-xl font-bold text-white mb-2">Link Not Found</h1>
+          <p className="text-gray-400">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" data-testid="proposal-view-page">
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 max-w-lg w-full shadow-lg">
+    <div className="min-h-screen bg-[#0f1219] flex items-center justify-center p-4" data-testid="proposal-view-page">
+      <div className="bg-[#1a1f36] rounded-2xl border border-white/10 p-8 max-w-lg w-full">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img 
             src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
             alt="THCO" 
-            className="h-10"
+            className="h-10 brightness-0 invert"
           />
         </div>
 
         {/* Client Name */}
         <div className="text-center mb-6">
-          <span className="text-xs font-mono uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+          <span className="text-xs font-mono uppercase tracking-wider text-purple-400 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-500/30">
             {proposal.client_name}
           </span>
         </div>
@@ -128,10 +128,10 @@ const ProposalView = () => {
         <div className={`rounded-2xl border p-8 mb-6 ${getFileColor(proposal.file_type)}`}>
           <div className="flex flex-col items-center">
             {getFileIcon(proposal.file_type)}
-            <h2 className="text-lg font-semibold text-gray-900 mt-4 text-center break-all">
+            <h2 className="text-lg font-semibold text-white mt-4 text-center break-all">
               {proposal.filename}
             </h2>
-            <div className="flex items-center gap-3 mt-2 text-sm text-gray-500">
+            <div className="flex items-center gap-3 mt-2 text-sm text-gray-400">
               <span>{proposal.file_type}</span>
               <span>•</span>
               <span>{formatFileSize(proposal.file_size)}</span>
@@ -155,7 +155,7 @@ const ProposalView = () => {
         </Button>
 
         {/* Footer */}
-        <p className="text-center text-xs text-gray-400 mt-6">
+        <p className="text-center text-xs text-gray-600 mt-6">
           Powered by THCO Group
         </p>
       </div>
