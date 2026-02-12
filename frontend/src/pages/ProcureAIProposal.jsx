@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import html2pdf from "html2pdf.js";
 import { 
@@ -21,7 +22,8 @@ import {
   Package,
   Clock,
   AlertCircle,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from "lucide-react";
 import {
   DropdownMenu,
