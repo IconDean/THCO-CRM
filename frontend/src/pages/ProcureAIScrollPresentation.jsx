@@ -223,7 +223,7 @@ const ProcureAIScrollPresentation = () => {
         className={`${sidebarExpanded ? 'ml-56' : 'ml-16'} pt-12 transition-all duration-300`}
       >
         {/* Section 1: Hero */}
-        <AnimatedSection id="overview" className="min-h-screen flex items-center justify-center relative" style={{ backgroundColor: colors.navy }}>
+        <AnimatedSection id="overview" startVisible={true} className="min-h-screen flex items-center justify-center relative" style={{ backgroundColor: colors.navy }}>
           <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: colors.teal }} />
           <div className="absolute top-20 left-20 w-64 h-64 rounded-full border border-teal-500/20" />
           <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full border border-teal-500/10" />
