@@ -173,4 +173,77 @@ export const dashboardAPI = {
   },
 };
 
+// Clients API
+export const clientsAPI = {
+  getAll: async () => {
+    const response = await apiClient.get('/clients');
+    return response.data;
+  },
+  
+  create: async (data) => {
+    const response = await apiClient.post('/clients', data);
+    return response.data;
+  },
+  
+  update: async (clientId, data) => {
+    const response = await apiClient.put(`/clients/${clientId}`, data);
+    return response.data;
+  },
+  
+  delete: async (clientId) => {
+    const response = await apiClient.delete(`/clients/${clientId}`);
+    return response.data;
+  },
+  
+  getProposals: async (clientId) => {
+    const response = await apiClient.get(`/clients/${clientId}/proposals`);
+    return response.data;
+  },
+  
+  uploadProposal: async (clientId, file, onProgress) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await apiClient.post(`/clients/${clientId}/proposals`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (onProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted);
+        }
+      },
+    });
+    return response.data;
+  },
+};
+
+// Proposals API
+export const proposalsAPI = {
+  getAll: async (params = {}) => {
+    const response = await apiClient.get('/proposals', { params });
+    return response.data;
+  },
+  
+  delete: async (proposalId) => {
+    const response = await apiClient.delete(`/proposals/${proposalId}`);
+    return response.data;
+  },
+  
+  regenerateLink: async (proposalId) => {
+    const response = await apiClient.post(`/proposals/${proposalId}/regenerate-link`);
+    return response.data;
+  },
+  
+  getShared: async (shareToken) => {
+    const response = await apiClient.get(`/proposals/shared/${shareToken}`);
+    return response.data;
+  },
+  
+  getDownloadUrl: (shareToken) => {
+    return `${API}/proposals/shared/${shareToken}/download`;
+  },
+};
+
 export default apiClient;
