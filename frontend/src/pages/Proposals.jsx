@@ -374,6 +374,49 @@ const Proposals = () => {
         )}
       </div>
 
+      {/* Interactive Presentations Section - Only show when not viewing a client */}
+      {!selectedClient && (
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-purple-500" />
+            <h2 className="text-lg font-semibold text-gray-900">Interactive Presentations</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Procure AI Presentation */}
+            <Link
+              to="/proposals/procure-ai"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-teal-300 hover:shadow-lg transition-all"
+              data-testid="procure-ai-presentation-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1E2761] to-[#0D9488] opacity-90" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                    <Presentation className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-white/70 bg-white/10 px-2 py-1 rounded-full">
+                    <Play className="w-3 h-3" />
+                    Interactive
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Procure AI</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Process Flowcharts & Database Architecture for IHS Towers Nigeria
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>8 Sections</span>
+                  <span>•</span>
+                  <span>February 2026</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       {selectedClient ? (
         // Proposals View
