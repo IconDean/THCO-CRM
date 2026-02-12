@@ -453,6 +453,11 @@ const Settings = () => {
           </div>
         </TabsContent>
 
+        {/* Analytics Tab */}
+        <TabsContent value="analytics" className="mt-6">
+          <Analytics />
+        </TabsContent>
+
         {/* Users Tab */}
         <TabsContent value="users" className="mt-6">
           <div className="flex justify-between items-center mb-6">
