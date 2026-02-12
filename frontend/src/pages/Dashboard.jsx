@@ -110,6 +110,7 @@ const Dashboard = () => {
   const [activities, setActivities] = useState([]);
   const [accessModal, setAccessModal] = useState({ open: false, unitName: "" });
   const [loading, setLoading] = useState(true);
+  const { trackAction } = useAnalytics();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -137,6 +138,7 @@ const Dashboard = () => {
   };
 
   const handleUnitClick = (unit, e) => {
+    trackAction("click", "unit_card", { unit_slug: unit.slug, unit_name: unit.name, has_access: hasUnitAccess(unit.slug) });
     if (!hasUnitAccess(unit.slug)) {
       e.preventDefault();
       setAccessModal({ open: true, unitName: unit.name });
