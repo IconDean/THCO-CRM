@@ -32,6 +32,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { authAPI } from "../lib/api";
 import { toast } from "sonner";
+import { AnalyticsProvider, useAnalytics } from "../context/AnalyticsContext";
 
 const UNITS = [
   { name: "Talent & Human Capital", slug: "talent", icon: Users, path: "/talent", active: true },
@@ -44,14 +45,16 @@ const UNITS = [
   { name: "Client Delivery", slug: "client-delivery", icon: Truck, path: "/client-delivery", active: false },
 ];
 
-const DashboardLayout = ({ children, user }) => {
+const DashboardLayoutInner = ({ children, user }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { trackAction } = useAnalytics();
 
   const handleLogout = async () => {
     try {
+      trackAction("click", "logout_button", { method: "user_dropdown" });
       await authAPI.logout();
       toast.success("Logged out successfully");
       navigate("/login", { replace: true });
@@ -320,6 +323,17 @@ const DashboardLayout = ({ children, user }) => {
         </main>
       </div>
     </div>
+  );
+};
+
+// Wrapper component that provides analytics context
+const DashboardLayout = ({ children, user }) => {
+  return (
+    <AnalyticsProvider user={user}>
+      <DashboardLayoutInner user={user}>
+        {children}
+      </DashboardLayoutInner>
+    </AnalyticsProvider>
   );
 };
 
