@@ -9,6 +9,7 @@ Build an internal company portal for THCO — a professional services firm. This
 - **Database**: MongoDB
 - **Authentication**: Email/Password + Emergent Google OAuth
 - **Email Service**: Resend (for password reset)
+- **File Storage**: Local file storage in /app/backend/uploads/proposals/
 
 ## User Personas
 1. **Super Admin** - Full access, can manage users, configure webhooks, view all activity and login records
@@ -16,106 +17,93 @@ Build an internal company portal for THCO — a professional services firm. This
 3. **Team Member** - Can access assigned units and use tools
 
 ## Core Requirements (Static)
-- Dark mode only with THCO branding (#0D0F1A background, #7C64FF primary accent)
+- Light mode theme with THCO branding (redesigned from dark mode)
 - Role-based access control
 - Webhook integration for n8n workflows
 - Responsive design (desktop, tablet, mobile)
 - Activity logging
 - Login tracking with device locking
 
-## What's Been Implemented (Feb 8, 2026)
+## What's Been Implemented
 
-### Authentication
+### Authentication (Feb 8, 2026)
 - [x] Email/Password login
 - [x] Google OAuth integration
 - [x] Forgot Password flow (UI complete, needs Resend API key for emails)
 - [x] Session management with secure cookies
 - [x] First user seeded as Super Admin (joshua@thcohq.com)
 
-### Dashboard
+### Dashboard (Feb 8, 2026)
 - [x] Welcome section with user name and role badge
 - [x] Quick stats (Tools Available, Pending Requests, Recent Activity)
 - [x] 8 Business Unit cards with access control
 - [x] Activity feed
 
-### Business Units
+### Business Units (Feb 8, 2026)
 - [x] Talent & Human Capital - ACTIVE with 2 tools
 - [x] 7 other units - Coming Soon placeholders
 
-### Talent & Human Capital Tools
+### Talent & Human Capital Tools (Feb 8, 2026)
 - [x] AI Candidate Sourcing form with all fields per spec
 - [x] Database Search form with all fields per spec
 - [x] Request History with expandable rows
 - [x] Webhook submission (configurable URLs)
 
-### Settings (Super Admin)
+### Settings - Super Admin (Feb 8, 2026)
 - [x] Webhook Configuration (Sourcing + Database Search)
 - [x] User Management (Add/Edit/Disable/Delete users)
-- [x] **Login Records** - NEW: Track all logins with:
-  - Login time
-  - IP address
-  - Location (country, city via IP geolocation)
-  - Device type (Desktop, Mobile, Tablet)
-  - Browser & OS
-  - Login method (Email or Google)
-  - Success/Failure status with reasons
-- [x] **Device Locking** - NEW:
-  - Lock users to their current device
-  - Block login attempts from unauthorized devices
-  - Update allowed device if user changes device
-  - Per-user device lock toggle
+- [x] Login Records tracking
+- [x] Device Locking
 - [x] Activity Log viewer
 
-### UI/UX
-- [x] Collapsible sidebar navigation
-- [x] Mobile responsive design
-- [x] Toast notifications
-- [x] Loading states
-- [x] Form validation with Zod
+### Proposal Management System (Feb 12, 2026) - NEW
+- [x] Client folder management (Create, View, Delete)
+- [x] Proposal file upload (PDF, PPTX, DOC, DOCX, XLS, XLSX)
+- [x] Shareable links for clients (public access, no auth required)
+- [x] Download functionality
+- [x] Link regeneration
+- [x] Activity logging for all proposal actions
+- [x] Public proposal view page at /proposals/view/:shareToken
+
+### UI Redesign (Feb 2026)
+- [x] Complete redesign from dark to light theme
+- [x] Modern, minimalist aesthetic
+- [x] Updated all pages and components
 
 ## Prioritized Backlog
 
-### P0 - Critical (Next)
-- Add Resend API key to enable password reset emails
+### P0 - Critical (Completed)
+- [x] Proposal Management System ✓
 
 ### P1 - High Priority
+- Add Resend API key to enable password reset emails
 - Enable remaining business units as tools are built
 - Add more webhooks as n8n workflows are created
 
 ### P2 - Future Enhancements
+- Move logout button to user dropdown (currently at sidebar bottom)
+- Dashboard activity feed improvements
+- Search bar functionality
+- Notification bell feature
+- Pagination for history tables
 - Candidate Pipeline (Kanban board)
 - Email & Outreach Templates
 - Interview Scheduling integration
-- Search across all accessible tools
-- Notification system improvements
 
-## Next Tasks
-1. Configure Resend API key for password reset emails
-2. Connect n8n webhook URLs in Settings
-3. Add additional team members via User Management
-4. Build out remaining tools for Talent unit
+## API Endpoints
 
-## Login Tracking & Device Lock Feature Details
-
-### Login Records Captured:
-- `record_id`: Unique identifier
-- `user_id`, `user_name`, `user_email`: User info
-- `login_time`: Timestamp
-- `ip_address`: Client IP
-- `location`, `country`, `city`: Geolocation from IP
-- `device_type`: Desktop/Mobile/Tablet
-- `device_os`: Operating system
-- `browser`: Browser name and version
-- `user_agent`: Full user agent string
-- `device_fingerprint`: Hash for device identification
-- `login_method`: email_password or google_oauth
-- `success`: Boolean
-- `failure_reason`: If failed, why
-
-### Device Lock Actions:
-- **Lock Device**: Enables device lock, sets current device as allowed
-- **Unlock Device**: Disables device lock, allows login from any device
-- **Update Device**: Changes allowed device to most recent login device
+### Proposal Management
+- `GET /api/clients` - List all clients
+- `POST /api/clients` - Create client folder
+- `PUT /api/clients/{id}` - Update client
+- `DELETE /api/clients/{id}` - Delete client and all proposals
+- `GET /api/clients/{id}/proposals` - Get client proposals
+- `POST /api/clients/{id}/proposals` - Upload proposal file
+- `GET /api/proposals` - Get all proposals
+- `DELETE /api/proposals/{id}` - Delete proposal
+- `POST /api/proposals/{id}/regenerate-link` - Regenerate share link
+- `GET /api/proposals/shared/{token}` - Public: Get proposal info
+- `GET /api/proposals/shared/{token}/download` - Public: Download file
 
 ## Seeded Admin Credentials
 - Email: joshua@thcohq.com
