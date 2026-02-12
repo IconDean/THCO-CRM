@@ -161,6 +161,16 @@ const ProcureAIProposal = () => {
       {/* Top Header Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4" style={{ marginLeft: sidebarExpanded ? '224px' : '64px', transition: 'margin-left 0.3s' }}>
         <div className="flex items-center gap-3">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate('/proposals')}
+            className="flex items-center gap-1 text-gray-500 hover:text-gray-700 transition-colors mr-2"
+            data-testid="back-to-proposals-btn"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">Back</span>
+          </button>
+          <span className="text-gray-300">|</span>
           <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ backgroundColor: colors.teal }}>
             <span className="text-white font-bold text-sm">E</span>
           </div>
