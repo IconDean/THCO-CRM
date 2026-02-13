@@ -58,6 +58,8 @@ const ProcureAIProposal = () => {
   const [direction, setDirection] = useState(0);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadStatus, setDownloadStatus] = useState('');
   const contentRef = useRef(null);
   const navigate = useNavigate();
 
@@ -85,60 +87,130 @@ const ProcureAIProposal = () => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (isGeneratingPdf) return; // Disable keyboard nav during PDF generation
       if (e.key === "ArrowRight") nextPage();
       if (e.key === "ArrowLeft") prevPage();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [nextPage, prevPage]);
+  }, [nextPage, prevPage, isGeneratingPdf]);
+
+  // Sleep function for delays
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const handleDownload = async () => {
     setIsGeneratingPdf(true);
+    setDownloadProgress(0);
+    setDownloadStatus('Preparing document...');
     
-    // Create a temporary container with all pages
-    const container = document.createElement('div');
-    container.style.width = '1200px';
-    container.style.background = '#fff';
-    
-    // Render all sections for PDF
-    const sections = [
-      { component: HeroSection, bg: colors.navy },
-      { component: ArchitectureSection, bg: colors.lightGray },
-      { component: RFQFlowSection, bg: colors.lightGray },
-      { component: VendorOnboardingSection, bg: colors.lightGray },
-      { component: ReverseAuctionSection, bg: colors.lightGray },
-      { component: DatabaseSection, bg: colors.lightGray },
-      { component: DataUploadSection, bg: colors.lightGray },
-      { component: NextStepsSection, bg: colors.navy },
-    ];
-    
-    // Use current page content for single-page PDF
-    const element = contentRef.current;
-    
-    const opt = {
-      margin: 0,
-      filename: 'Procure-AI-Presentation.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        letterRendering: true,
-      },
-      jsPDF: { 
-        unit: 'in', 
-        format: 'letter', 
-        orientation: 'landscape' 
-      },
-      pagebreak: { mode: 'avoid-all' }
-    };
+    const originalPage = currentPage;
+    const totalPages = 8;
+    const pageNames = ['Overview', 'Architecture', 'RFQ Flow', 'Vendor Onboarding', 'Reverse Auction', 'Database', 'Data Upload', 'Next Steps'];
     
     try {
-      await html2pdf().set(opt).from(element).save();
+      // Create a container to hold all pages
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.width = '1400px';
+      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.left = '-9999px';
+      pdfContainer.style.top = '0';
+      document.body.appendChild(pdfContainer);
+
+      // Capture each page
+      for (let i = 1; i <= totalPages; i++) {
+        // Update progress
+        const progressPercent = Math.round(((i - 1) / totalPages) * 80);
+        setDownloadProgress(progressPercent);
+        setDownloadStatus(`Capturing page ${i}/${totalPages}: ${pageNames[i-1]}...`);
+        
+        // Navigate to the page
+        setDirection(i > currentPage ? 1 : -1);
+        setCurrentPage(i);
+        
+        // Wait 5 seconds for animations to complete and content to render
+        await sleep(5000);
+        
+        // Clone the current page content
+        if (contentRef.current) {
+          const pageContent = contentRef.current.cloneNode(true);
+          
+          // Create a page wrapper with page break
+          const pageWrapper = document.createElement('div');
+          pageWrapper.style.pageBreakAfter = 'always';
+          pageWrapper.style.pageBreakInside = 'avoid';
+          pageWrapper.style.minHeight = '100vh';
+          pageWrapper.style.width = '100%';
+          pageWrapper.style.overflow = 'hidden';
+          
+          // Remove animations from cloned content
+          const allElements = pageContent.querySelectorAll('*');
+          allElements.forEach(el => {
+            el.style.animation = 'none';
+            el.style.transition = 'none';
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+          });
+          
+          pageWrapper.appendChild(pageContent);
+          pdfContainer.appendChild(pageWrapper);
+        }
+        
+        // Update progress after capture
+        const captureProgress = Math.round((i / totalPages) * 80);
+        setDownloadProgress(captureProgress);
+      }
+      
+      setDownloadProgress(85);
+      setDownloadStatus('Generating PDF file...');
+      
+      // Generate PDF from all captured pages
+      const opt = {
+        margin: [0.3, 0.3, 0.3, 0.3],
+        filename: 'Procure-AI-Presentation.pdf',
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          logging: false,
+          windowWidth: 1400,
+          windowHeight: 900,
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'letter', 
+          orientation: 'landscape' 
+        },
+        pagebreak: { mode: ['css', 'legacy'], after: '.page-break' }
+      };
+      
+      setDownloadProgress(90);
+      setDownloadStatus('Finalizing document...');
+      
+      await html2pdf().set(opt).from(pdfContainer).save();
+      
+      // Cleanup
+      document.body.removeChild(pdfContainer);
+      
+      setDownloadProgress(100);
+      setDownloadStatus('Download complete!');
+      
+      // Wait a moment to show completion
+      await sleep(1500);
+      
+      // Restore original page
+      setDirection(originalPage > currentPage ? 1 : -1);
+      setCurrentPage(originalPage);
+      
     } catch (error) {
       console.error('PDF generation failed:', error);
+      setDownloadStatus('Error generating PDF. Please try again.');
+      await sleep(2000);
     }
     
     setIsGeneratingPdf(false);
+    setDownloadProgress(0);
+    setDownloadStatus('');
   };
 
   const pageVariants = {
