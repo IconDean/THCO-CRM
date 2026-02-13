@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Loader2 } from "lucide-react";
 
 // ==================== DESIGN SYSTEM ====================
 const colors = {
@@ -18,60 +17,172 @@ const colors = {
   red: "#DC2626",
 };
 
+// Stagger animation helper
+const stagger = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
+  }
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
+const fadeLeft = {
+  hidden: { opacity: 0, x: -30 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
+const fadeRight = {
+  hidden: { opacity: 0, x: 30 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
+const scaleUp = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.34, 1.56, 0.64, 1] } }
+};
+
 // ==================== MAIN COMPONENT ====================
 const ProcureAIExecutivePackV3 = () => {
   const [currentSlide, setCurrentSlide] = useState(1);
   const [direction, setDirection] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showArrows, setShowArrows] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadStatus, setDownloadStatus] = useState('');
   const containerRef = useRef(null);
+  const contentRef = useRef(null);
   const totalSlides = 12;
 
   const goToSlide = (slide) => {
-    if (slide >= 1 && slide <= totalSlides && slide !== currentSlide) {
+    if (slide >= 1 && slide <= totalSlides && slide !== currentSlide && !isGeneratingPdf) {
       setDirection(slide > currentSlide ? 1 : -1);
       setCurrentSlide(slide);
     }
   };
 
   const nextSlide = useCallback(() => {
-    if (currentSlide < totalSlides) {
+    if (currentSlide < totalSlides && !isGeneratingPdf) {
       setDirection(1);
       setCurrentSlide(prev => prev + 1);
     }
-  }, [currentSlide]);
+  }, [currentSlide, isGeneratingPdf]);
 
   const prevSlide = useCallback(() => {
-    if (currentSlide > 1) {
+    if (currentSlide > 1 && !isGeneratingPdf) {
       setDirection(-1);
       setCurrentSlide(prev => prev - 1);
     }
-  }, [currentSlide]);
+  }, [currentSlide, isGeneratingPdf]);
 
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
     } else {
       document.exitFullscreen();
-      setIsFullscreen(false);
     }
   }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (isGeneratingPdf) return;
       if (e.key === "ArrowRight") nextSlide();
       if (e.key === "ArrowLeft") prevSlide();
       if (e.key === "f" || e.key === "F") toggleFullscreen();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [nextSlide, prevSlide, toggleFullscreen]);
+  }, [nextSlide, prevSlide, toggleFullscreen, isGeneratingPdf]);
+
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    setDownloadProgress(0);
+    setDownloadStatus('Initializing...');
+    
+    const originalSlide = currentSlide;
+    const slideNames = ['Title', 'Agenda', 'Strategic Framing', 'Scope', 'Architecture', 'Governance', 'Risk', 'Roadmap', 'Resources', 'Commercial', 'Decisions', 'Credentials'];
+    
+    try {
+      const { jsPDF } = await import('jspdf');
+      const html2canvas = (await import('html2canvas')).default;
+      
+      const pdfWidth = 1920;
+      const pdfHeight = 1080;
+      
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [pdfWidth, pdfHeight]
+      });
+
+      for (let i = 1; i <= totalSlides; i++) {
+        const progress = Math.round(((i - 1) / totalSlides) * 90);
+        setDownloadProgress(progress);
+        setDownloadStatus(`Capturing: ${slideNames[i-1]}...`);
+        
+        setDirection(0);
+        setCurrentSlide(i);
+        await sleep(4000);
+        
+        if (contentRef.current) {
+          try {
+            const canvas = await html2canvas(contentRef.current, {
+              scale: 1.5,
+              useCORS: true,
+              logging: false,
+              backgroundColor: [1, 11].includes(i) ? colors.navy : colors.lightGrey,
+              width: 1920,
+              height: 1080,
+              windowWidth: 1920,
+              windowHeight: 1080,
+            });
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            
+            if (i > 1) {
+              pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+            }
+            
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          } catch (err) {
+            console.error(`Error capturing slide ${i}:`, err);
+          }
+        }
+      }
+      
+      setDownloadProgress(95);
+      setDownloadStatus('Finalizing PDF...');
+      await sleep(500);
+      
+      pdf.save('ProcureAI-Executive-Pack.pdf');
+      
+      setDownloadProgress(100);
+      setDownloadStatus('Complete!');
+      await sleep(800);
+      
+      setCurrentSlide(originalSlide);
+      
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      setDownloadStatus('Error generating PDF');
+      await sleep(2000);
+    }
+    
+    setIsGeneratingPdf(false);
+    setDownloadProgress(0);
+    setDownloadStatus('');
+  };
 
   const slideVariants = {
-    enter: (direction) => ({ opacity: 0, x: direction > 0 ? 50 : -50 }),
-    center: { opacity: 1, x: 0 },
-    exit: (direction) => ({ opacity: 0, x: direction < 0 ? 50 : -50 })
+    enter: (direction) => ({ opacity: 0, x: direction > 0 ? 100 : -100, scale: 0.98 }),
+    center: { opacity: 1, x: 0, scale: 1 },
+    exit: (direction) => ({ opacity: 0, x: direction < 0 ? 100 : -100, scale: 0.98 })
   };
 
   return (
@@ -82,88 +193,152 @@ const ProcureAIExecutivePackV3 = () => {
       onMouseEnter={() => setShowArrows(true)}
       onMouseLeave={() => setShowArrows(false)}
     >
+      {/* Download Progress Overlay */}
+      {isGeneratingPdf && (
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-8 shadow-2xl w-[420px]"
+          >
+            <div className="text-center mb-6">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                className="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: colors.iceBlue }}
+              >
+                <Loader2 className="w-7 h-7" style={{ color: colors.teal }} />
+              </motion.div>
+              <h3 className="text-lg font-bold mb-1" style={{ color: colors.dark }}>Generating PDF</h3>
+              <p className="text-sm" style={{ color: colors.slate }}>{downloadStatus}</p>
+            </div>
+            
+            <div className="w-full h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: colors.lightGrey }}>
+              <motion.div
+                className="h-full rounded-full"
+                style={{ backgroundColor: colors.teal, width: `${downloadProgress}%` }}
+              />
+            </div>
+            <p className="text-center text-xs mt-3" style={{ color: colors.slate }}>
+              {downloadProgress}% — Slide {Math.min(Math.ceil((downloadProgress / 90) * 12), 12)} of 12
+            </p>
+          </motion.div>
+        </div>
+      )}
+
       {/* Teal accent stripe at top */}
       <div className="absolute top-0 left-0 right-0 h-1 z-50" style={{ backgroundColor: colors.teal }} />
 
+      {/* Download PDF Button */}
+      <motion.button
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        onClick={handleDownloadPdf}
+        disabled={isGeneratingPdf}
+        className="absolute top-4 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-lg transition-all hover:shadow-xl disabled:opacity-60"
+        style={{ backgroundColor: colors.teal }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <Download className="w-4 h-4" />
+        Download PDF
+      </motion.button>
+
       {/* Slide content */}
-      <AnimatePresence mode="wait" custom={direction}>
-        <motion.div
-          key={currentSlide}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="w-full h-full"
-        >
-          {currentSlide === 1 && <Slide1Title />}
-          {currentSlide === 2 && <Slide2Agenda />}
-          {currentSlide === 3 && <Slide3StrategicFraming />}
-          {currentSlide === 4 && <Slide4Scope />}
-          {currentSlide === 5 && <Slide5Architecture />}
-          {currentSlide === 6 && <Slide6Governance />}
-          {currentSlide === 7 && <Slide7Risk />}
-          {currentSlide === 8 && <Slide8Roadmap />}
-          {currentSlide === 9 && <Slide9Resources />}
-          {currentSlide === 10 && <Slide10Commercial />}
-          {currentSlide === 11 && <Slide11Decisions />}
-          {currentSlide === 12 && <Slide12Credentials />}
-        </motion.div>
-      </AnimatePresence>
+      <div ref={contentRef} className="w-full h-full">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={currentSlide}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="w-full h-full"
+          >
+            {currentSlide === 1 && <Slide1Title />}
+            {currentSlide === 2 && <Slide2Agenda />}
+            {currentSlide === 3 && <Slide3StrategicFraming />}
+            {currentSlide === 4 && <Slide4Scope />}
+            {currentSlide === 5 && <Slide5Architecture />}
+            {currentSlide === 6 && <Slide6Governance />}
+            {currentSlide === 7 && <Slide7Risk />}
+            {currentSlide === 8 && <Slide8Roadmap />}
+            {currentSlide === 9 && <Slide9Resources />}
+            {currentSlide === 10 && <Slide10Commercial />}
+            {currentSlide === 11 && <Slide11Decisions />}
+            {currentSlide === 12 && <Slide12Credentials />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* Navigation arrows */}
       <AnimatePresence>
-        {showArrows && currentSlide > 1 && (
+        {showArrows && currentSlide > 1 && !isGeneratingPdf && (
           <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 shadow-lg flex items-center justify-center hover:bg-white transition-colors z-40"
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/95 shadow-xl flex items-center justify-center hover:bg-white transition-all z-40"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <ChevronLeft className="w-6 h-6" style={{ color: colors.dark }} />
+            <ChevronLeft className="w-7 h-7" style={{ color: colors.dark }} />
           </motion.button>
         )}
-        {showArrows && currentSlide < totalSlides && (
+        {showArrows && currentSlide < totalSlides && !isGeneratingPdf && (
           <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 shadow-lg flex items-center justify-center hover:bg-white transition-colors z-40"
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/95 shadow-xl flex items-center justify-center hover:bg-white transition-all z-40"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <ChevronRight className="w-6 h-6" style={{ color: colors.dark }} />
+            <ChevronRight className="w-7 h-7" style={{ color: colors.dark }} />
           </motion.button>
         )}
       </AnimatePresence>
 
       {/* Bottom navigation */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-40">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-40"
+      >
         {Array.from({ length: totalSlides }, (_, i) => (
-          <button
+          <motion.button
             key={i + 1}
             onClick={() => goToSlide(i + 1)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              currentSlide === i + 1 
-                ? 'w-6' 
-                : 'hover:opacity-80'
-            }`}
+            whileHover={{ scale: 1.3 }}
+            whileTap={{ scale: 0.9 }}
+            className="rounded-full transition-all"
             style={{ 
-              backgroundColor: currentSlide === i + 1 ? colors.teal : colors.slate + '40'
+              width: currentSlide === i + 1 ? 28 : 10,
+              height: 10,
+              backgroundColor: currentSlide === i + 1 ? colors.teal : colors.slate + '50'
             }}
           />
         ))}
-      </div>
+      </motion.div>
 
       {/* Slide counter */}
-      <div 
-        className="absolute bottom-6 right-8 text-sm font-medium z-40"
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="absolute bottom-8 right-10 text-base font-medium z-40"
         style={{ color: colors.slate }}
       >
-        <span style={{ color: colors.teal, fontFamily: "Georgia, serif", fontWeight: "bold" }}>{currentSlide}</span>
+        <span style={{ color: colors.teal, fontFamily: "Georgia, serif", fontWeight: "bold", fontSize: '1.25rem' }}>{currentSlide}</span>
         <span> / {totalSlides}</span>
-      </div>
+      </motion.div>
     </div>
   );
 };
@@ -171,22 +346,40 @@ const ProcureAIExecutivePackV3 = () => {
 // ==================== SLIDE 1: TITLE ====================
 const Slide1Title = () => (
   <div className="w-full h-full flex flex-col" style={{ backgroundColor: colors.navy }}>
-    <div className="flex-1 flex flex-col items-center justify-center px-20">
+    {/* Animated background elements */}
+    <div className="absolute inset-0 overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.08, scale: 1 }}
+        transition={{ duration: 2 }}
+        className="absolute top-20 right-20 w-[500px] h-[500px] rounded-full border-2"
+        style={{ borderColor: colors.teal }}
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.05, scale: 1 }}
+        transition={{ duration: 2, delay: 0.3 }}
+        className="absolute -bottom-20 -left-20 w-[600px] h-[600px] rounded-full border"
+        style={{ borderColor: colors.iceBlue }}
+      />
+    </div>
+
+    <div className="flex-1 flex flex-col items-center justify-center px-20 relative z-10">
       <motion.h1 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-5xl font-bold mb-4"
+        initial={{ opacity: 0, y: 40, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
+        className="text-6xl font-bold mb-5"
         style={{ fontFamily: "Georgia, serif", color: colors.white }}
       >
         Procure AI
       </motion.h1>
       
       <motion.p 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="text-xl mb-6"
+        transition={{ duration: 0.6, delay: 0.15 }}
+        className="text-2xl mb-8"
         style={{ color: colors.iceBlue }}
       >
         Procurement Transformation Programme
@@ -195,16 +388,16 @@ const Slide1Title = () => (
       <motion.div 
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="w-44 h-0.5 mb-6"
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="w-52 h-1 mb-8 rounded-full"
         style={{ backgroundColor: colors.teal }}
       />
       
       <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="text-lg font-bold mb-3"
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="text-xl font-bold mb-4"
         style={{ color: colors.white }}
       >
         Executive Kick-Off Pack
@@ -213,8 +406,8 @@ const Slide1Title = () => (
       <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="text-sm mb-2"
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="text-base mb-3"
         style={{ color: colors.slate }}
       >
         Strategic Validation Session with Group CIO
@@ -223,98 +416,116 @@ const Slide1Title = () => (
       <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-        className="text-sm"
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="text-base"
         style={{ color: colors.slate }}
       >
         23 February 2026
       </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="mt-12 text-sm"
+        style={{ color: colors.iceBlue }}
+      >
+        Press <kbd className="px-2 py-1 rounded mx-1" style={{ backgroundColor: colors.dark }}>←</kbd> <kbd className="px-2 py-1 rounded mx-1" style={{ backgroundColor: colors.dark }}>→</kbd> to navigate
+      </motion.div>
     </div>
     
     {/* Footer */}
-    <div className="h-14 px-20 flex items-center justify-between" style={{ backgroundColor: colors.dark }}>
-      <span className="text-xs" style={{ color: colors.slate }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.7 }}
+      className="h-16 px-20 flex items-center justify-between" 
+      style={{ backgroundColor: colors.dark }}
+    >
+      <span className="text-sm" style={{ color: colors.slate }}>
         IHS Towers Nigeria | TN Macaulay | Future Africa
       </span>
-      <span className="text-xs tracking-widest" style={{ color: colors.teal }}>
+      <motion.span 
+        animate={{ opacity: [0.7, 1, 0.7] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="text-sm tracking-widest font-medium"
+        style={{ color: colors.teal }}
+      >
         CONFIDENTIAL
-      </span>
-    </div>
+      </motion.span>
+    </motion.div>
   </div>
 );
 
 // ==================== SLIDE 2: AGENDA ====================
 const Slide2Agenda = () => {
   const agendaItems = [
-    { num: "01", section: "Strategic Framing", time: "15–20 min", desc: "Objectives, transformation thesis, phased capability model" },
-    { num: "02", section: "Scope Confirmation", time: "20 min", desc: "Interfaces, data governance, assumptions, exclusions" },
-    { num: "03", section: "Target Architecture", time: "20–25 min", desc: "Solution design, integrations, cybersecurity, scalability" },
-    { num: "04", section: "Governance & Delivery Model", time: "20–25 min", desc: "SteerCo, PMO, RACI, reporting, risk management" },
-    { num: "05", section: "Milestones & Execution Roadmap", time: "20–25 min", desc: "13-month timeline, critical path, resources, change mgmt" },
-    { num: "06", section: "Commercial & Performance", time: "10–15 min", desc: "Budget phasing, payment milestones, KPIs, exclusions" },
-    { num: "07", section: "Decision Points", time: "10–15 min", desc: "Go/no-go for 1 March, governance approval, IT access" },
+    { num: "01", section: "Strategic Framing", time: "15–20 min", desc: "Programme objectives, transformation thesis, and phased capability model. Understanding the current procurement landscape and envisioning the AI-powered future state." },
+    { num: "02", section: "Scope Confirmation", time: "20 min", desc: "Detailed review of interfaces, data governance requirements, key assumptions requiring CIO validation, and explicit exclusions that fall under IHS responsibility." },
+    { num: "03", section: "Target Architecture", time: "20–25 min", desc: "Azure-native microservices solution design, D365 deep integration points, cybersecurity framework, and scalability considerations for enterprise deployment." },
+    { num: "04", section: "Governance & Delivery Model", time: "20–25 min", desc: "Steering committee structure, PMO operations, RACI matrix for all workstreams, reporting cadence, and risk management protocols." },
+    { num: "05", section: "Milestones & Execution Roadmap", time: "20–25 min", desc: "13-month delivery timeline with critical path analysis, resource mobilisation plan, change management strategy, and go-live preparation." },
+    { num: "06", section: "Commercial & Performance", time: "10–15 min", desc: "Budget phasing across three phases, payment milestone structure, KPI framework with baseline and target metrics, and scope exclusions." },
+    { num: "07", section: "Decision Points", time: "10–15 min", desc: "Three key decisions required: Go/no-go for 1 March mobilisation, governance model approval, and IT infrastructure provisioning instructions." },
   ];
 
   return (
-    <div className="w-full h-full p-16" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
+    <div className="w-full h-full p-14" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
       <motion.h2 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-3xl font-bold mb-2"
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        className="text-4xl font-bold mb-2"
         style={{ fontFamily: "Georgia, serif", color: colors.dark }}
       >
         Session Agenda
       </motion.h2>
       <motion.p 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
         transition={{ delay: 0.1 }}
-        className="text-sm mb-8"
+        className="text-base mb-8"
         style={{ color: colors.slate }}
       >
-        1.5–2 hour strategic validation — structured for executive decision
+        1.5–2 hour strategic validation — structured for executive decision-making
       </motion.p>
 
-      <div className="space-y-1">
+      <motion.div 
+        variants={stagger}
+        initial="hidden"
+        animate="visible"
+        className="space-y-2"
+      >
         {agendaItems.map((item, i) => (
           <motion.div
             key={item.num}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.15 + i * 0.08 }}
-            className="flex items-center py-4 px-6 rounded-lg"
+            variants={fadeLeft}
+            whileHover={{ x: 8, transition: { duration: 0.2 } }}
+            className="flex items-center py-4 px-6 rounded-xl cursor-default"
             style={{ 
               backgroundColor: i % 2 === 0 ? colors.white : 'transparent',
-              boxShadow: i % 2 === 0 ? '0 2px 8px rgba(0,0,0,0.08)' : 'none'
+              boxShadow: i % 2 === 0 ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'
             }}
           >
-            <span 
-              className="w-12 text-lg font-bold"
+            <motion.span 
+              className="w-14 text-xl font-bold"
               style={{ fontFamily: "Georgia, serif", color: colors.teal }}
             >
               {item.num}
-            </span>
-            <span 
-              className="w-64 font-bold text-sm"
-              style={{ color: colors.dark }}
-            >
+            </motion.span>
+            <span className="w-72 font-bold text-base" style={{ color: colors.dark }}>
               {item.section}
             </span>
-            <span 
-              className="w-24 text-center text-sm font-bold"
-              style={{ color: colors.teal }}
-            >
+            <span className="w-28 text-center text-sm font-bold rounded-full py-1 px-3" style={{ backgroundColor: colors.iceBlue, color: colors.teal }}>
               {item.time}
             </span>
-            <span 
-              className="flex-1 text-sm"
-              style={{ color: colors.slate }}
-            >
+            <span className="flex-1 text-sm pl-6" style={{ color: colors.slate }}>
               {item.desc}
             </span>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 };
@@ -322,64 +533,76 @@ const Slide2Agenda = () => {
 // ==================== SLIDE 3: STRATEGIC FRAMING ====================
 const Slide3StrategicFraming = () => {
   const currentState = [
-    "Manual Excel-based procurement across all categories",
-    "45-day average purchase cycle from request to PO",
-    "Limited to established local vendor networks",
-    "No real-time spend visibility or analytics",
-    "Manual vendor due diligence and compliance tracking",
-    "No structured asset recovery or disposal process"
+    "Manual Excel-based procurement workflows across all spend categories with limited automation and high error rates",
+    "45-day average purchase cycle from initial request to PO issuance, causing project delays and vendor frustration",
+    "Limited vendor pool restricted to established local networks, missing cost-saving opportunities from global sourcing",
+    "No real-time spend visibility — finance teams compile reports manually with 2-3 week lag in analytics",
+    "Manual vendor due diligence and compliance tracking with spreadsheet-based risk assessments prone to gaps",
+    "No structured process for asset recovery, disposal, or surplus equipment monetisation"
   ];
 
   const futureState = [
-    "AI-powered end-to-end procurement automation",
-    "15-day procurement cycles (67% reduction)",
-    "Global vendor discovery (Alibaba, D&B, Global Sources)",
-    "Real-time dashboards, spend analytics, forecasting",
-    "Automated compliance scoring and risk monitoring",
-    "Competitive reverse auctions for asset disposal"
+    "AI-powered end-to-end procurement automation with intelligent workflow routing and exception handling",
+    "15-day procurement cycles representing 67% reduction — accelerating project delivery and improving vendor relations",
+    "Global vendor discovery integrating Alibaba, D&B, and Global Sources for competitive sourcing and price benchmarking",
+    "Real-time dashboards with spend analytics, budget forecasting, and automated anomaly detection alerts",
+    "Automated compliance scoring with continuous risk monitoring, document verification, and audit trail maintenance",
+    "Competitive reverse auctions for asset disposal maximising recovery value with transparent bidding process"
   ];
 
   const phases = [
-    { num: 1, title: "Foundation & Core", desc: "Vendor Portal, Due Diligence, Risk Monitor, AI Bot, Reverse Auction", time: "Feb–May 2026 (4 mo)", cost: "$47,500", color: colors.blue },
-    { num: 2, title: "RFx Workflows", desc: "RFx Creation, Vendor Sourcing, Scope Validation, BAFO, Templates", time: "Jun–Oct 2026 (5 mo)", cost: "$60,000", color: colors.teal },
-    { num: 3, title: "Intelligence", desc: "Forecasting, Category Mgmt, TCO Reporting, Audit, Settings", time: "Nov 2026–Feb 2027 (4 mo)", cost: "$60,000", color: colors.green },
+    { num: 1, title: "Foundation & Core", desc: "Vendor Portal with self-registration, Due Diligence automation, Risk Monitor dashboard, AI Overview Bot, and Reverse Auction module", time: "Feb–May 2026 (4 months)", cost: "$47,500", color: colors.blue },
+    { num: 2, title: "RFx Workflows", desc: "RFx Creation engine, Global Vendor Sourcing, Scope Validation tools, BAFO management, and Template library", time: "Jun–Oct 2026 (5 months)", cost: "$60,000", color: colors.teal },
+    { num: 3, title: "Intelligence Suite", desc: "Demand Forecasting, Category Management, TCO Reporting, Risk Register, Audit trails, and Settings configuration", time: "Nov 2026–Feb 2027 (4 months)", cost: "$60,000", color: colors.green },
   ];
 
   return (
-    <div className="w-full h-full p-12 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
+    <div className="w-full h-full p-10 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>01</span>
+      <div className="flex items-center gap-4 mb-5">
+        <motion.span 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200 }}
+          className="text-2xl font-bold"
+          style={{ fontFamily: "Georgia, serif", color: colors.teal }}
+        >
+          01
+        </motion.span>
         <div>
-          <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Strategic Framing</h2>
-          <p className="text-sm" style={{ color: colors.slate }}>Programme objectives and transformation thesis</p>
+          <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>
+            Strategic Framing
+          </motion.h2>
+          <motion.p variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }} className="text-sm" style={{ color: colors.slate }}>
+            Programme objectives and transformation thesis — from manual processes to AI-powered procurement
+          </motion.p>
         </div>
       </div>
 
       {/* Current vs Future State */}
-      <div className="flex gap-6 mb-8">
+      <div className="flex gap-5 mb-6">
         {/* Current State */}
         <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex-1 rounded-lg overflow-hidden shadow-lg"
+          variants={fadeLeft}
+          initial="hidden"
+          animate="visible"
+          className="flex-1 rounded-xl overflow-hidden shadow-lg"
         >
           <div className="px-5 py-3" style={{ backgroundColor: colors.red }}>
-            <h3 className="text-sm font-bold text-white">CURRENT STATE</h3>
+            <h3 className="text-sm font-bold text-white tracking-wide">CURRENT STATE</h3>
           </div>
-          <div className="p-5 bg-white">
+          <div className="p-4 bg-white">
             {currentState.map((item, i) => (
-              <motion.p 
+              <motion.div 
                 key={i}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 + i * 0.05 }}
-                className="text-xs py-1.5 border-b border-gray-100 last:border-0"
-                style={{ color: colors.slate }}
+                transition={{ delay: 0.2 + i * 0.08 }}
+                className="flex items-start gap-2 py-2 border-b border-gray-100 last:border-0"
               >
-                • {item}
-              </motion.p>
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colors.red }} />
+                <p className="text-xs leading-relaxed" style={{ color: colors.slate }}>{item}</p>
+              </motion.div>
             ))}
           </div>
         </motion.div>
@@ -388,41 +611,51 @@ const Slide3StrategicFraming = () => {
         <motion.div 
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.3 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
           className="flex items-center"
         >
           <motion.div
-            animate={{ x: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ x: [0, 8, 0] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <svg width="40" height="40" viewBox="0 0 40 40">
-              <path d="M8 20 L28 20 M22 14 L28 20 L22 26" stroke={colors.teal} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="50" height="50" viewBox="0 0 50 50">
+              <motion.path 
+                d="M10 25 L35 25 M28 18 L35 25 L28 32" 
+                stroke={colors.teal} 
+                strokeWidth="3" 
+                fill="none" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              />
             </svg>
           </motion.div>
         </motion.div>
 
         {/* Future State */}
         <motion.div 
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex-1 rounded-lg overflow-hidden shadow-lg"
+          variants={fadeRight}
+          initial="hidden"
+          animate="visible"
+          className="flex-1 rounded-xl overflow-hidden shadow-lg"
         >
           <div className="px-5 py-3" style={{ backgroundColor: colors.green }}>
-            <h3 className="text-sm font-bold text-white">FUTURE STATE (PROCURE AI)</h3>
+            <h3 className="text-sm font-bold text-white tracking-wide">FUTURE STATE (PROCURE AI)</h3>
           </div>
-          <div className="p-5 bg-white">
+          <div className="p-4 bg-white">
             {futureState.map((item, i) => (
-              <motion.p 
+              <motion.div 
                 key={i}
-                initial={{ opacity: 0, x: 10 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 + i * 0.05 }}
-                className="text-xs py-1.5 border-b border-gray-100 last:border-0"
-                style={{ color: colors.slate }}
+                transition={{ delay: 0.2 + i * 0.08 }}
+                className="flex items-start gap-2 py-2 border-b border-gray-100 last:border-0"
               >
-                • {item}
-              </motion.p>
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colors.green }} />
+                <p className="text-xs leading-relaxed" style={{ color: colors.slate }}>{item}</p>
+              </motion.div>
             ))}
           </div>
         </motion.div>
@@ -433,24 +666,29 @@ const Slide3StrategicFraming = () => {
         {phases.map((phase, i) => (
           <motion.div
             key={phase.num}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 + i * 0.15 }}
-            className="flex-1 rounded-lg p-5 text-white relative overflow-hidden"
+            transition={{ delay: 0.6 + i * 0.15, type: "spring", stiffness: 100 }}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="flex-1 rounded-xl p-5 text-white relative overflow-hidden cursor-default"
             style={{ backgroundColor: phase.color }}
           >
             <div className="relative z-10">
-              <p className="text-xs font-bold opacity-80 mb-1">PHASE {phase.num}</p>
-              <h4 className="text-base font-bold mb-2">{phase.title}</h4>
+              <p className="text-xs font-bold opacity-80 mb-1 tracking-wider">PHASE {phase.num}</p>
+              <h4 className="text-lg font-bold mb-2">{phase.title}</h4>
               <p className="text-xs opacity-90 mb-3 leading-relaxed">{phase.desc}</p>
-              <p className="text-xs italic opacity-80 mb-2">{phase.time}</p>
-              <p className="text-xl font-bold">{phase.cost}</p>
+              <p className="text-xs italic opacity-70 mb-3">{phase.time}</p>
+              <motion.p 
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.9 + i * 0.1 }}
+                className="text-2xl font-bold"
+              >
+                {phase.cost}
+              </motion.p>
             </div>
-            {i < 2 && (
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                <ChevronRight className="w-4 h-4 text-white" />
-              </div>
-            )}
+            {/* Decorative circle */}
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-10" style={{ backgroundColor: colors.white }} />
           </motion.div>
         ))}
       </div>
@@ -463,7 +701,7 @@ const Slide4Scope = () => {
   const scopeData = [
     { phase: 1, module: "Vendor Portal + Interface", pages: 15, ai: "Agentic AI, Decision Engine", ext: "D&B, NAVEX, Docusign" },
     { phase: 1, module: "Due Diligence & Risk Monitor", pages: 7, ai: "Decision Engine", ext: "D&B, NAVEX" },
-    { phase: 1, module: "AI Overview Bot", pages: 1, ai: "LLM", ext: "—" },
+    { phase: 1, module: "AI Overview Bot", pages: 1, ai: "LLM (Azure OpenAI)", ext: "—" },
     { phase: 1, module: "Reverse Auction Portal", pages: 8, ai: "Analytics + Decision Engine", ext: "—" },
     { phase: 2, module: "RFx Creation + Source Vendor", pages: 9, ai: "Agentic AI, Decision Engine", ext: "Alibaba, Global Sources" },
     { phase: 2, module: "Scope Validation + Review & Rank", pages: 16, ai: "Analytics + Decision Engine", ext: "—" },
@@ -474,61 +712,55 @@ const Slide4Scope = () => {
   ];
 
   const assumptions = [
-    "IHS provides timely access to systems & environments",
-    "LLM usage, hosting, and 3rd-party licences are IHS cost",
-    "Scoping worksheet requirements are complete and final",
-    "D365 environment supports required API integrations",
-    "Change requests managed via formal CR process"
+    "IHS provides timely access to systems, environments, and SME resources as per the agreed project schedule",
+    "LLM usage costs, cloud hosting, and third-party service licences are IHS financial responsibility",
+    "Requirements documented in the scoping worksheet are complete, final, and approved by stakeholders",
+    "D365 Finance & Operations environment supports required API integrations without major customisation",
+    "Change requests will be managed via formal CR process with impact assessment and approval gates"
   ];
 
   const exclusions = [
-    "LLM API usage costs (Azure OpenAI or equivalent)",
-    "Cloud hosting and infrastructure costs (Azure)",
-    "Third-party service licences (D&B, NAVEX, Docusign)",
-    "Microsoft Dynamics 365 licensing",
-    "D365 core ERP modifications, legacy decommissioning"
+    "LLM API usage costs (Azure OpenAI or equivalent) — estimated $500–2,000/month based on volume",
+    "Cloud hosting and infrastructure costs (Azure subscription) — estimated $1,500–3,000/month",
+    "Third-party service licences: D&B ($15K/year), NAVEX ($8K/year), Docusign (per-envelope pricing)",
+    "Microsoft Dynamics 365 licensing and any required licence upgrades for API access",
+    "D365 core ERP modifications, legacy system decommissioning, and historical data archival"
   ];
 
   const getPhaseColor = (phase) => phase === 1 ? colors.blue : phase === 2 ? colors.teal : colors.green;
 
   return (
-    <div className="w-full h-full p-10 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
+    <div className="w-full h-full p-8 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
       <div className="flex items-center gap-4 mb-4">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>02</span>
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Scope Confirmation & Boundaries</h2>
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring" }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>02</motion.span>
+        <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Scope Confirmation & Boundaries</motion.h2>
       </div>
 
       {/* Scope Table */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg shadow-lg overflow-hidden mb-4"
-      >
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
         <table className="w-full text-xs">
           <thead>
             <tr style={{ backgroundColor: colors.dark }}>
-              <th className="px-3 py-2 text-left text-white font-bold">Phase</th>
-              <th className="px-3 py-2 text-left text-white font-bold">Module</th>
-              <th className="px-3 py-2 text-center text-white font-bold">Pages</th>
-              <th className="px-3 py-2 text-left text-white font-bold">AI Components</th>
-              <th className="px-3 py-2 text-left text-white font-bold">External Integration</th>
+              <th className="px-3 py-2.5 text-left text-white font-bold">Phase</th>
+              <th className="px-3 py-2.5 text-left text-white font-bold">Module</th>
+              <th className="px-3 py-2.5 text-center text-white font-bold">Pages</th>
+              <th className="px-3 py-2.5 text-left text-white font-bold">AI Components</th>
+              <th className="px-3 py-2.5 text-left text-white font-bold">External Integration</th>
             </tr>
           </thead>
           <tbody>
             {scopeData.map((row, i) => (
               <motion.tr 
                 key={i}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 + i * 0.03 }}
-                className="border-b border-gray-100"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.04 }}
+                className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 <td className="px-3 py-2">
-                  <span className="px-2 py-0.5 rounded text-white text-xs font-bold" style={{ backgroundColor: getPhaseColor(row.phase) }}>
-                    P{row.phase}
-                  </span>
+                  <span className="px-2 py-0.5 rounded text-white text-xs font-bold" style={{ backgroundColor: getPhaseColor(row.phase) }}>P{row.phase}</span>
                 </td>
-                <td className="px-3 py-2" style={{ color: colors.dark }}>{row.module}</td>
+                <td className="px-3 py-2 font-medium" style={{ color: colors.dark }}>{row.module}</td>
                 <td className="px-3 py-2 text-center font-bold" style={{ color: colors.teal }}>{row.pages}</td>
                 <td className="px-3 py-2" style={{ color: colors.slate }}>{row.ai}</td>
                 <td className="px-3 py-2" style={{ color: colors.slate }}>{row.ext}</td>
@@ -540,34 +772,44 @@ const Slide4Scope = () => {
 
       {/* Assumptions & Exclusions */}
       <div className="flex gap-4">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-          className="flex-1 rounded-lg overflow-hidden shadow-lg"
-        >
-          <div className="px-4 py-2" style={{ backgroundColor: colors.orange }}>
-            <h3 className="text-xs font-bold text-white">KEY ASSUMPTIONS (CIO VALIDATION)</h3>
+        <motion.div variants={fadeLeft} initial="hidden" animate="visible" transition={{ delay: 0.5 }} className="flex-1 rounded-xl overflow-hidden shadow-lg">
+          <div className="px-4 py-2.5" style={{ backgroundColor: colors.orange }}>
+            <h3 className="text-xs font-bold text-white tracking-wide">KEY ASSUMPTIONS (CIO VALIDATION REQUIRED)</h3>
           </div>
           <div className="p-4 bg-white">
             {assumptions.map((item, i) => (
-              <p key={i} className="text-xs py-1" style={{ color: colors.slate }}>• {item}</p>
+              <motion.p 
+                key={i} 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 + i * 0.05 }}
+                className="text-xs py-1.5 flex items-start gap-2"
+                style={{ color: colors.slate }}
+              >
+                <span className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colors.orange }} />
+                {item}
+              </motion.p>
             ))}
           </div>
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6 }}
-          className="flex-1 rounded-lg overflow-hidden shadow-lg"
-        >
-          <div className="px-4 py-2" style={{ backgroundColor: colors.red }}>
-            <h3 className="text-xs font-bold text-white">EXCLUSIONS (IHS RESPONSIBILITY)</h3>
+        <motion.div variants={fadeRight} initial="hidden" animate="visible" transition={{ delay: 0.6 }} className="flex-1 rounded-xl overflow-hidden shadow-lg">
+          <div className="px-4 py-2.5" style={{ backgroundColor: colors.red }}>
+            <h3 className="text-xs font-bold text-white tracking-wide">EXCLUSIONS (IHS FINANCIAL RESPONSIBILITY)</h3>
           </div>
           <div className="p-4 bg-white">
             {exclusions.map((item, i) => (
-              <p key={i} className="text-xs py-1" style={{ color: colors.slate }}>• {item}</p>
+              <motion.p 
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 + i * 0.05 }}
+                className="text-xs py-1.5 flex items-start gap-2"
+                style={{ color: colors.slate }}
+              >
+                <span className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: colors.red }} />
+                {item}
+              </motion.p>
             ))}
           </div>
         </motion.div>
@@ -578,7 +820,7 @@ const Slide4Scope = () => {
 
 // ==================== SLIDE 5: ARCHITECTURE ====================
 const Slide5Architecture = () => {
-  const ihsSystems = ["D365 Finance & Ops", "ServiceNow", "Azure Data Lake", "Azure OpenAI", "Azure AD / Entra ID"];
+  const ihsSystems = ["D365 Finance & Operations", "ServiceNow ITSM", "Azure Data Lake", "Azure OpenAI Service", "Azure AD / Entra ID"];
   const services = [
     { name: "Procurement Service", color: colors.blue },
     { name: "Vendor Service", color: colors.green },
@@ -588,43 +830,40 @@ const Slide5Architecture = () => {
     { name: "Contract Service", color: colors.slate },
   ];
   const infra = [
-    { cat: "Cloud", req: "Azure Subscription (compute, storage, networking)", env: "Dev, Staging, Prod", by: "Week 1" },
-    { cat: "Database", req: "Azure SQL or PostgreSQL", env: "Dev, Staging, Prod", by: "Week 1" },
-    { cat: "AI/LLM", req: "Azure OpenAI Service (GPT-4 access)", env: "All environments", by: "Month 2" },
-    { cat: "Integration", req: "D365 API credentials + ServiceNow API", env: "All environments", by: "Week 2" },
-    { cat: "Third-Party", req: "D&B, NAVEX, Docusign APIs", env: "Staging, Prod", by: "Month 3" },
-    { cat: "Security", req: "VPN access for dev team + CI/CD pipeline tools", env: "All environments", by: "Week 1" },
+    { cat: "Cloud", req: "Azure Subscription with compute, storage, networking, and monitoring services", env: "Dev, Staging, Production", by: "Week 1" },
+    { cat: "Database", req: "Azure SQL Database or PostgreSQL with geo-redundancy and automated backups", env: "Dev, Staging, Production", by: "Week 1" },
+    { cat: "AI/LLM", req: "Azure OpenAI Service with GPT-4 access and content filtering configured", env: "All environments", by: "Month 2" },
+    { cat: "Integration", req: "D365 API credentials with appropriate scopes + ServiceNow REST API access", env: "All environments", by: "Week 2" },
+    { cat: "Third-Party", req: "API keys for D&B, NAVEX, and Docusign with sandbox environments for testing", env: "Staging, Production", by: "Month 3" },
+    { cat: "Security", req: "VPN access for development team, CI/CD pipeline tools, and SSL certificates", env: "All environments", by: "Week 1" },
   ];
 
   return (
-    <div className="w-full h-full p-10 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
+    <div className="w-full h-full p-8 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
       <div className="flex items-center gap-4 mb-4">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>03</span>
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>03</motion.span>
         <div>
-          <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Target Architecture & Technical Design</h2>
-          <p className="text-sm" style={{ color: colors.slate }}>Azure-native microservices with D365 deep integration</p>
+          <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Target Architecture & Technical Design</motion.h2>
+          <motion.p variants={fadeUp} initial="hidden" animate="visible" className="text-sm" style={{ color: colors.slate }}>Azure-native microservices with D365 deep integration and enterprise-grade security</motion.p>
         </div>
       </div>
 
       {/* Architecture Diagram */}
-      <div className="flex gap-4 mb-6 items-stretch">
+      <div className="flex gap-4 mb-5 items-stretch">
         {/* IHS Systems */}
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="w-48"
-        >
-          <div className="px-4 py-2 rounded-t-lg" style={{ backgroundColor: colors.navy }}>
-            <h3 className="text-xs font-bold text-white text-center">IHS SYSTEMS</h3>
+        <motion.div variants={fadeLeft} initial="hidden" animate="visible" className="w-52">
+          <div className="px-4 py-2.5 rounded-t-xl" style={{ backgroundColor: colors.navy }}>
+            <h3 className="text-xs font-bold text-white text-center tracking-wide">IHS EXISTING SYSTEMS</h3>
           </div>
-          <div className="bg-white rounded-b-lg p-3 shadow-lg space-y-2">
+          <div className="bg-white rounded-b-xl p-3 shadow-lg space-y-2">
             {ihsSystems.map((sys, i) => (
               <motion.div 
                 key={sys}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 + i * 0.05 }}
-                className="px-3 py-2 rounded text-xs text-center"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + i * 0.08 }}
+                whileHover={{ scale: 1.02 }}
+                className="px-3 py-2 rounded-lg text-xs text-center font-medium"
                 style={{ backgroundColor: colors.iceBlue, color: colors.dark }}
               >
                 {sys}
@@ -634,68 +873,50 @@ const Slide5Architecture = () => {
         </motion.div>
 
         {/* API Hub */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col items-center justify-center"
-        >
-          <div className="w-0.5 h-8" style={{ backgroundColor: colors.teal }} />
-          <div className="px-4 py-2 rounded-full text-xs font-bold text-white" style={{ backgroundColor: colors.teal }}>
-            API Hub
-          </div>
-          <div className="w-0.5 h-8" style={{ backgroundColor: colors.teal }} />
+        <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="flex flex-col items-center justify-center">
+          <motion.div animate={{ scaleY: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }} className="w-0.5 h-10" style={{ backgroundColor: colors.teal }} />
+          <motion.div whileHover={{ scale: 1.1 }} className="px-4 py-3 rounded-xl text-xs font-bold text-white shadow-lg" style={{ backgroundColor: colors.teal }}>
+            API Gateway
+          </motion.div>
+          <motion.div animate={{ scaleY: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }} className="w-0.5 h-10" style={{ backgroundColor: colors.teal }} />
         </motion.div>
 
         {/* Procure AI Platform */}
-        <motion.div 
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex-1 border-2 rounded-lg p-4"
-          style={{ borderColor: colors.teal }}
-        >
-          <h3 className="text-xs font-bold mb-3" style={{ color: colors.teal }}>PROCURE AI PLATFORM (AZURE)</h3>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }} className="flex-1 border-2 rounded-xl p-4" style={{ borderColor: colors.teal }}>
+          <h3 className="text-xs font-bold mb-3 tracking-wide" style={{ color: colors.teal }}>PROCURE AI PLATFORM (AZURE)</h3>
           <div className="grid grid-cols-3 gap-2 mb-3">
             {services.map((svc, i) => (
               <motion.div
                 key={svc.name}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 + i * 0.05 }}
-                className="px-2 py-2 rounded text-xs text-white text-center font-medium"
+                transition={{ delay: 0.6 + i * 0.08 }}
+                whileHover={{ scale: 1.05 }}
+                className="px-2 py-2.5 rounded-lg text-xs text-white text-center font-medium"
                 style={{ backgroundColor: svc.color }}
               >
                 {svc.name}
               </motion.div>
             ))}
           </div>
-          <div className="px-3 py-2 rounded text-xs text-center" style={{ backgroundColor: colors.iceBlue, color: colors.dark }}>
-            Azure SQL | Cosmos DB | Redis | Blob Storage | Cognitive Search
-          </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="px-3 py-2 rounded-lg text-xs text-center font-medium" style={{ backgroundColor: colors.iceBlue, color: colors.dark }}>
+            Azure SQL | Cosmos DB | Redis Cache | Blob Storage | Cognitive Search
+          </motion.div>
         </motion.div>
 
         {/* External */}
-        <motion.div 
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-          className="w-44"
-        >
-          <div className="px-3 py-2 rounded text-xs text-center text-white" style={{ backgroundColor: colors.orange }}>
-            External: Alibaba | Global Sources | D&B | NAVEX | Docusign
+        <motion.div variants={fadeRight} initial="hidden" animate="visible" transition={{ delay: 0.7 }} className="w-48 flex flex-col justify-center">
+          <div className="px-3 py-3 rounded-xl text-xs text-center text-white font-medium" style={{ backgroundColor: colors.orange }}>
+            <p className="font-bold mb-1">External APIs</p>
+            <p className="opacity-90">Alibaba | Global Sources | D&B | NAVEX | Docusign</p>
           </div>
         </motion.div>
       </div>
 
       {/* Infrastructure Table */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="bg-white rounded-lg shadow-lg overflow-hidden"
-      >
-        <div className="px-4 py-2" style={{ backgroundColor: colors.dark }}>
-          <h3 className="text-xs font-bold text-white">IHS Technical Infrastructure Required</h3>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.8 }} className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="px-4 py-2.5" style={{ backgroundColor: colors.dark }}>
+          <h3 className="text-xs font-bold text-white tracking-wide">IHS TECHNICAL INFRASTRUCTURE REQUIREMENTS</h3>
         </div>
         <table className="w-full text-xs">
           <thead>
@@ -708,12 +929,18 @@ const Slide5Architecture = () => {
           </thead>
           <tbody>
             {infra.map((row, i) => (
-              <tr key={i} className="border-b border-gray-100">
+              <motion.tr 
+                key={i} 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 + i * 0.05 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
                 <td className="px-4 py-2 font-bold" style={{ color: colors.teal }}>{row.cat}</td>
                 <td className="px-4 py-2" style={{ color: colors.slate }}>{row.req}</td>
                 <td className="px-4 py-2" style={{ color: colors.slate }}>{row.env}</td>
                 <td className="px-4 py-2 font-bold" style={{ color: colors.dark }}>{row.by}</td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
@@ -725,80 +952,107 @@ const Slide5Architecture = () => {
 // ==================== SLIDE 6: GOVERNANCE ====================
 const Slide6Governance = () => {
   const raciData = [
-    { activity: "Platform development", tn: "R/A", it: "C", proc: "I", exec: "I" },
-    { activity: "D365 / system integration", tn: "R", it: "A/C", proc: "C", exec: "I" },
-    { activity: "Data migration & bulk upload", tn: "R", it: "R", proc: "A", exec: "I" },
-    { activity: "UAT & go-live sign-off", tn: "R", it: "C", proc: "R", exec: "A" },
-    { activity: "Change management & training", tn: "C", it: "C", proc: "R/A", exec: "I" },
+    { activity: "Platform development and feature delivery", tn: "R/A", it: "C", proc: "I", exec: "I" },
+    { activity: "D365 and external system integration", tn: "R", it: "A/C", proc: "C", exec: "I" },
+    { activity: "Data migration, bulk upload, and validation", tn: "R", it: "R", proc: "A", exec: "I" },
+    { activity: "UAT execution and go-live sign-off", tn: "R", it: "C", proc: "R", exec: "A" },
+    { activity: "Change management, training, and adoption", tn: "C", it: "C", proc: "R/A", exec: "I" },
   ];
 
-  const deps = ["D1: Azure env (Wk 1)", "D2: D365 API creds (Wk 2)", "D3: ServiceNow specs (Mo 2)", "D4: Vendor master export (Mo 1)", "D5: RFx templates (Mo 2)", "D6: 3rd-party APIs (Mo 3)", "D7: UAT env (Mo 3)", "D8: Security review (Mo 4)"];
+  const deps = ["D1: Azure environment (Week 1)", "D2: D365 API credentials (Week 2)", "D3: ServiceNow specs (Month 2)", "D4: Vendor master export (Month 1)", "D5: RFx templates (Month 2)", "D6: 3rd-party APIs (Month 3)", "D7: UAT environment (Month 3)", "D8: Security review (Month 4)"];
 
   return (
     <div className="w-full h-full p-10 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
-      <div className="flex items-center gap-4 mb-6">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>04</span>
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Governance & Delivery Model</h2>
+      <div className="flex items-center gap-4 mb-5">
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>04</motion.span>
+        <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Governance & Delivery Model</motion.h2>
       </div>
 
       {/* Hierarchy */}
-      <div className="flex flex-col items-center mb-6">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="px-8 py-3 rounded-lg text-white text-xs font-bold text-center" style={{ backgroundColor: colors.navy }}>
+      <motion.div variants={stagger} initial="hidden" animate="visible" className="flex flex-col items-center mb-5">
+        <motion.div variants={scaleUp} className="px-10 py-3 rounded-xl text-white text-sm font-bold text-center shadow-lg" style={{ backgroundColor: colors.navy }}>
           STEERING COMMITTEE (Monthly) — Exec Sponsor, Project Director, IT Lead, Project Owner
         </motion.div>
-        <div className="w-0.5 h-4" style={{ backgroundColor: colors.teal }} />
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="px-8 py-3 rounded-lg text-white text-xs font-bold text-center" style={{ backgroundColor: colors.teal }}>
-          PROJECT STATUS REVIEW (Weekly) — PM, IT Lead, Business Analysts
+        <motion.div initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.3 }} className="w-0.5 h-5" style={{ backgroundColor: colors.teal }} />
+        <motion.div variants={scaleUp} className="px-10 py-3 rounded-xl text-white text-sm font-bold text-center shadow-lg" style={{ backgroundColor: colors.teal }}>
+          PROJECT STATUS REVIEW (Weekly) — PM, IT Lead, Business Analysts, Solution Architect
         </motion.div>
-        <div className="w-0.5 h-4" style={{ backgroundColor: colors.teal }} />
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex gap-3">
+        <motion.div initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.5 }} className="w-0.5 h-5" style={{ backgroundColor: colors.teal }} />
+        <motion.div variants={stagger} className="flex gap-3">
           {[
             { title: "Sprint Demo", sub: "Bi-weekly — Full team + stakeholders", color: colors.blue },
             { title: "Technical Review", sub: "Weekly — Architect + Devs + IT Lead", color: colors.teal },
             { title: "Change Mgmt & Training", sub: "IHS Project Owner + Champions", color: colors.green },
             { title: "Integration Coordination", sub: "IT Lead + TN Macaulay", color: colors.orange },
           ].map((item, i) => (
-            <div key={i} className="px-4 py-2 rounded text-white text-center" style={{ backgroundColor: item.color }}>
+            <motion.div 
+              key={i} 
+              variants={scaleUp}
+              whileHover={{ y: -4 }}
+              className="px-4 py-3 rounded-xl text-white text-center shadow-lg cursor-default" 
+              style={{ backgroundColor: item.color }}
+            >
               <p className="text-xs font-bold">{item.title}</p>
-              <p className="text-xs opacity-80">{item.sub}</p>
-            </div>
+              <p className="text-xs opacity-80 mt-1">{item.sub}</p>
+            </motion.div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* RACI */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-        <table className="w-full text-xs">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.6 }} className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
+        <table className="w-full text-sm">
           <thead>
             <tr style={{ backgroundColor: colors.dark }}>
-              <th className="px-4 py-2 text-left text-white font-bold">Activity</th>
-              <th className="px-4 py-2 text-center text-white font-bold">TN Macaulay</th>
-              <th className="px-4 py-2 text-center text-white font-bold">IHS IT</th>
-              <th className="px-4 py-2 text-center text-white font-bold">IHS Procurement</th>
-              <th className="px-4 py-2 text-center text-white font-bold">Exec Sponsor</th>
+              <th className="px-4 py-2.5 text-left text-white font-bold">Activity</th>
+              <th className="px-4 py-2.5 text-center text-white font-bold">TN Macaulay</th>
+              <th className="px-4 py-2.5 text-center text-white font-bold">IHS IT</th>
+              <th className="px-4 py-2.5 text-center text-white font-bold">IHS Procurement</th>
+              <th className="px-4 py-2.5 text-center text-white font-bold">Exec Sponsor</th>
             </tr>
           </thead>
           <tbody>
             {raciData.map((row, i) => (
-              <tr key={i} className="border-b border-gray-100">
-                <td className="px-4 py-2" style={{ color: colors.dark }}>{row.activity}</td>
-                <td className="px-4 py-2 text-center font-bold" style={{ color: row.tn.includes("A") ? colors.blue : colors.slate }}>{row.tn}</td>
-                <td className="px-4 py-2 text-center font-bold" style={{ color: row.it.includes("A") ? colors.blue : colors.slate }}>{row.it}</td>
-                <td className="px-4 py-2 text-center font-bold" style={{ color: row.proc.includes("A") ? colors.blue : colors.slate }}>{row.proc}</td>
-                <td className="px-4 py-2 text-center font-bold" style={{ color: row.exec.includes("A") ? colors.blue : colors.slate }}>{row.exec}</td>
-              </tr>
+              <motion.tr 
+                key={i} 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 + i * 0.08 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-4 py-2.5" style={{ color: colors.dark }}>{row.activity}</td>
+                <td className="px-4 py-2.5 text-center font-bold" style={{ color: row.tn.includes("A") ? colors.blue : colors.slate }}>{row.tn}</td>
+                <td className="px-4 py-2.5 text-center font-bold" style={{ color: row.it.includes("A") ? colors.blue : colors.slate }}>{row.it}</td>
+                <td className="px-4 py-2.5 text-center font-bold" style={{ color: row.proc.includes("A") ? colors.blue : colors.slate }}>{row.proc}</td>
+                <td className="px-4 py-2.5 text-center font-bold" style={{ color: row.exec.includes("A") ? colors.blue : colors.slate }}>{row.exec}</td>
+              </motion.tr>
             ))}
           </tbody>
         </table>
         <div className="px-4 py-2 text-xs" style={{ backgroundColor: colors.lightGrey, color: colors.slate }}>
-          R = Responsible | A = Accountable | C = Consulted | I = Informed
+          <strong>R</strong> = Responsible | <strong>A</strong> = Accountable | <strong>C</strong> = Consulted | <strong>I</strong> = Informed
         </div>
       </motion.div>
 
       {/* Dependencies */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="px-4 py-2 rounded-lg text-xs flex flex-wrap gap-3" style={{ backgroundColor: colors.iceBlue }}>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        className="px-5 py-3 rounded-xl text-xs flex flex-wrap gap-x-4 gap-y-2"
+        style={{ backgroundColor: colors.iceBlue }}
+      >
+        <span className="font-bold" style={{ color: colors.dark }}>Critical Dependencies:</span>
         {deps.map((d, i) => (
-          <span key={i} style={{ color: colors.dark }}>{d}</span>
+          <motion.span 
+            key={i}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1 + i * 0.05 }}
+            style={{ color: colors.dark }}
+          >
+            {d}
+          </motion.span>
         ))}
       </motion.div>
     </div>
@@ -808,62 +1062,68 @@ const Slide6Governance = () => {
 // ==================== SLIDE 7: RISK ====================
 const Slide7Risk = () => {
   const risks = [
-    { id: "R1", risk: "D365 integration complexity", l: "Med", i: "High", mit: "Early POC in Month 1, dedicated integration specialist", owner: "TN Mac" },
-    { id: "R2", risk: "Delayed IHS environment access", l: "Med", i: "High", mit: "Parallel dev env, early dependency tracking", owner: "IHS IT" },
-    { id: "R3", risk: "Scope creep from new requirements", l: "High", i: "Med", mit: "Formal change control, weekly scope reviews", owner: "Joint" },
-    { id: "R4", risk: "Key resource unavailability", l: "Low", i: "High", mit: "Cross-training, documentation, backup resources", owner: "TN Mac" },
-    { id: "R5", risk: "Data migration quality issues", l: "Med", i: "Med", mit: "Data profiling, validation scripts, cleansing", owner: "Joint" },
-    { id: "R6", risk: "User adoption resistance", l: "Med", i: "Med", mit: "Early engagement, training, change champions", owner: "IHS" },
-    { id: "R7", risk: "Third-party API changes", l: "Low", i: "Med", mit: "Abstraction layer, API versioning, monitoring", owner: "TN Mac" },
-    { id: "R8", risk: "Security / compliance gaps", l: "Low", i: "High", mit: "Security review gates, compliance checklist, pen testing", owner: "Joint" },
+    { id: "R1", risk: "D365 integration complexity exceeds estimates due to customisations or API limitations", l: "Med", i: "High", mit: "Early POC in Month 1, dedicated integration specialist, weekly sync with IHS IT", owner: "TN Macaulay" },
+    { id: "R2", risk: "Delayed IHS environment access impacting development velocity and timeline", l: "Med", i: "High", mit: "Parallel development environment setup, early dependency tracking, escalation path defined", owner: "IHS IT" },
+    { id: "R3", risk: "Scope creep from new requirements discovered during development phase", l: "High", i: "Med", mit: "Formal change control process with impact assessment, weekly scope reviews, CR log", owner: "Joint" },
+    { id: "R4", risk: "Key resource unavailability on either side affecting delivery continuity", l: "Low", i: "High", mit: "Cross-training programme, comprehensive documentation, identified backup resources", owner: "TN Macaulay" },
+    { id: "R5", risk: "Data migration quality issues requiring extensive cleansing and rework", l: "Med", i: "Med", mit: "Data profiling in Month 1, validation scripts, automated cleansing rules, sample migration", owner: "Joint" },
+    { id: "R6", risk: "User adoption resistance from procurement team due to process changes", l: "Med", i: "Med", mit: "Early engagement sessions, training programme, change champion network, feedback loops", owner: "IHS" },
+    { id: "R7", risk: "Third-party API changes or deprecations during implementation", l: "Low", i: "Med", mit: "Abstraction layer design, API versioning strategy, monitoring and alerting", owner: "TN Macaulay" },
+    { id: "R8", risk: "Security or compliance gaps identified during pen testing", l: "Low", i: "High", mit: "Security review gates at each phase, compliance checklist, pre-UAT penetration testing", owner: "Joint" },
   ];
 
   const reporting = [
-    { cadence: "Weekly", forum: "Sprint Review", content: "Velocity, blockers, demo of features", audience: "PM + IT Lead + BAs" },
-    { cadence: "Bi-weekly", forum: "Sprint Demo", content: "Feature walkthrough, stakeholder feedback", audience: "Full project team" },
-    { cadence: "Monthly", forum: "SteerCo Pack", content: "Strategic progress, decisions, risk escalations", audience: "Exec Sponsor + SteerCo" },
-    { cadence: "Phase Gate", forum: "Go/No-Go", content: "UAT results, readiness checklist, sign-off", audience: "Exec Sponsor (final)" },
+    { cadence: "Weekly", forum: "Sprint Review", content: "Sprint velocity, blockers, demo of completed features, upcoming priorities", audience: "PM + IT Lead + BAs" },
+    { cadence: "Bi-weekly", forum: "Sprint Demo", content: "Feature walkthrough, stakeholder feedback collection, UAT preparation", audience: "Full project team" },
+    { cadence: "Monthly", forum: "SteerCo Pack", content: "Strategic progress update, key decisions required, risk escalations, budget status", audience: "Exec Sponsor + SteerCo" },
+    { cadence: "Phase Gate", forum: "Go/No-Go Review", content: "UAT results summary, readiness checklist, production deployment sign-off", audience: "Exec Sponsor (final authority)" },
   ];
 
   const getColor = (level) => level === "High" ? colors.red : level === "Med" ? colors.orange : colors.green;
 
   return (
-    <div className="w-full h-full p-10 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
+    <div className="w-full h-full p-8 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
       <div className="flex items-center gap-4 mb-4">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>04</span>
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Risk Register & Reporting Cadence</h2>
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>04</motion.span>
+        <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Risk Register & Reporting Cadence</motion.h2>
       </div>
 
       {/* Risk Table */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
         <table className="w-full text-xs">
           <thead>
             <tr style={{ backgroundColor: colors.dark }}>
-              <th className="px-3 py-2 text-left text-white font-bold">ID</th>
-              <th className="px-3 py-2 text-left text-white font-bold">Risk</th>
-              <th className="px-3 py-2 text-center text-white font-bold">L</th>
-              <th className="px-3 py-2 text-center text-white font-bold">I</th>
-              <th className="px-3 py-2 text-left text-white font-bold">Mitigation</th>
-              <th className="px-3 py-2 text-left text-white font-bold">Owner</th>
+              <th className="px-2 py-2 text-left text-white font-bold w-10">ID</th>
+              <th className="px-2 py-2 text-left text-white font-bold">Risk Description</th>
+              <th className="px-2 py-2 text-center text-white font-bold w-12">L</th>
+              <th className="px-2 py-2 text-center text-white font-bold w-12">I</th>
+              <th className="px-2 py-2 text-left text-white font-bold w-80">Mitigation Strategy</th>
+              <th className="px-2 py-2 text-left text-white font-bold w-24">Owner</th>
             </tr>
           </thead>
           <tbody>
             {risks.map((r, i) => (
-              <tr key={i} className="border-b border-gray-100">
-                <td className="px-3 py-1.5 font-bold" style={{ color: colors.dark }}>{r.id}</td>
-                <td className="px-3 py-1.5" style={{ color: colors.slate }}>{r.risk}</td>
-                <td className="px-3 py-1.5 text-center font-bold" style={{ color: getColor(r.l) }}>{r.l}</td>
-                <td className="px-3 py-1.5 text-center font-bold" style={{ color: getColor(r.i) }}>{r.i}</td>
-                <td className="px-3 py-1.5" style={{ color: colors.slate }}>{r.mit}</td>
-                <td className="px-3 py-1.5 font-bold" style={{ color: colors.dark }}>{r.owner}</td>
-              </tr>
+              <motion.tr 
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.05 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-2 py-1.5 font-bold" style={{ color: colors.dark }}>{r.id}</td>
+                <td className="px-2 py-1.5" style={{ color: colors.slate }}>{r.risk}</td>
+                <td className="px-2 py-1.5 text-center"><span className="font-bold" style={{ color: getColor(r.l) }}>{r.l}</span></td>
+                <td className="px-2 py-1.5 text-center"><span className="font-bold" style={{ color: getColor(r.i) }}>{r.i}</span></td>
+                <td className="px-2 py-1.5" style={{ color: colors.slate }}>{r.mit}</td>
+                <td className="px-2 py-1.5 font-medium" style={{ color: colors.dark }}>{r.owner}</td>
+              </motion.tr>
             ))}
           </tbody>
         </table>
       </motion.div>
 
       {/* Reporting Framework */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.5 }} className="bg-white rounded-xl shadow-lg overflow-hidden">
         <table className="w-full text-xs">
           <thead>
             <tr style={{ backgroundColor: colors.teal }}>
@@ -875,17 +1135,23 @@ const Slide7Risk = () => {
           </thead>
           <tbody>
             {reporting.map((r, i) => (
-              <tr key={i} className="border-b border-gray-100">
+              <motion.tr 
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 + i * 0.08 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
                 <td className="px-4 py-2 font-bold" style={{ color: colors.teal }}>{r.cadence}</td>
                 <td className="px-4 py-2 font-bold" style={{ color: colors.dark }}>{r.forum}</td>
                 <td className="px-4 py-2" style={{ color: colors.slate }}>{r.content}</td>
                 <td className="px-4 py-2" style={{ color: colors.slate }}>{r.audience}</td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
         <div className="px-4 py-2 text-xs" style={{ backgroundColor: colors.lightGrey, color: colors.slate }}>
-          Escalation: Workstream Lead (24hr) → PM (48hr) → SteerCo (72hr) → Exec Sponsor (exception)
+          <strong>Escalation Path:</strong> Workstream Lead (24hr) → Project Manager (48hr) → SteerCo (72hr) → Executive Sponsor (exception basis)
         </div>
       </motion.div>
     </div>
@@ -896,60 +1162,72 @@ const Slide7Risk = () => {
 const Slide8Roadmap = () => {
   const months = ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb"];
   const deliverables = [
-    { month: "1 (Feb)", key: "Kickoff, requirements validation, architecture design", gate: "Architecture Sign-off", gateColor: colors.blue },
-    { month: "2 (Mar)", key: "Vendor Portal (9 interfaces), API foundation", gate: "Vendor Portal Alpha", gateColor: colors.slate },
-    { month: "3 (Apr)", key: "Vendor Interface (6 pages), Due Diligence, Risk Monitor", gate: "Integration Testing", gateColor: colors.slate },
-    { month: "4 (May)", key: "AI Bot, Reverse Auction Portal (8 pages), Phase 1 UAT", gate: "PHASE 1 GO-LIVE", gateColor: colors.blue },
-    { month: "5 (Jun)", key: "RFx Creation (4 pages), Source Vendor (5 pages)", gate: "RFx Module Alpha", gateColor: colors.slate },
-    { month: "6 (Jul)", key: "Scope Validation (11 pages), D365 integration", gate: "Integration Complete", gateColor: colors.slate },
-    { month: "7–9", key: "Review & Rank, BAFO, Automated Planning, Templates, Phase 2 UAT", gate: "PHASE 2 GO-LIVE", gateColor: colors.teal },
-    { month: "10–11", key: "Forecasting, Category Mgmt, Risk Register, Cost/TCO Reporting", gate: "Reporting Suite Live", gateColor: colors.slate },
-    { month: "12–13", key: "Performance Mgmt, Exception Requests, Settings, Audit, Final UAT", gate: "PROJECT GO-LIVE", gateColor: colors.green },
+    { month: "1 (Feb)", key: "Project kickoff, requirements validation workshops, architecture design and review", gate: "Architecture Sign-off", gateColor: colors.blue },
+    { month: "2 (Mar)", key: "Vendor Portal development (9 interfaces), API foundation, authentication framework", gate: "Vendor Portal Alpha", gateColor: colors.slate },
+    { month: "3 (Apr)", key: "Vendor Interface (6 pages), Due Diligence module, Risk Monitor dashboard", gate: "Integration Testing", gateColor: colors.slate },
+    { month: "4 (May)", key: "AI Overview Bot, Reverse Auction Portal (8 pages), Phase 1 UAT execution", gate: "PHASE 1 GO-LIVE", gateColor: colors.blue },
+    { month: "5 (Jun)", key: "RFx Creation engine (4 pages), Source Vendor module (5 pages), vendor matching", gate: "RFx Module Alpha", gateColor: colors.slate },
+    { month: "6 (Jul)", key: "Scope Validation workflows (11 pages), D365 bidirectional integration", gate: "Integration Complete", gateColor: colors.slate },
+    { month: "7–9", key: "Review & Rank, BAFO management, Automated Planning, Template library, Phase 2 UAT", gate: "PHASE 2 GO-LIVE", gateColor: colors.teal },
+    { month: "10–11", key: "Demand Forecasting, Category Management, Risk Register, Cost/TCO Reporting", gate: "Reporting Suite Live", gateColor: colors.slate },
+    { month: "12–13", key: "Performance Management, Exception Requests, Settings, Audit trails, Final UAT", gate: "PROJECT GO-LIVE", gateColor: colors.green },
   ];
 
   const payments = [
-    { num: 1, trigger: "Project kickoff (contract signature)", pct: "50%", amt: "$83,750", target: "Feb 2026" },
-    { num: 2, trigger: "Phase 1 completion (core modules + vendor portal)", pct: "20%", amt: "$33,500", target: "May 2026" },
-    { num: 3, trigger: "Phase 2 completion (RFx workflows live)", pct: "15%", amt: "$25,125", target: "Oct 2026" },
-    { num: 4, trigger: "Final delivery and go-live", pct: "15%", amt: "$25,125", target: "Feb 2027" },
+    { num: 1, trigger: "Project kickoff and contract signature", pct: "50%", amt: "$83,750", target: "Feb 2026" },
+    { num: 2, trigger: "Phase 1 completion (core modules + vendor portal live)", pct: "20%", amt: "$33,500", target: "May 2026" },
+    { num: 3, trigger: "Phase 2 completion (RFx workflows live in production)", pct: "15%", amt: "$25,125", target: "Oct 2026" },
+    { num: 4, trigger: "Final delivery, go-live, and hypercare handover", pct: "15%", amt: "$25,125", target: "Feb 2027" },
   ];
 
   return (
     <div className="w-full h-full p-8 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
       <div className="flex items-center gap-4 mb-4">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>05</span>
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>05</motion.span>
         <div>
-          <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Milestones & Execution Roadmap</h2>
-          <p className="text-sm" style={{ color: colors.slate }}>13-month delivery — February 2026 to February 2027</p>
+          <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Milestones & Execution Roadmap</motion.h2>
+          <motion.p variants={fadeUp} initial="hidden" animate="visible" className="text-sm" style={{ color: colors.slate }}>13-month delivery timeline — February 2026 to February 2027</motion.p>
         </div>
       </div>
 
       {/* Timeline */}
       <div className="mb-4">
-        <div className="flex justify-between text-xs mb-2" style={{ color: colors.slate }}>
-          {months.map((m, i) => <span key={i} className="w-12 text-center">{m}</span>)}
+        <div className="flex justify-between text-xs mb-2 px-1" style={{ color: colors.slate }}>
+          {months.map((m, i) => <span key={i} className="w-12 text-center font-medium">{m}</span>)}
         </div>
-        <div className="relative h-8 flex gap-1">
-          <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8 }} style={{ originX: 0 }}
-            className="h-full rounded text-white text-xs font-bold flex items-center justify-center"
-            style={{ backgroundColor: colors.blue, width: `${(4/13)*100}%` }}>
+        <div className="relative h-10 flex gap-1">
+          <motion.div 
+            initial={{ scaleX: 0 }} 
+            animate={{ scaleX: 1 }} 
+            transition={{ duration: 0.8 }}
+            style={{ originX: 0, backgroundColor: colors.blue, width: `${(4/13)*100}%` }}
+            className="h-full rounded-lg text-white text-xs font-bold flex items-center justify-center shadow-lg"
+          >
             Phase 1: Foundation & Core ($47,500)
           </motion.div>
-          <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8, delay: 0.3 }} style={{ originX: 0 }}
-            className="h-full rounded text-white text-xs font-bold flex items-center justify-center"
-            style={{ backgroundColor: colors.teal, width: `${(5/13)*100}%` }}>
+          <motion.div 
+            initial={{ scaleX: 0 }} 
+            animate={{ scaleX: 1 }} 
+            transition={{ duration: 0.8, delay: 0.3 }}
+            style={{ originX: 0, backgroundColor: colors.teal, width: `${(5/13)*100}%` }}
+            className="h-full rounded-lg text-white text-xs font-bold flex items-center justify-center shadow-lg"
+          >
             Phase 2: RFx Workflows ($60,000)
           </motion.div>
-          <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8, delay: 0.6 }} style={{ originX: 0 }}
-            className="h-full rounded text-white text-xs font-bold flex items-center justify-center"
-            style={{ backgroundColor: colors.green, width: `${(4/13)*100}%` }}>
+          <motion.div 
+            initial={{ scaleX: 0 }} 
+            animate={{ scaleX: 1 }} 
+            transition={{ duration: 0.8, delay: 0.6 }}
+            style={{ originX: 0, backgroundColor: colors.green, width: `${(4/13)*100}%` }}
+            className="h-full rounded-lg text-white text-xs font-bold flex items-center justify-center shadow-lg"
+          >
             Phase 3: Intelligence ($60,000)
           </motion.div>
         </div>
       </div>
 
       {/* Deliverables Table */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.5 }} className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
         <table className="w-full text-xs">
           <thead>
             <tr style={{ backgroundColor: colors.dark }}>
@@ -960,19 +1238,25 @@ const Slide8Roadmap = () => {
           </thead>
           <tbody>
             {deliverables.map((d, i) => (
-              <tr key={i} className="border-b border-gray-100">
+              <motion.tr 
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 + i * 0.04 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
                 <td className="px-3 py-1.5 font-bold" style={{ color: colors.dark }}>{d.month}</td>
                 <td className="px-3 py-1.5" style={{ color: colors.slate }}>{d.key}</td>
                 <td className="px-3 py-1.5 font-bold" style={{ color: d.gateColor }}>{d.gate}</td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
       </motion.div>
 
       {/* Payment Milestones */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="px-4 py-2 font-bold text-xs" style={{ backgroundColor: colors.teal, color: colors.white }}>Payment Milestones</div>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.8 }} className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="px-4 py-2 font-bold text-xs text-white" style={{ backgroundColor: colors.teal }}>PAYMENT MILESTONES</div>
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b" style={{ backgroundColor: colors.lightGrey }}>
@@ -984,14 +1268,20 @@ const Slide8Roadmap = () => {
             </tr>
           </thead>
           <tbody>
-            {payments.map((p) => (
-              <tr key={p.num} className="border-b border-gray-100">
+            {payments.map((p, i) => (
+              <motion.tr 
+                key={p.num}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 + i * 0.1 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
                 <td className="px-4 py-2 font-bold" style={{ color: colors.teal }}>{p.num}</td>
                 <td className="px-4 py-2" style={{ color: colors.slate }}>{p.trigger}</td>
                 <td className="px-4 py-2 text-center font-bold" style={{ color: colors.dark }}>{p.pct}</td>
                 <td className="px-4 py-2 text-right font-bold" style={{ color: colors.green }}>{p.amt}</td>
                 <td className="px-4 py-2 text-right" style={{ color: colors.slate }}>{p.target}</td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
@@ -1013,27 +1303,27 @@ const Slide9Resources = () => {
   ];
 
   const ihsTeam = [
-    { role: "Executive Sponsor", weekly: "1 hr/week", activities: "Steering committee, escalations, budget approval" },
-    { role: "Project Owner (Procurement)", weekly: "8 hrs/week", activities: "Requirements, UAT, business process decisions" },
-    { role: "IT Lead", weekly: "8 hrs/week", activities: "Technical review, integration support, security" },
-    { role: "Business Analysts (2)", weekly: "20 hrs/week each", activities: "Requirements docs, process mapping, testing" },
-    { role: "SMEs + Change Champions", weekly: "4 hrs/week each", activities: "Domain expertise, training coordination, feedback" },
+    { role: "Executive Sponsor", weekly: "1 hr/week", activities: "Monthly steering committee participation, critical escalation decisions, budget approvals, strategic direction" },
+    { role: "Project Owner (Procurement)", weekly: "8 hrs/week", activities: "Requirements validation, UAT coordination, business process decisions, vendor communication, sign-offs" },
+    { role: "IT Lead", weekly: "8 hrs/week", activities: "Technical review participation, integration support, security review, infrastructure coordination" },
+    { role: "Business Analysts (2)", weekly: "20 hrs/week each", activities: "Requirements documentation, process mapping, test case development, UAT execution, training support" },
+    { role: "SMEs + Change Champions", weekly: "4 hrs/week each", activities: "Domain expertise provision, training coordination, feedback collection, adoption monitoring" },
   ];
 
   return (
     <div className="w-full h-full p-8 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
-      <div className="flex items-center gap-4 mb-4">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>05</span>
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Resource Mobilisation & Change Management</h2>
+      <div className="flex items-center gap-4 mb-5">
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>05</motion.span>
+        <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Resource Mobilisation & Change Management</motion.h2>
       </div>
 
       {/* TN Macaulay Team */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-        <div className="px-4 py-2 flex justify-between items-center" style={{ backgroundColor: colors.teal }}>
-          <span className="text-xs font-bold text-white">TN Macaulay Delivery Team</span>
-          <span className="text-xs text-white opacity-80">12,640 total hours</span>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
+        <div className="px-4 py-2.5 flex justify-between items-center" style={{ backgroundColor: colors.teal }}>
+          <span className="text-sm font-bold text-white">TN MACAULAY DELIVERY TEAM</span>
+          <span className="text-sm text-white opacity-90">12,640 total hours over 13 months</span>
         </div>
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b" style={{ backgroundColor: colors.lightGrey }}>
               <th className="px-3 py-2 text-left font-bold" style={{ color: colors.dark }}>Role</th>
@@ -1045,25 +1335,31 @@ const Slide9Resources = () => {
           </thead>
           <tbody>
             {tnTeam.map((r, i) => (
-              <tr key={i} className="border-b border-gray-100">
-                <td className="px-3 py-1.5" style={{ color: colors.dark }}>{r.role}</td>
-                <td className="px-3 py-1.5 text-center" style={{ color: colors.slate }}>{r.p1}</td>
-                <td className="px-3 py-1.5 text-center" style={{ color: colors.slate }}>{r.p2}</td>
-                <td className="px-3 py-1.5 text-center" style={{ color: colors.slate }}>{r.p3}</td>
-                <td className="px-3 py-1.5 text-right font-bold" style={{ color: colors.teal }}>{r.total}</td>
-              </tr>
+              <motion.tr 
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.05 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-3 py-2" style={{ color: colors.dark }}>{r.role}</td>
+                <td className="px-3 py-2 text-center" style={{ color: colors.slate }}>{r.p1}</td>
+                <td className="px-3 py-2 text-center" style={{ color: colors.slate }}>{r.p2}</td>
+                <td className="px-3 py-2 text-center" style={{ color: colors.slate }}>{r.p3}</td>
+                <td className="px-3 py-2 text-right font-bold" style={{ color: colors.teal }}>{r.total}</td>
+              </motion.tr>
             ))}
           </tbody>
         </table>
       </motion.div>
 
       {/* IHS Team */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-        <div className="px-4 py-2 flex justify-between items-center" style={{ backgroundColor: colors.navy }}>
-          <span className="text-xs font-bold text-white">IHS Towers Resources Required</span>
-          <span className="text-xs text-white opacity-80">3,380 total hours</span>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.3 }} className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
+        <div className="px-4 py-2.5 flex justify-between items-center" style={{ backgroundColor: colors.navy }}>
+          <span className="text-sm font-bold text-white">IHS TOWERS RESOURCES REQUIRED</span>
+          <span className="text-sm text-white opacity-90">3,380 total hours over 13 months</span>
         </div>
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b" style={{ backgroundColor: colors.lightGrey }}>
               <th className="px-3 py-2 text-left font-bold" style={{ color: colors.dark }}>Role</th>
@@ -1073,20 +1369,32 @@ const Slide9Resources = () => {
           </thead>
           <tbody>
             {ihsTeam.map((r, i) => (
-              <tr key={i} className="border-b border-gray-100">
-                <td className="px-3 py-1.5 font-bold" style={{ color: colors.dark }}>{r.role}</td>
-                <td className="px-3 py-1.5 text-center font-bold" style={{ color: colors.teal }}>{r.weekly}</td>
-                <td className="px-3 py-1.5" style={{ color: colors.slate }}>{r.activities}</td>
-              </tr>
+              <motion.tr 
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.05 }}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-3 py-2 font-medium" style={{ color: colors.dark }}>{r.role}</td>
+                <td className="px-3 py-2 text-center font-bold" style={{ color: colors.teal }}>{r.weekly}</td>
+                <td className="px-3 py-2 text-sm" style={{ color: colors.slate }}>{r.activities}</td>
+              </motion.tr>
             ))}
           </tbody>
         </table>
       </motion.div>
 
       {/* Post-Deployment */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="px-4 py-3 rounded-lg text-xs flex gap-6" style={{ backgroundColor: colors.iceBlue }}>
-        <span style={{ color: colors.dark }}><strong>Hypercare:</strong> 3 months (4-hr response)</span>
-        <span style={{ color: colors.dark }}><strong>Critical issues:</strong> 24/7</span>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="px-5 py-3 rounded-xl text-sm flex gap-8"
+        style={{ backgroundColor: colors.iceBlue }}
+      >
+        <span style={{ color: colors.dark }}><strong>Hypercare:</strong> 3 months (4-hour response SLA)</span>
+        <span style={{ color: colors.dark }}><strong>Critical issues:</strong> 24/7 coverage</span>
         <span style={{ color: colors.dark }}><strong>Knowledge transfer:</strong> Month 13</span>
         <span style={{ color: colors.dark }}><strong>Optional maintenance:</strong> $3,000/month</span>
       </motion.div>
@@ -1099,62 +1407,73 @@ const Slide10Commercial = () => {
   const investment = [
     { phase: "Phase 1: Foundation & Core", amt: "$47,500", time: "Feb–May 2026" },
     { phase: "Phase 2: RFx Workflows", amt: "$60,000", time: "Jun–Oct 2026" },
-    { phase: "Phase 3: Intelligence", amt: "$60,000", time: "Nov–Feb 2027" },
+    { phase: "Phase 3: Intelligence Suite", amt: "$60,000", time: "Nov–Feb 2027" },
   ];
 
   const kpis = [
     { kpi: "Procurement cycle time", baseline: "45 days", target: "15 days" },
-    { kpi: "Vendor onboarding", baseline: "3–4 weeks", target: "3–5 days" },
-    { kpi: "Spend visibility", baseline: "~40%", target: ">85%" },
-    { kpi: "Cost savings", baseline: "Baseline", target: "10–15% YoY" },
-    { kpi: "Automation rate", baseline: "<10%", target: "80%+" },
+    { kpi: "Vendor onboarding duration", baseline: "3–4 weeks", target: "3–5 days" },
+    { kpi: "Spend visibility coverage", baseline: "~40%", target: ">85%" },
+    { kpi: "Cost savings (Year 1)", baseline: "Baseline", target: "10–15% YoY" },
+    { kpi: "Process automation rate", baseline: "<10%", target: "80%+" },
   ];
 
   const competitive = [
-    { metric: "Total cost", procure: "$167.5K one-time", ariba: "$200K+/year", oracle: "$180K+/year", inhouse: "$300K+" },
-    { metric: "AI capabilities", procure: "5+ AI engines", ariba: "Basic", oracle: "Basic", inhouse: "None" },
-    { metric: "D365 integration", procure: "Deep, proven", ariba: "Available", oracle: "Available", inhouse: "Build" },
-    { metric: "Code ownership", procure: "Full to IHS", ariba: "No (SaaS)", oracle: "No (SaaS)", inhouse: "Yes" },
-    { metric: "Annual licence", procure: "None", ariba: "$200K+", oracle: "$180K+", inhouse: "None" },
+    { metric: "Total cost of ownership", procure: "$167.5K one-time", ariba: "$200K+/year", oracle: "$180K+/year", inhouse: "$300K+" },
+    { metric: "AI/ML capabilities", procure: "5+ AI engines", ariba: "Basic analytics", oracle: "Basic analytics", inhouse: "None" },
+    { metric: "D365 integration depth", procure: "Deep, proven", ariba: "Available", oracle: "Available", inhouse: "Custom build" },
+    { metric: "Source code ownership", procure: "Full to IHS", ariba: "No (SaaS)", oracle: "No (SaaS)", inhouse: "Yes" },
+    { metric: "Annual licence fees", procure: "None", ariba: "$200K+", oracle: "$180K+", inhouse: "None" },
   ];
 
   return (
     <div className="w-full h-full p-10 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
-      <div className="flex items-center gap-4 mb-6">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>06</span>
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Commercial & Performance Framework</h2>
+      <div className="flex items-center gap-4 mb-5">
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>06</motion.span>
+        <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Commercial & Performance Framework</motion.h2>
       </div>
 
-      <div className="flex gap-6 mb-6">
+      <div className="flex gap-5 mb-5">
         {/* Investment Summary */}
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex-1 bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="px-4 py-3" style={{ backgroundColor: colors.dark }}>
-            <h3 className="text-sm font-bold text-white">Investment Summary</h3>
+        <motion.div variants={fadeLeft} initial="hidden" animate="visible" className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="px-5 py-3" style={{ backgroundColor: colors.dark }}>
+            <h3 className="text-sm font-bold text-white">INVESTMENT SUMMARY</h3>
           </div>
-          <div className="p-4">
+          <div className="p-5">
             {investment.map((i, idx) => (
-              <div key={idx} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + idx * 0.1 }}
+                className="flex justify-between py-3 border-b border-gray-100 last:border-0"
+              >
                 <span className="text-sm" style={{ color: colors.dark }}>{i.phase}</span>
                 <div className="text-right">
-                  <span className="text-sm font-bold" style={{ color: colors.teal }}>{i.amt}</span>
+                  <span className="text-base font-bold" style={{ color: colors.teal }}>{i.amt}</span>
                   <span className="text-xs ml-2" style={{ color: colors.slate }}>{i.time}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-            <div className="flex justify-between pt-3 mt-2 border-t-2 border-gray-200">
-              <span className="text-sm font-bold" style={{ color: colors.dark }}>TOTAL</span>
-              <span className="text-lg font-bold" style={{ color: colors.green }}>$167,500</span>
-            </div>
-            <p className="text-xs mt-2" style={{ color: colors.slate }}>+ 7.5% VAT = $180,062.50 | Optional maintenance: $3,000/month</p>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex justify-between pt-4 mt-3 border-t-2 border-gray-200"
+            >
+              <span className="text-base font-bold" style={{ color: colors.dark }}>TOTAL INVESTMENT</span>
+              <span className="text-2xl font-bold" style={{ color: colors.green }}>$167,500</span>
+            </motion.div>
+            <p className="text-xs mt-3" style={{ color: colors.slate }}>+ 7.5% VAT = $180,062.50 | Optional post-project maintenance: $3,000/month</p>
           </div>
         </motion.div>
 
         {/* KPI Framework */}
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex-1 bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="px-4 py-3" style={{ backgroundColor: colors.teal }}>
-            <h3 className="text-sm font-bold text-white">KPI Framework</h3>
+        <motion.div variants={fadeRight} initial="hidden" animate="visible" className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="px-5 py-3" style={{ backgroundColor: colors.teal }}>
+            <h3 className="text-sm font-bold text-white">KPI FRAMEWORK</h3>
           </div>
-          <table className="w-full text-xs">
+          <table className="w-full text-sm">
             <thead>
               <tr className="border-b" style={{ backgroundColor: colors.lightGrey }}>
                 <th className="px-4 py-2 text-left font-bold" style={{ color: colors.dark }}>KPI</th>
@@ -1164,11 +1483,17 @@ const Slide10Commercial = () => {
             </thead>
             <tbody>
               {kpis.map((k, i) => (
-                <tr key={i} className="border-b border-gray-100">
+                <motion.tr 
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 + i * 0.08 }}
+                  className="border-b border-gray-100"
+                >
                   <td className="px-4 py-2" style={{ color: colors.dark }}>{k.kpi}</td>
                   <td className="px-4 py-2 text-center" style={{ color: colors.slate }}>{k.baseline}</td>
                   <td className="px-4 py-2 text-center font-bold" style={{ color: colors.green }}>{k.target}</td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
@@ -1176,29 +1501,35 @@ const Slide10Commercial = () => {
       </div>
 
       {/* Competitive Context */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="px-4 py-2" style={{ backgroundColor: colors.navy }}>
-          <h3 className="text-xs font-bold text-white">Competitive Context</h3>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.5 }} className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="px-4 py-2.5" style={{ backgroundColor: colors.navy }}>
+          <h3 className="text-sm font-bold text-white">COMPETITIVE CONTEXT</h3>
         </div>
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b" style={{ backgroundColor: colors.lightGrey }}>
               <th className="px-4 py-2 text-left font-bold" style={{ color: colors.dark }}></th>
               <th className="px-4 py-2 text-center font-bold" style={{ color: colors.teal }}>Procure AI</th>
               <th className="px-4 py-2 text-center font-bold" style={{ color: colors.slate }}>SAP Ariba</th>
               <th className="px-4 py-2 text-center font-bold" style={{ color: colors.slate }}>Oracle</th>
-              <th className="px-4 py-2 text-center font-bold" style={{ color: colors.slate }}>In-House</th>
+              <th className="px-4 py-2 text-center font-bold" style={{ color: colors.slate }}>In-House Build</th>
             </tr>
           </thead>
           <tbody>
             {competitive.map((c, i) => (
-              <tr key={i} className="border-b border-gray-100">
-                <td className="px-4 py-2 font-bold" style={{ color: colors.dark }}>{c.metric}</td>
+              <motion.tr 
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 + i * 0.08 }}
+                className="border-b border-gray-100"
+              >
+                <td className="px-4 py-2 font-medium" style={{ color: colors.dark }}>{c.metric}</td>
                 <td className="px-4 py-2 text-center font-bold" style={{ color: colors.green }}>{c.procure}</td>
                 <td className="px-4 py-2 text-center" style={{ color: colors.slate }}>{c.ariba}</td>
                 <td className="px-4 py-2 text-center" style={{ color: colors.slate }}>{c.oracle}</td>
                 <td className="px-4 py-2 text-center" style={{ color: colors.slate }}>{c.inhouse}</td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
@@ -1210,55 +1541,92 @@ const Slide10Commercial = () => {
 // ==================== SLIDE 11: DECISIONS ====================
 const Slide11Decisions = () => {
   const decisions = [
-    { num: "01", title: "Confirm Programme Start & Milestone 1 Payment", desc: "Approve mobilisation and authorise Payment 1 ($83,750 + VAT). Team begins with Azure provisioning, D365 integration, and architecture design in Month 1.", btn: "GO / NO-GO" },
-    { num: "02", title: "Approve Governance Model & Team Allocation", desc: "Endorse SteerCo composition, reporting cadence, RACI matrix, and escalation protocol. Confirm IHS project team roles (Project Owner, IT Lead, 2 BAs, SMEs, Change Champions).", btn: "APPROVE" },
-    { num: "03", title: "Instruct IT to Provision Infrastructure Access", desc: "Direct IHS IT to provision: Azure subscription (Week 1), D365 API credentials (Week 2), VPN access for dev team (Week 1), and ServiceNow specs (Month 2).", btn: "APPROVE" },
+    { num: "01", title: "Confirm Programme Start & Milestone 1 Payment", desc: "Approve project mobilisation and authorise Payment 1 ($83,750 + 7.5% VAT = $90,031.25). TN Macaulay team begins immediately with Azure environment provisioning, D365 API integration planning, and detailed architecture design during Month 1. This decision enables the project to meet the 1 March 2026 start date.", btn: "GO / NO-GO" },
+    { num: "02", title: "Approve Governance Model & Team Allocation", desc: "Formally endorse the Steering Committee composition, monthly reporting cadence, RACI matrix for all workstreams, and escalation protocol. Confirm IHS project team role assignments including Project Owner, IT Lead, 2 Business Analysts, Subject Matter Experts, and Change Champions. Team members should be available from Week 1.", btn: "APPROVE" },
+    { num: "03", title: "Instruct IT to Provision Infrastructure Access", desc: "Direct IHS IT to provision the following critical infrastructure: Azure subscription with required services (Week 1), D365 Finance & Operations API credentials with appropriate scopes (Week 2), VPN access for TN Macaulay development team (Week 1), and ServiceNow integration specifications (Month 2). Delays here directly impact project timeline.", btn: "APPROVE" },
   ];
 
   return (
-    <div className="w-full h-full flex flex-col p-16" style={{ backgroundColor: colors.navy, paddingLeft: 80 }}>
+    <div className="w-full h-full flex flex-col p-14" style={{ backgroundColor: colors.navy, paddingLeft: 80 }}>
       <div className="mb-8">
-        <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>07</span>
-        <h2 className="text-4xl font-bold mt-2 mb-4" style={{ fontFamily: "Georgia, serif", color: colors.white }}>Decision Points</h2>
-        <div className="w-44 h-0.5 mb-4" style={{ backgroundColor: colors.teal }} />
-        <p style={{ color: colors.slate }}>Three decisions required to proceed with 1 March 2026 mobilisation:</p>
+        <motion.span 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring" }}
+          className="text-2xl font-bold"
+          style={{ fontFamily: "Georgia, serif", color: colors.teal }}
+        >
+          07
+        </motion.span>
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-4xl font-bold mt-3 mb-4"
+          style={{ fontFamily: "Georgia, serif", color: colors.white }}
+        >
+          Decision Points
+        </motion.h2>
+        <motion.div 
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ delay: 0.2 }}
+          className="w-52 h-1 mb-5 rounded-full"
+          style={{ backgroundColor: colors.teal }}
+        />
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          style={{ color: colors.slate }}
+        >
+          Three decisions required from the Group CIO to proceed with 1 March 2026 mobilisation:
+        </motion.p>
       </div>
 
-      <div className="space-y-4 flex-1">
+      <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-4 flex-1">
         {decisions.map((d, i) => (
           <motion.div
             key={d.num}
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 + i * 0.15 }}
-            className="flex items-center gap-6 p-5 rounded-lg"
+            variants={fadeLeft}
+            whileHover={{ x: 8 }}
+            className="flex items-center gap-6 p-5 rounded-xl cursor-default"
             style={{ backgroundColor: colors.dark }}
           >
-            <span className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>{d.num}</span>
+            <motion.span 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.4 + i * 0.1, type: "spring" }}
+              className="text-4xl font-bold"
+              style={{ fontFamily: "Georgia, serif", color: colors.teal }}
+            >
+              {d.num}
+            </motion.span>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-white mb-1">{d.title}</h3>
-              <p className="text-sm" style={{ color: colors.slate }}>{d.desc}</p>
+              <h3 className="text-lg font-bold text-white mb-2">{d.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: colors.slate }}>{d.desc}</p>
             </div>
             <motion.button
-              whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${colors.teal}40` }}
-              className="px-6 py-3 rounded-lg font-bold text-white"
+              whileHover={{ scale: 1.05, boxShadow: `0 0 25px ${colors.teal}60` }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 rounded-lg font-bold text-white flex-shrink-0"
               style={{ backgroundColor: colors.teal }}
             >
               {d.btn}
             </motion.button>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="mt-6 px-6 py-4 rounded-lg border"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        className="mt-6 px-6 py-4 rounded-xl border"
         style={{ borderColor: colors.teal }}
       >
         <p className="text-sm italic" style={{ color: colors.iceBlue }}>
-          Thursday follow-up session will incorporate feedback and conclude with formal endorsement to proceed.
+          Thursday follow-up session will incorporate feedback from this meeting and conclude with formal written endorsement to proceed with project mobilisation.
         </p>
       </motion.div>
     </div>
@@ -1268,59 +1636,70 @@ const Slide11Decisions = () => {
 // ==================== SLIDE 12: CREDENTIALS ====================
 const Slide12Credentials = () => {
   const projects = [
-    { title: "Meristem Investment Bank", year: "2016", desc: "One of Nigeria's earliest enterprise AI chatbots. NLP-powered investment advisory processing thousands of queries daily.", color: colors.blue },
-    { title: "Vodafone Procurement Platform", year: "2017–2019", desc: "Three-in-one: internal procurement + vendor enablement + reverse auctions. D365 integration. 200+ vendors, ₦2B+ annually.", color: colors.teal },
-    { title: "Enterprise Financial Wallet", year: "2018", desc: "Multi-tenant platform for P&G, Vodafone, Dangote, Oando. D365 reconciliation. 50,000+ users across tenants.", color: colors.green },
-    { title: "Multi-Tenant AI Platform", year: "2018–Present", desc: "15+ enterprises on shared infra. Kubernetes-based isolation. 50K+ monthly transactions. HR, CX, and operations.", color: colors.navy },
+    { title: "Meristem Investment Bank", year: "2016", desc: "One of Nigeria's earliest enterprise AI chatbots deployed in production. NLP-powered investment advisory system processing thousands of customer queries daily with high accuracy and response times under 2 seconds. Integrated with core banking system for real-time portfolio updates.", color: colors.blue },
+    { title: "Vodacom Procurement Platform", year: "2017–2019", desc: "Comprehensive three-in-one solution: internal procurement workflows, external vendor enablement portal, and real-time reverse auction capability. Deep D365 Finance & Operations integration with bidirectional sync. 200+ active vendors, processing over ₦2B annually in procurement transactions.", color: colors.teal },
+    { title: "Enterprise Financial Wallet", year: "2018", desc: "Multi-tenant enterprise wallet platform supporting multiple large corporate clients. Features include D365 reconciliation automation, real-time transaction processing, and comprehensive audit trails. Over 50,000 active users across all tenant organisations with 99.9% uptime.", color: colors.green },
+    { title: "Multi-Tenant AI Platform", year: "2018–Present", desc: "Enterprise-grade AI platform serving 15+ organisations on shared infrastructure with complete data isolation. Kubernetes-based deployment ensuring security and scalability. Processing 50K+ transactions monthly across HR, customer experience, and operations use cases.", color: colors.navy },
   ];
 
   const stats = [
-    { value: "8+", label: "Years D365/Azure" },
-    { value: "15+", label: "Enterprise tenants" },
-    { value: "5", label: "D365 integrations" },
-    { value: "50K+", label: "Monthly txns" },
-    { value: "12", label: "Azure apps live" },
+    { value: "8+", label: "Years D365/Azure Experience" },
+    { value: "15+", label: "Enterprise Tenant Organisations" },
+    { value: "5", label: "D365 Deep Integrations" },
+    { value: "50K+", label: "Monthly Transactions" },
+    { value: "12", label: "Azure Production Apps" },
   ];
 
   return (
     <div className="w-full h-full p-12 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Appendix: TN Macaulay Credentials</h2>
-        <p style={{ color: colors.slate }}>Pioneering enterprise AI in Nigeria since 2016</p>
-      </div>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center mb-8">
+        <p className="text-sm font-medium mb-2" style={{ color: colors.teal }}>APPENDIX</p>
+        <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>TN Macaulay Team Credentials</h2>
+        <p className="text-base" style={{ color: colors.slate }}>Pioneering enterprise AI solutions in Nigeria since 2016</p>
+      </motion.div>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <motion.div variants={stagger} initial="hidden" animate="visible" className="grid grid-cols-2 gap-5 mb-8">
         {projects.map((p, i) => (
           <motion.div
             key={p.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + i * 0.1 }}
-            className="rounded-lg overflow-hidden shadow-lg"
+            variants={scaleUp}
+            whileHover={{ y: -4 }}
+            className="rounded-xl overflow-hidden shadow-lg cursor-default"
           >
-            <div className="px-4 py-2 flex justify-between items-center" style={{ backgroundColor: p.color }}>
+            <div className="px-5 py-3 flex justify-between items-center" style={{ backgroundColor: p.color }}>
               <h3 className="text-sm font-bold text-white">{p.title}</h3>
-              <span className="text-xs text-white opacity-80">{p.year}</span>
+              <span className="text-xs text-white opacity-80 px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>{p.year}</span>
             </div>
-            <div className="p-4 bg-white">
-              <p className="text-sm" style={{ color: colors.slate }}>{p.desc}</p>
+            <div className="p-5 bg-white">
+              <p className="text-sm leading-relaxed" style={{ color: colors.slate }}>{p.desc}</p>
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="flex justify-around py-6 rounded-lg"
+        transition={{ delay: 0.6 }}
+        className="flex justify-around py-6 rounded-xl"
         style={{ backgroundColor: colors.iceBlue }}
       >
         {stats.map((s, i) => (
-          <div key={i} className="text-center">
-            <p className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>{s.value}</p>
+          <motion.div 
+            key={i}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.7 + i * 0.1 }}
+            className="text-center"
+          >
+            <motion.p 
+              className="text-4xl font-bold mb-1"
+              style={{ fontFamily: "Georgia, serif", color: colors.teal }}
+            >
+              {s.value}
+            </motion.p>
             <p className="text-xs" style={{ color: colors.slate }}>{s.label}</p>
-          </div>
+          </motion.div>
         ))}
       </motion.div>
     </div>
