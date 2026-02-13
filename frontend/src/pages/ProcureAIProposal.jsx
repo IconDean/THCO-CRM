@@ -1118,6 +1118,38 @@ const ReverseAuctionSection = () => {
     { num: 6, label: "Payment & Collection", desc: "Invoice generated, asset handover", color: "#EA580C" },
   ];
 
+  // Thin Arrow Component
+  const ThinArrow = ({ delay = 0 }) => (
+    <motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay }}
+      className="flex items-center justify-center"
+    >
+      <svg width="30" height="20" viewBox="0 0 30 20">
+        <defs>
+          <linearGradient id={`thinArrow-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={colors.teal} />
+            <stop offset="100%" stopColor={colors.navy} />
+          </linearGradient>
+          <marker id={`thinHead-${delay}`} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill={colors.teal} />
+          </marker>
+        </defs>
+        <motion.path
+          d="M2,10 L22,10"
+          stroke={`url(#thinArrow-${delay})`}
+          strokeWidth="1.5"
+          fill="none"
+          markerEnd={`url(#thinHead-${delay})`}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: delay + 0.2, duration: 0.4 }}
+        />
+      </svg>
+    </motion.div>
+  );
+
   return (
     <div className="min-h-screen p-12 pb-24" style={{ backgroundColor: colors.lightGray }}>
       <div className="max-w-7xl mx-auto">
@@ -1128,27 +1160,41 @@ const ReverseAuctionSection = () => {
           <p className="text-gray-500 mb-12">Asset disposal through competitive bidding</p>
         </motion.div>
 
-        {/* Flow */}
-        <div className="grid grid-cols-6 gap-4 mb-12">
+        {/* Flow with Arrows */}
+        <div className="flex items-start justify-center gap-2 mb-12">
           {steps.map((step, i) => (
-            <motion.div
-              key={step.num}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="text-center"
-            >
-              <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-3"
-                style={{ backgroundColor: step.color }}
+            <div key={step.num} className="flex items-start">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="text-center w-36"
               >
-                {step.num}
-              </div>
-              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm h-32">
-                <h4 className="font-semibold text-gray-900 text-sm mb-2">{step.label}</h4>
-                <p className="text-xs text-gray-500">{step.desc}</p>
-              </div>
-            </motion.div>
+                <motion.div 
+                  className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-3 shadow-lg"
+                  style={{ backgroundColor: step.color }}
+                  whileHover={{ scale: 1.1 }}
+                  animate={{ 
+                    boxShadow: [`0 0 0px ${step.color}40`, `0 0 12px ${step.color}40`, `0 0 0px ${step.color}40`]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {step.num}
+                </motion.div>
+                <motion.div 
+                  className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm h-32"
+                  whileHover={{ y: -3, boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
+                >
+                  <h4 className="font-semibold text-gray-900 text-sm mb-2">{step.label}</h4>
+                  <p className="text-xs text-gray-500">{step.desc}</p>
+                </motion.div>
+              </motion.div>
+              {i < 5 && (
+                <div className="flex items-center h-14 mx-1">
+                  <ThinArrow delay={i * 0.1 + 0.3} />
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
@@ -1158,6 +1204,7 @@ const ReverseAuctionSection = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8 }}
+            whileHover={{ scale: 1.02 }}
             className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
           >
             <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -1176,6 +1223,7 @@ const ReverseAuctionSection = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.9 }}
+            whileHover={{ scale: 1.02 }}
             className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
           >
             <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
