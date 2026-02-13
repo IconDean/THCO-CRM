@@ -273,7 +273,7 @@ const ProcureAIProposal = () => {
     <div className="min-h-screen bg-white flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       {/* Download Progress Overlay - Hidden during actual capture */}
       {isGeneratingPdf && !captureInProgress && (
-        <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center">
+        <div data-pdf-overlay className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
