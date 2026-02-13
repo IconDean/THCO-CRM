@@ -111,16 +111,41 @@ const ProcureAIProposal = () => {
       const { jsPDF } = await import('jspdf');
       const html2canvas = (await import('html2canvas')).default;
       
+      // PDF dimensions (landscape letter size in pixels at 96 DPI)
+      const pdfWidth = 1056; // 11 inches * 96
+      const pdfHeight = 816; // 8.5 inches * 96
+      
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'px',
-        format: [1400, 900]
+        format: [pdfWidth, pdfHeight]
       });
+
+      // Hide UI elements for clean capture
+      const sidebar = document.querySelector('aside');
+      const header = document.querySelector('header');
+      const bottomNav = document.querySelector('[class*="fixed bottom-0"]');
+      const mainContent = document.querySelector('main');
+      
+      // Store original styles
+      const originalSidebarDisplay = sidebar?.style.display;
+      const originalHeaderDisplay = header?.style.display;
+      const originalBottomNavDisplay = bottomNav?.style.display;
+      const originalMainMargin = mainContent?.style.marginLeft;
+      
+      // Hide UI elements
+      if (sidebar) sidebar.style.display = 'none';
+      if (header) header.style.display = 'none';
+      if (bottomNav) bottomNav.style.display = 'none';
+      if (mainContent) {
+        mainContent.style.marginLeft = '0';
+        mainContent.style.marginTop = '0';
+      }
 
       // Capture each page
       for (let i = 1; i <= totalPages; i++) {
         // Update progress
-        const progressPercent = Math.round(((i - 1) / totalPages) * 90);
+        const progressPercent = Math.round(((i - 1) / totalPages) * 85);
         setDownloadProgress(progressPercent);
         setDownloadStatus(`Capturing page ${i}/${totalPages}: ${pageNames[i-1]}...`);
         
@@ -128,35 +153,65 @@ const ProcureAIProposal = () => {
         setDirection(0);
         setCurrentPage(i);
         
-        // Wait 5 seconds for content to fully render
-        await sleep(5000);
+        // Wait 7 seconds for content to fully render (longer wait for better capture)
+        await sleep(7000);
         
-        // Capture the current view
+        // Capture the content
         if (contentRef.current) {
-          const canvas = await html2canvas(contentRef.current, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: i === 1 || i === 8 ? '#1E2761' : '#F8FAFC',
-            windowWidth: 1400,
-            windowHeight: 900,
-          });
-          
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
-          
-          if (i > 1) {
-            pdf.addPage([1400, 900], 'landscape');
+          try {
+            const canvas = await html2canvas(contentRef.current, {
+              scale: 2,
+              useCORS: true,
+              logging: false,
+              backgroundColor: i === 1 || i === 8 ? '#1E2761' : '#F8FAFC',
+              width: 1400,
+              height: 900,
+              windowWidth: 1400,
+              windowHeight: 900,
+              x: 0,
+              y: 0,
+              scrollX: 0,
+              scrollY: 0,
+              allowTaint: true,
+              foreignObjectRendering: false,
+            });
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.92);
+            
+            if (i > 1) {
+              pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+            }
+            
+            // Add image with proper scaling to fit page
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            const scaledWidth = imgWidth * ratio;
+            const scaledHeight = imgHeight * ratio;
+            const xOffset = (pdfWidth - scaledWidth) / 2;
+            const yOffset = (pdfHeight - scaledHeight) / 2;
+            
+            pdf.addImage(imgData, 'JPEG', xOffset, yOffset, scaledWidth, scaledHeight);
+          } catch (captureError) {
+            console.error(`Error capturing page ${i}:`, captureError);
           }
-          
-          pdf.addImage(imgData, 'JPEG', 0, 0, 1400, 900);
         }
         
         // Update progress after capture
-        const captureProgress = Math.round((i / totalPages) * 90);
+        const captureProgress = Math.round((i / totalPages) * 85);
         setDownloadProgress(captureProgress);
       }
       
-      setDownloadProgress(95);
+      // Restore UI elements
+      if (sidebar) sidebar.style.display = originalSidebarDisplay || '';
+      if (header) header.style.display = originalHeaderDisplay || '';
+      if (bottomNav) bottomNav.style.display = originalBottomNavDisplay || '';
+      if (mainContent) {
+        mainContent.style.marginLeft = originalMainMargin || '';
+        mainContent.style.marginTop = '';
+      }
+      
+      setDownloadProgress(92);
       setDownloadStatus('Finalizing PDF...');
       await sleep(1000);
       
