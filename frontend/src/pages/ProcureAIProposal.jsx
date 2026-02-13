@@ -455,69 +455,72 @@ const HeroSection = () => (
 
 // Section 2: Architecture
 const ArchitectureSection = () => {
-  // Animated Bidirectional Arrow SVG
-  const BidirectionalArrow = ({ delay = 0 }) => (
-    <motion.svg 
-      width="120" height="60" 
-      viewBox="0 0 120 60"
+  // Thin Bidirectional Arrow SVG - shows flow going both directions
+  const ThinBidirectionalArrow = ({ delay = 0 }) => (
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
+      className="flex flex-col items-center justify-center gap-1"
     >
-      <defs>
-        <linearGradient id="biArrowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor={colors.teal} />
-          <stop offset="100%" stopColor={colors.navy} />
-        </linearGradient>
-        <marker id="arrowRight" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <path d="M0,0 L0,8 L8,4 z" fill={colors.navy} />
-        </marker>
-        <marker id="arrowLeft" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
-          <path d="M8,0 L8,8 L0,4 z" fill={colors.teal} />
-        </marker>
-      </defs>
-      {/* Right arrow */}
-      <motion.path
-        d="M10,25 L100,25"
-        stroke="url(#biArrowGrad)"
-        strokeWidth="3"
-        fill="none"
-        markerEnd="url(#arrowRight)"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ delay: delay + 0.3, duration: 0.6 }}
-      />
-      {/* Left arrow */}
-      <motion.path
-        d="M100,35 L10,35"
-        stroke="url(#biArrowGrad)"
-        strokeWidth="3"
-        fill="none"
-        markerEnd="url(#arrowLeft)"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ delay: delay + 0.6, duration: 0.6 }}
-      />
-      {/* Animated dots */}
-      <motion.circle
-        cx="55"
-        cy="25"
-        r="4"
-        fill={colors.teal}
-        initial={{ cx: 10 }}
-        animate={{ cx: [10, 100, 10] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: delay + 1 }}
-      />
-      <motion.circle
-        cx="55"
-        cy="35"
-        r="4"
-        fill={colors.navy}
-        initial={{ cx: 100 }}
-        animate={{ cx: [100, 10, 100] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: delay + 1.5 }}
-      />
-    </motion.svg>
+      <svg width="80" height="40" viewBox="0 0 80 40">
+        <defs>
+          <linearGradient id={`biArrowRight-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={colors.teal} />
+            <stop offset="100%" stopColor={colors.navy} />
+          </linearGradient>
+          <linearGradient id={`biArrowLeft-${delay}`} x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor={colors.teal} />
+            <stop offset="100%" stopColor={colors.navy} />
+          </linearGradient>
+          <marker id={`headRight-${delay}`} markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+            <path d="M0,0 L0,5 L5,2.5 z" fill={colors.navy} />
+          </marker>
+          <marker id={`headLeft-${delay}`} markerWidth="5" markerHeight="5" refX="1" refY="2.5" orient="auto">
+            <path d="M5,0 L5,5 L0,2.5 z" fill={colors.teal} />
+          </marker>
+        </defs>
+        {/* Right arrow (top) */}
+        <motion.path
+          d="M5,12 L65,12"
+          stroke={`url(#biArrowRight-${delay})`}
+          strokeWidth="1.5"
+          fill="none"
+          markerEnd={`url(#headRight-${delay})`}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: delay + 0.2, duration: 0.5 }}
+        />
+        {/* Left arrow (bottom) */}
+        <motion.path
+          d="M70,28 L10,28"
+          stroke={`url(#biArrowLeft-${delay})`}
+          strokeWidth="1.5"
+          fill="none"
+          markerEnd={`url(#headLeft-${delay})`}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: delay + 0.5, duration: 0.5 }}
+        />
+        {/* Animated dot going right */}
+        <motion.circle
+          r="3"
+          fill={colors.teal}
+          initial={{ cx: 5, cy: 12 }}
+          animate={{ cx: [5, 65, 5] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "linear", delay: delay + 1 }}
+        />
+        {/* Animated dot going left */}
+        <motion.circle
+          r="3"
+          fill={colors.navy}
+          initial={{ cx: 70, cy: 28 }}
+          animate={{ cx: [70, 10, 70] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "linear", delay: delay + 1.3 }}
+        />
+      </svg>
+      <span className="text-xs text-gray-400">Data Sync</span>
+    </motion.div>
   );
 
   return (
@@ -556,9 +559,9 @@ const ArchitectureSection = () => {
             ))}
           </motion.div>
 
-          {/* Left Arrows */}
+          {/* Left Bidirectional Arrows */}
           <div className="col-span-1 flex items-center justify-center">
-            <BidirectionalArrow delay={0.5} />
+            <ThinBidirectionalArrow delay={0.5} />
           </div>
 
           {/* Center - API Hub */}
@@ -605,9 +608,9 @@ const ArchitectureSection = () => {
             </div>
           </motion.div>
 
-          {/* Right Arrows */}
+          {/* Right Bidirectional Arrows */}
           <div className="col-span-1 flex items-center justify-center">
-            <BidirectionalArrow delay={0.7} />
+            <ThinBidirectionalArrow delay={0.7} />
           </div>
 
           {/* Right Column - Procure AI */}
