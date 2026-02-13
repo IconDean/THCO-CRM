@@ -103,7 +103,6 @@ const ProcureAIProposal = () => {
     setIsGeneratingPdf(true);
     setDownloadProgress(0);
     setDownloadStatus('Preparing document...');
-    setCaptureInProgress(true); // Hide overlay from the start
     
     const originalPage = currentPage;
     const totalPages = 8;
@@ -123,61 +122,58 @@ const ProcureAIProposal = () => {
         format: [pdfWidth, pdfHeight]
       });
 
-      // Hide sidebar and nav once at the start
-      const sidebar = document.querySelector('aside');
-      const header = document.querySelector('header');
-      const bottomNav = document.querySelectorAll('[class*="fixed bottom-0"]');
-      const mainContent = document.querySelector('main');
-      const progressOverlay = document.querySelector('[data-pdf-overlay]');
-      
-      const originalStyles = {
-        sidebar: sidebar?.style.cssText,
-        header: header?.style.cssText,
-        main: mainContent?.style.cssText,
-      };
-      
-      // Hide UI elements for entire capture process
-      if (sidebar) sidebar.style.display = 'none';
-      if (header) header.style.display = 'none';
-      bottomNav.forEach(el => el.style.display = 'none');
-      if (progressOverlay) progressOverlay.style.display = 'none';
-      if (mainContent) {
-        mainContent.style.marginLeft = '0';
-        mainContent.style.marginTop = '0';
-        mainContent.style.paddingTop = '0';
-      }
-
-      // Capture each page
+      // Capture each page - we need to show the overlay between captures
       for (let i = 1; i <= totalPages; i++) {
-        // Update progress (this won't show due to overlay being hidden, but useful for logging)
+        // Update progress - this WILL show because we're not hiding it yet
         const progressPercent = Math.round(((i - 1) / totalPages) * 85);
         setDownloadProgress(progressPercent);
         setDownloadStatus(`Capturing page ${i}/${totalPages}: ${pageNames[i-1]}...`);
-        console.log(`PDF: Capturing page ${i}/${totalPages}: ${pageNames[i-1]}`);
+        console.log(`PDF: Navigating to page ${i}/${totalPages}: ${pageNames[i-1]}`);
         
-        // Navigate to the page - use a promise to ensure state update completes
-        await new Promise((resolve) => {
-          setDirection(0);
-          setCurrentPage(i);
-          // Use requestAnimationFrame + setTimeout to ensure React has rendered
-          requestAnimationFrame(() => {
-            setTimeout(resolve, 100);
-          });
-        });
+        // Navigate to the page
+        setDirection(0);
+        setCurrentPage(i);
         
-        // Wait for animations to complete (framer-motion uses 500ms)
-        await sleep(800);
+        // CRITICAL: Wait 7 seconds for ALL animations to complete
+        // This includes Framer Motion page transitions AND internal section animations
+        await sleep(7000);
+        
+        console.log(`PDF: Starting capture of page ${i}`);
+        
+        // NOW hide overlay and UI for capture
+        setCaptureInProgress(true);
+        await sleep(300); // Let React hide the overlay
+        
+        // Hide sidebar, header, and bottom nav
+        const sidebar = document.querySelector('aside');
+        const header = document.querySelector('header');
+        const bottomNav = document.querySelectorAll('[class*="fixed bottom-0"]');
+        const mainContent = document.querySelector('main');
+        
+        const originalStyles = {
+          sidebar: sidebar?.style.cssText,
+          header: header?.style.cssText,
+          main: mainContent?.style.cssText,
+        };
+        
+        if (sidebar) sidebar.style.display = 'none';
+        if (header) header.style.display = 'none';
+        bottomNav.forEach(el => el.style.display = 'none');
+        if (mainContent) {
+          mainContent.style.marginLeft = '0';
+          mainContent.style.marginTop = '0';
+          mainContent.style.paddingTop = '0';
+        }
+        
+        await sleep(200); // Let styles apply
         
         // Capture the content
         if (contentRef.current) {
           try {
-            // Find the actual rendered content (the motion.div with current content)
-            const contentToCapture = contentRef.current.querySelector('.min-h-\\[calc\\(100vh-48px\\)\\]') || contentRef.current;
-            
-            const canvas = await html2canvas(contentToCapture, {
+            const canvas = await html2canvas(contentRef.current, {
               scale: 2,
               useCORS: true,
-              logging: true, // Enable logging for debugging
+              logging: true,
               backgroundColor: i === 1 || i === 8 ? '#1E2761' : '#F8FAFC',
               width: 1400,
               height: 850,
@@ -187,10 +183,11 @@ const ProcureAIProposal = () => {
               scrollY: 0,
               allowTaint: true,
               foreignObjectRendering: false,
-              onclone: (clonedDoc) => {
-                // Remove any fixed/overlay elements from the cloned document
-                const overlays = clonedDoc.querySelectorAll('.fixed.inset-0, [data-pdf-overlay]');
-                overlays.forEach(el => el.remove());
+              ignoreElements: (element) => {
+                // Ignore progress overlay and fixed elements
+                if (element.hasAttribute('data-pdf-overlay')) return true;
+                if (element.classList?.contains('fixed') && element.classList?.contains('inset-0')) return true;
+                return false;
               }
             });
             
@@ -217,18 +214,21 @@ const ProcureAIProposal = () => {
             console.error(`Error capturing page ${i}:`, captureError);
           }
         }
+        
+        // Restore UI elements after each capture
+        if (sidebar) sidebar.style.cssText = originalStyles.sidebar || '';
+        if (header) header.style.cssText = originalStyles.header || '';
+        bottomNav.forEach(el => el.style.display = '');
+        if (mainContent) mainContent.style.cssText = originalStyles.main || '';
+        
+        // Show overlay again for progress display
+        setCaptureInProgress(false);
+        await sleep(100);
       }
-      
-      // Restore UI elements
-      if (sidebar) sidebar.style.cssText = originalStyles.sidebar || '';
-      if (header) header.style.cssText = originalStyles.header || '';
-      bottomNav.forEach(el => el.style.display = '');
-      if (progressOverlay) progressOverlay.style.display = '';
-      if (mainContent) mainContent.style.cssText = originalStyles.main || '';
       
       setDownloadProgress(92);
       setDownloadStatus('Finalizing PDF...');
-      await sleep(500);
+      await sleep(1000);
       
       // Save the PDF
       console.log('PDF: Saving document...');
@@ -236,7 +236,7 @@ const ProcureAIProposal = () => {
       
       setDownloadProgress(100);
       setDownloadStatus('Download complete!');
-      await sleep(1000);
+      await sleep(1500);
       
       // Restore original page
       setDirection(originalPage > currentPage ? 1 : -1);
