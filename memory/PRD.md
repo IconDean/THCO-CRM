@@ -54,7 +54,8 @@ Build an internal company portal for THCO — a professional services firm. This
 - [x] Keyboard navigation (arrow keys)
 - [x] Left sidebar page numbers with hover expand
 - [x] Bottom navigation bar with progress indicator
-- [x] PDF export via html2pdf.js
+- [x] Multi-page PDF export using jspdf + html2canvas (Fixed Feb 13, 2026)
+- [x] Scroll-based presentation variant at /proposals/procure-ai-scroll
 
 ### Comprehensive Analytics System (Feb 12, 2026)
 - [x] Analytics tab in Settings (Super Admin only)
