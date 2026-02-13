@@ -173,7 +173,10 @@ const AppRouter = () => {
       <Route path="/proposals/view/:shareToken" element={<ProposalView />} />
       
       {/* Public Procure AI Presentation - No Auth Required */}
-      <Route path="/proposals/procure-ai" element={<ProcureAIProposal />} />
+      <Route path="/proposals/procure-ai" element={<ProcureAIProposalV2 />} />
+      
+      {/* Old version (backup) */}
+      <Route path="/proposals/procure-ai-v1" element={<ProcureAIProposal />} />
       
       {/* Public Procure AI Scroll Presentation - No Auth Required */}
       <Route path="/proposals/procure-ai-scroll" element={<ProcureAIScrollPresentation />} />
