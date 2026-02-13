@@ -690,33 +690,33 @@ const RFQFlowSection = () => {
     { num: 10, label: "Award & Contract", color: colors.navy },
   ];
 
-  // Animated Arrow Component
-  const AnimatedArrow = ({ delay = 0, direction = "right" }) => (
+  // Thin Animated Arrow Component
+  const ThinAnimatedArrow = ({ delay = 0 }) => (
     <motion.div
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.3 }}
+      transition={{ delay }}
       className="flex items-center justify-center mx-1"
     >
-      <svg width="40" height="24" viewBox="0 0 40 24" className={direction === "down" ? "rotate-90" : ""}>
+      <svg width="32" height="16" viewBox="0 0 32 16">
         <defs>
-          <linearGradient id={`arrowGrad-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={`thinGrad-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor={colors.teal} />
             <stop offset="100%" stopColor={colors.navy} />
           </linearGradient>
-          <marker id={`arrowHead-${delay}`} markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L9,3 z" fill={colors.teal} />
+          <marker id={`thinArrowHead-${delay}`} markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+            <path d="M0,0 L0,5 L5,2.5 z" fill={colors.teal} />
           </marker>
         </defs>
         <motion.path
-          d="M5,12 L30,12"
-          stroke={`url(#arrowGrad-${delay})`}
-          strokeWidth="3"
+          d="M2,8 L24,8"
+          stroke={`url(#thinGrad-${delay})`}
+          strokeWidth="1.5"
           fill="none"
-          markerEnd={`url(#arrowHead-${delay})`}
+          markerEnd={`url(#thinArrowHead-${delay})`}
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
-          transition={{ delay: delay + 0.2, duration: 0.5 }}
+          transition={{ delay: delay + 0.2, duration: 0.4 }}
         />
       </svg>
     </motion.div>
