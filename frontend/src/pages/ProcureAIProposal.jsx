@@ -230,12 +230,74 @@ const ProcureAIProposal = () => {
 
   return (
     <div className="min-h-screen bg-white flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Download Progress Overlay */}
+      {isGeneratingPdf && (
+        <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-8 shadow-2xl w-[500px]"
+          >
+            <div className="text-center mb-6">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: `${colors.teal}20` }}
+              >
+                <Loader2 className="w-8 h-8" style={{ color: colors.teal }} />
+              </motion.div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Generating PDF</h3>
+              <p className="text-gray-500 text-sm">{downloadStatus}</p>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="mb-4">
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-600">Progress</span>
+                <span className="font-bold" style={{ color: colors.teal }}>{downloadProgress}%</span>
+              </div>
+              <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ 
+                    background: `linear-gradient(90deg, ${colors.teal}, ${colors.navy})`,
+                    width: `${downloadProgress}%`
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${downloadProgress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            </div>
+            
+            {/* Page indicator */}
+            <div className="flex justify-center gap-1 mt-4">
+              {[1,2,3,4,5,6,7,8].map((page) => (
+                <div 
+                  key={page}
+                  className={`w-8 h-2 rounded-full transition-colors ${
+                    Math.ceil((downloadProgress / 80) * 8) >= page 
+                      ? 'bg-teal-500' 
+                      : 'bg-gray-200'
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="text-center text-xs text-gray-400 mt-2">
+              Capturing all 8 pages (5 seconds per page)
+            </p>
+          </motion.div>
+        </div>
+      )}
+
       {/* Top Header Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4" style={{ marginLeft: sidebarExpanded ? '224px' : '64px', transition: 'margin-left 0.3s' }}>
         <div className="flex items-center gap-3">
           {/* Back Button */}
           <button
             onClick={() => {
+              if (isGeneratingPdf) return;
               // Try to go back in history, fallback to proposals page
               if (window.history.length > 1) {
                 navigate(-1);
@@ -271,7 +333,7 @@ const ProcureAIProposal = () => {
               ) : (
                 <Download className="w-4 h-4" />
               )}
-              {isGeneratingPdf ? "Generating..." : "Download"}
+              {isGeneratingPdf ? `${downloadProgress}%` : "Download"}
               <ChevronDown className="w-4 h-4" />
             </button>
           </DropdownMenuTrigger>
