@@ -108,94 +108,63 @@ const ProcureAIProposal = () => {
     const pageNames = ['Overview', 'Architecture', 'RFQ Flow', 'Vendor Onboarding', 'Reverse Auction', 'Database', 'Data Upload', 'Next Steps'];
     
     try {
-      // Create a container to hold all pages
-      const pdfContainer = document.createElement('div');
-      pdfContainer.style.width = '1400px';
-      pdfContainer.style.position = 'absolute';
-      pdfContainer.style.left = '-9999px';
-      pdfContainer.style.top = '0';
-      document.body.appendChild(pdfContainer);
+      const { jsPDF } = await import('jspdf');
+      const html2canvas = (await import('html2canvas')).default;
+      
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [1400, 900]
+      });
 
       // Capture each page
       for (let i = 1; i <= totalPages; i++) {
         // Update progress
-        const progressPercent = Math.round(((i - 1) / totalPages) * 80);
+        const progressPercent = Math.round(((i - 1) / totalPages) * 90);
         setDownloadProgress(progressPercent);
         setDownloadStatus(`Capturing page ${i}/${totalPages}: ${pageNames[i-1]}...`);
         
-        // Navigate to the page
-        setDirection(i > currentPage ? 1 : -1);
+        // Navigate to the page (without animation for PDF capture)
+        setDirection(0);
         setCurrentPage(i);
         
-        // Wait 5 seconds for animations to complete and content to render
+        // Wait 5 seconds for content to fully render
         await sleep(5000);
         
-        // Clone the current page content
+        // Capture the current view
         if (contentRef.current) {
-          const pageContent = contentRef.current.cloneNode(true);
-          
-          // Create a page wrapper with page break
-          const pageWrapper = document.createElement('div');
-          pageWrapper.style.pageBreakAfter = 'always';
-          pageWrapper.style.pageBreakInside = 'avoid';
-          pageWrapper.style.minHeight = '100vh';
-          pageWrapper.style.width = '100%';
-          pageWrapper.style.overflow = 'hidden';
-          
-          // Remove animations from cloned content
-          const allElements = pageContent.querySelectorAll('*');
-          allElements.forEach(el => {
-            el.style.animation = 'none';
-            el.style.transition = 'none';
-            el.style.opacity = '1';
-            el.style.transform = 'none';
+          const canvas = await html2canvas(contentRef.current, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: i === 1 || i === 8 ? '#1E2761' : '#F8FAFC',
+            windowWidth: 1400,
+            windowHeight: 900,
           });
           
-          pageWrapper.appendChild(pageContent);
-          pdfContainer.appendChild(pageWrapper);
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          
+          if (i > 1) {
+            pdf.addPage([1400, 900], 'landscape');
+          }
+          
+          pdf.addImage(imgData, 'JPEG', 0, 0, 1400, 900);
         }
         
         // Update progress after capture
-        const captureProgress = Math.round((i / totalPages) * 80);
+        const captureProgress = Math.round((i / totalPages) * 90);
         setDownloadProgress(captureProgress);
       }
       
-      setDownloadProgress(85);
-      setDownloadStatus('Generating PDF file...');
+      setDownloadProgress(95);
+      setDownloadStatus('Finalizing PDF...');
+      await sleep(1000);
       
-      // Generate PDF from all captured pages
-      const opt = {
-        margin: [0.3, 0.3, 0.3, 0.3],
-        filename: 'Procure-AI-Presentation.pdf',
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          logging: false,
-          windowWidth: 1400,
-          windowHeight: 900,
-        },
-        jsPDF: { 
-          unit: 'in', 
-          format: 'letter', 
-          orientation: 'landscape' 
-        },
-        pagebreak: { mode: ['css', 'legacy'], after: '.page-break' }
-      };
-      
-      setDownloadProgress(90);
-      setDownloadStatus('Finalizing document...');
-      
-      await html2pdf().set(opt).from(pdfContainer).save();
-      
-      // Cleanup
-      document.body.removeChild(pdfContainer);
+      // Save the PDF
+      pdf.save('Procure-AI-Presentation.pdf');
       
       setDownloadProgress(100);
       setDownloadStatus('Download complete!');
-      
-      // Wait a moment to show completion
       await sleep(1500);
       
       // Restore original page
