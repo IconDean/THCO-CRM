@@ -455,71 +455,78 @@ const HeroSection = () => (
 
 // Section 2: Architecture
 const ArchitectureSection = () => {
-  // Thin Bidirectional Arrow SVG - shows flow going both directions
+  // Thin Bidirectional Arrow SVG - shows flow going both directions (left and right)
   const ThinBidirectionalArrow = ({ delay = 0 }) => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
-      className="flex flex-col items-center justify-center gap-1"
+      className="flex flex-col items-center justify-center"
     >
-      <svg width="80" height="40" viewBox="0 0 80 40">
+      <svg width="100" height="50" viewBox="0 0 100 50">
         <defs>
-          <linearGradient id={`biArrowRight-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={`gradRight-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor={colors.teal} />
             <stop offset="100%" stopColor={colors.navy} />
           </linearGradient>
-          <linearGradient id={`biArrowLeft-${delay}`} x1="100%" y1="0%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor={colors.teal} />
-            <stop offset="100%" stopColor={colors.navy} />
+          <linearGradient id={`gradLeft-${delay}`} x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor={colors.navy} />
+            <stop offset="100%" stopColor={colors.teal} />
           </linearGradient>
-          <marker id={`headRight-${delay}`} markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-            <path d="M0,0 L0,5 L5,2.5 z" fill={colors.navy} />
-          </marker>
-          <marker id={`headLeft-${delay}`} markerWidth="5" markerHeight="5" refX="1" refY="2.5" orient="auto">
-            <path d="M5,0 L5,5 L0,2.5 z" fill={colors.teal} />
-          </marker>
         </defs>
-        {/* Right arrow (top) */}
-        <motion.path
-          d="M5,12 L65,12"
-          stroke={`url(#biArrowRight-${delay})`}
-          strokeWidth="1.5"
-          fill="none"
-          markerEnd={`url(#headRight-${delay})`}
+        
+        {/* Right arrow (top) - pointing right */}
+        <motion.line
+          x1="10" y1="18" x2="80" y2="18"
+          stroke={`url(#gradRight-${delay})`}
+          strokeWidth="2"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ delay: delay + 0.2, duration: 0.5 }}
         />
-        {/* Left arrow (bottom) */}
-        <motion.path
-          d="M70,28 L10,28"
-          stroke={`url(#biArrowLeft-${delay})`}
-          strokeWidth="1.5"
-          fill="none"
-          markerEnd={`url(#headLeft-${delay})`}
+        <motion.polygon
+          points="78,12 90,18 78,24"
+          fill={colors.navy}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: delay + 0.5 }}
+        />
+        
+        {/* Left arrow (bottom) - pointing left */}
+        <motion.line
+          x1="90" y1="32" x2="20" y2="32"
+          stroke={`url(#gradLeft-${delay})`}
+          strokeWidth="2"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
-          transition={{ delay: delay + 0.5, duration: 0.5 }}
+          transition={{ delay: delay + 0.4, duration: 0.5 }}
         />
+        <motion.polygon
+          points="22,26 10,32 22,38"
+          fill={colors.teal}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: delay + 0.7 }}
+        />
+        
         {/* Animated dot going right */}
         <motion.circle
-          r="3"
+          r="4"
           fill={colors.teal}
-          initial={{ cx: 5, cy: 12 }}
-          animate={{ cx: [5, 65, 5] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "linear", delay: delay + 1 }}
+          initial={{ cx: 10, cy: 18, opacity: 0.8 }}
+          animate={{ cx: [10, 85, 10], opacity: [0.8, 1, 0.8] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: delay + 1 }}
         />
         {/* Animated dot going left */}
         <motion.circle
-          r="3"
+          r="4"
           fill={colors.navy}
-          initial={{ cx: 70, cy: 28 }}
-          animate={{ cx: [70, 10, 70] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "linear", delay: delay + 1.3 }}
+          initial={{ cx: 90, cy: 32, opacity: 0.8 }}
+          animate={{ cx: [90, 15, 90], opacity: [0.8, 1, 0.8] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: delay + 1.5 }}
         />
       </svg>
-      <span className="text-xs text-gray-400">Data Sync</span>
+      <span className="text-xs text-gray-400 mt-1">← Data Sync →</span>
     </motion.div>
   );
 
