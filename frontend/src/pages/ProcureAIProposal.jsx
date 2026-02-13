@@ -770,7 +770,7 @@ const RFQFlowSection = () => {
           {/* Curved Connector from Step 5 to Step 6 */}
           <div className="flex justify-end pr-16">
             <motion.svg 
-              width="60" height="60" 
+              width="50" height="50" 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
@@ -780,14 +780,14 @@ const RFQFlowSection = () => {
                   <stop offset="0%" stopColor={colors.teal} />
                   <stop offset="100%" stopColor={colors.navy} />
                 </linearGradient>
-                <marker id="curveArrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
-                  <path d="M0,0 L0,10 L10,5 z" fill={colors.navy} />
+                <marker id="curveArrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                  <path d="M0,0 L0,5 L5,2.5 z" fill={colors.navy} />
                 </marker>
               </defs>
               <motion.path
-                d="M30,5 L30,30 L5,30 L5,55"
+                d="M25,5 L25,25 L5,25 L5,45"
                 stroke="url(#curveGrad)"
-                strokeWidth="3"
+                strokeWidth="1.5"
                 fill="none"
                 markerEnd="url(#curveArrow)"
                 initial={{ pathLength: 0 }}
