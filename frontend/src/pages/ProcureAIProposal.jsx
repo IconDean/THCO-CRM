@@ -762,7 +762,7 @@ const RFQFlowSection = () => {
                     <span className="text-xs font-medium text-gray-700">{step.label}</span>
                   </motion.div>
                 </motion.div>
-                {i < 4 && <AnimatedArrow delay={i * 0.15 + 0.3} />}
+                {i < 4 && <ThinAnimatedArrow delay={i * 0.15 + 0.3} />}
               </div>
             ))}
           </div>
