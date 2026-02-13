@@ -17,6 +17,7 @@ import Proposals from "./pages/Proposals";
 import ProposalView from "./pages/ProposalView";
 import ProcureAIProposal from "./pages/ProcureAIProposal";
 import ProcureAIProposalV2 from "./pages/ProcureAIProposalV2";
+import ProcureAIExecutivePack from "./pages/ProcureAIExecutivePack";
 import ProcureAIScrollPresentation from "./pages/ProcureAIScrollPresentation";
 
 // Layout
