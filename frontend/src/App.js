@@ -176,6 +176,9 @@ const AppRouter = () => {
       {/* Public Procure AI Presentation - No Auth Required */}
       <Route path="/proposals/procure-ai" element={<ProcureAIProposalV2 />} />
       
+      {/* Public Procure AI Executive Pack - No Auth Required */}
+      <Route path="/proposals/procure-ai-executive" element={<ProcureAIExecutivePack />} />
+      
       {/* Old version (backup) */}
       <Route path="/proposals/procure-ai-v1" element={<ProcureAIProposal />} />
       
