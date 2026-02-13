@@ -97,6 +97,7 @@ const ProcureAIProposal = () => {
 
   // Sleep function for delays
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const [captureInProgress, setCaptureInProgress] = useState(false);
 
   const handleDownload = async () => {
     setIsGeneratingPdf(true);
@@ -121,27 +122,6 @@ const ProcureAIProposal = () => {
         format: [pdfWidth, pdfHeight]
       });
 
-      // Hide UI elements for clean capture
-      const sidebar = document.querySelector('aside');
-      const header = document.querySelector('header');
-      const bottomNav = document.querySelector('[class*="fixed bottom-0"]');
-      const mainContent = document.querySelector('main');
-      
-      // Store original styles
-      const originalSidebarDisplay = sidebar?.style.display;
-      const originalHeaderDisplay = header?.style.display;
-      const originalBottomNavDisplay = bottomNav?.style.display;
-      const originalMainMargin = mainContent?.style.marginLeft;
-      
-      // Hide UI elements
-      if (sidebar) sidebar.style.display = 'none';
-      if (header) header.style.display = 'none';
-      if (bottomNav) bottomNav.style.display = 'none';
-      if (mainContent) {
-        mainContent.style.marginLeft = '0';
-        mainContent.style.marginTop = '0';
-      }
-
       // Capture each page
       for (let i = 1; i <= totalPages; i++) {
         // Update progress
@@ -149,32 +129,69 @@ const ProcureAIProposal = () => {
         setDownloadProgress(progressPercent);
         setDownloadStatus(`Capturing page ${i}/${totalPages}: ${pageNames[i-1]}...`);
         
-        // Navigate to the page (without animation for PDF capture)
+        // Navigate to the page
         setDirection(0);
         setCurrentPage(i);
         
-        // Wait 7 seconds for content to fully render (longer wait for better capture)
+        // Wait 7 seconds for content to fully render
         await sleep(7000);
+        
+        // Hide overlay for capture
+        setCaptureInProgress(true);
+        await sleep(500); // Let React update the DOM
         
         // Capture the content
         if (contentRef.current) {
           try {
+            // Hide sidebar and nav during capture
+            const sidebar = document.querySelector('aside');
+            const header = document.querySelector('header');
+            const bottomNav = document.querySelectorAll('[class*="fixed bottom-0"]');
+            const mainContent = document.querySelector('main');
+            
+            const originalStyles = {
+              sidebar: sidebar?.style.cssText,
+              header: header?.style.cssText,
+              main: mainContent?.style.cssText,
+            };
+            
+            if (sidebar) sidebar.style.display = 'none';
+            if (header) header.style.display = 'none';
+            bottomNav.forEach(el => el.style.display = 'none');
+            if (mainContent) {
+              mainContent.style.marginLeft = '0';
+              mainContent.style.marginTop = '0';
+              mainContent.style.paddingTop = '0';
+            }
+            
+            await sleep(300); // Let styles apply
+            
             const canvas = await html2canvas(contentRef.current, {
               scale: 2,
               useCORS: true,
               logging: false,
               backgroundColor: i === 1 || i === 8 ? '#1E2761' : '#F8FAFC',
               width: 1400,
-              height: 900,
+              height: 850,
               windowWidth: 1400,
-              windowHeight: 900,
+              windowHeight: 850,
               x: 0,
               y: 0,
               scrollX: 0,
               scrollY: 0,
               allowTaint: true,
               foreignObjectRendering: false,
+              ignoreElements: (element) => {
+                // Ignore any fixed overlays
+                return element.classList?.contains('fixed') && element.classList?.contains('inset-0');
+              }
             });
+            
+            // Restore styles
+            if (sidebar) sidebar.style.cssText = originalStyles.sidebar || '';
+            if (header) header.style.cssText = originalStyles.header || '';
+            bottomNav.forEach(el => el.style.display = '');
+            if (mainContent) mainContent.style.cssText = originalStyles.main || '';
             
             const imgData = canvas.toDataURL('image/jpeg', 0.92);
             
@@ -197,18 +214,12 @@ const ProcureAIProposal = () => {
           }
         }
         
+        // Show overlay again
+        setCaptureInProgress(false);
+        
         // Update progress after capture
         const captureProgress = Math.round((i / totalPages) * 85);
         setDownloadProgress(captureProgress);
-      }
-      
-      // Restore UI elements
-      if (sidebar) sidebar.style.display = originalSidebarDisplay || '';
-      if (header) header.style.display = originalHeaderDisplay || '';
-      if (bottomNav) bottomNav.style.display = originalBottomNavDisplay || '';
-      if (mainContent) {
-        mainContent.style.marginLeft = originalMainMargin || '';
-        mainContent.style.marginTop = '';
       }
       
       setDownloadProgress(92);
@@ -235,6 +246,7 @@ const ProcureAIProposal = () => {
     setIsGeneratingPdf(false);
     setDownloadProgress(0);
     setDownloadStatus('');
+    setCaptureInProgress(false);
   };
 
   const pageVariants = {
