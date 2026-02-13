@@ -266,8 +266,8 @@ const ProcureAIProposal = () => {
 
   return (
     <div className="min-h-screen bg-white flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-      {/* Download Progress Overlay */}
-      {isGeneratingPdf && (
+      {/* Download Progress Overlay - Hidden during actual capture */}
+      {isGeneratingPdf && !captureInProgress && (
         <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -313,7 +313,7 @@ const ProcureAIProposal = () => {
                 <div 
                   key={page}
                   className={`w-8 h-2 rounded-full transition-colors ${
-                    Math.ceil((downloadProgress / 80) * 8) >= page 
+                    Math.ceil((downloadProgress / 85) * 8) >= page 
                       ? 'bg-teal-500' 
                       : 'bg-gray-200'
                   }`}
@@ -321,7 +321,7 @@ const ProcureAIProposal = () => {
               ))}
             </div>
             <p className="text-center text-xs text-gray-400 mt-2">
-              Capturing all 8 pages (5 seconds per page)
+              Capturing all 8 pages (7 seconds per page)
             </p>
           </motion.div>
         </div>
