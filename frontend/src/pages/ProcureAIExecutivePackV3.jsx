@@ -106,7 +106,7 @@ const ProcureAIExecutivePackV3 = () => {
     setDownloadStatus('Initializing...');
     
     const originalSlide = currentSlide;
-    const slideNames = ['Title', 'Agenda', 'Strategic Framing', 'Scope', 'Architecture', 'Governance', 'Risk', 'Roadmap', 'Resources', 'Commercial', 'Decisions', 'Credentials'];
+    const slideNames = ['Title', 'Agenda', 'Strategic Framing', 'Scope', 'Architecture', 'Governance', 'Risk', 'Roadmap', 'Resources', 'Performance', 'Decisions', 'Credentials'];
     
     try {
       const { jsPDF } = await import('jspdf');
@@ -124,16 +124,35 @@ const ProcureAIExecutivePackV3 = () => {
       for (let i = 1; i <= totalSlides; i++) {
         const progress = Math.round(((i - 1) / totalSlides) * 90);
         setDownloadProgress(progress);
-        setDownloadStatus(`Capturing: ${slideNames[i-1]}...`);
+        setDownloadStatus(`Rendering: ${slideNames[i-1]}...`);
         
         setDirection(0);
         setCurrentSlide(i);
-        await sleep(4000);
+        
+        // Wait for React to re-render
+        await sleep(100);
+        
+        // Wait for Framer Motion animations to complete (most animations have delays up to 1.5s)
+        await sleep(2500);
+        
+        // Force a repaint
+        if (contentRef.current) {
+          contentRef.current.offsetHeight; // Force reflow
+        }
+        
+        // Additional wait to ensure all animations are settled
+        await sleep(500);
+        
+        setDownloadStatus(`Capturing: ${slideNames[i-1]}...`);
         
         if (contentRef.current) {
           try {
+            // Use requestAnimationFrame to ensure rendering is complete
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            await sleep(200);
+            
             const canvas = await html2canvas(contentRef.current, {
-              scale: 1.5,
+              scale: 2,
               useCORS: true,
               logging: false,
               backgroundColor: [1, 11].includes(i) ? colors.navy : colors.lightGrey,
@@ -141,9 +160,18 @@ const ProcureAIExecutivePackV3 = () => {
               height: 1080,
               windowWidth: 1920,
               windowHeight: 1080,
+              onclone: (clonedDoc) => {
+                // Ensure all animations are in final state in cloned document
+                const clonedElement = clonedDoc.body;
+                const motionElements = clonedElement.querySelectorAll('[style*="opacity"]');
+                motionElements.forEach(el => {
+                  el.style.opacity = '1';
+                  el.style.transform = 'none';
+                });
+              }
             });
             
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            const imgData = canvas.toDataURL('image/jpeg', 0.92);
             
             if (i > 1) {
               pdf.addPage([pdfWidth, pdfHeight], 'landscape');
