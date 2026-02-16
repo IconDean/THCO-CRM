@@ -551,9 +551,9 @@ const Slide3StrategicFraming = () => {
   ];
 
   const phases = [
-    { num: 1, title: "Foundation & Core", desc: "Vendor Portal with self-registration, Due Diligence automation, Risk Monitor dashboard, AI Overview Bot, and Reverse Auction module", time: "Feb–May 2026 (4 months)", cost: "$47,500", color: colors.blue },
-    { num: 2, title: "RFx Workflows", desc: "RFx Creation engine, Global Vendor Sourcing, Scope Validation tools, BAFO management, and Template library", time: "Jun–Oct 2026 (5 months)", cost: "$60,000", color: colors.teal },
-    { num: 3, title: "Intelligence Suite", desc: "Demand Forecasting, Category Management, TCO Reporting, Risk Register, Audit trails, and Settings configuration", time: "Nov 2026–Feb 2027 (4 months)", cost: "$60,000", color: colors.green },
+    { num: 1, title: "Foundation & Core", desc: "Vendor Portal with self-registration, Due Diligence automation, Risk Monitor dashboard, AI Overview Bot, and Reverse Auction module", time: "Feb–May 2026 (4 months)", color: colors.blue },
+    { num: 2, title: "RFx Workflows", desc: "RFx Creation engine, Global Vendor Sourcing, Scope Validation tools, BAFO management, and Template library", time: "Jun–Oct 2026 (5 months)", color: colors.teal },
+    { num: 3, title: "Intelligence Suite", desc: "Demand Forecasting, Category Management, TCO Reporting, Risk Register, Audit trails, and Settings configuration", time: "Nov 2026–Feb 2027 (4 months)", color: colors.green },
   ];
 
   return (
