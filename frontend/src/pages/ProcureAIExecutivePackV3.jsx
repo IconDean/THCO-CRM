@@ -678,14 +678,6 @@ const Slide3StrategicFraming = () => {
               <h4 className="text-lg font-bold mb-2">{phase.title}</h4>
               <p className="text-xs opacity-90 mb-3 leading-relaxed">{phase.desc}</p>
               <p className="text-xs italic opacity-70 mb-3">{phase.time}</p>
-              <motion.p 
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.9 + i * 0.1 }}
-                className="text-2xl font-bold"
-              >
-                {phase.cost}
-              </motion.p>
             </div>
             {/* Decorative circle */}
             <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-10" style={{ backgroundColor: colors.white }} />
