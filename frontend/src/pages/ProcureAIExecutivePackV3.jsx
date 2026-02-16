@@ -1527,7 +1527,7 @@ const Slide10Commercial = () => {
 // ==================== SLIDE 11: DECISIONS ====================
 const Slide11Decisions = () => {
   const decisions = [
-    { num: "01", title: "Confirm Programme Start & Milestone 1 Payment", desc: "Approve project mobilisation and authorise initial payment. TN Macaulay team begins immediately with Azure environment provisioning, D365 API integration planning, and detailed architecture design during Month 1. This decision enables the project to meet the 1 March 2026 start date.", btn: "GO / NO-GO" },
+    { num: "01", title: "Confirm Programme Start Date", desc: "Approve project mobilisation for the 1 March 2026 start date. TN Macaulay team begins immediately with Azure environment provisioning, D365 API integration planning, and detailed architecture design during Month 1.", btn: "GO / NO-GO" },
     { num: "02", title: "Approve Governance Model & Team Allocation", desc: "Formally endorse the Steering Committee composition, monthly reporting cadence, RACI matrix for all workstreams, and escalation protocol. Confirm IHS project team role assignments including Project Owner, IT Lead, 2 Business Analysts, Subject Matter Experts, and Change Champions. Team members should be available from Week 1.", btn: "APPROVE" },
     { num: "03", title: "Instruct IT to Provision Infrastructure Access", desc: "Direct IHS IT to provision the following critical infrastructure: Azure subscription with required services (Week 1), D365 Finance & Operations API credentials with appropriate scopes (Week 2), VPN access for TN Macaulay development team (Week 1), and ServiceNow integration specifications (Month 2). Delays here directly impact project timeline.", btn: "APPROVE" },
   ];
