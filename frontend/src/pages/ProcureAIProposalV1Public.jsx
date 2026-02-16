@@ -1,4 +1,5 @@
 import EmailGate from '../components/EmailGate';
+import MobileWrapper from '../components/MobileWrapper';
 import ProcureAIProposal from './ProcureAIProposal';
 
 const ProcureAIProposalV1Public = () => {
@@ -7,7 +8,9 @@ const ProcureAIProposalV1Public = () => {
       proposalSlug="procure-ai-v1" 
       proposalTitle="Procure AI V1 - Original Presentation"
     >
-      <ProcureAIProposal />
+      <MobileWrapper presentationTitle="Procure AI V1">
+        <ProcureAIProposal />
+      </MobileWrapper>
     </EmailGate>
   );
 };
