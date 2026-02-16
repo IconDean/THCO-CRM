@@ -1392,9 +1392,9 @@ const Slide9Resources = () => {
   );
 };
 
-// ==================== SLIDE 10: COMMERCIAL ====================
+// ==================== SLIDE 10: PERFORMANCE FRAMEWORK ====================
 const Slide10Commercial = () => {
-  const investment = [
+  const phases = [
     { phase: "Phase 1: Foundation & Core", time: "Feb–May 2026" },
     { phase: "Phase 2: RFx Workflows", time: "Jun–Oct 2026" },
     { phase: "Phase 3: Intelligence Suite", time: "Nov–Feb 2027" },
@@ -1409,28 +1409,28 @@ const Slide10Commercial = () => {
   ];
 
   const competitive = [
-    { metric: "Total cost of ownership", procure: "One-time investment", ariba: "Annual subscription", oracle: "Annual subscription", inhouse: "High build cost" },
     { metric: "AI/ML capabilities", procure: "5+ AI engines", ariba: "Basic analytics", oracle: "Basic analytics", inhouse: "None" },
     { metric: "D365 integration depth", procure: "Deep, proven", ariba: "Available", oracle: "Available", inhouse: "Custom build" },
     { metric: "Source code ownership", procure: "Full to IHS", ariba: "No (SaaS)", oracle: "No (SaaS)", inhouse: "Yes" },
-    { metric: "Annual licence fees", procure: "None", ariba: "Required", oracle: "Required", inhouse: "None" },
+    { metric: "Time to deployment", procure: "13 months", ariba: "6-12 months", oracle: "6-12 months", inhouse: "18+ months" },
+    { metric: "Customization flexibility", procure: "Unlimited", ariba: "Limited", oracle: "Limited", inhouse: "Unlimited" },
   ];
 
   return (
     <div className="w-full h-full p-10 overflow-hidden" style={{ backgroundColor: colors.lightGrey, paddingLeft: 80 }}>
       <div className="flex items-center gap-4 mb-5">
         <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-2xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>06</motion.span>
-        <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Commercial & Performance Framework</motion.h2>
+        <motion.h2 variants={fadeUp} initial="hidden" animate="visible" className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.dark }}>Performance Framework</motion.h2>
       </div>
 
       <div className="flex gap-5 mb-5">
-        {/* Investment Summary */}
+        {/* Programme Timeline */}
         <motion.div variants={fadeLeft} initial="hidden" animate="visible" className="flex-1 bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="px-5 py-3" style={{ backgroundColor: colors.dark }}>
-            <h3 className="text-sm font-bold text-white">INVESTMENT SUMMARY</h3>
+            <h3 className="text-sm font-bold text-white">PROGRAMME TIMELINE</h3>
           </div>
           <div className="p-5">
-            {investment.map((i, idx) => (
+            {phases.map((i, idx) => (
               <motion.div 
                 key={idx}
                 initial={{ opacity: 0, x: -10 }}
@@ -1438,10 +1438,8 @@ const Slide10Commercial = () => {
                 transition={{ delay: 0.2 + idx * 0.1 }}
                 className="flex justify-between py-3 border-b border-gray-100 last:border-0"
               >
-                <span className="text-sm" style={{ color: colors.dark }}>{i.phase}</span>
-                <div className="text-right">
-                  <span className="text-xs" style={{ color: colors.slate }}>{i.time}</span>
-                </div>
+                <span className="text-sm font-medium" style={{ color: colors.dark }}>{i.phase}</span>
+                <span className="text-sm" style={{ color: colors.teal }}>{i.time}</span>
               </motion.div>
             ))}
             <motion.div 
@@ -1450,10 +1448,9 @@ const Slide10Commercial = () => {
               transition={{ delay: 0.6 }}
               className="flex justify-between pt-4 mt-3 border-t-2 border-gray-200"
             >
-              <span className="text-base font-bold" style={{ color: colors.dark }}>TOTAL INVESTMENT</span>
-              <span className="text-lg font-bold" style={{ color: colors.green }}>Contact for pricing</span>
+              <span className="text-base font-bold" style={{ color: colors.dark }}>TOTAL DURATION</span>
+              <span className="text-base font-bold" style={{ color: colors.green }}>13 Months</span>
             </motion.div>
-            <p className="text-xs mt-3" style={{ color: colors.slate }}>Optional post-project maintenance available</p>
           </div>
         </motion.div>
 
