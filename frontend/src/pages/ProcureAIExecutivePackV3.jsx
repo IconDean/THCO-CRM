@@ -1396,7 +1396,7 @@ const Slide9Resources = () => {
         <span style={{ color: colors.dark }}><strong>Hypercare:</strong> 3 months (4-hour response SLA)</span>
         <span style={{ color: colors.dark }}><strong>Critical issues:</strong> 24/7 coverage</span>
         <span style={{ color: colors.dark }}><strong>Knowledge transfer:</strong> Month 13</span>
-        <span style={{ color: colors.dark }}><strong>Optional maintenance:</strong> $3,000/month</span>
+        <span style={{ color: colors.dark }}><strong>Optional maintenance:</strong> Available</span>
       </motion.div>
     </div>
   );
@@ -1405,9 +1405,9 @@ const Slide9Resources = () => {
 // ==================== SLIDE 10: COMMERCIAL ====================
 const Slide10Commercial = () => {
   const investment = [
-    { phase: "Phase 1: Foundation & Core", amt: "$47,500", time: "Feb–May 2026" },
-    { phase: "Phase 2: RFx Workflows", amt: "$60,000", time: "Jun–Oct 2026" },
-    { phase: "Phase 3: Intelligence Suite", amt: "$60,000", time: "Nov–Feb 2027" },
+    { phase: "Phase 1: Foundation & Core", time: "Feb–May 2026" },
+    { phase: "Phase 2: RFx Workflows", time: "Jun–Oct 2026" },
+    { phase: "Phase 3: Intelligence Suite", time: "Nov–Feb 2027" },
   ];
 
   const kpis = [
@@ -1419,11 +1419,11 @@ const Slide10Commercial = () => {
   ];
 
   const competitive = [
-    { metric: "Total cost of ownership", procure: "$167.5K one-time", ariba: "$200K+/year", oracle: "$180K+/year", inhouse: "$300K+" },
+    { metric: "Total cost of ownership", procure: "One-time investment", ariba: "Annual subscription", oracle: "Annual subscription", inhouse: "High build cost" },
     { metric: "AI/ML capabilities", procure: "5+ AI engines", ariba: "Basic analytics", oracle: "Basic analytics", inhouse: "None" },
     { metric: "D365 integration depth", procure: "Deep, proven", ariba: "Available", oracle: "Available", inhouse: "Custom build" },
     { metric: "Source code ownership", procure: "Full to IHS", ariba: "No (SaaS)", oracle: "No (SaaS)", inhouse: "Yes" },
-    { metric: "Annual licence fees", procure: "None", ariba: "$200K+", oracle: "$180K+", inhouse: "None" },
+    { metric: "Annual licence fees", procure: "None", ariba: "Required", oracle: "Required", inhouse: "None" },
   ];
 
   return (
