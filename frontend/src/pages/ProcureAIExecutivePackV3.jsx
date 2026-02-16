@@ -493,7 +493,7 @@ const Slide2Agenda = () => {
     { num: "03", section: "Target Architecture", time: "20–25 min", desc: "Azure-native microservices solution design, D365 deep integration points, cybersecurity framework, and scalability considerations for enterprise deployment." },
     { num: "04", section: "Governance & Delivery Model", time: "20–25 min", desc: "Steering committee structure, PMO operations, RACI matrix for all workstreams, reporting cadence, and risk management protocols." },
     { num: "05", section: "Milestones & Execution Roadmap", time: "20–25 min", desc: "13-month delivery timeline with critical path analysis, resource mobilisation plan, change management strategy, and go-live preparation." },
-    { num: "06", section: "Commercial & Performance", time: "10–15 min", desc: "Budget phasing across three phases, payment milestone structure, KPI framework with baseline and target metrics, and scope exclusions." },
+    { num: "06", section: "Performance Framework", time: "10–15 min", desc: "KPI framework with baseline and target metrics, programme timeline across three phases, and competitive analysis." },
     { num: "07", section: "Decision Points", time: "10–15 min", desc: "Three key decisions required: Go/no-go for 1 March mobilisation, governance model approval, and IT infrastructure provisioning instructions." },
   ];
 
