@@ -22,6 +22,13 @@ import ProcureAIExecutivePackV3 from "./pages/ProcureAIExecutivePackV3";
 import ProcureAIExecutivePackV4 from "./pages/ProcureAIExecutivePackV4";
 import ProcureAIScrollPresentation from "./pages/ProcureAIScrollPresentation";
 
+// Public Email-Gated Presentations
+import ProcureAIExecutivePackPublic from "./pages/ProcureAIExecutivePackPublic";
+import ProcureAIExecutivePackV3Public from "./pages/ProcureAIExecutivePackV3Public";
+import ProcureAIProposalPublic from "./pages/ProcureAIProposalPublic";
+import ProcureAIScrollPublic from "./pages/ProcureAIScrollPublic";
+import ProcureAIProposalV1Public from "./pages/ProcureAIProposalV1Public";
+
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
 
