@@ -10,7 +10,6 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [company, setCompany] = useState('');
   const [error, setError] = useState('');
   const activityInterval = useRef(null);
   const startTime = useRef(Date.now());
@@ -29,14 +28,13 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
           if (response.data.has_access) {
             setEmail(storedEmail);
             setName(response.data.name || '');
-            setCompany(response.data.company || '');
             setHasAccess(true);
             
             // Re-register to update last viewed
             await axios.post(`${API_URL}/api/proposals/viewers/register`, {
               email: storedEmail,
               name: response.data.name || '',
-              company: response.data.company || '',
+              company: '',
               proposal_slug: proposalSlug
             });
           }
@@ -101,11 +99,17 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
       return;
     }
 
+    if (!name) {
+      setError('Please enter your name');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const response = await axios.post(`${API_URL}/api/proposals/viewers/register`, {
         email,
         name,
-        company,
+        company: '',
         proposal_slug: proposalSlug
       });
 
@@ -164,13 +168,20 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
       >
         <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-10">
           {/* Title */}
-          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 text-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 text-center mb-3">
             View Presentation
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-sm text-gray-500 text-center mb-6 px-2">
-            {proposalTitle || 'Enter your details to continue'}
+          {/* Proposal Title */}
+          {proposalTitle && (
+            <p className="text-sm text-gray-500 text-center mb-2 px-2">
+              {proposalTitle}
+            </p>
+          )}
+
+          {/* Clear instruction */}
+          <p className="text-sm text-gray-600 text-center mb-6 px-2">
+            Enter your details below to view the presentation
           </p>
 
           {/* Form */}
@@ -178,13 +189,13 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
             {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-                Email
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder="your@email.com"
                 required
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
                 data-testid="email-gate-email"
@@ -194,30 +205,16 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
             {/* Name Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-                Name <span className="text-gray-400 font-normal">(optional)</span>
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Name"
+                placeholder="Your full name"
+                required
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
                 data-testid="email-gate-name"
-              />
-            </div>
-
-            {/* Company Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-                Company <span className="text-gray-400 font-normal">(optional)</span>
-              </label>
-              <input
-                type="text"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                placeholder="Company"
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
-                data-testid="email-gate-company"
               />
             </div>
 
@@ -245,18 +242,13 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Verifying...
+                  Loading...
                 </span>
               ) : (
-                'Continue'
+                'View Presentation'
               )}
             </button>
           </form>
-
-          {/* Footer text */}
-          <p className="text-xs text-gray-400 text-center mt-5 sm:mt-6">
-            Your information is used only to track viewership
-          </p>
         </div>
       </motion.div>
     </div>
