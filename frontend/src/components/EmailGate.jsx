@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, User, Building2, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -134,9 +133,9 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
   }
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-[#f8fafc] overflow-hidden relative">
-      {/* Background Cloud Shapes */}
-      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice">
+    <div className="w-screen min-h-screen flex items-center justify-center bg-[#f8fafc] overflow-auto relative px-4 py-8 sm:py-0">
+      {/* Background Cloud Shapes - Hidden on very small screens for performance */}
+      <svg className="absolute inset-0 w-full h-full hidden sm:block" preserveAspectRatio="xMidYMid slice">
         <defs>
           <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
             <circle cx="2" cy="2" r="1" fill="#d4e4f7" opacity="0.5" />
@@ -153,29 +152,32 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
         <rect x="15%" y="10%" width="70%" height="70%" fill="url(#dots)" opacity="0.6" />
       </svg>
 
+      {/* Mobile background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white sm:hidden" />
+
       {/* Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative z-10 w-full max-w-md mx-4"
+        className="relative z-10 w-full max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-xl p-10">
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-10">
           {/* Title */}
-          <h1 className="text-3xl font-semibold text-gray-900 text-center mb-8">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 text-center mb-4 sm:mb-8">
             View Presentation
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm text-gray-500 text-center mb-6">
+          <p className="text-sm text-gray-500 text-center mb-6 px-2">
             {proposalTitle || 'Enter your details to continue'}
           </p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Email
               </label>
               <input
@@ -184,14 +186,14 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
                 data-testid="email-gate-email"
               />
             </div>
 
             {/* Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Name <span className="text-gray-400 font-normal">(optional)</span>
               </label>
               <input
@@ -199,14 +201,14 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Name"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
                 data-testid="email-gate-name"
               />
             </div>
 
             {/* Company Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Company <span className="text-gray-400 font-normal">(optional)</span>
               </label>
               <input
@@ -214,7 +216,7 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="Company"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg text-gray-900 text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4169E1] focus:border-transparent transition-all"
                 data-testid="email-gate-company"
               />
             </div>
@@ -237,7 +239,7 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 px-4 bg-[#4169E1] hover:bg-[#3457c9] text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 sm:py-3.5 px-4 bg-[#4169E1] hover:bg-[#3457c9] active:bg-[#2d4ab3] text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base"
               data-testid="email-gate-submit"
             >
               {isSubmitting ? (
@@ -252,7 +254,7 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
           </form>
 
           {/* Footer text */}
-          <p className="text-xs text-gray-400 text-center mt-6">
+          <p className="text-xs text-gray-400 text-center mt-5 sm:mt-6">
             Your information is used only to track viewership
           </p>
         </div>
