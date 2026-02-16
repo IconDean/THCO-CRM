@@ -1203,7 +1203,7 @@ const Slide8Roadmap = () => {
             style={{ originX: 0, backgroundColor: colors.blue, width: `${(4/13)*100}%` }}
             className="h-full rounded-lg text-white text-xs font-bold flex items-center justify-center shadow-lg"
           >
-            Phase 1: Foundation & Core ($47,500)
+            Phase 1: Foundation & Core
           </motion.div>
           <motion.div 
             initial={{ scaleX: 0 }} 
@@ -1212,7 +1212,7 @@ const Slide8Roadmap = () => {
             style={{ originX: 0, backgroundColor: colors.teal, width: `${(5/13)*100}%` }}
             className="h-full rounded-lg text-white text-xs font-bold flex items-center justify-center shadow-lg"
           >
-            Phase 2: RFx Workflows ($60,000)
+            Phase 2: RFx Workflows
           </motion.div>
           <motion.div 
             initial={{ scaleX: 0 }} 
@@ -1221,7 +1221,7 @@ const Slide8Roadmap = () => {
             style={{ originX: 0, backgroundColor: colors.green, width: `${(4/13)*100}%` }}
             className="h-full rounded-lg text-white text-xs font-bold flex items-center justify-center shadow-lg"
           >
-            Phase 3: Intelligence ($60,000)
+            Phase 3: Intelligence
           </motion.div>
         </div>
       </div>
