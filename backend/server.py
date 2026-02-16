@@ -250,6 +250,37 @@ class AnalyticsSummary(BaseModel):
     device_breakdown: dict
     browser_breakdown: dict
 
+# ==================== PROPOSAL VIEWER MODELS ====================
+
+class ProposalViewerRegister(BaseModel):
+    email: EmailStr
+    name: Optional[str] = ""
+    company: Optional[str] = ""
+    proposal_slug: str
+
+class ProposalViewerResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    viewer_id: str
+    email: str
+    name: str
+    company: str
+    proposal_slug: str
+    proposal_name: str
+    first_viewed_at: datetime
+    last_viewed_at: datetime
+    view_count: int
+    total_time_spent: int  # seconds
+    ip_address: Optional[str] = None
+    location: Optional[str] = None
+    device_type: Optional[str] = None
+    browser: Optional[str] = None
+
+class ProposalViewerActivity(BaseModel):
+    email: str
+    proposal_slug: str
+    time_spent: int  # seconds to add
+    current_slide: Optional[int] = None
+
 # ==================== HELPER FUNCTIONS ====================
 
 def hash_password(password: str) -> str:
