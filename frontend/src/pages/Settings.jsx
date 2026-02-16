@@ -746,6 +746,11 @@ const Settings = () => {
             </Table>
           </div>
         </TabsContent>
+
+        {/* Proposal Viewers Tab */}
+        <TabsContent value="proposal-viewers" className="mt-6">
+          <ProposalViewerAnalytics />
+        </TabsContent>
       </Tabs>
 
       {/* User Modal */}
