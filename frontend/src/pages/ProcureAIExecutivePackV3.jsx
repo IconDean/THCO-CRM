@@ -1462,9 +1462,9 @@ const Slide10Commercial = () => {
               className="flex justify-between pt-4 mt-3 border-t-2 border-gray-200"
             >
               <span className="text-base font-bold" style={{ color: colors.dark }}>TOTAL INVESTMENT</span>
-              <span className="text-2xl font-bold" style={{ color: colors.green }}>$167,500</span>
+              <span className="text-lg font-bold" style={{ color: colors.green }}>Contact for pricing</span>
             </motion.div>
-            <p className="text-xs mt-3" style={{ color: colors.slate }}>+ 7.5% VAT = $180,062.50 | Optional post-project maintenance: $3,000/month</p>
+            <p className="text-xs mt-3" style={{ color: colors.slate }}>Optional post-project maintenance available</p>
           </div>
         </motion.div>
 
