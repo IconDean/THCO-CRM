@@ -360,6 +360,14 @@ const Settings = () => {
             <Activity className="w-4 h-4 mr-2" />
             Activity Log
           </TabsTrigger>
+          <TabsTrigger 
+            value="proposal-viewers" 
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 rounded-lg"
+            data-testid="proposal-viewers-tab"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Proposal Viewers
+          </TabsTrigger>
         </TabsList>
 
         {/* Webhooks Tab */}
