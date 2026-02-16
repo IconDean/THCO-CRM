@@ -720,9 +720,9 @@ const Slide4Scope = () => {
   ];
 
   const exclusions = [
-    "LLM API usage costs (Azure OpenAI or equivalent) — estimated $500–2,000/month based on volume",
-    "Cloud hosting and infrastructure costs (Azure subscription) — estimated $1,500–3,000/month",
-    "Third-party service licences: D&B ($15K/year), NAVEX ($8K/year), Docusign (per-envelope pricing)",
+    "LLM API usage costs (Azure OpenAI or equivalent)",
+    "Cloud hosting and infrastructure costs (Azure subscription)",
+    "Third-party service licences: D&B, NAVEX, Docusign",
     "Microsoft Dynamics 365 licensing and any required licence upgrades for API access",
     "D365 core ERP modifications, legacy system decommissioning, and historical data archival"
   ];
