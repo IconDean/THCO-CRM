@@ -1451,30 +1451,30 @@ const ProcureAIExecutivePackV4 = () => {
       <button
         onClick={prevSlide}
         disabled={currentSlide === 0}
-        className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full transition-all z-40 hover:scale-110 disabled:opacity-30"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-all z-40 hover:scale-110 disabled:opacity-30 active:scale-95"
         style={{ backgroundColor: 'rgba(13, 148, 136, 0.9)' }}
         data-testid="prev-slide-btn"
       >
-        <ChevronLeft className="w-6 h-6 text-white" />
+        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
       </button>
 
       <button
         onClick={nextSlide}
         disabled={currentSlide === slides.length - 1}
-        className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full transition-all z-40 hover:scale-110 disabled:opacity-30"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full transition-all z-40 hover:scale-110 disabled:opacity-30 active:scale-95"
         style={{ backgroundColor: 'rgba(13, 148, 136, 0.9)' }}
         data-testid="next-slide-btn"
       >
-        <ChevronRight className="w-6 h-6 text-white" />
+        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
       </button>
 
-      {/* Bottom Navigation */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-40">
+      {/* Bottom Navigation - Scrollable on mobile */}
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 z-40 max-w-[80%] overflow-x-auto px-2 scrollbar-hide">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className="w-3 h-3 rounded-full transition-all"
+            className="w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all flex-shrink-0"
             style={{ 
               backgroundColor: index === currentSlide ? colors.teal : 'rgba(255,255,255,0.3)',
               transform: index === currentSlide ? 'scale(1.2)' : 'scale(1)',
@@ -1486,32 +1486,43 @@ const ProcureAIExecutivePackV4 = () => {
 
       {/* Slide Counter */}
       <div 
-        className="absolute bottom-6 right-8 text-sm font-bold z-40"
+        className="absolute bottom-4 sm:bottom-6 right-4 sm:right-8 text-xs sm:text-sm font-bold z-40"
         style={{ fontFamily: 'Georgia, serif', color: colors.teal }}
       >
         {currentSlide + 1} / {slides.length}
       </div>
 
-      {/* Controls */}
-      <div className="absolute top-6 right-8 flex items-center gap-3 z-40">
+      {/* Controls - Responsive layout */}
+      <div className="absolute top-4 sm:top-6 right-4 sm:right-8 flex items-center gap-2 sm:gap-3 z-40">
         <button
           onClick={downloadPDF}
           disabled={isGeneratingPDF}
-          className="flex items-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold text-white transition-all hover:scale-105 disabled:opacity-50"
+          className="hidden sm:flex items-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold text-white transition-all hover:scale-105 disabled:opacity-50"
           style={{ backgroundColor: colors.teal }}
           data-testid="download-pdf-btn"
         >
           <Download className="w-4 h-4" />
           Download PDF
         </button>
+        
+        {/* Mobile PDF button - icon only */}
+        <button
+          onClick={downloadPDF}
+          disabled={isGeneratingPDF}
+          className="sm:hidden p-2 rounded-lg text-white transition-all active:scale-95 disabled:opacity-50"
+          style={{ backgroundColor: colors.teal }}
+          data-testid="download-pdf-btn-mobile"
+        >
+          <Download className="w-5 h-5" />
+        </button>
 
         <button
           onClick={toggleFullscreen}
-          className="p-2 rounded-lg text-white transition-all hover:scale-105"
+          className="p-2 rounded-lg text-white transition-all hover:scale-105 active:scale-95"
           style={{ backgroundColor: 'rgba(13, 148, 136, 0.9)' }}
           data-testid="fullscreen-btn"
         >
-          {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+          {isFullscreen ? <Minimize className="w-4 h-4 sm:w-5 sm:h-5" /> : <Maximize className="w-4 h-4 sm:w-5 sm:h-5" />}
         </button>
       </div>
     </div>
