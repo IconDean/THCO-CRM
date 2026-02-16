@@ -57,6 +57,18 @@ Build an internal company portal for THCO — a professional services firm. This
 - [x] Multi-page PDF export using jspdf + html2canvas (Fixed Feb 13, 2026)
 - [x] Scroll-based presentation variant at /proposals/procure-ai-scroll
 
+### Procure AI Executive Pack V4 (Dec 2025)
+- [x] Premium 12-slide executive kick-off presentation at /proposals/procure-ai-executive (PUBLIC)
+- [x] Full-screen slides designed for 16:9 projection (1920x1080)
+- [x] Design System: Navy (#1E2761) backgrounds, Teal (#0D9488) accents, Georgia serif headings
+- [x] Slides: Title, Agenda, Strategic Framing, Scope Confirmation, Target Architecture, Governance, Risk Register, Milestones, Resources, Commercial, Decision Points, Credentials
+- [x] Interactive navigation: Arrow keys, dot navigation, prev/next buttons
+- [x] Fullscreen toggle (F key or button)
+- [x] Responsive scaling to fit any viewport
+- [x] Multi-page PDF download (58MB, 12 pages)
+- [x] Framer Motion animations for slide transitions
+- [x] Credentials slide shows "Vodacom" (not Vodafone)
+
 ### Comprehensive Analytics System (Feb 12, 2026)
 - [x] Analytics tab in Settings (Super Admin only)
 - [x] Automatic page view tracking via AnalyticsProvider context
