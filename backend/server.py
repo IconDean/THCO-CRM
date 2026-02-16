@@ -1927,6 +1927,188 @@ async def download_shared_proposal(share_token: str):
         media_type=content_type
     )
 
+# ==================== PROPOSAL VIEWER TRACKING ROUTES ====================
+
+# Mapping of proposal slugs to display names
+PROPOSAL_NAMES = {
+    "procure-ai": "Procure AI - Process Flowcharts",
+    "procure-ai-scroll": "Procure AI - Scroll Version",
+    "procure-ai-executive": "Executive Kick-Off Pack",
+    "procure-ai-executive-v3": "Executive Pack V3",
+    "procure-ai-v1": "Procure AI V1",
+}
+
+@api_router.post("/proposals/viewers/register")
+async def register_proposal_viewer(data: ProposalViewerRegister, request: Request):
+    """Register a viewer's email before they can view a proposal (public endpoint)"""
+    
+    # Get request metadata
+    ip_address = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown")
+    if "," in ip_address:
+        ip_address = ip_address.split(",")[0].strip()
+    
+    user_agent_str = request.headers.get("User-Agent", "")
+    ua = parse_user_agent(user_agent_str)
+    device_type = "Mobile" if ua.is_mobile else "Tablet" if ua.is_tablet else "Desktop"
+    browser = f"{ua.browser.family} {ua.browser.version_string}"
+    
+    # Get location from IP
+    location = None
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"http://ip-api.com/json/{ip_address}?fields=city,country", timeout=3)
+            if resp.status_code == 200:
+                loc_data = resp.json()
+                if loc_data.get("city") and loc_data.get("country"):
+                    location = f"{loc_data['city']}, {loc_data['country']}"
+    except:
+        pass
+    
+    proposal_name = PROPOSAL_NAMES.get(data.proposal_slug, data.proposal_slug)
+    now = datetime.now(timezone.utc)
+    
+    # Check if viewer already exists for this proposal
+    existing = await db.proposal_viewers.find_one({
+        "email": data.email.lower(),
+        "proposal_slug": data.proposal_slug
+    }, {"_id": 0})
+    
+    if existing:
+        # Update existing record
+        await db.proposal_viewers.update_one(
+            {"email": data.email.lower(), "proposal_slug": data.proposal_slug},
+            {
+                "$set": {
+                    "last_viewed_at": now,
+                    "ip_address": ip_address,
+                    "device_type": device_type,
+                    "browser": browser,
+                    "location": location,
+                    "name": data.name or existing.get("name", ""),
+                    "company": data.company or existing.get("company", ""),
+                },
+                "$inc": {"view_count": 1}
+            }
+        )
+        viewer_id = existing["viewer_id"]
+    else:
+        # Create new viewer record
+        viewer_id = f"viewer_{uuid.uuid4().hex[:12]}"
+        await db.proposal_viewers.insert_one({
+            "viewer_id": viewer_id,
+            "email": data.email.lower(),
+            "name": data.name or "",
+            "company": data.company or "",
+            "proposal_slug": data.proposal_slug,
+            "proposal_name": proposal_name,
+            "first_viewed_at": now,
+            "last_viewed_at": now,
+            "view_count": 1,
+            "total_time_spent": 0,
+            "ip_address": ip_address,
+            "location": location,
+            "device_type": device_type,
+            "browser": browser,
+        })
+    
+    return {
+        "success": True,
+        "viewer_id": viewer_id,
+        "message": "Access granted"
+    }
+
+@api_router.post("/proposals/viewers/activity")
+async def update_viewer_activity(data: ProposalViewerActivity):
+    """Update viewer's time spent on proposal (public endpoint)"""
+    
+    result = await db.proposal_viewers.update_one(
+        {"email": data.email.lower(), "proposal_slug": data.proposal_slug},
+        {
+            "$inc": {"total_time_spent": data.time_spent},
+            "$set": {"last_viewed_at": datetime.now(timezone.utc)}
+        }
+    )
+    
+    return {"success": result.modified_count > 0}
+
+@api_router.get("/proposals/viewers/check/{proposal_slug}/{email}")
+async def check_viewer_access(proposal_slug: str, email: str):
+    """Check if a viewer has already registered for a proposal (public endpoint)"""
+    
+    existing = await db.proposal_viewers.find_one({
+        "email": email.lower(),
+        "proposal_slug": proposal_slug
+    }, {"_id": 0})
+    
+    if existing:
+        return {
+            "has_access": True,
+            "viewer_id": existing["viewer_id"],
+            "name": existing.get("name", ""),
+            "company": existing.get("company", "")
+        }
+    
+    return {"has_access": False}
+
+@api_router.get("/proposals/viewers", response_model=List[ProposalViewerResponse])
+async def get_all_proposal_viewers(
+    proposal_slug: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all proposal viewers (admin only)"""
+    if current_user["role"] not in ["super_admin", "mini_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    query = {}
+    if proposal_slug:
+        query["proposal_slug"] = proposal_slug
+    
+    viewers = await db.proposal_viewers.find(query, {"_id": 0}).sort("last_viewed_at", -1).to_list(500)
+    return viewers
+
+@api_router.get("/proposals/viewers/stats")
+async def get_proposal_viewer_stats(current_user: dict = Depends(get_current_user)):
+    """Get proposal viewer statistics (admin only)"""
+    if current_user["role"] not in ["super_admin", "mini_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Total unique viewers
+    total_viewers = await db.proposal_viewers.count_documents({})
+    
+    # Total views
+    pipeline = [{"$group": {"_id": None, "total_views": {"$sum": "$view_count"}}}]
+    total_views_result = await db.proposal_viewers.aggregate(pipeline).to_list(1)
+    total_views = total_views_result[0]["total_views"] if total_views_result else 0
+    
+    # Views by proposal
+    pipeline = [
+        {"$group": {
+            "_id": "$proposal_slug",
+            "proposal_name": {"$first": "$proposal_name"},
+            "unique_viewers": {"$sum": 1},
+            "total_views": {"$sum": "$view_count"},
+            "total_time_spent": {"$sum": "$total_time_spent"}
+        }},
+        {"$sort": {"total_views": -1}}
+    ]
+    views_by_proposal = await db.proposal_viewers.aggregate(pipeline).to_list(20)
+    
+    # Recent viewers (last 7 days)
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    recent_viewers = await db.proposal_viewers.count_documents({"last_viewed_at": {"$gte": week_ago}})
+    
+    # Today's viewers
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_viewers = await db.proposal_viewers.count_documents({"last_viewed_at": {"$gte": today_start}})
+    
+    return {
+        "total_unique_viewers": total_viewers,
+        "total_views": total_views,
+        "views_by_proposal": views_by_proposal,
+        "viewers_this_week": recent_viewers,
+        "viewers_today": today_viewers
+    }
+
 # ==================== ANALYTICS & USER TRACKING ROUTES ====================
 
 @api_router.post("/analytics/page-view")
