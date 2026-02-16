@@ -1421,22 +1421,30 @@ const ProcureAIExecutivePackV4 = () => {
 
       {/* Slide Content */}
       <div 
-        ref={slideRef}
-        className="w-full h-full"
-        style={{ width: '1920px', height: '1080px', transform: 'scale(1)', transformOrigin: 'top left' }}
+        className="absolute top-0 left-0 flex items-center justify-center w-full h-full"
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            className="w-full h-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <CurrentSlideComponent />
-          </motion.div>
-        </AnimatePresence>
+        <div 
+          ref={slideRef}
+          style={{ 
+            width: '1920px', 
+            height: '1080px', 
+            transform: `scale(${scale})`,
+            transformOrigin: 'center center',
+          }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              className="w-full h-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CurrentSlideComponent />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Navigation Arrows */}
