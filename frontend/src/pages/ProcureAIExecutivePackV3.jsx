@@ -1440,8 +1440,7 @@ const Slide10Commercial = () => {
               >
                 <span className="text-sm" style={{ color: colors.dark }}>{i.phase}</span>
                 <div className="text-right">
-                  <span className="text-base font-bold" style={{ color: colors.teal }}>{i.amt}</span>
-                  <span className="text-xs ml-2" style={{ color: colors.slate }}>{i.time}</span>
+                  <span className="text-xs" style={{ color: colors.slate }}>{i.time}</span>
                 </div>
               </motion.div>
             ))}
