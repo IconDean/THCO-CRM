@@ -1249,8 +1249,29 @@ const ProcureAIExecutivePackV4 = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [scale, setScale] = useState(1);
   const slideRef = useRef(null);
   const containerRef = useRef(null);
+
+  // Calculate scale to fit viewport
+  useEffect(() => {
+    const calculateScale = () => {
+      const targetWidth = 1920;
+      const targetHeight = 1080;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      const scaleX = viewportWidth / targetWidth;
+      const scaleY = viewportHeight / targetHeight;
+      const newScale = Math.min(scaleX, scaleY);
+      
+      setScale(newScale);
+    };
+
+    calculateScale();
+    window.addEventListener('resize', calculateScale);
+    return () => window.removeEventListener('resize', calculateScale);
+  }, []);
 
   const slides = [
     { component: TitleSlide, name: 'Title' },
