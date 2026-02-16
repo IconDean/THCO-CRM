@@ -1,4 +1,5 @@
 import EmailGate from '../components/EmailGate';
+import MobileWrapper from '../components/MobileWrapper';
 import ProcureAIExecutivePackV4 from './ProcureAIExecutivePackV4';
 
 const ProcureAIExecutivePackPublic = () => {
@@ -7,7 +8,9 @@ const ProcureAIExecutivePackPublic = () => {
       proposalSlug="procure-ai-executive" 
       proposalTitle="Executive Kick-Off Pack - IHS Towers"
     >
-      <ProcureAIExecutivePackV4 />
+      <MobileWrapper presentationTitle="Executive Kick-Off Pack">
+        <ProcureAIExecutivePackV4 />
+      </MobileWrapper>
     </EmailGate>
   );
 };
