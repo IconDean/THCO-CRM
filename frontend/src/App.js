@@ -179,9 +179,10 @@ const AppRouter = () => {
       <Route path="/proposals/procure-ai" element={<ProcureAIProposalV2 />} />
       
       {/* Public Procure AI Executive Pack - No Auth Required */}
-      <Route path="/proposals/procure-ai-executive" element={<ProcureAIExecutivePackV3 />} />
+      <Route path="/proposals/procure-ai-executive" element={<ProcureAIExecutivePackV4 />} />
       
-      {/* Old Executive Pack version */}
+      {/* Old Executive Pack versions */}
+      <Route path="/proposals/procure-ai-executive-v3" element={<ProcureAIExecutivePackV3 />} />
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
       
       {/* Old version (backup) */}
