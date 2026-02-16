@@ -1255,7 +1255,6 @@ const Slide8Roadmap = () => {
               <th className="px-4 py-2 text-left font-bold" style={{ color: colors.dark }}>#</th>
               <th className="px-4 py-2 text-left font-bold" style={{ color: colors.dark }}>Trigger</th>
               <th className="px-4 py-2 text-center font-bold" style={{ color: colors.dark }}>%</th>
-              <th className="px-4 py-2 text-right font-bold" style={{ color: colors.dark }}>Amount</th>
               <th className="px-4 py-2 text-right font-bold" style={{ color: colors.dark }}>Target</th>
             </tr>
           </thead>
@@ -1271,7 +1270,6 @@ const Slide8Roadmap = () => {
                 <td className="px-4 py-2 font-bold" style={{ color: colors.teal }}>{p.num}</td>
                 <td className="px-4 py-2" style={{ color: colors.slate }}>{p.trigger}</td>
                 <td className="px-4 py-2 text-center font-bold" style={{ color: colors.dark }}>{p.pct}</td>
-                <td className="px-4 py-2 text-right font-bold" style={{ color: colors.green }}>{p.amt}</td>
                 <td className="px-4 py-2 text-right" style={{ color: colors.slate }}>{p.target}</td>
               </motion.tr>
             ))}
