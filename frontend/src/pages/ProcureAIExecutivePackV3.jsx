@@ -1174,10 +1174,10 @@ const Slide8Roadmap = () => {
   ];
 
   const payments = [
-    { num: 1, trigger: "Project kickoff and contract signature", pct: "50%", amt: "$83,750", target: "Feb 2026" },
-    { num: 2, trigger: "Phase 1 completion (core modules + vendor portal live)", pct: "20%", amt: "$33,500", target: "May 2026" },
-    { num: 3, trigger: "Phase 2 completion (RFx workflows live in production)", pct: "15%", amt: "$25,125", target: "Oct 2026" },
-    { num: 4, trigger: "Final delivery, go-live, and hypercare handover", pct: "15%", amt: "$25,125", target: "Feb 2027" },
+    { num: 1, trigger: "Project kickoff and contract signature", pct: "50%", target: "Feb 2026" },
+    { num: 2, trigger: "Phase 1 completion (core modules + vendor portal live)", pct: "20%", target: "May 2026" },
+    { num: 3, trigger: "Phase 2 completion (RFx workflows live in production)", pct: "15%", target: "Oct 2026" },
+    { num: 4, trigger: "Final delivery, go-live, and hypercare handover", pct: "15%", target: "Feb 2027" },
   ];
 
   return (
