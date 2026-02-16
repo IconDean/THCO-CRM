@@ -182,21 +182,22 @@ const AppRouter = () => {
       {/* Public Proposal View - No Auth Required */}
       <Route path="/proposals/view/:shareToken" element={<ProposalView />} />
       
-      {/* Public Procure AI Presentation - No Auth Required */}
-      <Route path="/proposals/procure-ai" element={<ProcureAIProposalV2 />} />
+      {/* Public Email-Gated Presentations */}
+      <Route path="/proposals/procure-ai" element={<ProcureAIProposalPublic />} />
+      <Route path="/proposals/procure-ai-executive" element={<ProcureAIExecutivePackPublic />} />
+      <Route path="/proposals/procure-ai-executive-v3" element={<ProcureAIExecutivePackV3Public />} />
+      <Route path="/proposals/procure-ai-scroll" element={<ProcureAIScrollPublic />} />
+      <Route path="/proposals/procure-ai-v1" element={<ProcureAIProposalV1Public />} />
       
-      {/* Public Procure AI Executive Pack - No Auth Required */}
-      <Route path="/proposals/procure-ai-executive" element={<ProcureAIExecutivePackV4 />} />
+      {/* Internal Preview Routes (no email gate - for admins) */}
+      <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
+      <Route path="/proposals/preview/procure-ai-executive" element={<ProcureAIExecutivePackV4 />} />
+      <Route path="/proposals/preview/procure-ai-executive-v3" element={<ProcureAIExecutivePackV3 />} />
+      <Route path="/proposals/preview/procure-ai-scroll" element={<ProcureAIScrollPresentation />} />
+      <Route path="/proposals/preview/procure-ai-v1" element={<ProcureAIProposal />} />
       
-      {/* Old Executive Pack versions */}
-      <Route path="/proposals/procure-ai-executive-v3" element={<ProcureAIExecutivePackV3 />} />
+      {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
-      
-      {/* Old version (backup) */}
-      <Route path="/proposals/procure-ai-v1" element={<ProcureAIProposal />} />
-      
-      {/* Public Procure AI Scroll Presentation - No Auth Required */}
-      <Route path="/proposals/procure-ai-scroll" element={<ProcureAIScrollPresentation />} />
       
       {/* Coming Soon Unit Routes */}
       <Route path="/sales" element={
