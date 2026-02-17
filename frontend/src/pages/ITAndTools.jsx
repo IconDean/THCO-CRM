@@ -335,21 +335,21 @@ const ITAndTools = () => {
 
       {/* AI Agents Overview */}
       <div>
-        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-4">AI Agents Status</h2>
+        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-4">All 37 AI Agents Registry</h2>
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">All Agents ({AI_AGENTS.length})</h3>
+            <h3 className="font-semibold text-gray-900">Agent Hub ({ALL_AGENTS.length} agents)</h3>
             <div className="flex items-center gap-4 text-xs">
               <span className="flex items-center gap-1 text-green-600">
                 <CheckCircle2 className="w-3 h-3" /> {activeAgents} Active
               </span>
-              <span className="flex items-center gap-1 text-gray-500">
-                <RefreshCw className="w-3 h-3" /> {idleAgents} Idle
+              <span className="flex items-center gap-1 text-amber-600">
+                <Clock className="w-3 h-3" /> {comingSoonAgents} Coming Soon
               </span>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-            {AI_AGENTS.map((agent, index) => {
+            {ALL_AGENTS.map((agent, index) => {
               const statusConfig = STATUS_CONFIG[agent.status];
               const StatusIcon = statusConfig.icon;
               return (
@@ -357,7 +357,7 @@ const ITAndTools = () => {
                   key={agent.id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: index * 0.03 }}
+                  transition={{ delay: index * 0.02 }}
                   className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all cursor-pointer"
                   data-testid={`agent-${agent.id}`}
                 >
@@ -366,7 +366,7 @@ const ITAndTools = () => {
                       <StatusIcon className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{agent.name}</p>
+                      <p className="text-sm font-medium text-gray-900">#{agent.id} {agent.name}</p>
                       <p className="text-xs text-gray-500">{agent.department}</p>
                     </div>
                   </div>
@@ -374,7 +374,6 @@ const ITAndTools = () => {
                     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusConfig.color}`}>
                       {statusConfig.label}
                     </span>
-                    <p className="text-xs text-gray-400 mt-1">{agent.lastRun}</p>
                   </div>
                 </motion.div>
               );
