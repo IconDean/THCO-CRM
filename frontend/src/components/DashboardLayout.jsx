@@ -81,6 +81,7 @@ const DashboardLayoutInner = ({ children, user }) => {
     }
     if (path === "/thco-hr") return "THCO HR";
     if (path === "/project-management") return "Project Management";
+    if (path === "/it-tools") return "IT & THCO Tools";
     const unit = UNITS.find(u => path.startsWith(u.path));
     return unit?.name || "Dashboard";
   };
