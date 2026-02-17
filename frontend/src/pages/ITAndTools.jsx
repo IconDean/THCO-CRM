@@ -22,20 +22,67 @@ import {
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 
-// The 22 AI Agents from Operating Cycle
+// The 22 AI Agents from Operating Cycle - now showing IT-specific agents
 const AI_AGENTS = [
-  { id: "lead_research", name: "Lead Research Agent", department: "Sales", status: "active", lastRun: "2 min ago" },
-  { id: "meeting_prep", name: "Meeting Prep Agent", department: "Sales", status: "active", lastRun: "15 min ago" },
-  { id: "follow_up", name: "Follow-Up Agent", department: "Sales", status: "active", lastRun: "5 min ago" },
-  { id: "inbox_mgmt", name: "Inbox Management Agent", department: "Operations", status: "active", lastRun: "1 min ago" },
-  { id: "mvp_proposal", name: "MVP/Proposal Generator", department: "Technology", status: "active", lastRun: "30 min ago" },
-  { id: "spec_to_tasks", name: "Spec-to-Tasks Agent", department: "Technology", status: "active", lastRun: "1 hr ago" },
-  { id: "project_status", name: "Project Status Agent", department: "Project Mgmt", status: "active", lastRun: "10 min ago" },
-  { id: "knowledge_capture", name: "Knowledge Capture Agent", department: "Academy", status: "idle", lastRun: "2 hrs ago" },
-  { id: "data_aggregation", name: "Data Aggregation Agent", department: "Analytics", status: "active", lastRun: "3 min ago" },
-  { id: "content_writer", name: "Content Writer Agent", department: "Marketing", status: "active", lastRun: "45 min ago" },
-  { id: "linkedin_poster", name: "LinkedIn Poster Agent", department: "Marketing", status: "idle", lastRun: "4 hrs ago" },
-  { id: "newsletter", name: "Newsletter Agent", department: "Marketing", status: "idle", lastRun: "1 week ago" },
+  {
+    id: 13,
+    name: "#13 Tool Health Monitor Agent",
+    department: "IT & Tools",
+    description: "Monitors email deliverability, domain reputation, bounce rates, API quotas 24/7",
+    priority: "high",
+    trigger: "Continuous monitoring",
+    status: "coming_soon"
+  },
+  {
+    id: 37,
+    name: "#37 Security & Compliance Agent",
+    department: "IT & Tools",
+    description: "Multi-jurisdiction compliance (GDPR, NDPR, PIPEDA). Data exposure alerts. Audit docs",
+    priority: "low",
+    trigger: "Continuous + quarterly",
+    status: "coming_soon"
+  }
+];
+
+// All 37 agents for overview display
+const ALL_AGENTS = [
+  { id: 1, name: "Lead Research Agent", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 2, name: "Email Outreach Agent", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 3, name: "Inbox Management Agent", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 4, name: "Candidate Sourcing Agent", department: "Recruiting", status: "active", lastRun: "2 min ago" },
+  { id: 5, name: "Spec-to-Tasks Agent", department: "Technology", status: "coming_soon", lastRun: "—" },
+  { id: 6, name: "Content Generation Agent", department: "Marketing", status: "coming_soon", lastRun: "—" },
+  { id: 7, name: "Client Reactivation Intel", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 8, name: "Intake Call Processing", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 9, name: "Follow-Up & Cadence", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 10, name: "Candidate Screening", department: "Recruiting", status: "coming_soon", lastRun: "—" },
+  { id: 11, name: "Candidate Outreach", department: "Recruiting", status: "coming_soon", lastRun: "—" },
+  { id: 12, name: "MVP/Proposal Generator", department: "Technology", status: "coming_soon", lastRun: "—" },
+  { id: 13, name: "Tool Health Monitor", department: "IT & Tools", status: "coming_soon", lastRun: "—" },
+  { id: 14, name: "Meeting Prep Agent", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 15, name: "Project Management", department: "Operations", status: "coming_soon", lastRun: "—" },
+  { id: 16, name: "Social Media Scheduling", department: "Marketing", status: "coming_soon", lastRun: "—" },
+  { id: 17, name: "Client Reporting", department: "Recruiting", status: "coming_soon", lastRun: "—" },
+  { id: 18, name: "Project Status Tracker", department: "Technology", status: "coming_soon", lastRun: "—" },
+  { id: 19, name: "Workforce Assessment", department: "Advisory", status: "coming_soon", lastRun: "—" },
+  { id: 20, name: "HR Policy Generator", department: "Advisory", status: "coming_soon", lastRun: "—" },
+  { id: 21, name: "Research & Analysis", department: "Advisory", status: "coming_soon", lastRun: "—" },
+  { id: 22, name: "Applicant Screening", department: "Academy", status: "coming_soon", lastRun: "—" },
+  { id: 23, name: "Document Automation", department: "Operations", status: "coming_soon", lastRun: "—" },
+  { id: 24, name: "Performance Tracking", department: "Operations", status: "coming_soon", lastRun: "—" },
+  { id: 25, name: "Knowledge Capture", department: "Insights", status: "coming_soon", lastRun: "—" },
+  { id: 26, name: "Curriculum & Learning", department: "Academy", status: "coming_soon", lastRun: "—" },
+  { id: 27, name: "Code Review & Mentoring", department: "Academy", status: "coming_soon", lastRun: "—" },
+  { id: 28, name: "Newsletter & Nurture", department: "Marketing", status: "coming_soon", lastRun: "—" },
+  { id: 29, name: "Internal HR & People Ops", department: "THCO HR", status: "coming_soon", lastRun: "—" },
+  { id: 30, name: "CRM & Pipeline Intel", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 31, name: "Competitive Intelligence", department: "Sales", status: "coming_soon", lastRun: "—" },
+  { id: 32, name: "Client Onboarding", department: "Operations", status: "coming_soon", lastRun: "—" },
+  { id: 33, name: "Invoicing & Collections", department: "Operations", status: "coming_soon", lastRun: "—" },
+  { id: 34, name: "QA & Testing", department: "Technology", status: "coming_soon", lastRun: "—" },
+  { id: 35, name: "Scope Creep Detection", department: "Technology", status: "coming_soon", lastRun: "—" },
+  { id: 36, name: "Timesheet & Utilization", department: "Operations", status: "coming_soon", lastRun: "—" },
+  { id: 37, name: "Security & Compliance", department: "IT & Tools", status: "coming_soon", lastRun: "—" },
 ];
 
 const TOOLS = [
