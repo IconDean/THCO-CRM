@@ -127,7 +127,7 @@ const TOOLS = [
 
 const STATUS_CONFIG = {
   active: { color: "bg-green-100 text-green-700", icon: CheckCircle2, label: "Active" },
-  idle: { color: "bg-gray-100 text-gray-600", icon: RefreshCw, label: "Idle" },
+  coming_soon: { color: "bg-amber-100 text-amber-700", icon: Clock, label: "Coming Soon" },
   error: { color: "bg-red-100 text-red-700", icon: XCircle, label: "Error" },
   warning: { color: "bg-amber-100 text-amber-700", icon: AlertTriangle, label: "Warning" }
 };
