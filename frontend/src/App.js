@@ -210,55 +210,55 @@ const AppRouter = () => {
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
       
-      {/* Coming Soon Unit Routes */}
+      {/* Business Unit Routes */}
       <Route path="/sales" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Sales & Business Development" />
+          <SalesAndBD />
         </ProtectedRoute>
       } />
       <Route path="/marketing" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Marketing & Brand" />
+          <MarketingAndBrand />
         </ProtectedRoute>
       } />
       <Route path="/advisory" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Advisory & Consulting" />
+          <AdvisoryAndConsulting />
         </ProtectedRoute>
       } />
       <Route path="/technology" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Technology & Build" />
+          <TechnologyAndBuild />
         </ProtectedRoute>
       } />
       <Route path="/operations" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Operations & Finance" />
+          <OperationsAndFinance />
         </ProtectedRoute>
       } />
       <Route path="/academy" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Academy & Learning" />
+          <AcademyAndLearning />
         </ProtectedRoute>
       } />
       <Route path="/client-delivery" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Client Delivery" />
+          <ClientDelivery />
         </ProtectedRoute>
       } />
       <Route path="/thco-hr" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="THCO HR" />
+          <THCOHRPage />
         </ProtectedRoute>
       } />
       <Route path="/project-management" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="Project Management" />
+          <ProjectManagement />
         </ProtectedRoute>
       } />
       <Route path="/it-tools" element={
         <ProtectedRoute>
-          <UnitComingSoon unitName="IT & THCO Tools" />
+          <ITAndTools />
         </ProtectedRoute>
       } />
       
