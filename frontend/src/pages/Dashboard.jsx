@@ -139,10 +139,11 @@ const UNITS = [
     slug: "client-delivery", 
     icon: Truck, 
     path: "/client-delivery", 
-    active: false,
-    description: "Managed services, SLA tracking, and delivery management",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#EF4444] to-[#F87171]"
+    active: true,
+    description: "Managed services, SLA tracking, deployed staff at client sites",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#EC4899] to-[#F472B6]",
+    lead: "Isaiah"
   },
 ];
 
