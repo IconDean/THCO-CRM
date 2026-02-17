@@ -320,6 +320,49 @@ const ProjectManagement = () => {
         </div>
       </div>
 
+      {/* AI Agents */}
+      <div className="mb-8">
+        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-4">AI Agents ({AI_AGENTS.length})</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {AI_AGENTS.map((agent, index) => {
+            const Icon = agent.icon;
+            return (
+              <motion.div
+                key={agent.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group bg-white rounded-xl border border-gray-200 p-4 hover:border-teal-300 hover:shadow-md transition-all cursor-pointer"
+                data-testid={`agent-card-${agent.id}`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 text-sm group-hover:text-teal-600 transition-colors">
+                        {agent.name}
+                      </h3>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${PRIORITY_COLORS[agent.priority]}`}>
+                        {agent.priority.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mb-3 line-clamp-2">{agent.description}</p>
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <span className="text-[10px] text-gray-400">Trigger: {agent.trigger}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                    COMING SOON
+                  </span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
