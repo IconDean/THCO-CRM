@@ -62,7 +62,7 @@
   "seed_data_creation": "Test client 'UI Test Client' was created and deleted during testing. Existing 'Acme Corporation' client with test_proposal.pdf preserved.",
   "retest_needed": false,
   "should_main_agent_self_test": true,
-  "context_for_next_testing_agent": "Proposal Management System fully tested. All CRUD operations work. Public share link: https://thcogroup-hub.preview.emergentagent.com/proposals/view/wQZ6CxrQ9LW3Ii56GX57NcAhPkVZQKuT4wR2LUo_SzA works without authentication. Test file exists at /app/backend/tests/test_proposals.py for regression testing.",
+  "context_for_next_testing_agent": "Proposal Management System fully tested. All CRUD operations work. Public share link: https://operationcycle.preview.emergentagent.com/proposals/view/wQZ6CxrQ9LW3Ii56GX57NcAhPkVZQKuT4wR2LUo_SzA works without authentication. Test file exists at /app/backend/tests/test_proposals.py for regression testing.",
   "features_tested": {
     "login": "✓ Super admin login works",
     "proposals_navigation": "✓ Sidebar navigation to Proposals page works",
