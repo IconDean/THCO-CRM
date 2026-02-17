@@ -17,11 +17,32 @@ import {
   Building2,
   Plus,
   Search,
-  Filter
+  Filter,
+  Heart
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+
+// AI Agents for THCO HR (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 29,
+    name: "#29 Internal HR & People Ops Agent",
+    description: "THCO team admin: leave requests, expense reports, policy lookups, offboarding checklists",
+    icon: Heart,
+    priority: "low",
+    trigger: "Employee request / HR event",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 const TOOLS = [
   {
