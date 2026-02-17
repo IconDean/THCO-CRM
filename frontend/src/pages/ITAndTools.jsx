@@ -182,7 +182,7 @@ const ITAndTools = () => {
               <Bot className="w-5 h-5 text-violet-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{AI_AGENTS.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{ALL_AGENTS.length}</p>
               <p className="text-sm text-gray-500">Total AI Agents</p>
             </div>
           </div>
@@ -212,12 +212,12 @@ const ITAndTools = () => {
           className="bg-white rounded-xl border border-gray-200 p-5"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <Mail className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">5</p>
-              <p className="text-sm text-gray-500">Email Domains</p>
+              <p className="text-2xl font-bold text-gray-900">{comingSoonAgents}</p>
+              <p className="text-sm text-gray-500">Coming Soon</p>
             </div>
           </div>
         </motion.div>
