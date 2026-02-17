@@ -30,99 +30,109 @@ const UNITS = [
     icon: Users, 
     path: "/talent", 
     active: true,
-    description: "AI-powered recruiting, sourcing, and talent operations",
+    description: "AI-powered recruiting, sourcing, screening, placement, and workforce planning",
     toolCount: 2,
-    gradient: "bg-gradient-to-br from-[#B855E8] to-[#DA67E4]"
+    gradient: "bg-gradient-to-br from-[#B855E8] to-[#DA67E4]",
+    lead: "Amalina"
   },
   { 
     name: "THCO HR", 
     slug: "thco-hr", 
     icon: UserCog, 
     path: "/thco-hr", 
-    active: false,
-    description: "Internal HR management, employee records, and HR operations",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA]"
+    active: true,
+    description: "Internal HR, employee records, people operations, performance & incentives",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA]",
+    lead: "Victoria"
   },
   { 
     name: "Project Management", 
     slug: "project-management", 
     icon: FolderKanban, 
     path: "/project-management", 
-    active: false,
-    description: "Project tracking, task management, and team collaboration",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#14B8A6] to-[#2DD4BF]"
+    active: true,
+    description: "Project tracking, Friday demos, handoff enforcement, task management",
+    toolCount: 2,
+    gradient: "bg-gradient-to-br from-[#14B8A6] to-[#2DD4BF]",
+    lead: "Victoria"
   },
   { 
     name: "IT & THCO Tools", 
     slug: "it-tools", 
     icon: Wrench, 
     path: "/it-tools", 
-    active: false,
-    description: "IT infrastructure, internal tools, and technical resources",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#F97316] to-[#FB923C]"
+    active: true,
+    description: "IT infrastructure, outbound tooling, email warming, AI agent management",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#F97316] to-[#FB923C]",
+    lead: "Emmanuel"
   },
   { 
     name: "Sales & Business Development", 
     slug: "sales", 
     icon: TrendingUp, 
     path: "/sales", 
-    active: false,
-    description: "Pipeline management, proposals, and client engagement",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#38D190] to-[#53E1A3]"
+    active: true,
+    description: "4 intake paths: Outbound, Inbound, Referrals, Reactivation across 5 pillars",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#38D190] to-[#53E1A3]",
+    lead: "Rebecca"
   },
   { 
     name: "Marketing & Brand", 
     slug: "marketing", 
     icon: Megaphone, 
     path: "/marketing", 
-    active: false,
-    description: "Content creation, campaigns, and brand management",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#FF3D8D] to-[#FF7F7F]"
+    active: true,
+    description: "Content engine: 20 articles/mo, 130+ LinkedIn posts, 4 newsletters, case studies",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#FF3D8D] to-[#FF7F7F]",
+    lead: "Havilah"
   },
   { 
     name: "Advisory & Consulting", 
     slug: "advisory", 
     icon: Briefcase, 
     path: "/advisory", 
-    active: false,
-    description: "Project delivery, research, and client advisory tools",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#3B82F6] to-[#60A5FA]"
+    active: true,
+    description: "Client advisory, scoping, HR consulting, workforce assessments, pricing",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#3B82F6] to-[#60A5FA]",
+    lead: "Christiana"
   },
   { 
     name: "Technology & Build", 
     slug: "technology", 
     icon: Code, 
     path: "/technology", 
-    active: false,
-    description: "Product development, engineering, and AI tools",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#06B6D4] to-[#22D3EE]"
+    active: true,
+    description: "3 engineering pods, AI tools, software delivery, product development",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#06B6D4] to-[#22D3EE]",
+    lead: "James"
   },
   { 
     name: "Operations & Finance", 
     slug: "operations", 
     icon: Building2, 
     path: "/operations", 
-    active: false,
-    description: "Internal operations, HR, finance, and admin tools",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#F97316] to-[#FB923C]"
+    active: true,
+    description: "Invoicing, contracts, financial tracking, office admin, logistics",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#EF4444] to-[#F87171]",
+    lead: "Victoria"
   },
   { 
     name: "Academy & Learning", 
     slug: "academy", 
     icon: GraduationCap, 
     path: "/academy", 
-    active: false,
-    description: "Training programs, assessments, and learning management",
-    toolCount: 0,
-    gradient: "bg-gradient-to-br from-[#F59E0B] to-[#FBBF24]"
+    active: true,
+    description: "Day Learning platform, AI Engineer tracks, brand architects training",
+    toolCount: 1,
+    gradient: "bg-gradient-to-br from-[#F59E0B] to-[#FBBF24]",
+    lead: "Babatunde"
   },
   { 
     name: "Client Delivery", 
