@@ -16,11 +16,80 @@ import {
   Plus,
   Filter,
   Search,
-  Download
+  Download,
+  LayoutDashboard,
+  UserCheck,
+  ClipboardList,
+  Timer
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+
+// AI Agents for Operations & Finance (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 15,
+    name: "#15 Project Management Agent",
+    description: "Victoria's daily dashboard: project statuses, stall alerts, overload warnings, deadlines",
+    icon: LayoutDashboard,
+    priority: "high",
+    trigger: "06:00 daily schedule",
+    status: "coming_soon"
+  },
+  {
+    id: 23,
+    name: "#23 Document & Proposal Automation",
+    description: "Generates proposals, MSAs, SOWs, invoices, NDAs from templates. Pre-populates all details",
+    icon: FileText,
+    priority: "medium",
+    trigger: "Intake form / milestone event",
+    status: "coming_soon"
+  },
+  {
+    id: 24,
+    name: "#24 Performance Tracking Agent",
+    description: "Revenue per person, utilization, satisfaction, completion rates. Monthly reports",
+    icon: TrendingUp,
+    priority: "low",
+    trigger: "Monthly schedule",
+    status: "coming_soon"
+  },
+  {
+    id: 32,
+    name: "#32 Client Onboarding & Kickoff Agent",
+    description: "Contract → kickoff in 48hrs. Checklists, access provisioning, welcome packets",
+    icon: UserCheck,
+    priority: "high",
+    trigger: "Contract signed",
+    status: "coming_soon"
+  },
+  {
+    id: 33,
+    name: "#33 Invoicing & Collections Agent",
+    description: "Milestone-triggered invoicing, payment reminders (7/14/30 days), AR dashboard",
+    icon: Receipt,
+    priority: "high",
+    trigger: "Milestone completed",
+    status: "coming_soon"
+  },
+  {
+    id: 36,
+    name: "#36 Timesheet & Utilization Agent",
+    description: "Auto-captures hours from PM tools, calendar, git. Utilization rates, project cost analysis",
+    icon: Timer,
+    priority: "medium",
+    trigger: "Passive continuous",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 const TOOLS = [
   {
