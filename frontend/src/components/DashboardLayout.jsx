@@ -77,6 +77,8 @@ const DashboardLayoutInner = ({ children, user }) => {
       if (path === "/talent/sourcing") return "AI Candidate Sourcing";
       if (path === "/talent/database-search") return "Database Search";
     }
+    if (path === "/thco-hr") return "THCO HR";
+    if (path === "/project-management") return "Project Management";
     const unit = UNITS.find(u => path.startsWith(u.path));
     return unit?.name || "Dashboard";
   };
