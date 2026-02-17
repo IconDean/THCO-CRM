@@ -14,11 +14,52 @@ import {
   Clock,
   DollarSign,
   Plus,
-  Search
+  Search,
+  UserSearch,
+  BookText,
+  FlaskConical
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+
+// AI Agents for Advisory & Consulting (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 19,
+    name: "#19 Workforce Assessment Agent",
+    description: "Org data → skills heat map, bench strength, org health score. Recommendations summary",
+    icon: UserSearch,
+    priority: "medium",
+    trigger: "New advisory project",
+    status: "coming_soon"
+  },
+  {
+    id: 20,
+    name: "#20 HR Policy Generator Agent",
+    description: "Generates jurisdiction-compliant HR policies from templates. Pre-populates client specifics",
+    icon: BookText,
+    priority: "medium",
+    trigger: "Policy request / new client",
+    status: "coming_soon"
+  },
+  {
+    id: 21,
+    name: "#21 Research & Analysis Agent",
+    description: "Deep research: market sizing, competitive analysis, industry benchmarks. Cited reports",
+    icon: FlaskConical,
+    priority: "medium",
+    trigger: "Research request",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 // Pricing approval gates from Operating Cycle
 const PRICING_GATES = [
