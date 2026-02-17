@@ -18,7 +18,9 @@ import {
   ChevronDown,
   LogOut,
   User,
-  FileText
+  FileText,
+  UserCog,
+  FolderKanban
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -36,6 +38,8 @@ import { AnalyticsProvider, useAnalytics } from "../context/AnalyticsContext";
 
 const UNITS = [
   { name: "Talent & Human Capital", slug: "talent", icon: Users, path: "/talent", active: true },
+  { name: "THCO HR", slug: "thco-hr", icon: UserCog, path: "/thco-hr", active: false },
+  { name: "Project Management", slug: "project-management", icon: FolderKanban, path: "/project-management", active: false },
   { name: "Sales & Business Dev", slug: "sales", icon: TrendingUp, path: "/sales", active: false },
   { name: "Marketing & Brand", slug: "marketing", icon: Megaphone, path: "/marketing", active: false },
   { name: "Advisory & Consulting", slug: "advisory", icon: Briefcase, path: "/advisory", active: false },
