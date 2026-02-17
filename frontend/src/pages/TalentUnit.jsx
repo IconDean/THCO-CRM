@@ -1,6 +1,54 @@
 import { Link } from "react-router-dom";
-import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft, Bot, UserCheck, Send, FileText } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+
+// AI Agents for Recruiting (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 4,
+    name: "#4 Candidate Sourcing Agent",
+    description: "Searches LinkedIn, GitHub, job boards. Ranked longlist of 20-50 candidates per role",
+    icon: Search,
+    priority: "critical",
+    trigger: "New role from Amalina",
+    status: "active"
+  },
+  {
+    id: 10,
+    name: "#10 Candidate Screening Agent",
+    description: "Deep screens longlist → shortlist of 5-10 with scores, red flags, interview Qs",
+    icon: UserCheck,
+    priority: "high",
+    trigger: "Longlist from #4",
+    status: "coming_soon"
+  },
+  {
+    id: 11,
+    name: "#11 Candidate Outreach Agent",
+    description: "Personalized outreach via email + LinkedIn. Response tracking + interview scheduling",
+    icon: Send,
+    priority: "high",
+    trigger: "Shortlist from #10",
+    status: "coming_soon"
+  },
+  {
+    id: 17,
+    name: "#17 Client Reporting Agent",
+    description: "Weekly client reports: candidates sourced, screened, shortlisted, pipeline viz",
+    icon: FileText,
+    priority: "medium",
+    trigger: "Weekly schedule",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 const TOOLS = [
   {
