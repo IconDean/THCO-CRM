@@ -134,8 +134,8 @@ const STATUS_CONFIG = {
 const ITAndTools = () => {
   const [selectedAgent, setSelectedAgent] = useState(null);
 
-  const activeAgents = AI_AGENTS.filter(a => a.status === "active").length;
-  const idleAgents = AI_AGENTS.filter(a => a.status === "idle").length;
+  const activeAgents = ALL_AGENTS.filter(a => a.status === "active").length;
+  const comingSoonAgents = ALL_AGENTS.filter(a => a.status === "coming_soon").length;
 
   return (
     <div className="space-y-8" data-testid="it-tools-page">
