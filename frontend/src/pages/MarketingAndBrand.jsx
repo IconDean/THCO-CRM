@@ -16,10 +16,49 @@ import {
   MessageSquare,
   Share2,
   Plus,
-  Filter
+  Filter,
+  PenTool
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+
+// AI Agents for Marketing & Brand (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 6,
+    name: "#6 Content Generation Agent",
+    description: "Drafts: 20 blog articles, 130+ LinkedIn posts, 4 newsletters, PDF lead magnets monthly",
+    icon: PenTool,
+    priority: "critical",
+    trigger: "Daily per content calendar",
+    status: "coming_soon"
+  },
+  {
+    id: 16,
+    name: "#16 Social Media Scheduling Agent",
+    description: "Schedules 130+ posts/month across 12 LinkedIn pages. Optimizes timing. Tracks engagement",
+    icon: Linkedin,
+    priority: "medium",
+    trigger: "Approved content from #6",
+    status: "coming_soon"
+  },
+  {
+    id: 28,
+    name: "#28 Newsletter & Lead Nurture Agent",
+    description: "4 monthly newsletters: 2 client + 2 talent. Segments subscribers. Flags sales-ready leads",
+    icon: Mail,
+    priority: "low",
+    trigger: "Monthly schedule",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 // Content targets from Operating Cycle
 const CONTENT_TARGETS = {
