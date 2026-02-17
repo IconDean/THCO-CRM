@@ -16,7 +16,9 @@ import {
   Eye,
   Edit,
   Trash2,
-  ChevronDown
+  ChevronDown,
+  Brain,
+  LayoutDashboard
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -41,6 +43,35 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { toast } from "sonner";
+
+// AI Agents for Project Management (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 15,
+    name: "#15 Project Management Agent",
+    description: "Victoria's daily dashboard: project statuses, stall alerts, overload warnings, deadlines",
+    icon: LayoutDashboard,
+    priority: "high",
+    trigger: "06:00 daily schedule",
+    status: "coming_soon"
+  },
+  {
+    id: 25,
+    name: "#25 Knowledge Capture Agent",
+    description: "Post-project learnings from retros, demos, support. Searchable knowledge base. Case study drafts",
+    icon: Brain,
+    priority: "low",
+    trigger: "Project milestone / Friday demos",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 // Sample project data based on THCO Operating Cycle
 const SAMPLE_PROJECTS = [
