@@ -19,7 +19,15 @@ import {
   Search,
   Clock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Bot,
+  Send,
+  Inbox,
+  Calendar,
+  Swords,
+  Database,
+  Mic,
+  Repeat
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -147,6 +155,98 @@ const SAMPLE_LEADS = [
     assignedTo: "Rebecca"
   }
 ];
+
+// AI Agents for Sales & BD (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 1,
+    name: "#1 Lead Research Agent",
+    description: "Daily prospect list (10-25 qualified leads) from LinkedIn, news, job boards",
+    icon: Search,
+    priority: "critical",
+    trigger: "Daily schedule",
+    status: "coming_soon"
+  },
+  {
+    id: 2,
+    name: "#2 Email Outreach Agent",
+    description: "Personalized cold email sequences (50-100+/day). Multi-step campaigns",
+    icon: Send,
+    priority: "critical",
+    trigger: "New prospects from #1",
+    status: "coming_soon"
+  },
+  {
+    id: 3,
+    name: "#3 Inbox Management Agent",
+    description: "Categorizes replies: Hot/Warm/Not Now/Not Interested. Instant alerts on hot leads",
+    icon: Inbox,
+    priority: "critical",
+    trigger: "Real-time email monitoring",
+    status: "coming_soon"
+  },
+  {
+    id: 7,
+    name: "#7 Client Reactivation Intel Agent",
+    description: "Researches 320 clients for cross-sell. Generates tailored value guides",
+    icon: RefreshCw,
+    priority: "critical",
+    trigger: "Weekly batch",
+    status: "coming_soon"
+  },
+  {
+    id: 8,
+    name: "#8 Intake Call Processing Agent",
+    description: "Transcribes calls, extracts structured Intake Brief: client, needs, budget, timeline",
+    icon: Mic,
+    priority: "critical",
+    trigger: "Recording uploaded",
+    status: "coming_soon"
+  },
+  {
+    id: 9,
+    name: "#9 Follow-Up & Cadence Agent",
+    description: "Multi-step follow-up sequences. Re-engages after 30/60/90 days",
+    icon: Repeat,
+    priority: "high",
+    trigger: "Prospect status from #3",
+    status: "coming_soon"
+  },
+  {
+    id: 14,
+    name: "#14 Meeting Prep Agent",
+    description: "24hrs before meeting: company overview, pain points, competitive context, pricing",
+    icon: Calendar,
+    priority: "high",
+    trigger: "Calendar event",
+    status: "coming_soon"
+  },
+  {
+    id: 30,
+    name: "#30 CRM & Pipeline Intelligence Agent",
+    description: "Auto-logs, deduplicates, enriches leads. Pipeline analytics, stale deal alerts",
+    icon: Database,
+    priority: "critical",
+    trigger: "Any lead event",
+    status: "coming_soon"
+  },
+  {
+    id: 31,
+    name: "#31 Competitive Intelligence Agent",
+    description: "Monitors competitor pricing, positioning, wins/losses. Per-meeting briefs",
+    icon: Swords,
+    priority: "high",
+    trigger: "Weekly scan + pre-meeting",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 const LEAD_STATUSES = {
   new: { label: "New", color: "bg-gray-100 text-gray-700", icon: Clock },
@@ -319,6 +419,49 @@ const SalesAndBD = () => {
                     {path.conversion} conversion
                   </span>
                   <ChevronRight className="w-4 h-4 text-gray-400" />
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* AI Agents */}
+      <div>
+        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-4">AI Agents ({AI_AGENTS.length})</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {AI_AGENTS.map((agent, index) => {
+            const Icon = agent.icon;
+            return (
+              <motion.div
+                key={agent.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group bg-white rounded-xl border border-gray-200 p-4 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer"
+                data-testid={`agent-card-${agent.id}`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 text-sm group-hover:text-emerald-600 transition-colors">
+                        {agent.name}
+                      </h3>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${PRIORITY_COLORS[agent.priority]}`}>
+                        {agent.priority.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mb-3 line-clamp-2">{agent.description}</p>
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <span className="text-[10px] text-gray-400">Trigger: {agent.trigger}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                    COMING SOON
+                  </span>
                 </div>
               </motion.div>
             );
