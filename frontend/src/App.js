@@ -235,6 +235,16 @@ const AppRouter = () => {
           <UnitComingSoon unitName="Client Delivery" />
         </ProtectedRoute>
       } />
+      <Route path="/thco-hr" element={
+        <ProtectedRoute>
+          <UnitComingSoon unitName="THCO HR" />
+        </ProtectedRoute>
+      } />
+      <Route path="/project-management" element={
+        <ProtectedRoute>
+          <UnitComingSoon unitName="Project Management" />
+        </ProtectedRoute>
+      } />
       
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
