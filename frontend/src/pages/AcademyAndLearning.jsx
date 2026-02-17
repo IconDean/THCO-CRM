@@ -14,10 +14,51 @@ import {
   Star,
   TrendingUp,
   Plus,
-  Filter
+  Filter,
+  UserCheck,
+  Route,
+  Code2
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+
+// AI Agents for Academy & Learning (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 22,
+    name: "#22 Applicant Screening Agent",
+    description: "Screens Day Learning applicants: scoring, interview scheduling. Shortlists top candidates",
+    icon: UserCheck,
+    priority: "medium",
+    trigger: "New application",
+    status: "coming_soon"
+  },
+  {
+    id: 26,
+    name: "#26 Curriculum & Learning Path Agent",
+    description: "Personalized learning paths based on track + career goals. Progress tracking, recommendations",
+    icon: Route,
+    priority: "low",
+    trigger: "Trainee onboarding / milestone",
+    status: "coming_soon"
+  },
+  {
+    id: 27,
+    name: "#27 Code Review & Mentoring Agent",
+    description: "Reviews trainee code, provides feedback. Tracks skill progression. Flags for mentor attention",
+    icon: Code2,
+    priority: "low",
+    trigger: "PR submitted / assignment due",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 const TOOLS = [
   {
