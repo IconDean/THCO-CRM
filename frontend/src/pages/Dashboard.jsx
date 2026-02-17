@@ -55,6 +55,16 @@ const UNITS = [
     gradient: "bg-gradient-to-br from-[#14B8A6] to-[#2DD4BF]"
   },
   { 
+    name: "IT & THCO Tools", 
+    slug: "it-tools", 
+    icon: Wrench, 
+    path: "/it-tools", 
+    active: false,
+    description: "IT infrastructure, internal tools, and technical resources",
+    toolCount: 0,
+    gradient: "bg-gradient-to-br from-[#F97316] to-[#FB923C]"
+  },
+  { 
     name: "Sales & Business Development", 
     slug: "sales", 
     icon: TrendingUp, 
