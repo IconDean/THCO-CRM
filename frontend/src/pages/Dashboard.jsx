@@ -14,7 +14,9 @@ import {
   Clock,
   Lock,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  UserCog,
+  FolderKanban
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
@@ -31,6 +33,26 @@ const UNITS = [
     description: "AI-powered recruiting, sourcing, and talent operations",
     toolCount: 2,
     gradient: "bg-gradient-to-br from-[#B855E8] to-[#DA67E4]"
+  },
+  { 
+    name: "THCO HR", 
+    slug: "thco-hr", 
+    icon: UserCog, 
+    path: "/thco-hr", 
+    active: false,
+    description: "Internal HR management, employee records, and HR operations",
+    toolCount: 0,
+    gradient: "bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA]"
+  },
+  { 
+    name: "Project Management", 
+    slug: "project-management", 
+    icon: FolderKanban, 
+    path: "/project-management", 
+    active: false,
+    description: "Project tracking, task management, and team collaboration",
+    toolCount: 0,
+    gradient: "bg-gradient-to-br from-[#14B8A6] to-[#2DD4BF]"
   },
   { 
     name: "Sales & Business Development", 
