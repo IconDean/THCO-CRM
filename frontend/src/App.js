@@ -12,7 +12,6 @@ import TalentUnit from "./pages/TalentUnit";
 import SourcingTool from "./pages/SourcingTool";
 import DatabaseSearchTool from "./pages/DatabaseSearchTool";
 import Settings from "./pages/Settings";
-import UnitComingSoon from "./pages/UnitComingSoon";
 import Proposals from "./pages/Proposals";
 import ProposalView from "./pages/ProposalView";
 import ProcureAIProposal from "./pages/ProcureAIProposal";
@@ -21,6 +20,18 @@ import ProcureAIExecutivePack from "./pages/ProcureAIExecutivePack";
 import ProcureAIExecutivePackV3 from "./pages/ProcureAIExecutivePackV3";
 import ProcureAIExecutivePackV4 from "./pages/ProcureAIExecutivePackV4";
 import ProcureAIScrollPresentation from "./pages/ProcureAIScrollPresentation";
+
+// Business Unit Pages
+import SalesAndBD from "./pages/SalesAndBD";
+import MarketingAndBrand from "./pages/MarketingAndBrand";
+import AdvisoryAndConsulting from "./pages/AdvisoryAndConsulting";
+import TechnologyAndBuild from "./pages/TechnologyAndBuild";
+import OperationsAndFinance from "./pages/OperationsAndFinance";
+import AcademyAndLearning from "./pages/AcademyAndLearning";
+import ClientDelivery from "./pages/ClientDelivery";
+import THCOHRPage from "./pages/THCOHRPage";
+import ProjectManagement from "./pages/ProjectManagement";
+import ITAndTools from "./pages/ITAndTools";
 
 // Public Email-Gated Presentations
 import ProcureAIExecutivePackPublic from "./pages/ProcureAIExecutivePackPublic";
