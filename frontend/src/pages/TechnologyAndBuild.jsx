@@ -14,10 +14,72 @@ import {
   AlertCircle,
   Calendar,
   Plus,
-  Filter
+  Filter,
+  FileText,
+  ListChecks,
+  Activity,
+  Bug,
+  Scale,
+  TestTube
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+
+// AI Agents for Technology & Build (from Agent Registry)
+const AI_AGENTS = [
+  {
+    id: 5,
+    name: "#5 Spec-to-Tasks Agent",
+    description: "Converts project spec into sprint-organized engineering tickets with acceptance criteria",
+    icon: ListChecks,
+    priority: "critical",
+    trigger: "Approved project enters build",
+    status: "coming_soon"
+  },
+  {
+    id: 12,
+    name: "#12 MVP/Proposal Generator Agent",
+    description: "Generates proposal draft: MVP scope, tech approach, timeline, pricing from rate card",
+    icon: FileText,
+    priority: "high",
+    trigger: "Intake Brief from #8",
+    status: "coming_soon"
+  },
+  {
+    id: 18,
+    name: "#18 Project Status Tracker Agent",
+    description: "Daily engineering progress → client-friendly language. Sprint tracking, blocker flags",
+    icon: Activity,
+    priority: "medium",
+    trigger: "Daily + sprint events",
+    status: "coming_soon"
+  },
+  {
+    id: 34,
+    name: "#34 QA & Testing Agent",
+    description: "Automated test suites, regression, code quality, security scans before Friday demos",
+    icon: TestTube,
+    priority: "medium",
+    trigger: "PR created / pre-deployment",
+    status: "coming_soon"
+  },
+  {
+    id: 35,
+    name: "#35 Scope Creep Detection Agent",
+    description: "Compares tickets vs SOW. Flags out-of-scope work. Auto-drafts change orders",
+    icon: Scale,
+    priority: "medium",
+    trigger: "New ticket created",
+    status: "coming_soon"
+  }
+];
+
+const PRIORITY_COLORS = {
+  critical: "bg-red-100 text-red-700 border-red-200",
+  high: "bg-amber-100 text-amber-700 border-amber-200",
+  medium: "bg-blue-100 text-blue-700 border-blue-200",
+  low: "bg-gray-100 text-gray-600 border-gray-200"
+};
 
 // 3 Engineering Pods from Operating Cycle
 const ENGINEERING_PODS = [
