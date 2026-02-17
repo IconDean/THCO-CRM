@@ -31,14 +31,86 @@ Build an internal company portal for THCO — a professional services firm. This
 - [x] Light theme with colorful gradient cards (matching thcoteam.com)
 - [x] Welcome section with user name and role badge
 - [x] Quick stats (Tools Available, Pending Requests, Recent Activity)
-- [x] 8 Business Unit cards with access control
+- [x] 11 Business Unit cards with access control - ALL ACTIVE
 - [x] Activity feed
 
-### Business Units
-- [x] Talent & Human Capital - ACTIVE with 2 tools
-- [x] 7 other units - Coming Soon placeholders
+### Business Units - ALL 11 IMPLEMENTED (Feb 17, 2026)
 
-### Proposal Management System (Feb 12, 2026)
+#### 1. Talent & Human Capital
+- [x] AI Candidate Sourcing tool
+- [x] Database Search tool
+- [x] Tool cards with gradient styling
+
+#### 2. THCO HR (NEW)
+- [x] Employee Directory with 12 team members
+- [x] Performance Reviews tool
+- [x] Department filtering
+- [x] Stats: Team Members, Departments, Review Cycle, Active Rate
+
+#### 3. Project Management (NEW)
+- [x] Project Tracker table with 5 projects
+- [x] Operating Cycle Pipeline visualization (FIND → SCOPE → BUILD → REVIEW → EARN → LEARN → GROW)
+- [x] Phase and Pillar filters
+- [x] Progress bars for each project
+- [x] Stats: Total Projects, In Progress, In Review, Delivered
+
+#### 4. IT & THCO Tools (NEW)
+- [x] AI Agents Hub showing 12 AI agents across departments
+- [x] Email Warming tool
+- [x] Agent status tracking (Active/Idle)
+- [x] Stats: Total AI Agents, Active Agents, Email Domains, System Uptime
+
+#### 5. Sales & Business Development (NEW)
+- [x] 4 Intake Paths: Outbound, Inbound, Referrals, Reactivation
+- [x] Lead Pipeline table with status tracking
+- [x] Conversion rates for each path
+- [x] 5 Pillars filter (Technology, Talent, Advisory, Academy, Operate)
+- [x] Stats: Active Leads, Pipeline Value, Existing Clients, Avg Conversion
+
+#### 6. Marketing & Brand (NEW)
+- [x] Content Targets with progress bars (Articles 14/20, LinkedIn 98/130, Newsletters 3/4, Case Studies 1/2)
+- [x] Content Calendar tool
+- [x] LinkedIn Scheduler tool
+- [x] Recent Content table with performance metrics
+- [x] Content type filtering
+
+#### 7. Advisory & Consulting (NEW)
+- [x] Pricing Approval Gates (Under $30K, $30K-$75K, Over $75K)
+- [x] Scoping Tool
+- [x] Proposal Generator tool
+- [x] Engagements table with status tracking
+- [x] Stats: Engagements, Pipeline Value, In Scoping, Approved
+
+#### 8. Technology & Build (NEW)
+- [x] 3 Engineering Pods (Pod A, Pod B, Pod C) with focus areas
+- [x] Engineering Board tool
+- [x] Pod Assignment tool
+- [x] Projects table with progress tracking
+- [x] Pod filtering
+- [x] Stats: Active Projects, In Development, In Review, Engineers
+
+#### 9. Operations & Finance (NEW)
+- [x] Invoice Tracker with status (Paid, Pending, Overdue, Draft)
+- [x] Contract Manager tool
+- [x] Financial stats: Total Revenue, Collected, Outstanding, Overdue count
+- [x] Status filtering and search
+
+#### 10. Academy & Learning (NEW)
+- [x] Learning Tracks: AI Engineer Track, Brand Architect Track, Tech Fundamentals
+- [x] Day Learning Platform tool
+- [x] Trainee Tracker tool
+- [x] Trainees table with progress bars
+- [x] Track filtering
+- [x] Stats: Total Trainees, Currently Learning, Successfully Placed, Avg Progress
+
+#### 11. Client Delivery (NEW)
+- [x] Deployed Staff Manager with 5 staff members
+- [x] SLA Tracker tool
+- [x] SLA scores with color coding
+- [x] Status filtering (Active, Ending Soon, Completed)
+- [x] Stats: Total Deployed, Active, Avg SLA Score, Ending Soon
+
+### Proposal Management System
 - [x] Client folder management (Create, View, Delete)
 - [x] Proposal file upload (PDF, PPTX, DOC, DOCX, XLS, XLSX)
 - [x] Shareable links for clients (public access, no auth required)
@@ -47,41 +119,27 @@ Build an internal company portal for THCO — a professional services firm. This
 - [x] Activity logging for all proposal actions
 - [x] Public proposal view page at /proposals/view/:shareToken
 
-### Procure AI Presentation (Feb 12, 2026)
-- [x] 8-section enterprise presentation at /proposals/procure-ai (PUBLIC - no auth)
-- [x] Page-based slideshow navigation with Framer Motion animations
-- [x] Sections: Overview, Architecture, RFQ Flow, Vendor Onboarding, Reverse Auction, Database, Data Upload, Next Steps
-- [x] Keyboard navigation (arrow keys)
-- [x] Left sidebar page numbers with hover expand
-- [x] Bottom navigation bar with progress indicator
-- [x] Multi-page PDF export using jspdf + html2canvas (Fixed Feb 13, 2026)
-- [x] Scroll-based presentation variant at /proposals/procure-ai-scroll
+### Procure AI Presentations
+- [x] V1: Original presentation
+- [x] V2: 8-section enterprise presentation with PDF export
+- [x] V3: Executive Pack (pricing removed)
+- [x] V4: Premium 12-slide executive kick-off presentation
+- [x] Scroll-based presentation variant
+- [x] Email gating for public presentation links
+- [x] Proposal Viewer analytics tracking
 
-### Procure AI Executive Pack V4 (Dec 2025)
-- [x] Premium 12-slide executive kick-off presentation at /proposals/procure-ai-executive (PUBLIC)
-- [x] Full-screen slides designed for 16:9 projection (1920x1080)
-- [x] Design System: Navy (#1E2761) backgrounds, Teal (#0D9488) accents, Georgia serif headings
-- [x] Slides: Title, Agenda, Strategic Framing, Scope Confirmation, Target Architecture, Governance, Risk Register, Milestones, Resources, Commercial, Decision Points, Credentials
-- [x] Interactive navigation: Arrow keys, dot navigation, prev/next buttons
-- [x] Fullscreen toggle (F key or button)
-- [x] Responsive scaling to fit any viewport
-- [x] Multi-page PDF download (58MB, 12 pages)
-- [x] Framer Motion animations for slide transitions
-- [x] Credentials slide shows "Vodacom" (not Vodafone)
+### DocSend-like Email Gate & Analytics
+- [x] Email/name capture form before viewing presentations
+- [x] Viewer tracking with IP, device, browser info
+- [x] Proposal Viewers admin dashboard
+- [x] View statistics and summaries
 
-### Comprehensive Analytics System (Feb 12, 2026)
+### Comprehensive Analytics System
 - [x] Analytics tab in Settings (Super Admin only)
 - [x] Automatic page view tracking via AnalyticsProvider context
 - [x] User action tracking (clicks, form submissions, uploads)
 - [x] Session management with heartbeat (30-second intervals)
-- [x] Analytics dashboard with:
-  - Total Users, Active Users, Total Sessions, Avg Duration
-  - Page Views with daily/hourly breakdown
-  - User Actions summary
-  - Device and Browser breakdown
-  - Most visited pages
-  - User activity table with drill-down
-  - Recent sessions table
+- [x] Analytics dashboard with charts and tables
 
 ### Settings - Super Admin
 - [x] Webhook Configuration
@@ -89,39 +147,34 @@ Build an internal company portal for THCO — a professional services firm. This
 - [x] Login Records tracking
 - [x] Device Locking
 - [x] Activity Log viewer
-- [x] Analytics Dashboard (NEW)
-
-### UI Theme (Feb 12, 2026)
-- [x] Light sidebar with light content area (matching thcoteam.com)
-- [x] Colorful gradient business unit cards
-- [x] "Made with Emergent" branding removed
+- [x] Analytics Dashboard
+- [x] Proposal Viewers Analytics
 
 ## Prioritized Backlog
 
 ### P0 - Critical (Completed)
+- [x] All 11 Business Unit Pages - DONE Feb 17, 2026
 - [x] Comprehensive Analytics System - DONE
-- [x] Procure AI Presentation Page - DONE
-- [x] PDF Download Fix (Multi-page capture) - DONE Feb 13, 2026
+- [x] Procure AI Presentations - DONE
+- [x] PDF Download Fix - DONE
 
 ### P1 - High Priority
 - [ ] Add Resend API key to enable password reset emails
-- [ ] Enable remaining business units as tools are built
-- [ ] Build remaining tools for Talent & Human Capital unit
+- [ ] Connect business unit tools to backend APIs (currently using static data)
+- [ ] Build working Project Tracker with CRUD operations
+- [ ] Build working Invoice Tracker with CRUD operations
 
 ### P2 - Future Enhancements  
-- [ ] Move logout button to user dropdown in header (UX improvement)
-- [ ] Recent Activity Feed on dashboard using analytics data
 - [ ] Global search bar functionality
 - [ ] Notification bell feature
-- [ ] Candidate Pipeline (Kanban board)
-- [ ] Email & Outreach Templates
-- [ ] Interview Scheduling integration
+- [ ] Recent Activity Feed on dashboard using analytics data
 - [ ] Pagination for history tables
 - [ ] Backend refactoring (server.py is >2000 lines - split into routers)
+- [ ] PDF download verification for V2 and V3 presentations
 
 ## API Endpoints
 
-### Analytics (NEW - Feb 12, 2026)
+### Analytics
 - `GET /api/analytics/summary` - Get analytics summary (days param)
 - `GET /api/analytics/users` - Get per-user analytics
 - `GET /api/analytics/sessions` - Get session history
@@ -147,11 +200,43 @@ Build an internal company portal for THCO — a professional services firm. This
 - `GET /api/proposals/shared/{token}` - Public: Get proposal info
 - `GET /api/proposals/shared/{token}/download` - Public: Download file
 
+### Proposal Viewers
+- `POST /api/proposals/viewers` - Record new view
+- `GET /api/proposals/viewers/{proposal_slug}` - Get viewers for proposal
+- `GET /api/proposals/viewers/stats` - Aggregate stats
+- `GET /api/proposals/viewers/summary` - Summary per proposal
+
 ## Public Routes (No Auth Required)
 - `/proposals/view/:shareToken` - View shared proposal
-- `/proposals/procure-ai` - Procure AI presentation
+- `/proposals/procure-ai` - Procure AI V2 presentation (email gated)
+- `/proposals/procure-ai-executive` - Executive Pack V4 (email gated)
+- `/proposals/procure-ai-executive-v3` - Executive Pack V3 (email gated)
+- `/proposals/procure-ai-scroll` - Scroll presentation (email gated)
+- `/proposals/procure-ai-v1` - V1 presentation (email gated)
 
 ## Seeded Admin Credentials
 - Email: joshua@thcohq.com
 - Password: THCOAdmin2024!
 - Role: Super Admin (full access)
+
+## Recent Changes
+
+### Feb 17, 2026 - Business Unit Pages Implementation
+- Created all 10 new business unit pages with tools based on THCO Operating Cycle
+- Each page includes: breadcrumb, header, stats cards, tools grid, data tables
+- All pages use static/sample data for display purposes
+- Removed UnitComingSoon placeholders
+- Updated sidebar to show all units as ACTIVE
+- Testing agent confirmed 100% success rate
+
+### Files Created
+- `/app/frontend/src/pages/SalesAndBD.jsx`
+- `/app/frontend/src/pages/ITAndTools.jsx`
+- `/app/frontend/src/pages/THCOHRPage.jsx`
+- `/app/frontend/src/pages/MarketingAndBrand.jsx`
+- `/app/frontend/src/pages/OperationsAndFinance.jsx`
+- `/app/frontend/src/pages/AdvisoryAndConsulting.jsx`
+- `/app/frontend/src/pages/TechnologyAndBuild.jsx`
+- `/app/frontend/src/pages/AcademyAndLearning.jsx`
+- `/app/frontend/src/pages/ClientDelivery.jsx`
+- `/app/frontend/src/pages/ProjectManagement.jsx` (already existed, now connected)
