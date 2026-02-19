@@ -857,14 +857,17 @@ async def sync_workflow_inventory(request: Request):
                         trigger_type = node.get('type', '')
                         break
                 
+                # Handle case where meta might be None
+                meta = wf.get('meta') or {}
+                
                 inventory_doc = {
                     'engine_workflow_id': wf.get('id', ''),
                     'name': wf.get('name', 'Untitled'),
-                    'description': wf.get('meta', {}).get('description', ''),
+                    'description': meta.get('description', '') if isinstance(meta, dict) else '',
                     'nodes_summary': nodes_summary,
                     'trigger_type': trigger_type,
                     'is_active': wf.get('active', False),
-                    'tags': [t.get('name', '') for t in wf.get('tags', [])],
+                    'tags': [t.get('name', '') for t in (wf.get('tags') or [])],
                     'is_flowforge_created': False,  # Will be updated if linked to conversation
                     'last_synced_at': now,
                     'engine_created_at': wf.get('createdAt'),
