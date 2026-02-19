@@ -530,6 +530,7 @@ const FlowForgeChat = () => {
             key={message.id} 
             message={message} 
             isLastMessage={index === messages.length - 1}
+            onActionClick={handleActionClick}
           />
         ))}
         <div ref={messagesEndRef} />
