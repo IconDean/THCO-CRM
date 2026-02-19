@@ -102,6 +102,8 @@ const TOOLS = [
 ];
 
 const TalentUnit = () => {
+  const [activeTab, setActiveTab] = useState("tools");
+  
   return (
     <div className="space-y-8" data-testid="talent-unit-page">
       {/* Breadcrumb */}
@@ -121,18 +123,59 @@ const TalentUnit = () => {
 
       {/* Unit Header */}
       <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-        <div className="flex items-start gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
-            <Users className="w-8 h-8 text-white" />
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+              <Users className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Talent & Human Capital</h1>
+              <p className="text-gray-500 text-lg">
+                AI-powered recruiting, sourcing, and talent operations
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Talent & Human Capital</h1>
-            <p className="text-gray-500 text-lg">
-              AI-powered recruiting, sourcing, and talent operations
-            </p>
-          </div>
+          
+          {/* Build New Tool Button */}
+          <Link to="/talent/build/new">
+            <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+              <Zap className="w-4 h-4 mr-2" />
+              Build New Tool
+            </Button>
+          </Link>
         </div>
       </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab("tools")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeTab === "tools" 
+              ? "bg-white text-gray-900 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          data-testid="tab-tools"
+        >
+          Tools
+        </button>
+        <button
+          onClick={() => setActiveTab("build-history")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+            activeTab === "build-history" 
+              ? "bg-white text-gray-900 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          data-testid="tab-build-history"
+        >
+          <History className="w-4 h-4" />
+          Build History
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "tools" ? (
+        <>
 
       {/* Tools Grid */}
       <div>
