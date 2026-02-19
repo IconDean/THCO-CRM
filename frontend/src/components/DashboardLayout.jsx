@@ -331,6 +331,9 @@ const DashboardLayoutInner = ({ children, user }) => {
         <main className="flex-1 p-4 lg:p-8 overflow-auto bg-white">
           {children}
         </main>
+        
+        {/* FlowForge FAB */}
+        <FlowForgeFAB />
       </div>
     </div>
   );
