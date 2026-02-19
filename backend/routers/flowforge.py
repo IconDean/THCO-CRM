@@ -604,7 +604,7 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
 @router.get("/approvals/stats")
 async def get_approval_stats(request: Request):
     """Get approval queue statistics"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     # Count by status
