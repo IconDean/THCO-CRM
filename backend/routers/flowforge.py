@@ -524,7 +524,7 @@ async def create_approval(data: ApprovalCreate, request: Request):
 @router.get("/approvals/{approval_id}", response_model=ApprovalResponse)
 async def get_approval(approval_id: str, request: Request):
     """Get a specific approval request"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     result = sb.table('flowforge_approvals').select('*').eq('id', approval_id).execute()
