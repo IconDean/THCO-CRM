@@ -97,7 +97,7 @@ const IntegrationIcon = ({ type, status }) => {
 };
 
 // Message component
-const ChatMessage = ({ message, isLastMessage }) => {
+const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
   const isUser = message.role === "user";
   const isSystem = message.role === "system";
 
