@@ -37,13 +37,16 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - [x] Message persistence in Supabase
 - [x] AI-generated responses with clarifying questions
 
-### Phase 2 - Approval System (UPCOMING)
-- [ ] Admin roles table and management UI
-- [ ] Approval request generation (new tools + updates)
-- [ ] Approval queue page (list, filter, review details)
-- [ ] Approve/reject/request-changes actions
-- [ ] Notification system (in-app + email)
-- [ ] Admin sidebar item with badge count
+### Phase 2 - Approval System (COMPLETE ✅)
+- [x] Approval request generation (new tools + updates)
+- [x] Approval queue page (`/admin/approvals`) with list, filter, review details
+- [x] Approve/reject/request-changes actions with notes
+- [x] Notification system (in-app badge count)
+- [x] Admin sidebar item with pending approval badge
+- [x] Status flow: building → pending_approval → approved/rejected → deployed
+- [x] Submit for Approval button in chat after workflow generation
+- [x] Approval stats endpoint with counts
+- [x] Approval detail modal with full request information
 
 ### Phase 3 - Duplicate Detection & Inventory (UPCOMING)
 - [ ] n8n workflow inventory sync (every 15 min)
