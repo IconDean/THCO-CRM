@@ -621,26 +621,6 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
         "status": status_map[data.action]
     }
 
-@router.get("/approvals/stats")
-async def get_approval_stats(request: Request):
-    """Get approval queue statistics"""
-    await get_current_user_from_request(request)  # Ensure authenticated
-    sb = ensure_supabase()
-    
-    # Count by status
-    pending = sb.table('flowforge_approvals').select('id', count='exact').eq('status', 'pending').execute()
-    approved = sb.table('flowforge_approvals').select('id', count='exact').eq('status', 'approved').execute()
-    rejected = sb.table('flowforge_approvals').select('id', count='exact').eq('status', 'rejected').execute()
-    changes_requested = sb.table('flowforge_approvals').select('id', count='exact').eq('status', 'changes_requested').execute()
-    
-    return {
-        "pending": pending.count or 0,
-        "approved": approved.count or 0,
-        "rejected": rejected.count or 0,
-        "changes_requested": changes_requested.count or 0,
-        "total": (pending.count or 0) + (approved.count or 0) + (rejected.count or 0) + (changes_requested.count or 0)
-    }
-
 # ==================== ADMIN ROUTES ====================
 
 @router.get("/admins", response_model=List[AdminResponse])
