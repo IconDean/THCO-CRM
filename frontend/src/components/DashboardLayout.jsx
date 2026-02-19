@@ -56,9 +56,29 @@ const UNITS = [
 const DashboardLayoutInner = ({ children, user }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pendingApprovals, setPendingApprovals] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { trackAction } = useAnalytics();
+
+  // Fetch pending approvals count
+  useEffect(() => {
+    const fetchPendingApprovals = async () => {
+      if (user?.role === "super_admin") {
+        try {
+          const stats = await flowforgeAPI.getApprovalStats();
+          setPendingApprovals(stats.pending || 0);
+        } catch (error) {
+          console.error("Failed to fetch approval stats:", error);
+        }
+      }
+    };
+    
+    fetchPendingApprovals();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchPendingApprovals, 30000);
+    return () => clearInterval(interval);
+  }, [user?.role]);
 
   const handleLogout = async () => {
     try {
@@ -76,6 +96,7 @@ const DashboardLayoutInner = ({ children, user }) => {
     if (path === "/dashboard") return "Dashboard";
     if (path === "/settings") return "Settings";
     if (path === "/proposals") return "Proposals";
+    if (path === "/admin/approvals") return "Approval Queue";
     if (path.startsWith("/talent")) {
       if (path === "/talent") return "Talent & Human Capital";
       if (path === "/talent/sourcing") return "AI Candidate Sourcing";
