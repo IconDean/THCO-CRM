@@ -6,11 +6,80 @@ Build an internal company portal for THCO — a professional services firm. This
 ## Architecture & Tech Stack
 - **Frontend**: React 19 with TailwindCSS, Shadcn/UI components, Framer Motion
 - **Backend**: FastAPI (Python)
-- **Database**: MongoDB
+- **Database**: MongoDB (legacy) + Supabase/PostgreSQL (FlowForge)
 - **Authentication**: Email/Password + Emergent Google OAuth
 - **Email Service**: Resend (for password reset)
 - **AI Agents**: n8n webhooks for agent processing
+- **AI Generation**: Claude via Emergent LLM Key
 - **Theme**: Light sidebar with light content area (matching thcoteam.com)
+
+---
+
+## FlowForge - AI-Powered Workflow Builder (NEW - Feb 19, 2026)
+
+### Overview
+FlowForge is THCO's internal AI-powered automation platform embedded into the thcoteam.com portal. Users describe business problems in text/voice, and the system generates production-ready automation workflows for deployment to n8n.
+
+### Phase 1 - Core Foundation (COMPLETE ✅)
+- [x] Supabase database setup with all required tables
+- [x] FlowForge backend API routes (`/api/flowforge/*`)
+- [x] AI integration with Claude via Emergent LLM Key
+- [x] FlowForge FAB (floating action button) on dashboard
+- [x] Unit selection modal (all 11 business units)
+- [x] FlowForge chat interface with:
+  - Welcome message
+  - Text input with send button
+  - Voice recording button (UI only - Phase 4)
+  - Attachment button (UI only - future)
+  - Status badges (Building, Pending Approval, Active, etc.)
+  - Editable tool name
+- [x] Build History tab on Talent unit page
+- [x] Message persistence in Supabase
+- [x] AI-generated responses with clarifying questions
+
+### Phase 2 - Approval System (UPCOMING)
+- [ ] Admin roles table and management UI
+- [ ] Approval request generation (new tools + updates)
+- [ ] Approval queue page (list, filter, review details)
+- [ ] Approve/reject/request-changes actions
+- [ ] Notification system (in-app + email)
+- [ ] Admin sidebar item with badge count
+
+### Phase 3 - Duplicate Detection & Inventory (UPCOMING)
+- [ ] n8n workflow inventory sync (every 15 min)
+- [ ] Inventory search API (keyword + semantic similarity)
+- [ ] Duplicate detection integrated into chat flow
+- [ ] Similar tool cards shown in chat
+- [ ] User options: use existing, request update, build new
+
+### Phase 4 - Voice Input & Integration Checks (UPCOMING)
+- [ ] Voice recording component (microphone, waveform, timer)
+- [ ] Speech-to-text integration (Whisper)
+- [ ] Editable transcriptions in chat
+- [ ] Integration registry table and sync
+- [ ] Integration status check before generation
+
+### FlowForge Files
+- `/app/backend/routers/flowforge.py` - Main API routes
+- `/app/backend/services/flowforge_ai.py` - AI service (Claude)
+- `/app/backend/sql/flowforge_schema.sql` - Database schema
+- `/app/frontend/src/pages/FlowForgeChat.jsx` - Chat UI
+- `/app/frontend/src/components/FlowForgeFAB.jsx` - FAB button
+- `/app/frontend/src/components/UnitSelectionModal.jsx` - Unit picker
+- `/app/frontend/src/components/BuildHistory.jsx` - History component
+
+### FlowForge Database (Supabase)
+- `flowforge_conversations` - Conversation/tool metadata
+- `flowforge_messages` - Chat messages
+- `flowforge_approvals` - Approval requests
+- `flowforge_admins` - Admin roles
+- `flowforge_workflow_inventory` - n8n workflow inventory
+- `flowforge_integrations` - Available integrations
+- `flowforge_execution_log` - Execution history
+- `flowforge_activity` - Activity feed
+- `flowforge_notifications` - User notifications
+
+---
 
 ## What's Been Implemented
 
