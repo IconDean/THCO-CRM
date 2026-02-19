@@ -2524,6 +2524,10 @@ async def health_check():
 # Include the router
 app.include_router(api_router)
 
+# Include FlowForge router
+from routers.flowforge import router as flowforge_router
+api_router.include_router(flowforge_router)
+
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
