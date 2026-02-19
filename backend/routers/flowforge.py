@@ -808,7 +808,7 @@ async def list_workflow_inventory(
     offset: int = 0
 ):
     """List all workflows in the inventory"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     query = sb.table('flowforge_workflow_inventory').select('*')
@@ -823,7 +823,7 @@ async def list_workflow_inventory(
 @router.post("/inventory/sync")
 async def sync_workflow_inventory(request: Request):
     """Sync workflow inventory from n8n"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     if not N8N_BASE_URL or not N8N_API_KEY:
