@@ -265,6 +265,18 @@ const AppRouter = () => {
         </ProtectedRoute>
       } />
       
+      {/* FlowForge Routes */}
+      <Route path="/:unit/build/new" element={
+        <ProtectedRoute>
+          <FlowForgeChat />
+        </ProtectedRoute>
+      } />
+      <Route path="/:unit/build/:conversationId" element={
+        <ProtectedRoute>
+          <FlowForgeChat />
+        </ProtectedRoute>
+      } />
+      
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
