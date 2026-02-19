@@ -33,6 +33,9 @@ import THCOHRPage from "./pages/THCOHRPage";
 import ProjectManagement from "./pages/ProjectManagement";
 import ITAndTools from "./pages/ITAndTools";
 
+// FlowForge Pages
+import FlowForgeChat from "./pages/FlowForgeChat";
+
 // Public Email-Gated Presentations
 import ProcureAIExecutivePackPublic from "./pages/ProcureAIExecutivePackPublic";
 import ProcureAIExecutivePackV3Public from "./pages/ProcureAIExecutivePackV3Public";
