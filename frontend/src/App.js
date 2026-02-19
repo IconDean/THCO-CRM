@@ -278,6 +278,13 @@ const AppRouter = () => {
         </ProtectedRoute>
       } />
       
+      {/* Admin Routes */}
+      <Route path="/admin/approvals" element={
+        <ProtectedRoute>
+          <ApprovalQueue />
+        </ProtectedRoute>
+      } />
+      
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
