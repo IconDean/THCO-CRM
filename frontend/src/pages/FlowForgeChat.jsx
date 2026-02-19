@@ -201,6 +201,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
                 key={idx}
                 variant={btn.variant || "outline"}
                 size="sm"
+                onClick={() => onActionClick && onActionClick(btn.action, message)}
                 className={btn.primary ? "bg-[#7C64FF] text-white hover:bg-[#6B55E0]" : ""}
                 data-testid={`action-btn-${btn.action}`}
               >
