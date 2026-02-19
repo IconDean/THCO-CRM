@@ -210,6 +210,33 @@ const DashboardLayoutInner = ({ children, user }) => {
                 </div>
               )}
               <Link
+                to="/admin/approvals"
+                data-testid="nav-approval-queue"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
+                  ${isActive("/admin/approvals") 
+                    ? "bg-gray-200/70 text-gray-900 font-medium" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"}`}
+              >
+                <div className="relative">
+                  <ClipboardCheck size={20} />
+                  {pendingApprovals > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {pendingApprovals > 9 ? '9+' : pendingApprovals}
+                    </span>
+                  )}
+                </div>
+                {sidebarOpen && (
+                  <div className="flex-1 flex items-center justify-between">
+                    <span className="text-sm">Approval Queue</span>
+                    {pendingApprovals > 0 && (
+                      <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-700 rounded-full font-medium">
+                        {pendingApprovals}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </Link>
+              <Link
                 to="/settings"
                 data-testid="nav-settings"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
