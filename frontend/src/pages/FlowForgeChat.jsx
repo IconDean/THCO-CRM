@@ -258,17 +258,19 @@ const FlowForgeChat = () => {
           // New conversation - create it
           const newConv = await flowforgeAPI.createConversation({ unit });
           setConversation(newConv);
-          navigate(`/${unit}/build/${newConv.id}`, { replace: true });
           
-          // Add welcome message
-          const welcomeMessage = {
-            id: "welcome",
+          // Add welcome message and save to database
+          const welcomeContent = `Hey! I'm FlowForge, your automation builder.\n\nYou're building a tool for **${UNIT_NAMES[unit] || unit}**.\n\nTo get started:\n1. **What should this tool be called?**\n2. **Describe the problem you want to solve.**\n\nType it out, record a voice message, or do both — the more context you give me, the better I'll build it.`;
+          
+          const welcomeMessage = await flowforgeAPI.addMessage(newConv.id, {
             role: "assistant",
-            content: `Hey! I'm FlowForge, your automation builder.\n\nYou're building a tool for **${UNIT_NAMES[unit] || unit}**.\n\nTo get started:\n1. **What should this tool be called?**\n2. **Describe the problem you want to solve.**\n\nType it out, record a voice message, or do both — the more context you give me, the better I'll build it.`,
-            created_at: new Date().toISOString(),
-            has_action_buttons: false,
-          };
+            content: welcomeContent,
+          });
+          
           setMessages([welcomeMessage]);
+          
+          // Navigate after setting state
+          navigate(`/${unit}/build/${newConv.id}`, { replace: true });
         }
       } catch (error) {
         console.error("Failed to load FlowForge data:", error);
