@@ -695,7 +695,7 @@ async def remove_admin(admin_id: str, request: Request):
 @router.get("/admins/for-unit/{unit}", response_model=List[AdminResponse])
 async def get_unit_admins(unit: str, request: Request):
     """Get admins for a specific unit"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     # Get unit admins + company admins
@@ -719,7 +719,7 @@ async def get_unit_admins(unit: str, request: Request):
 @router.get("/integrations", response_model=List[IntegrationResponse])
 async def list_integrations(request: Request):
     """List all available integrations and their status"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     result = sb.table('flowforge_integrations').select('*').execute()
@@ -729,7 +729,7 @@ async def list_integrations(request: Request):
 @router.post("/integrations/check")
 async def check_integrations(request: Request, integration_types: List[str]):
     """Check if specific integrations are available"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     result = sb.table('flowforge_integrations').select('*').in_('internal_type', integration_types).execute()
