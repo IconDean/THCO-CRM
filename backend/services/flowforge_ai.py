@@ -218,7 +218,9 @@ async def generate_ai_response(
     conversation_history: List[Dict[str, Any]] = None,
     tool_status: str = None,
     execution_count: int = 0,
-    last_error: str = None
+    last_error: str = None,
+    check_duplicates: bool = True,
+    is_first_message: bool = False
 ) -> Dict[str, Any]:
     """
     High-level function to generate an AI response for FlowForge
@@ -231,10 +233,43 @@ async def generate_ai_response(
         tool_status: Current status of the tool
         execution_count: Number of times the tool has run
         last_error: Last error message if any
+        check_duplicates: Whether to check for duplicates first
+        is_first_message: Whether this is the first user message (trigger duplicate check)
     
     Returns:
         Dict containing the AI response and metadata
     """
+    # Check for duplicates on first meaningful message
+    duplicate_data = None
+    if check_duplicates and is_first_message:
+        try:
+            from services.duplicate_detection import check_for_duplicates, generate_duplicate_alert_data
+            
+            has_strong_match, similar_workflows = await check_for_duplicates(user_message, unit)
+            
+            if similar_workflows:
+                strongest = similar_workflows[0]
+                duplicate_data = generate_duplicate_alert_data(similar_workflows, strongest)
+                
+                # If strong match, return duplicate alert instead of generating workflow
+                if has_strong_match:
+                    return {
+                        "content": f"Before I build something new, I found an existing tool that looks very similar to what you're describing:\n\n**{strongest['name']}**\n{strongest.get('description', 'No description')}\n\nDoes this match what you need?",
+                        "has_workflow": False,
+                        "workflow_data": None,
+                        "has_action_buttons": False,
+                        "action_buttons": None,
+                        "has_duplicate_alert": True,
+                        "duplicate_data": duplicate_data
+                    }
+                elif similar_workflows:
+                    # Weak matches - mention them but continue
+                    weak_match_text = f"\n\n*Note: I found some related tools ({', '.join([w['name'] for w in similar_workflows[:2]])}) but they don't seem to be exactly what you need. Proceeding with your request.*"
+                    # Continue with normal AI response but add note
+        except Exception as e:
+            logger.warning(f"Duplicate detection failed: {e}")
+    
+    # Generate AI response
     ai = FlowForgeAI(conversation_id, unit)
     
     context = {
@@ -248,5 +283,10 @@ async def generate_ai_response(
         context["execution_summary"] = f"{execution_count} executions"
     
     response = await ai.send_message(user_message, context)
+    
+    # Add duplicate data if present (weak matches)
+    if duplicate_data and not duplicate_data.get('has_strong_match'):
+        response["has_duplicate_alert"] = True
+        response["duplicate_data"] = duplicate_data
     
     return response
