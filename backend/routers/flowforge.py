@@ -954,7 +954,9 @@ async def generate_workflow(data: GenerateRequest, request: Request):
             conversation_history=history,
             tool_status=conversation['status'],
             execution_count=conversation.get('execution_count', 0),
-            last_error=conversation.get('last_error_message')
+            last_error=conversation.get('last_error_message'),
+            check_duplicates=data.check_duplicates,
+            is_first_message=is_first_message
         )
         
         return response
