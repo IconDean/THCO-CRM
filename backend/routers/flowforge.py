@@ -903,6 +903,7 @@ class GenerateRequest(BaseModel):
     conversation_id: str
     message: str
     include_history: bool = True
+    check_duplicates: bool = True
 
 class GenerateResponse(BaseModel):
     content: str
@@ -910,6 +911,8 @@ class GenerateResponse(BaseModel):
     workflow_data: Optional[Dict[str, Any]] = None
     has_action_buttons: bool = False
     action_buttons: Optional[List[Dict[str, Any]]] = None
+    has_duplicate_alert: bool = False
+    duplicate_data: Optional[Dict[str, Any]] = None
 
 @router.post("/generate", response_model=GenerateResponse)
 async def generate_workflow(data: GenerateRequest, request: Request):
@@ -935,9 +938,13 @@ async def generate_workflow(data: GenerateRequest, request: Request):
         
         # Get conversation history if needed
         history = []
+        is_first_message = True
         if data.include_history:
             msg_result = sb.table('flowforge_messages').select('role,content').eq('conversation_id', data.conversation_id).order('message_index').execute()
             history = msg_result.data or []
+            # Check if this is the first user message
+            user_messages = [m for m in history if m['role'] == 'user']
+            is_first_message = len(user_messages) == 0
         
         # Generate AI response
         response = await generate_ai_response(
