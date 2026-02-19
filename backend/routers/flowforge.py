@@ -897,6 +897,65 @@ async def search_inventory(request: Request, query: str, limit: int = 10):
     
     return result.data or []
 
+# ==================== AI GENERATION ROUTES ====================
+
+class GenerateRequest(BaseModel):
+    conversation_id: str
+    message: str
+    include_history: bool = True
+
+class GenerateResponse(BaseModel):
+    content: str
+    has_workflow: bool = False
+    workflow_data: Optional[Dict[str, Any]] = None
+    has_action_buttons: bool = False
+    action_buttons: Optional[List[Dict[str, Any]]] = None
+
+@router.post("/generate", response_model=GenerateResponse)
+async def generate_workflow(data: GenerateRequest, request: Request):
+    """Generate AI response for workflow building"""
+    user = await get_current_user_from_request(request)
+    sb = ensure_supabase()
+    
+    # Get conversation
+    conv_result = sb.table('flowforge_conversations').select('*').eq('id', data.conversation_id).execute()
+    if not conv_result.data:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    conversation = conv_result.data[0]
+    
+    # Check access
+    if user.get('role') not in ['super_admin', 'company_admin']:
+        if conversation['created_by'] != user['user_id']:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    try:
+        # Import AI service
+        from services.flowforge_ai import generate_ai_response
+        
+        # Get conversation history if needed
+        history = []
+        if data.include_history:
+            msg_result = sb.table('flowforge_messages').select('role,content').eq('conversation_id', data.conversation_id).order('message_index').execute()
+            history = msg_result.data or []
+        
+        # Generate AI response
+        response = await generate_ai_response(
+            conversation_id=data.conversation_id,
+            unit=conversation['unit'],
+            user_message=data.message,
+            conversation_history=history,
+            tool_status=conversation['status'],
+            execution_count=conversation.get('execution_count', 0),
+            last_error=conversation.get('last_error_message')
+        )
+        
+        return response
+    
+    except Exception as e:
+        logger.error(f"AI generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate response: {str(e)}")
+
 # ==================== HEALTH CHECK ====================
 
 @router.get("/health")
@@ -917,3 +976,4 @@ async def health_check():
             status["status"] = "degraded"
     
     return status
+
