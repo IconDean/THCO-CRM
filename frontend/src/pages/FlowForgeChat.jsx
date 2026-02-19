@@ -400,6 +400,8 @@ const FlowForgeChat = () => {
           workflow_version: aiResponse.has_workflow ? 1 : null,
           has_action_buttons: aiResponse.has_action_buttons,
           action_buttons: aiResponse.action_buttons,
+          has_duplicate_alert: aiResponse.has_duplicate_alert || false,
+          duplicate_data: aiResponse.duplicate_data || null,
         };
         
         const savedAiMessage = await flowforgeAPI.addMessage(conversation.id, aiMessage);
