@@ -887,7 +887,7 @@ async def sync_workflow_inventory(request: Request):
 @router.post("/inventory/search")
 async def search_inventory(request: Request, query: str, limit: int = 10):
     """Search workflow inventory for similar workflows"""
-    user = await get_current_user_from_request(request)
+    await get_current_user_from_request(request)  # Ensure authenticated
     sb = ensure_supabase()
     
     # Simple text search - in production, this would use semantic similarity
