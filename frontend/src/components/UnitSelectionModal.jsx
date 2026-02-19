@@ -99,9 +99,9 @@ const UnitSelectionModal = ({ isOpen, onClose }) => {
           <DialogTitle className="text-xl font-semibold text-gray-800">
             Which unit is this tool for?
           </DialogTitle>
-          <p className="text-sm text-gray-500 mt-1">
+          <DialogDescription className="text-sm text-gray-500 mt-1">
             Select the business unit where this automation will be used
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="p-6 grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto" data-testid="unit-selection-grid">
