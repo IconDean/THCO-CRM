@@ -12,7 +12,7 @@ import {
   FolderKanban,
   X
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { useNavigate } from "react-router-dom";
 
 const UNITS = [
