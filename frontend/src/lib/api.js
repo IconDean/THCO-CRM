@@ -449,11 +449,12 @@ export const flowforgeAPI = {
   },
   
   // AI Generation
-  generateResponse: async (conversationId, message, includeHistory = true) => {
+  generateResponse: async (conversationId, message, includeHistory = true, checkDuplicates = true) => {
     const response = await apiClient.post('/flowforge/generate', {
       conversation_id: conversationId,
       message,
-      include_history: includeHistory
+      include_history: includeHistory,
+      check_duplicates: checkDuplicates
     });
     return response.data;
   },
