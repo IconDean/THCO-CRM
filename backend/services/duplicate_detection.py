@@ -171,7 +171,7 @@ async def search_similar_workflows(
 async def check_for_duplicates(
     user_description: str,
     unit: Optional[str] = None,
-    threshold: float = 40.0
+    threshold: float = 20.0
 ) -> Tuple[bool, List[Dict[str, Any]]]:
     """
     Check if there are potential duplicate workflows
