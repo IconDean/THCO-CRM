@@ -2521,12 +2521,12 @@ async def get_single_user_analytics(user_id: str, request: Request, days: int = 
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
-# Include the router
-app.include_router(api_router)
-
 # Include FlowForge router
 from routers.flowforge import router as flowforge_router
 api_router.include_router(flowforge_router)
+
+# Include the main router
+app.include_router(api_router)
 
 # CORS Middleware
 app.add_middleware(
