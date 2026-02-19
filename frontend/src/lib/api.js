@@ -447,6 +447,16 @@ export const flowforgeAPI = {
     const response = await apiClient.post('/flowforge/inventory/search', { query, limit });
     return response.data;
   },
+  
+  // AI Generation
+  generateResponse: async (conversationId, message, includeHistory = true) => {
+    const response = await apiClient.post('/flowforge/generate', {
+      conversation_id: conversationId,
+      message,
+      include_history: includeHistory
+    });
+    return response.data;
+  },
 };
 
 export default apiClient;
