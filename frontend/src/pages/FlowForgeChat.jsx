@@ -401,6 +401,69 @@ const FlowForgeChat = () => {
     }
   };
 
+  // Handle action button clicks (Submit for Approval, Make Changes, etc.)
+  const handleActionClick = async (action, message) => {
+    if (action === "submit_approval") {
+      try {
+        setSending(true);
+        
+        // Get workflow data from the message
+        const workflowData = message.workflow_preview_json || {};
+        
+        // Create approval request
+        const approvalData = {
+          conversation_id: conversation.id,
+          request_type: "new_tool",
+          tool_name: toolName !== "Untitled" ? toolName : workflowData.tool_name || "Untitled Tool",
+          request_summary: workflowData.description || `New automation tool for ${UNIT_NAMES[unit] || unit}`,
+          request_details: {
+            steps: workflowData.steps || [],
+            trigger_type: workflowData.trigger_type,
+            trigger_description: workflowData.trigger_description,
+            systems_used: workflowData.systems_used || [],
+            estimated_impact: workflowData.estimated_impact,
+          },
+          proposed_workflow_json: workflowData,
+          impact_assessment: {
+            risk: "LOW",
+            estimated_impact: workflowData.estimated_impact || "Pending assessment",
+          },
+        };
+        
+        await flowforgeAPI.createApproval(approvalData);
+        
+        // Add system message
+        const systemMessage = await flowforgeAPI.addMessage(conversation.id, {
+          role: "assistant",
+          content: `Great! I've submitted "${approvalData.tool_name}" for admin approval. You'll be notified once it's reviewed.\n\nIn the meantime, you can continue refining the tool or start building another one.`,
+        });
+        
+        setMessages(prev => [...prev, systemMessage]);
+        
+        // Update conversation status
+        await flowforgeAPI.updateConversation(conversation.id, { 
+          status: "pending_approval",
+          tool_name: approvalData.tool_name,
+        });
+        setConversation(prev => ({ ...prev, status: "pending_approval" }));
+        
+        toast.success("Submitted for approval!");
+      } catch (error) {
+        console.error("Failed to submit for approval:", error);
+        toast.error("Failed to submit for approval");
+      } finally {
+        setSending(false);
+      }
+    } else if (action === "request_changes") {
+      // Add a prompt for the user to describe changes
+      const changeMessage = await flowforgeAPI.addMessage(conversation.id, {
+        role: "assistant",
+        content: "Sure! What changes would you like to make? Describe what you'd like to modify and I'll update the workflow accordingly.",
+      });
+      setMessages(prev => [...prev, changeMessage]);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
