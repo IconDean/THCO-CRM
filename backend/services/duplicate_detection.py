@@ -89,15 +89,16 @@ async def search_similar_workflows(
         # Extract keywords from user description
         user_keywords = extract_keywords(user_description)
         
-        # Get all workflows from inventory
+        # Get ALL workflows from inventory (don't filter by unit since inventory workflows
+        # are synced from n8n and typically don't have unit assignments)
         query = supabase.table('flowforge_workflow_inventory').select('*')
-        if unit:
-            query = query.eq('unit', unit)
+        # Don't filter inventory by unit - we want to find ALL similar workflows
         
         result = query.execute()
         workflows = result.data or []
         
         # Also get FlowForge conversations (deployed tools)
+        # For conversations, we CAN filter by unit since they have unit assignments
         conv_query = supabase.table('flowforge_conversations').select('*').in_('status', ['deployed', 'active'])
         if unit:
             conv_query = conv_query.eq('unit', unit)
