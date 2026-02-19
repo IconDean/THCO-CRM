@@ -36,6 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { authAPI } from "../lib/api";
 import { toast } from "sonner";
 import { AnalyticsProvider, useAnalytics } from "../context/AnalyticsContext";
+import FlowForgeFAB from "./FlowForgeFAB";
 
 const UNITS = [
   { name: "Talent & Human Capital", slug: "talent", icon: Users, path: "/talent", active: true },
