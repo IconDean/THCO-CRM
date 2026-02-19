@@ -35,6 +35,7 @@ import ITAndTools from "./pages/ITAndTools";
 
 // FlowForge Pages
 import FlowForgeChat from "./pages/FlowForgeChat";
+import ApprovalQueue from "./pages/ApprovalQueue";
 
 // Public Email-Gated Presentations
 import ProcureAIExecutivePackPublic from "./pages/ProcureAIExecutivePackPublic";
