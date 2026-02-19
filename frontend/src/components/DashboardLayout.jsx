@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -21,7 +21,8 @@ import {
   FileText,
   UserCog,
   FolderKanban,
-  Wrench
+  Wrench,
+  ClipboardCheck
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -33,7 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { authAPI } from "../lib/api";
+import { authAPI, flowforgeAPI } from "../lib/api";
 import { toast } from "sonner";
 import { AnalyticsProvider, useAnalytics } from "../context/AnalyticsContext";
 import FlowForgeFAB from "./FlowForgeFAB";
