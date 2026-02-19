@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft, Bot, UserCheck, Send, FileText } from "lucide-react";
+import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft, Bot, UserCheck, Send, FileText, Zap, History } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+import { Button } from "../components/ui/button";
+import BuildHistory from "../components/BuildHistory";
 
 // AI Agents for Recruiting (from Agent Registry)
 const AI_AGENTS = [
