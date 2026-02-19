@@ -518,6 +518,42 @@ const FlowForgeChat = () => {
         content: "Sure! What changes would you like to make? Describe what you'd like to modify and I'll update the workflow accordingly.",
       });
       setMessages(prev => [...prev, changeMessage]);
+    } else if (action === "use_existing") {
+      // User wants to use the existing similar tool
+      const duplicateData = message.duplicate_data;
+      const existingTool = duplicateData?.strongest_match;
+      
+      const confirmMessage = await flowforgeAPI.addMessage(conversation.id, {
+        role: "assistant",
+        content: `Great! "${existingTool?.name}" is already available and ${existingTool?.is_active ? 'actively running' : 'deployed'}. You can find it in your unit's tools section.\n\nIs there anything else you'd like to build?`,
+      });
+      setMessages(prev => [...prev, confirmMessage]);
+      
+      // Update conversation to resolved
+      await flowforgeAPI.updateConversation(conversation.id, { 
+        status: "archived",
+        description: `Resolved - matched to existing tool: ${existingTool?.name}`,
+      });
+      setConversation(prev => ({ ...prev, status: "archived" }));
+      
+    } else if (action === "request_update") {
+      // User wants to update the existing tool
+      const duplicateData = message.duplicate_data;
+      const existingTool = duplicateData?.strongest_match;
+      
+      const updateMessage = await flowforgeAPI.addMessage(conversation.id, {
+        role: "assistant",
+        content: `Got it! What changes would you like to make to "${existingTool?.name}"? Describe the modifications and I'll prepare an update request for admin approval.`,
+      });
+      setMessages(prev => [...prev, updateMessage]);
+      
+    } else if (action === "build_new") {
+      // User confirms they want to build something new despite similar tools
+      const buildMessage = await flowforgeAPI.addMessage(conversation.id, {
+        role: "assistant",
+        content: "Understood! Let's build something new. Can you give me more details about what you need? I'll make sure it's distinct from the existing tools.",
+      });
+      setMessages(prev => [...prev, buildMessage]);
     }
   };
 
