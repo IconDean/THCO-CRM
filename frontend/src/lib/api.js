@@ -329,4 +329,124 @@ export const analyticsAPI = {
   },
 };
 
+// FlowForge API
+export const flowforgeAPI = {
+  // Health check
+  health: async () => {
+    const response = await apiClient.get('/flowforge/health');
+    return response.data;
+  },
+  
+  // Conversations
+  getConversations: async (params = {}) => {
+    const response = await apiClient.get('/flowforge/conversations', { params });
+    return response.data;
+  },
+  
+  createConversation: async (data) => {
+    const response = await apiClient.post('/flowforge/conversations', data);
+    return response.data;
+  },
+  
+  getConversation: async (conversationId) => {
+    const response = await apiClient.get(`/flowforge/conversations/${conversationId}`);
+    return response.data;
+  },
+  
+  updateConversation: async (conversationId, data) => {
+    const response = await apiClient.patch(`/flowforge/conversations/${conversationId}`, data);
+    return response.data;
+  },
+  
+  // Messages
+  getMessages: async (conversationId) => {
+    const response = await apiClient.get(`/flowforge/conversations/${conversationId}/messages`);
+    return response.data;
+  },
+  
+  addMessage: async (conversationId, data) => {
+    const response = await apiClient.post(`/flowforge/conversations/${conversationId}/messages`, data);
+    return response.data;
+  },
+  
+  // Approvals
+  getApprovals: async (params = {}) => {
+    const response = await apiClient.get('/flowforge/approvals', { params });
+    return response.data;
+  },
+  
+  createApproval: async (data) => {
+    const response = await apiClient.post('/flowforge/approvals', data);
+    return response.data;
+  },
+  
+  getApproval: async (approvalId) => {
+    const response = await apiClient.get(`/flowforge/approvals/${approvalId}`);
+    return response.data;
+  },
+  
+  processApproval: async (approvalId, action, note = null) => {
+    const response = await apiClient.post(`/flowforge/approvals/${approvalId}/action`, { action, note });
+    return response.data;
+  },
+  
+  getApprovalStats: async () => {
+    const response = await apiClient.get('/flowforge/approvals/stats');
+    return response.data;
+  },
+  
+  // Admins
+  getAdmins: async () => {
+    const response = await apiClient.get('/flowforge/admins');
+    return response.data;
+  },
+  
+  addAdmin: async (data) => {
+    const response = await apiClient.post('/flowforge/admins', data);
+    return response.data;
+  },
+  
+  removeAdmin: async (adminId) => {
+    const response = await apiClient.delete(`/flowforge/admins/${adminId}`);
+    return response.data;
+  },
+  
+  getUnitAdmins: async (unit) => {
+    const response = await apiClient.get(`/flowforge/admins/for-unit/${unit}`);
+    return response.data;
+  },
+  
+  // Integrations
+  getIntegrations: async () => {
+    const response = await apiClient.get('/flowforge/integrations');
+    return response.data;
+  },
+  
+  checkIntegrations: async (integrationTypes) => {
+    const response = await apiClient.post('/flowforge/integrations/check', { integration_types: integrationTypes });
+    return response.data;
+  },
+  
+  syncIntegrations: async () => {
+    const response = await apiClient.post('/flowforge/integrations/sync');
+    return response.data;
+  },
+  
+  // Workflow Inventory
+  getInventory: async (params = {}) => {
+    const response = await apiClient.get('/flowforge/inventory', { params });
+    return response.data;
+  },
+  
+  syncInventory: async () => {
+    const response = await apiClient.post('/flowforge/inventory/sync');
+    return response.data;
+  },
+  
+  searchInventory: async (query, limit = 10) => {
+    const response = await apiClient.post('/flowforge/inventory/search', { query, limit });
+    return response.data;
+  },
+};
+
 export default apiClient;
