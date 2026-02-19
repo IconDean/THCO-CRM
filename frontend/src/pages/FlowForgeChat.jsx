@@ -272,8 +272,15 @@ const FlowForgeChat = () => {
         }
       } catch (error) {
         console.error("Failed to load FlowForge data:", error);
-        if (error.response?.status === 404 || error.response?.data?.detail?.includes("table")) {
-          toast.error("FlowForge database is being set up. Please try again in a moment.");
+        if (error.response?.status === 404 || error.response?.data?.detail?.includes("table") || error.response?.status === 503) {
+          // Supabase tables not set up yet - show setup instructions
+          toast.error("FlowForge database setup required. Please check with your administrator.");
+          setMessages([{
+            id: "setup-required",
+            role: "system",
+            content: "FlowForge database is being configured. Please ask your administrator to complete the setup.",
+            created_at: new Date().toISOString(),
+          }]);
         } else {
           toast.error("Failed to load conversation");
         }
