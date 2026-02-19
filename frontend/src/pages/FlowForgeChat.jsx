@@ -163,6 +163,62 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
           </div>
         )}
 
+        {/* Duplicate Alert */}
+        {message.has_duplicate_alert && message.duplicate_data && (
+          <div className={`mt-2 rounded-xl p-4 shadow-sm w-full ${
+            message.duplicate_data.has_strong_match 
+              ? "bg-yellow-50 border-2 border-yellow-200" 
+              : "bg-blue-50 border border-blue-100"
+          }`}>
+            <div className="flex items-center gap-2 mb-3">
+              <Search className={`w-5 h-5 ${message.duplicate_data.has_strong_match ? "text-yellow-600" : "text-blue-600"}`} />
+              <span className="font-medium text-gray-800">
+                {message.duplicate_data.has_strong_match ? "Similar Tool Found" : "Related Tools"}
+              </span>
+            </div>
+            
+            {/* Strongest match */}
+            <div className="bg-white rounded-lg p-3 mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-gray-900">{message.duplicate_data.strongest_match?.name}</h4>
+                <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">
+                  {message.duplicate_data.strongest_match?.similarity_score}% match
+                </span>
+              </div>
+              <p className="text-sm text-gray-600">{message.duplicate_data.strongest_match?.description || "No description available"}</p>
+              {message.duplicate_data.strongest_match?.is_active && (
+                <span className="inline-flex items-center gap-1 mt-2 text-xs text-green-600">
+                  <Play className="w-3 h-3" />
+                  Active
+                </span>
+              )}
+            </div>
+            
+            {/* Other matches */}
+            {message.duplicate_data.other_matches?.length > 0 && (
+              <div className="text-sm text-gray-500 mb-3">
+                Also similar: {message.duplicate_data.other_matches.map(m => m.name).join(", ")}
+              </div>
+            )}
+            
+            {/* Action buttons */}
+            <div className="flex flex-wrap gap-2">
+              {message.duplicate_data.action_buttons?.map((btn, idx) => (
+                <Button
+                  key={idx}
+                  variant={btn.primary ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => onActionClick && onActionClick(btn.action, message)}
+                  className={btn.primary ? "bg-[#7C64FF] text-white hover:bg-[#6B55E0]" : ""}
+                  data-testid={`duplicate-action-${btn.action}`}
+                >
+                  {btn.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Integration Check */}
         {message.has_integration_check && message.integration_check_data && (
           <div className="mt-2 bg-white border border-gray-200 rounded-xl p-4 shadow-sm w-full">
