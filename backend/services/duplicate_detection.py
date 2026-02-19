@@ -44,7 +44,12 @@ def extract_keywords(text: str) -> List[str]:
         'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them',
         'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this',
         'that', 'these', 'those', 'am', 'build', 'create', 'make', 'want', 'need',
-        'something', 'tool', 'automation', 'automate', 'help', 'please', 'call'
+        'something', 'tool', 'automation', 'automate', 'help', 'please', 'call',
+        # n8n technical terms to exclude
+        'nodes', 'base', 'n8n', 'trigger', 'node', 'httprequest', 'code',
+        'formtrigger', 'webhooktrigger', 'scheduletrigger', 'manualtrigger',
+        'splitinbatches', 'wait', 'switch', 'merge', 'set', 'function',
+        'correct', 'version', 'thco'
     }
     
     # Extract words
