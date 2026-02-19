@@ -320,17 +320,53 @@ const FlowForgeChat = () => {
       // Update with real message
       setMessages((prev) => prev.map((m) => (m.id === tempId ? savedMessage : m)));
 
-      // TODO: In Phase 1, we'll add AI response here
-      // For now, add a placeholder response
-      setTimeout(() => {
-        const aiResponse = {
-          id: `ai-${Date.now()}`,
+      // Generate AI response
+      try {
+        const aiResponse = await flowforgeAPI.generateResponse(
+          conversation.id,
+          inputValue.trim(),
+          true
+        );
+        
+        // Save AI response to database
+        const aiMessage = {
           role: "assistant",
-          content: "I've received your message! In the full version, I'll analyze your request, check for similar existing tools, verify required integrations, and generate a workflow for you.\n\n*Note: AI integration is coming in the next phase.*",
+          content: aiResponse.content,
+          has_workflow_preview: aiResponse.has_workflow,
+          workflow_preview_json: aiResponse.workflow_data ? {
+            ...aiResponse.workflow_data,
+            steps: aiResponse.workflow_data.steps || []
+          } : null,
+          workflow_version: aiResponse.has_workflow ? 1 : null,
+          has_action_buttons: aiResponse.has_action_buttons,
+          action_buttons: aiResponse.action_buttons,
+        };
+        
+        const savedAiMessage = await flowforgeAPI.addMessage(conversation.id, aiMessage);
+        setMessages((prev) => [...prev, savedAiMessage]);
+        
+        // Update conversation with tool name if workflow was generated
+        if (aiResponse.workflow_data?.tool_name && toolName === "Untitled") {
+          setToolName(aiResponse.workflow_data.tool_name);
+          await flowforgeAPI.updateConversation(conversation.id, { 
+            tool_name: aiResponse.workflow_data.tool_name,
+            description: aiResponse.workflow_data.description,
+            systems_used: aiResponse.workflow_data.systems_used || [],
+            trigger_type: aiResponse.workflow_data.trigger_type,
+            trigger_description: aiResponse.workflow_data.trigger_description,
+          });
+        }
+      } catch (aiError) {
+        console.error("AI generation error:", aiError);
+        // Fallback message if AI fails
+        const fallbackMessage = {
+          id: `fallback-${Date.now()}`,
+          role: "assistant",
+          content: "I'm having trouble processing your request right now. Please try again in a moment.",
           created_at: new Date().toISOString(),
         };
-        setMessages((prev) => [...prev, aiResponse]);
-      }, 1000);
+        setMessages((prev) => [...prev, fallbackMessage]);
+      }
 
     } catch (error) {
       console.error("Failed to send message:", error);
