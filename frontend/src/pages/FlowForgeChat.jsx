@@ -145,8 +145,75 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
           )}
         </div>
 
-        {/* Workflow Preview */}
-        {message.has_workflow_preview && message.workflow_preview_json && (
+        {/* Workflow Preview - Enhanced for Two-Step Process */}
+        {message.has_workflow && message.workflow_data && (
+          <div className="mt-2 bg-white border border-gray-200 rounded-xl p-4 shadow-sm w-full" data-testid="workflow-preview">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <FileCode className="w-5 h-5 text-[#7C64FF]" />
+                <span className="font-medium text-gray-800">
+                  {message.workflow_data.suggested_name || "Workflow Preview"}
+                </span>
+              </div>
+              {message.workflow_data.trigger_type && (
+                <span className="text-xs px-2 py-1 bg-[#7C64FF]/10 text-[#7C64FF] rounded-full capitalize">
+                  {message.workflow_data.trigger_type}
+                </span>
+              )}
+            </div>
+            
+            {/* Description */}
+            {message.workflow_data.description && (
+              <p className="text-sm text-gray-600 mb-3">{message.workflow_data.description}</p>
+            )}
+            
+            {/* Workflow Steps */}
+            {message.workflow_steps && message.workflow_steps.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {message.workflow_steps.slice(0, 6).map((step, idx) => (
+                  <div key={idx} className="flex items-start gap-2 text-sm">
+                    <span className="w-6 h-6 bg-[#7C64FF]/10 text-[#7C64FF] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                      {step.step_number || idx + 1}
+                    </span>
+                    <div>
+                      <span className="font-medium text-gray-800">{step.name}</span>
+                      {step.description && (
+                        <p className="text-gray-500 text-xs mt-0.5">{step.description.substring(0, 80)}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {message.workflow_steps.length > 6 && (
+                  <div className="text-xs text-gray-400 ml-8">
+                    +{message.workflow_steps.length - 6} more steps
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Trigger Info */}
+            {message.workflow_data.trigger_description && (
+              <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                <Clock className="w-4 h-4" />
+                <span>{message.workflow_data.trigger_description}</span>
+              </div>
+            )}
+            
+            {/* Systems Used */}
+            {message.workflow_data.systems_used && message.workflow_data.systems_used.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap mt-2">
+                {message.workflow_data.systems_used.map((system, idx) => (
+                  <span key={idx} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">
+                    {system}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Legacy Workflow Preview (for backwards compatibility) */}
+        {message.has_workflow_preview && message.workflow_preview_json && !message.workflow_data && (
           <div className="mt-2 bg-white border border-gray-200 rounded-xl p-4 shadow-sm w-full">
             <div className="flex items-center gap-2 mb-3">
               <FileCode className="w-5 h-5 text-[#7C64FF]" />
