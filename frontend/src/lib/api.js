@@ -458,6 +458,19 @@ export const flowforgeAPI = {
     });
     return response.data;
   },
+  
+  // Voice Transcription
+  transcribeAudio: async (audioBlob) => {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    
+    const response = await apiClient.post('/flowforge/transcribe', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 };
 
 export default apiClient;
