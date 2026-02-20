@@ -159,16 +159,30 @@ const ITAndTools = () => {
 
       {/* Unit Header */}
       <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-        <div className="flex items-start gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
-            <Wrench className="w-8 h-8 text-white" />
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
+              <Wrench className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">IT & THCO Tools</h1>
+              <p className="text-gray-500 text-lg">
+                IT infrastructure, AI agents, outbound tooling, and system management
+              </p>
+              <p className="text-sm text-gray-400 mt-1">Lead: Emmanuel</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">IT & THCO Tools</h1>
-            <p className="text-gray-500 text-lg">
-              IT infrastructure, AI agents, outbound tooling, and system management
-            </p>
-            <p className="text-sm text-gray-400 mt-1">Lead: Emmanuel</p>
+          <div className="flex gap-3">
+            <Link to="/it-tools/build/new">
+              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+                <Zap className="w-4 h-4 mr-2" />
+                Build New Tool
+              </Button>
+            </Link>
+            <Button className="bg-orange-600 hover:bg-orange-700">
+              <Plus className="w-4 h-4 mr-2" />
+              New Agent
+            </Button>
           </div>
         </div>
       </div>

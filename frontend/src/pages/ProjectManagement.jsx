@@ -220,10 +220,18 @@ const ProjectManagement = () => {
           <h1 className="text-2xl font-bold text-gray-900">Project Management</h1>
           <p className="text-gray-500 mt-1">Track projects through the THCO Operating Cycle</p>
         </div>
-        <Button onClick={() => setIsAddModalOpen(true)} className="bg-teal-600 hover:bg-teal-700">
-          <Plus className="w-4 h-4 mr-2" />
-          New Project
-        </Button>
+        <div className="flex gap-3">
+          <Link to="/project-management/build/new">
+            <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+              <Zap className="w-4 h-4 mr-2" />
+              Build New Tool
+            </Button>
+          </Link>
+          <Button onClick={() => setIsAddModalOpen(true)} className="bg-teal-600 hover:bg-teal-700">
+            <Plus className="w-4 h-4 mr-2" />
+            New Project
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
