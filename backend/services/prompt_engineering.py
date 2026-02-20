@@ -725,12 +725,23 @@ Be specific but concise. Use unit context to fill gaps intelligently."""
                 for w in existing_inventory[:10]
             ])
         
-        prompt = f"""
-USER'S DESCRIPTION:
+        # Format the combined input using guided_input service
+        from services.guided_input import format_combined_input, detect_input_type
+        
+        # Detect input type and format accordingly
+        input_type = detect_input_type(user_description, has_voice=bool(voice_transcription))
+        
+        if input_type in ['structured_brief', 'both']:
+            combined_input = format_combined_input(user_description, voice_transcription)
+        else:
+            combined_input = f"""USER'S DESCRIPTION:
 {user_description}
 
 {"VOICE TRANSCRIPTION:" if voice_transcription else ""}
-{voice_transcription or ""}
+{voice_transcription or ""}"""
+        
+        prompt = f"""
+{combined_input}
 
 {"CONVERSATION HISTORY (for context):" if history_text else ""}
 {history_text}
@@ -741,7 +752,7 @@ USER'S DESCRIPTION:
 {"EXISTING AUTOMATION INVENTORY (avoid duplicates):" if inventory_text else ""}
 {inventory_text}
 
-Please create the comprehensive Build Specification.
+Please create the comprehensive Build Specification based on the user's input.
 """
         
         message = UserMessage(text=prompt)
