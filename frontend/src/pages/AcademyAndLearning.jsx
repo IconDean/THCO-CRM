@@ -229,10 +229,18 @@ const AcademyAndLearning = () => {
               <p className="text-sm text-gray-400 mt-1">Lead: Babatunde</p>
             </div>
           </div>
-          <Button className="bg-amber-600 hover:bg-amber-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Enroll Trainee
-          </Button>
+          <div className="flex gap-3">
+            <Link to="/academy/build/new">
+              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+                <Zap className="w-4 h-4 mr-2" />
+                Build New Tool
+              </Button>
+            </Link>
+            <Button className="bg-amber-600 hover:bg-amber-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Enroll Trainee
+            </Button>
+          </div>
         </div>
       </div>
 

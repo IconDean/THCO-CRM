@@ -173,10 +173,18 @@ const ClientDelivery = () => {
               <p className="text-sm text-gray-400 mt-1">Lead: Isaiah</p>
             </div>
           </div>
-          <Button className="bg-pink-600 hover:bg-pink-700">
-            <Plus className="w-4 h-4 mr-2" />
-            New Deployment
-          </Button>
+          <div className="flex gap-3">
+            <Link to="/client-delivery/build/new">
+              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+                <Zap className="w-4 h-4 mr-2" />
+                Build New Tool
+              </Button>
+            </Link>
+            <Button className="bg-pink-600 hover:bg-pink-700">
+              <Plus className="w-4 h-4 mr-2" />
+              New Deployment
+            </Button>
+          </div>
         </div>
       </div>
 
