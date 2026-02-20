@@ -664,10 +664,26 @@ class PromptArchitect:
         if not EMERGENT_LLM_KEY:
             raise ValueError("EMERGENT_LLM_KEY not found")
         
-        system_prompt = PROMPT_ARCHITECT_SYSTEM.format(
-            company_context=THCO_COMPANY_CONTEXT,
-            unit_context=self.unit_context
-        )
+        # Use a more concise system prompt for Step 1
+        system_prompt = f"""You are a THCO FlowForge Prompt Architect. Transform user automation requests into detailed Build Specifications.
+
+Company: THCO - AI-native professional services firm. Mission: "Human insight. Amplified."
+
+Unit Context:
+{self.unit_context[:2000]}
+
+Create a Build Specification with these sections:
+1. PROBLEM STATEMENT - Clear restatement of the need
+2. AUTOMATION OBJECTIVE - "This automation will [X] when [Y] so that [Z]"
+3. TRIGGER - Scheduled (cron), Event-based, or Manual
+4. INPUT DATA - Tables, fields, filters needed
+5. PROCESSING LOGIC - Step-by-step logic
+6. OUTPUT & ACTIONS - What it does (emails, updates, notifications)
+7. ERROR HANDLING - What happens when steps fail
+8. INTEGRATIONS NEEDED - Email, Database, Slack, etc.
+9. SUGGESTED NAME - 2-3 clear names like "Auto Follow-Up for Cold Candidates"
+
+Be specific but concise. Use unit context to fill gaps intelligently."""
         
         self.chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
