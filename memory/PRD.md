@@ -98,7 +98,11 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
   - Chat messages hidden when form showing
   - Regular chat input hidden when form showing
   - Form submission creates user message and triggers AI generation
-- **Files**: `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx`, `/app/frontend/src/pages/FlowForgeChat.jsx`
+- [x] **Build New Tool Button on ALL Unit Pages**
+  - Added to all 11 business unit pages: Sales, Marketing, Advisory, Technology, Operations, Academy, Client Delivery, THCO HR, IT & Tools, Project Management, Talent
+  - Consistent purple gradient button with Zap icon
+  - Routes to unit-specific build page with tailored form placeholders
+- **Files**: `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx`, `/app/frontend/src/pages/FlowForgeChat.jsx`, all unit page files
 
 ### Phase 5 - Polish & White-Label (UPCOMING)
 - [ ] Final UI polish and animations
