@@ -836,6 +836,19 @@ const FlowForgeChat = () => {
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-6 py-4">
+        {/* Problem Brief Form - Shown for new conversations */}
+        {showProblemBriefForm && (
+          <div className="mb-4" data-testid="problem-brief-form-container">
+            <ProblemBriefForm
+              unit={unit}
+              unitDisplayName={UNIT_NAMES[unit] || unit}
+              onSubmit={handleBriefFormSubmit}
+              onCancel={() => setShowProblemBriefForm(false)}
+            />
+          </div>
+        )}
+        
+        {/* Chat Messages */}
         {messages.map((message, index) => (
           <ChatMessage 
             key={message.id} 
