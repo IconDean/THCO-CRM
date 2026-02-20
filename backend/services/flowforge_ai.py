@@ -289,4 +289,118 @@ async def generate_ai_response(
         response["has_duplicate_alert"] = True
         response["duplicate_data"] = duplicate_data
     
+    # Check integrations if workflow was generated with systems_used
+    if response.get('has_workflow') and response.get('workflow_data'):
+        systems_used = response['workflow_data'].get('systems_used', [])
+        if systems_used:
+            try:
+                integration_check = await check_integration_status(systems_used)
+                if integration_check:
+                    response["has_integration_check"] = True
+                    response["integration_check_data"] = integration_check
+            except Exception as e:
+                logger.warning(f"Integration check failed: {e}")
+    
     return response
+
+
+async def check_integration_status(systems_used: List[str]) -> Optional[Dict[str, Any]]:
+    """
+    Check the status of required integrations
+    Maps display names to internal types and checks their status in the database
+    """
+    import os
+    from supabase import create_client
+    
+    SUPABASE_URL = os.environ.get('SUPABASE_URL')
+    SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
+    
+    if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+        return None
+    
+    supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+    
+    # Map display names to internal types
+    name_to_type = {
+        "database access": "database",
+        "email sending": "gmail",
+        "email sending (gmail)": "gmail",
+        "calendar access": "google_calendar",
+        "google calendar": "google_calendar",
+        "spreadsheet access": "google_sheets",
+        "google sheets": "google_sheets",
+        "team notifications": "slack",
+        "team notifications (slack)": "slack",
+        "slack": "slack",
+        "whatsapp messaging": "whatsapp",
+        "whatsapp": "whatsapp",
+        "linkedin integration": "linkedin",
+        "linkedin": "linkedin",
+        "ai text generation": "ai_text",
+        "ai": "ai_text",
+        "voice processing": "voice_processing",
+        "voice": "voice_processing",
+        "external api connection": "http_request",
+        "http": "http_request",
+        "api": "http_request",
+        "scheduled automation": "scheduled",
+        "scheduled": "scheduled",
+    }
+    
+    # Normalize and map systems to internal types
+    internal_types = []
+    for system in systems_used:
+        normalized = system.lower().strip()
+        if normalized in name_to_type:
+            internal_types.append(name_to_type[normalized])
+        else:
+            # Try partial matching
+            for key, value in name_to_type.items():
+                if key in normalized or normalized in key:
+                    internal_types.append(value)
+                    break
+    
+    if not internal_types:
+        return None
+    
+    # Get integration statuses from database
+    result = supabase.table('flowforge_integrations').select('*').in_('internal_type', internal_types).execute()
+    
+    integrations = []
+    has_issues = False
+    
+    for internal_type in internal_types:
+        # Find matching integration
+        found = None
+        for integration in (result.data or []):
+            if integration['internal_type'] == internal_type:
+                found = integration
+                break
+        
+        if found:
+            status = found['status']
+            if status != 'connected':
+                has_issues = True
+            
+            integrations.append({
+                "type": internal_type,
+                "display_name": found['display_name'],
+                "status": status,
+                "icon": found.get('icon')
+            })
+        else:
+            has_issues = True
+            # Find original display name
+            original_name = next((s for s in systems_used if name_to_type.get(s.lower().strip()) == internal_type), internal_type)
+            integrations.append({
+                "type": internal_type,
+                "display_name": original_name,
+                "status": "not_found",
+                "icon": None
+            })
+    
+    return {
+        "integrations": integrations,
+        "has_issues": has_issues,
+        "all_connected": not has_issues
+    }
