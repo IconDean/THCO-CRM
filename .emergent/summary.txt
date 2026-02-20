@@ -1,168 +1,138 @@
 <analysis>**original_problem_statement**:
-The user wants to build a large-scale, internal AI-powered workflow automation tool named FlowForge inside their existing company portal ().
+The user's goal is to build FlowForge, a large-scale, internal AI-powered workflow automation tool integrated into their existing company portal.
 
-PRODUCT REQUIREMENTS (FlowForge):
-1.  **Conversational Interface**: Users build automations by describing problems in a chat interface using text and/or voice.
-2.  **Duplicate Detection**: Before building, the system checks an inventory of all existing automations (including manually created ones on the automation engine) to prevent redundant work.
-3.  **Integration Transparency**: The system identifies required service connections (e.g., Database, Email, Calendar), checks their availability, and asks for user confirmation before proceeding.
-4.  **Admin Approval System**: All new tools and any modifications to existing tools must be submitted for approval to designated Unit Admins or Company Admins before deployment.
-5.  **Persistent Conversations**: Every tool has a permanent, linked conversation history, allowing users to return anytime to view, troubleshoot, or request updates. The AI should have full context of the tool's history and status upon return.
-6.  **White-Labeling**: The underlying technologies (n8n, Claude, Supabase) must be completely abstracted away from the end-user.
-7.  **Platform Integration**: The feature must be seamlessly integrated into the existing React portal.
-8.  **Technical Stack**: The project requires a new **Supabase (PostgreSQL)** database, integration with an **n8n** instance, and use of **Claude** and **Whisper** via the **Emergent LLM Key**.
+PRODUCT REQUIREMENTS:
+1.  **Conversational Interface & Guided Input**: Users initiate builds via a chat interface. The process starts with a mandatory interactive form () where the user provides structured text input and a voice note for context. This replaces the previous open-ended chat approach.
+2.  **Two-Step AI Build Process**: A new Prompt Engineering Layer has been implemented.
+    *   **Step 1 (Prompt Architect)**: An AI call takes the user's structured brief and voice note, combines it with extensive company/unit context, and generates a detailed Build Specification.
+    *   **Step 2 (Workflow Builder)**: A second AI call takes the Build Specification and generates the final, production-ready workflow JSON.
+3.  **Duplicate Detection**: Before building, the system checks an inventory of existing automations to prevent redundant work.
+4.  **Integration Transparency**: The system identifies required service connections, checks their status, and notifies the user.
+5.  **Admin Approval System**: New and modified tools require admin approval before deployment.
+6.  **Persistent Conversations**: Each tool has a permanent conversation history for context and future modifications.
+7.  **White-Labeling**: The underlying technologies (n8n, Claude, Supabase) must be abstracted from the end-user.
+8.  **Platform Integration**: Must be seamlessly integrated into the existing React portal.
+9.  **Technical Stack**: Requires a **Supabase (PostgreSQL)** database, integration with an **n8n** instance, and use of **Claude** and **Whisper** via the **Emergent LLM Key**.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application (FastAPI backend with MongoDB, React frontend) serves as the THCO Group company portal. The new FlowForge feature has been built up to Phase 3.
-
-- **Backend**: A new router () has been added to  to handle all FlowForge logic. It connects to a Supabase (PostgreSQL) database. The database schema has been created and all tables exist. Endpoints for conversations, AI generation, approvals, and n8n inventory sync are implemented.
-- **Frontend**: The UI for FlowForge is integrated into the existing portal. This includes a Floating Action Button (FAB) on the dashboard, a unit selection modal, the main chat interface, a Build History tab on unit pages, and an Approval Queue for admins.
-- **Phases Completed**: Phase 1 (Core Foundation) and Phase 2 (Approval System) are implemented and were verified by the testing agent. Phase 3 (Duplicate Detection) has been implemented but awaits testing.
+A full-stack application (FastAPI backend with MongoDB, React frontend) for the THCO Group company portal. The FlowForge feature is substantially built out.
+- **Backend**: The core logic is in  and modular services. It connects to both the original MongoDB and a new Supabase (PostgreSQL) database for all FlowForge data.
+- **Phases Completed**: Phase 1 (Core Foundation), Phase 2 (Approval System), Phase 3 (Duplicate Detection), and Phase 4 (Voice Input & Integration Checks) are functionally complete and have been tested.
+- **New Architecture**: A two-step AI generation process (Prompt Architect & Workflow Builder) has been implemented in  to improve the quality of generated workflows.
+- **New UI Flow**: The user experience for creating a new tool has been updated. It now starts with an interactive form () to guide the user's input, replacing the initial text-based template.
 
 **Last working item**:
-- **Last item agent was working**: Implementing **Phase 3: Duplicate Detection & Inventory**. The agent built the backend logic to sync workflows from the n8n instance and perform a semantic search to find duplicates before generating a new tool. The frontend was updated to display a Similar Tool Found card in the chat, allowing the user to use the existing tool, request changes, or build a new one.
+- **Last item agent was working**: Converting the Problem Brief from a text template into a full, interactive form within the chat interface. The agent created the  component, added the necessary state management and submission handler () to , and added logic to display the form for new conversations. The agent was in the final stages of rendering the form component conditionally within the chat message area.
 - **Status**: IN PROGRESS
 - **Agent Testing Done**: N
-- **Which testing method agent to use?**: backend testing agent. The agent should be used to test the entire Phase 3 flow: syncing the inventory from n8n, triggering the duplicate detection from a chat message, displaying the alert on the frontend, and handling the user's choice.
+- **Which testing method agent to use?**: frontend testing agent. This is a critical new UI component with complex state management, validation, conditional fields, and a voice recording feature. It requires comprehensive end-to-end testing.
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-  - **Issue 1**: PDF download on  was never verified by the user. (Priority: P2)
-  - **Issue 2**: PDF download on  fix is pending user verification. (Priority: P2)
+- **Issue 1**: API Timeouts in Two-Step AI Generation (Priority: P0)
+- **Issue 2**: PDF download on  was never verified by the user. (Priority: P2)
+- **Issue 3**: PDF download on  fix is pending user verification. (Priority: P2)
 
-  **Issues Detail**:
-  - **Issue 1**:
-     - **Next debug checklist**: Manually test the Download as PDF function on the  page. Inspect the downloaded PDF to ensure all 8 pages are captured correctly.
-     - **Why fix this issue and what will be achieved with the fix?**: Ensures a core feature of a delivered component is functional.
-     - **Status**: USER VERIFICATION PENDING
-     - **Is recurring issue?**: Y
-     - **Should Test frontend/backend/both after fix?**: frontend
-     - **Blocked on other issue**: None.
-  - **Issue 2**:
-     - **Next debug checklist**: Await user feedback on the last fix. If it fails, the  function in  needs further debugging.
-     - **Why fix this issue and what will be achieved with the fix?**: Completes a user-reported bug fix on a key presentation.
-     - **Status**: USER VERIFICATION PENDING
-     - **Is recurring issue?**: Y
-     - **Should Test frontend/backend/both after fix?**: frontend
-     - **Blocked on other issue**: None.
+**Issues Detail**:
+- **Issue 1**:
+    - **Attempted fixes**: The agent identified that the new two-step AI generation process was causing API timeouts. Attempts to fix this included streamlining the prompts, using a faster model for the first step, and adding an  timeout wrapper. However, the root cause (potentially LLM rate limits or excessive processing time) may not be fully resolved. The fallback to the old single-step generation is in place but the two-step process is the desired path.
+    - **Next debug checklist**:
+        1.  Check backend logs () during a generation request to see the exact error from LiteLLM.
+        2.  Test the  function in  with more robust timeout handling and logging.
+        3.  Consider implementing a background task/polling mechanism for this long-running process instead of a synchronous API call, to provide a better user experience and avoid gateway timeouts.
+    - **Why fix this issue and what will be achieved with the fix?**: This is a blocker for the core feature. Fixing it will make the primary workflow generation path reliable and functional.
+    - **Status**: IN PROGRESS
+    - **Is recurring issue?**: Y
+    - **Should Test frontend/backend/both after fix?**: backend
+    - **Blocked on other issue**: None.
+- **Issue 2**:
+    - **Status**: USER VERIFICATION PENDING
+    - **Details**: See previous summary. Unchanged.
+- **Issue 3**:
+    - **Status**: USER VERIFICATION PENDING
+    - **Details**: See previous summary. Unchanged.
 
 **In progress Task List**:
-- **Task 1**: Build the FlowForge MVP (Phases 1-4). (Priority: P0)
-  - **Where to resume**: The implementation for Phase 3 (Duplicate Detection) is complete. The next step is to call the  to perform a comprehensive test of this new functionality. After successful testing, proceed to Phase 4.
-  - **What will be achieved with this?**: This will validate the duplicate detection feature and mark Phase 3 as complete, paving the way for the next phase.
-  - **Status**: IN PROGRESS
-  - **Should Test frontend/backend/both after fix?**: both
-  - **Blocked on something**: No.
+- **Task 1**: Complete and Test the Interactive Problem Brief Form (Priority: P0)
+    - **Where to resume**: In , inside the message rendering loop. The  component needs to be rendered conditionally when  is true. The  function needs to be connected to the form's  prop and thoroughly tested.
+    - **What will be achieved with this?**: This will complete the user-requested UI upgrade, replacing the clunky text template with a user-friendly form that captures higher-quality, structured data for the AI.
+    - **Status**: IN PROGRESS
+    - **Should Test frontend/backend/both after fix?**: frontend
+    - **Blocked on something**: No.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks (P0 - FlowForge MVP)**:
-    - **Phase 4: Voice Input & Integration Checks**: Add voice recording/transcription and implement the integration registry with its status-checking flow.
-- **Future Tasks (P2)**:
-    - Implement FlowForge Phase 5 (Polish & White-Label) and Phase 6 (Rollout & Monitoring).
-    - Implement V2+ enhancements from the prompt (template library, workflow marketplace, auto-monitoring).
-    - Refactor  into a modular structure.
-    - Refactor monolithic presentation components.
-    - Implement a Forgot Password flow.
+- **Upcoming Tasks**:
+    - **(P1)** Stabilize the two-step AI build process by resolving the timeout issue.
+- **Future Tasks**:
+    - **(P2)** Implement FlowForge Phase 5 (Polish & White-Label) and Phase 6 (Rollout & Monitoring).
+    - **(P2)** Implement Progressive Enhancements for the interactive form (e.g., smart pre-fill, live AI suggestions, template library).
+    - **(P3)** Refactor the monolithic  into a more modular structure.
+    - **(P3)** Implement a Forgot Password flow for the main portal.
 
 **Completed work in this session**
-- **FlowForge Phase 1: Core Foundation**:
-    - Created Supabase database schema () and successfully set up all tables.
-    - Implemented backend router () and services (, ) for conversations and AI generation via Claude.
-    - Built frontend chat UI (), FAB, unit selection modal, and build history tab.
-    - Verified with the testing agent.
-- **FlowForge Phase 2: Approval System**:
-    - Implemented backend endpoints for creating and managing approval requests.
-    - Built frontend Approval Queue page for admins () with a link in the sidebar.
-    - Integrated Submit for Approval logic into the chat interface.
-    - Verified with the testing agent.
-- **FlowForge Phase 3: Duplicate Detection & Inventory**:
-    - Implemented backend service () to sync n8n workflows and perform semantic search for duplicates.
-    - Integrated duplicate check into the AI generation flow.
-    - Created frontend components () to display alerts and handle user actions in the chat.
-    - Created an admin-facing Inventory page.
-
-**Earlier issues found/mentioned but not fixed**
-- The two PDF download issues ( and ) are pending user verification and have been deprioritized.
-
-**Known issue recurrence from previous fork**
-- **PDF Generation**: This feature has been historically fragile and prone to breaking. The last fixes are still awaiting user verification.
+- **FlowForge Phase 3 (Duplicate Detection)**: Successfully debugged and verified. The agent fixed a critical logic bug related to the  check, making the feature functional.
+- **FlowForge Phase 4 (Voice Input & Integration Checks)**: Fully implemented and passed tests. This included adding a backend  endpoint using Whisper and a new frontend  component.
+- **Architectural Upgrade (Two-Step AI Process)**: Implemented the user-specified Prompt Architect and Workflow Builder pattern. Created a new  to house the complex prompts and logic.
+- **UI Upgrade (Guided Input)**: Implemented the user's Guided Input Structure request, first as a formatted text template and then began the conversion to a full interactive form.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend**: FastAPI, JWT Authentication, **Dual Database (MongoDB for existing portal, Supabase/PostgreSQL for FlowForge)**.
-- **Frontend**: React, Axios, Tailwind CSS, Shadcn UI, Framer Motion.
-- **Key Integrations**:
-    - **n8n**: As the THCO Automation Engine for running workflows and inventory sync.
-    - **Anthropic Claude**: For AI workflow generation, accessed via Emergent LLM Key.
-    - **OpenAI Whisper**: (Planned for Phase 4) For voice transcription, via Emergent LLM Key.
+- **Two-Step Prompting Architecture**: A core pattern where a first AI call (Prompt Architect) enriches user input into a detailed spec, and a second call (Workflow Builder) generates the final artifact from that spec. This dramatically improves output quality.
+- **Guided Input Form**: Using a structured, interactive form within a chat interface to gather high-quality user requirements before engaging the AI.
+- **Hybrid Database**: Using MongoDB for the legacy portal and Supabase (PostgreSQL) for all new FlowForge features.
+- **Real-time Voice Transcription**: Using OpenAI Whisper via an API to accept voice input from the user.
 
 **key DB schema**
-- **Supabase Tables (Implemented)**: , , , , , , , , , .
-
-**changes in tech stack**
-- **Introduction of Supabase (PostgreSQL)**. The application now operates with a hybrid database architecture.
-- **Adoption of  library** to handle LLM calls using the Emergent LLM Key.
+- No schema changes were made, but an important implementation detail was decided: The Build Specification generated by the Prompt Architect is stored in the  table as a hidden system message for auditing and debugging.
 
 **All files of reference**
-- : Contains all new backend API endpoints.
-- : The source of truth for the Supabase database schema.
-- : The core chat UI.
-- : The admin approval UI.
-- : The comprehensive product requirements document.
-
-**Areas that need refactoring**:
-- The monolithic  file remains a high-priority refactoring candidate, although the new  router helps isolate new code.
-- The numerous, nearly identical public presentation wrapper components could be consolidated.
+- : The new interactive form for gathering user requirements.
+- : The main chat interface, which now contains the logic to display and handle the .
+- : Contains the core system prompts and logic for the new two-step AI generation process.
+- : The orchestrator service that was updated to use the two-step process and handle its potential timeouts.
+- : Contains the API endpoints, updated to support the new features.
 
 **key api endpoints**
-- : CRUD for chat conversations.
-- : Add/get messages.
-- : The main endpoint for getting AI responses, now includes duplicate detection.
-- : CRUD for approval requests.
-- : Get statistics for the approval queue.
-- : Manually trigger a sync with the n8n instance.
+- : The primary generation endpoint. It now internally uses the complex two-step process and is prone to timeouts.
+- : New endpoint that takes an audio file and returns a transcription using Whisper.
+- : Updated to automatically create the initial welcome message which contains the guided input form.
 
 **Critical Info for New Agent**
-- **Project Focus**: The priority is completing the FlowForge MVP. The immediate next step is to **test the newly implemented Phase 3 (Duplicate Detection)** using the testing agent.
-- **Dual Database Architecture**: All new FlowForge data **must** be stored in the **Supabase (PostgreSQL)** instance.
-- **White-Labeling is Mandatory**: Do not expose any underlying technology names (n8n, Claude, Supabase) in the user interface.
-- **Follow the Phases**: The project is being implemented in phases. Phases 1 & 2 are complete and tested. Phase 3 is implemented but **requires testing**. Phase 4 is next.
+- Your immediate task is to complete the implementation of the interactive  in . Wire it up and ensure it renders correctly for new conversations.
+- Your second, and most critical, task is to solve the timeout issue with the two-step AI generation process in the backend. This is a P0 blocker for the core product feature. Investigate background tasks or more robust error handling.
+- The entire user onboarding flow for creating a tool has changed. It is no longer a simple chat. It starts with the interactive form. All testing and development must follow this new user journey.
 
 **documents and test reports created in this job**
-- 
--  (Passed Phase 1 tests)
--  (Passed Phase 2 tests)
--  (updated with Phase 1, 2, 3 progress)
+- : Passed tests for Phase 4.
+- : Updated to reflect completion of Phases 3 & 4 and the new architectural direction.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**:  (Provides full v5.0 prompt)
-2.  **User**:  (Confirms they ran the SQL schema in Supabase)
-3.  **User**: 
-4.  **User**: 
-5.  **User**:  (Re-requesting schema to run it)
-6.  **User**:  (Confirmation of running the schema again)
+The user has provided three major specification documents in sequence, driving the latest work:
+1.  **FlowForge Prompt Engineering Layer**: Detailed the two-step AI process (Prompt Architect, Workflow Builder).
+2.  **FlowForge Guided Input Structure**: Specified a text-based template for the initial user interaction.
+3.  **UPDATE INSTRUCTION: Convert Problem Brief from Chat Text to Interactive Form**: Superseded the previous spec, detailing the interactive form that is currently being built.
+
+The agent's work has been to implement these specifications.
 
 **Project Health Check:**
-- **Broken**: The PDF generation feature on two proposal pages remains high-risk and is pending user verification.
+- **Broken**: The core AI workflow generation feature is unreliable due to API timeouts in the new two-step process.
 - **Mocked**: N/A.
 
 **3rd Party Integrations**
-- **Framer Motion**: For UI animations.
-- **Lucide React**: For icons.
-- **html2canvas / jspdf**: For PDF generation (existing feature).
-- **Supabase (PostgreSQL)**: New primary database for the FlowForge feature.
+- **Supabase (PostgreSQL)**: Primary database for FlowForge.
 - **n8n (THCO Automation Engine)**: For workflow execution and inventory.
-- **Anthropic Claude**: For AI logic, via Emergent LLM Key.
-- **OpenAI Whisper**: (Planned) For voice transcription, via Emergent LLM Key.
+- **Anthropic Claude**: For AI logic (via Emergent LLM Key).
+- **OpenAI Whisper**: For voice transcription (via Emergent LLM Key).
+- Other existing integrations: Framer Motion, Lucide React, html2canvas/jspdf.
 
 **Testing status**
-- **Testing agent used after significant changes**: YES, for Phase 1 and Phase 2. **NO** for the just-completed Phase 3.
-- **Troubleshoot agent used after agent stuck in loop**: NO.
+- **Testing agent used after significant changes**: YES, for debugging Phase 3 and verifying Phase 4.
 - **Test files created**: None.
-- **Known regressions**: The PDF download functionality has a history of failures.
+- **Known regressions**: Two PDF download features on other pages remain unverified by the user.
 
 **Credentials to test flow:**
 - **Role**: Super Admin
@@ -170,4 +140,4 @@ A full-stack application (FastAPI backend with MongoDB, React frontend) serves a
 - **Password**: 
 
 **What agent forgot to execute**
-The agent has correctly followed the phased implementation plan and user instructions. The only pending action for the last implemented feature (Phase 3) is to run the testing agent for verification.</analysis>
+The agent has followed the user's requests diligently. The only outstanding items are the incomplete implementation of the interactive form (which is the current task) and the unresolved timeout issue from the previous task, which must be addressed next.</analysis>
