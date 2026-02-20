@@ -20,7 +20,8 @@ import {
   Activity,
   Bug,
   Scale,
-  TestTube
+  TestTube,
+  Zap
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
