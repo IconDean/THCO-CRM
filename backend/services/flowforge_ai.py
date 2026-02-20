@@ -220,10 +220,16 @@ async def generate_ai_response(
     execution_count: int = 0,
     last_error: str = None,
     check_duplicates: bool = True,
-    is_first_message: bool = False
+    is_first_message: bool = False,
+    use_two_step: bool = True,  # New parameter for two-step process
+    voice_transcription: str = None  # Voice input support
 ) -> Dict[str, Any]:
     """
     High-level function to generate an AI response for FlowForge
+    
+    Uses the two-step Prompt Engineering process:
+    1. Prompt Architect - Creates detailed Build Specification
+    2. Workflow Builder - Generates workflow from spec
     
     Args:
         conversation_id: The conversation ID
@@ -234,7 +240,9 @@ async def generate_ai_response(
         execution_count: Number of times the tool has run
         last_error: Last error message if any
         check_duplicates: Whether to check for duplicates first
-        is_first_message: Whether this is the first user message (trigger duplicate check)
+        is_first_message: Whether this is the first user message
+        use_two_step: Whether to use the two-step build process
+        voice_transcription: Optional voice transcription to include
     
     Returns:
         Dict containing the AI response and metadata
@@ -262,11 +270,41 @@ async def generate_ai_response(
                         "has_duplicate_alert": True,
                         "duplicate_data": duplicate_data
                     }
-                # Weak matches are handled after AI response - duplicate_data is added there
+                # Weak matches are handled after AI response
         except Exception as e:
             logger.warning(f"Duplicate detection failed: {e}")
     
-    # Generate AI response
+    # Determine if we should use two-step process
+    # Use two-step when we have enough context to build (not just clarifying questions)
+    should_use_two_step = use_two_step and _should_trigger_two_step(user_message, conversation_history)
+    
+    if should_use_two_step:
+        # Use the Two-Step Prompt Engineering Process
+        try:
+            from services.prompt_engineering import generate_workflow_two_step
+            
+            logger.info(f"[FlowForge] Using two-step build process for {unit}")
+            
+            response = await generate_workflow_two_step(
+                conversation_id=conversation_id,
+                unit=unit,
+                user_description=user_message,
+                voice_transcription=voice_transcription,
+                conversation_history=conversation_history
+            )
+            
+            # Add duplicate data if present (weak matches)
+            if duplicate_data and not duplicate_data.get('has_strong_match'):
+                response["has_duplicate_alert"] = True
+                response["duplicate_data"] = duplicate_data
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f"Two-step generation failed, falling back to standard: {e}")
+            # Fall through to standard generation
+    
+    # Standard single-step generation (for clarifying questions, etc.)
     ai = FlowForgeAI(conversation_id, unit)
     
     context = {
