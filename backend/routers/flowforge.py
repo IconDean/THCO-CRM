@@ -287,6 +287,30 @@ async def create_conversation(data: ConversationCreate, request: Request):
     if not result.data:
         raise HTTPException(status_code=500, detail="Failed to create conversation")
     
+    # Add the welcome message with the structured template
+    try:
+        from services.guided_input import get_welcome_template, get_unit_display_name
+        
+        unit_display_name = get_unit_display_name(data.unit)
+        welcome_content = get_welcome_template(data.unit, unit_display_name)
+        
+        welcome_message = {
+            'id': str(uuid.uuid4()),
+            'conversation_id': conversation_id,
+            'role': 'assistant',
+            'content': welcome_content,
+            'message_index': 0,
+            'created_at': now,
+            'has_workflow': False,
+            'has_action_buttons': False,
+            'metadata': {'type': 'welcome_template', 'unit': data.unit}
+        }
+        
+        sb.table('flowforge_messages').insert(welcome_message).execute()
+        logger.info(f"Created welcome message for conversation {conversation_id}")
+    except Exception as e:
+        logger.warning(f"Failed to create welcome message: {e}")
+    
     return result.data[0]
 
 @router.get("/conversations/{conversation_id}", response_model=ConversationResponse)
