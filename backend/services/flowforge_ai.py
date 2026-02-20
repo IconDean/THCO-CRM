@@ -262,10 +262,7 @@ async def generate_ai_response(
                         "has_duplicate_alert": True,
                         "duplicate_data": duplicate_data
                     }
-                elif similar_workflows:
-                    # Weak matches - mention them but continue
-                    weak_match_text = f"\n\n*Note: I found some related tools ({', '.join([w['name'] for w in similar_workflows[:2]])}) but they don't seem to be exactly what you need. Proceeding with your request.*"
-                    # Continue with normal AI response but add note
+                # Weak matches are handled after AI response - duplicate_data is added there
         except Exception as e:
             logger.warning(f"Duplicate detection failed: {e}")
     
