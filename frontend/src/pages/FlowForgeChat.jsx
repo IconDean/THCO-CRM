@@ -458,14 +458,22 @@ const FlowForgeChat = () => {
           true  // check_duplicates
         );
         
-        // Save AI response to database
+        // Save AI response to database with enhanced workflow data
         const aiMessage = {
           role: "assistant",
           content: aiResponse.content,
+          // New two-step workflow format
+          has_workflow: aiResponse.has_workflow || false,
+          workflow_data: aiResponse.workflow_data || null,
+          workflow_steps: aiResponse.workflow_steps || null,
+          build_spec: aiResponse.build_spec || null,  // Stored for admin review
+          explanation: aiResponse.explanation || null,
+          integration_requirements: aiResponse.integration_requirements || null,
+          // Legacy format (backwards compatibility)
           has_workflow_preview: aiResponse.has_workflow,
           workflow_preview_json: aiResponse.workflow_data ? {
             ...aiResponse.workflow_data,
-            steps: aiResponse.workflow_data.steps || []
+            steps: aiResponse.workflow_steps || aiResponse.workflow_data.steps || []
           } : null,
           workflow_version: aiResponse.has_workflow ? 1 : null,
           has_action_buttons: aiResponse.has_action_buttons,
@@ -478,10 +486,11 @@ const FlowForgeChat = () => {
         setMessages((prev) => [...prev, savedAiMessage]);
         
         // Update conversation with tool name if workflow was generated
-        if (aiResponse.workflow_data?.tool_name && toolName === "Untitled") {
-          setToolName(aiResponse.workflow_data.tool_name);
+        if (aiResponse.workflow_data?.suggested_name && toolName === "Untitled") {
+          const newName = aiResponse.workflow_data.suggested_name;
+          setToolName(newName);
           await flowforgeAPI.updateConversation(conversation.id, { 
-            tool_name: aiResponse.workflow_data.tool_name,
+            tool_name: newName,
             description: aiResponse.workflow_data.description,
             systems_used: aiResponse.workflow_data.systems_used || [],
             trigger_type: aiResponse.workflow_data.trigger_type,
