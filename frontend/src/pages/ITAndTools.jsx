@@ -18,7 +18,9 @@ import {
   AlertTriangle,
   XCircle,
   RefreshCw,
-  Clock
+  Clock,
+  Zap,
+  Plus
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
