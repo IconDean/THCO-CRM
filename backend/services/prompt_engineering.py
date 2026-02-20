@@ -867,7 +867,8 @@ async def generate_workflow_two_step(
     unit: str,
     user_description: str,
     voice_transcription: Optional[str] = None,
-    conversation_history: Optional[List[Dict]] = None
+    conversation_history: Optional[List[Dict]] = None,
+    timeout_seconds: int = 60
 ) -> Dict[str, Any]:
     """
     Main entry point for the two-step workflow generation process
@@ -877,6 +878,7 @@ async def generate_workflow_two_step(
     
     Returns complete result with build_spec stored for admin review
     """
+    import asyncio
     
     # Get integrations
     available_integrations = await _get_integrations()
@@ -887,14 +889,21 @@ async def generate_workflow_two_step(
     # ═══════════════════════════════════════════════════
     logger.info(f"[FlowForge] Step 1: Creating Build Specification for {unit}")
     
-    architect = PromptArchitect(unit)
-    build_spec = await architect.create_build_spec(
-        user_description=user_description,
-        voice_transcription=voice_transcription,
-        conversation_history=conversation_history,
-        available_integrations=available_integrations,
-        existing_inventory=existing_inventory
-    )
+    try:
+        architect = PromptArchitect(unit)
+        build_spec = await asyncio.wait_for(
+            architect.create_build_spec(
+                user_description=user_description,
+                voice_transcription=voice_transcription,
+                conversation_history=conversation_history,
+                available_integrations=available_integrations,
+                existing_inventory=existing_inventory
+            ),
+            timeout=timeout_seconds
+        )
+    except asyncio.TimeoutError:
+        logger.warning(f"[FlowForge] Step 1 timed out after {timeout_seconds}s")
+        raise TimeoutError("Build specification generation timed out")
     
     logger.info(f"[FlowForge] Build Spec created: {len(build_spec)} chars")
     
@@ -903,11 +912,32 @@ async def generate_workflow_two_step(
     # ═══════════════════════════════════════════════════
     logger.info("[FlowForge] Step 2: Building workflow from spec")
     
-    builder = WorkflowBuilder()
-    workflow_result = await builder.build_workflow(
-        build_spec=build_spec,
-        available_integrations=available_integrations
-    )
+    try:
+        builder = WorkflowBuilder()
+        workflow_result = await asyncio.wait_for(
+            builder.build_workflow(
+                build_spec=build_spec,
+                available_integrations=available_integrations
+            ),
+            timeout=timeout_seconds
+        )
+    except asyncio.TimeoutError:
+        logger.warning(f"[FlowForge] Step 2 timed out after {timeout_seconds}s")
+        # Return partial result with build spec
+        return {
+            "build_spec": build_spec,
+            "workflow_data": {"suggested_name": "Pending Workflow"},
+            "workflow_steps": [],
+            "explanation": {"summary": "Build specification created but workflow generation timed out. Please try again."},
+            "integration_requirements": [],
+            "has_workflow": False,
+            "content": f"I've analyzed your request and created a detailed specification. However, the workflow generation is taking longer than expected.\n\n**Build Specification Preview:**\n{build_spec[:500]}...\n\nWould you like me to try again?",
+            "has_action_buttons": True,
+            "action_buttons": [
+                {"label": "Try Again", "action": "retry_generation", "primary": True},
+                {"label": "Start Over", "action": "reset", "primary": False}
+            ]
+        }
     
     logger.info("[FlowForge] Workflow built successfully")
     
