@@ -3,7 +3,7 @@ FlowForge - AI-Powered Workflow Automation Builder
 Handles conversations, workflow generation, and approvals via Supabase (PostgreSQL)
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, UploadFile, File
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
@@ -11,6 +11,7 @@ import os
 import uuid
 import logging
 import httpx
+import tempfile
 from supabase import create_client, Client
 
 # Initialize logger
