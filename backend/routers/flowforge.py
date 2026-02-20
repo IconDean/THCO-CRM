@@ -302,8 +302,7 @@ async def create_conversation(data: ConversationCreate, request: Request):
             'message_index': 0,
             'created_at': now,
             'has_workflow_preview': False,
-            'has_action_buttons': False,
-            'metadata': {'type': 'welcome_template', 'unit': data.unit}
+            'has_action_buttons': False
         }
         
         sb.table('flowforge_messages').insert(welcome_message).execute()
