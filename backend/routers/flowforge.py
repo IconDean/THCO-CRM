@@ -946,8 +946,10 @@ async def generate_workflow(data: GenerateRequest, request: Request):
             msg_result = sb.table('flowforge_messages').select('role,content').eq('conversation_id', data.conversation_id).order('message_index').execute()
             history = msg_result.data or []
             # Check if this is the first user message
+            # Note: The current user message may already be saved before calling generate,
+            # so we check if there are 0 or 1 user messages (1 being the current one)
             user_messages = [m for m in history if m['role'] == 'user']
-            is_first_message = len(user_messages) == 0
+            is_first_message = len(user_messages) <= 1
         
         # Generate AI response
         response = await generate_ai_response(
