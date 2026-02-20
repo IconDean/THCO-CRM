@@ -385,7 +385,8 @@ const FlowForgeChat = () => {
         const aiResponse = await flowforgeAPI.generateResponse(
           conversation.id,
           inputValue.trim(),
-          true
+          true, // include_history
+          true  // check_duplicates
         );
         
         // Save AI response to database
