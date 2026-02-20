@@ -574,6 +574,108 @@ const FlowForgeChat = () => {
     }
   };
 
+  // Handle Problem Brief Form submission
+  const handleBriefFormSubmit = async (submissionData, audioBlob) => {
+    if (!conversation) return;
+    
+    try {
+      setSending(true);
+      setShowProblemBriefForm(false);
+      
+      // First, transcribe the audio if we have a blob but no transcription
+      let transcription = submissionData.form_data.voice_recording.transcription;
+      if (audioBlob && !transcription) {
+        try {
+          const result = await flowforgeAPI.transcribeAudio(audioBlob);
+          transcription = result.text;
+          submissionData.form_data.voice_recording.transcription = transcription;
+        } catch (e) {
+          console.error("Transcription failed:", e);
+        }
+      }
+      
+      // Format the brief as a user message
+      const briefText = formatBriefAsText(submissionData.form_data);
+      
+      // Add user message with the formatted brief
+      const userMessage = {
+        role: "user",
+        content: briefText,
+        has_voice: true,
+        voice_transcription: transcription
+      };
+      
+      const savedUserMsg = await flowforgeAPI.addMessage(conversation.id, userMessage);
+      setMessages(prev => [...prev, savedUserMsg]);
+      
+      // Update tool name if provided
+      if (submissionData.form_data.tool_name && toolName === "Untitled") {
+        setToolName(submissionData.form_data.tool_name);
+        await flowforgeAPI.updateConversation(conversation.id, {
+          tool_name: submissionData.form_data.tool_name
+        });
+      }
+      
+      // Now call generate to get AI response
+      const aiResponse = await flowforgeAPI.generateResponse(
+        conversation.id,
+        briefText + (transcription ? `\n\n[Voice Note]:\n${transcription}` : ''),
+        true,
+        true
+      );
+      
+      // Save AI response
+      const aiMessage = {
+        role: "assistant",
+        content: aiResponse.content,
+        has_workflow: aiResponse.has_workflow || false,
+        workflow_data: aiResponse.workflow_data || null,
+        workflow_steps: aiResponse.workflow_steps || null,
+        build_spec: aiResponse.build_spec || null,
+        has_action_buttons: aiResponse.has_action_buttons,
+        action_buttons: aiResponse.action_buttons,
+        has_duplicate_alert: aiResponse.has_duplicate_alert || false,
+        duplicate_data: aiResponse.duplicate_data || null,
+      };
+      
+      const savedAiMsg = await flowforgeAPI.addMessage(conversation.id, aiMessage);
+      setMessages(prev => [...prev, savedAiMsg]);
+      
+      toast.success("Brief submitted! AI is reviewing...");
+      
+    } catch (error) {
+      console.error("Failed to submit brief:", error);
+      toast.error("Failed to submit brief. Please try again.");
+      setShowProblemBriefForm(true); // Re-show form on error
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // Format brief data as readable text
+  const formatBriefAsText = (formData) => {
+    let text = `**TOOL NAME:** ${formData.tool_name}\n\n`;
+    text += `**THE PROBLEM:**\n${formData.problem}\n\n`;
+    text += `**THE TRIGGER:** ${formData.trigger_type}`;
+    if (formData.trigger_detail) text += ` - ${formData.trigger_detail}`;
+    text += `\n\n`;
+    text += `**THE STEPS:**\n${formData.steps}\n\n`;
+    text += `**THE OUTCOME:**\n${formData.outcome}\n\n`;
+    if (formData.who_involved) text += `**WHO IS INVOLVED:**\n${formData.who_involved}\n\n`;
+    text += `**HOW OFTEN:** ${formData.frequency}`;
+    if (formData.frequency_detail) text += ` - ${formData.frequency_detail}`;
+    text += `\n\n`;
+    if (formData.systems && formData.systems.length > 0) {
+      text += `**SYSTEMS & TOOLS:** ${formData.systems.join(', ')}`;
+      if (formData.systems_other) text += `, ${formData.systems_other}`;
+      text += `\n\n`;
+    }
+    if (formData.exceptions) text += `**EXCEPTIONS & EDGE CASES:**\n${formData.exceptions}\n\n`;
+    if (formData.anything_else) text += `**ANYTHING ELSE:**\n${formData.anything_else}\n\n`;
+    
+    return text;
+  };
+
   // Handle action button clicks (Submit for Approval, Make Changes, etc.)
   const handleActionClick = async (action, message) => {
     if (action === "submit_approval") {
