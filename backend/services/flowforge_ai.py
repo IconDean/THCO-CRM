@@ -211,6 +211,54 @@ class FlowForgeAI:
         ]
 
 
+def _should_trigger_two_step(user_message: str, conversation_history: List[Dict[str, Any]] = None) -> bool:
+    """
+    Determine if the two-step build process should be triggered
+    
+    Two-step is triggered when:
+    1. The user has provided enough context (e.g., answered clarifying questions)
+    2. The message contains automation-related keywords
+    3. There are at least 2 exchanges in the conversation
+    
+    Returns False for:
+    - Very short messages (likely clarifying questions)
+    - First message without enough context
+    - Messages that are questions to the AI
+    """
+    # If no history, check if the message is detailed enough
+    if not conversation_history:
+        # Require at least 50 characters for first message
+        if len(user_message) < 50:
+            return False
+        
+        # Check for automation-related keywords
+        automation_keywords = [
+            'automat', 'workflow', 'trigger', 'schedule', 'notify', 'alert',
+            'send', 'email', 'update', 'create', 'generate', 'report',
+            'daily', 'weekly', 'when', 'every', 'follow', 'track', 'monitor'
+        ]
+        has_keywords = any(kw in user_message.lower() for kw in automation_keywords)
+        
+        # For first message, require keywords AND decent length
+        return has_keywords and len(user_message) >= 80
+    
+    # If there's conversation history, we likely have enough context
+    user_messages = [m for m in conversation_history if m.get('role') == 'user']
+    
+    # After at least 2 user messages, assume we have context
+    if len(user_messages) >= 2:
+        return True
+    
+    # Check the current message for "build this" signals
+    build_signals = [
+        'yes', 'go ahead', 'build', 'create', 'make', 'that', 'sounds good',
+        'let\'s do', 'proceed', 'approved', 'confirm', 'all of', 'exactly'
+    ]
+    has_build_signal = any(sig in user_message.lower() for sig in build_signals)
+    
+    return has_build_signal
+
+
 async def generate_ai_response(
     conversation_id: str,
     unit: str,
