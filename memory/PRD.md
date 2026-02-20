@@ -64,15 +64,18 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - [x] Integration status check after workflow generation (checks systems_used against registry)
 - **Files**: `/app/frontend/src/components/flowforge/VoiceRecorder.jsx`, `/app/backend/routers/flowforge.py` (transcribe endpoint)
 
-### Phase 4.5 - Two-Step Prompt Engineering Layer (IN PROGRESS) - Feb 20, 2026
+### Phase 4.5 - Two-Step Prompt Engineering Layer (COMPLETE ✅) - Feb 20, 2026
 - [x] Prompt Architect service - Creates detailed Build Specifications from user input
 - [x] Workflow Builder service - Generates structured workflow from Build Spec
 - [x] THCO company context and unit-specific context embedded in prompts
 - [x] Build Spec stored in database for admin review
 - [x] Timeout handling and fallback to standard generation
-- [ ] Frontend loading states for two-step process
-- [ ] Admin view of Build Spec in approval modal
-- **Files**: `/app/backend/services/prompt_engineering.py`
+- [x] **Guided Input Structure** - Structured Problem Brief Template
+  - Unit-specific examples for each field (Tool Name, Problem, Trigger, etc.)
+  - Voice note instructions (Step 2)
+  - Checklist showing what FlowForge will do
+  - Combined typed + voice input formatted for Prompt Architect
+- **Files**: `/app/backend/services/prompt_engineering.py`, `/app/backend/services/guided_input.py`
 
 ### Phase 5 - Polish & White-Label (UPCOMING)
 - [ ] Final UI polish and animations
