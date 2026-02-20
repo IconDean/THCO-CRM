@@ -56,19 +56,27 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - [x] User action buttons: "Yes, use this one", "Close, but needs changes", "No, build something new"
 - **Files**: `/app/backend/services/duplicate_detection.py`, `/app/backend/routers/flowforge.py` (inventory endpoints)
 
-### Phase 4 - Voice Input & Integration Checks (UPCOMING)
-- [ ] Voice recording component (microphone, waveform, timer)
-- [ ] Speech-to-text integration (Whisper)
-- [ ] Editable transcriptions in chat
-- [ ] Integration registry table and sync
-- [ ] Integration status check before generation
+### Phase 4 - Voice Input & Integration Checks (COMPLETE ✅) - Feb 20, 2026
+- [x] Voice recording component with microphone button, waveform visualization, timer
+- [x] Speech-to-text via OpenAI Whisper (Emergent LLM Key)
+- [x] Editable transcriptions before sending
+- [x] Integration registry seeded (15 integrations: Gmail, Slack, Google Sheets, etc.)
+- [x] Integration status check after workflow generation (checks systems_used against registry)
+- **Files**: `/app/frontend/src/components/flowforge/VoiceRecorder.jsx`, `/app/backend/routers/flowforge.py` (transcribe endpoint)
+
+### Phase 5 - Polish & White-Label (UPCOMING)
+- [ ] Final UI polish and animations
+- [ ] Error handling improvements
+- [ ] Loading states and feedback
+- [ ] Documentation and help tooltips
 
 ### FlowForge Files
-- `/app/backend/routers/flowforge.py` - Main API routes
-- `/app/backend/services/flowforge_ai.py` - AI service (Claude)
+- `/app/backend/routers/flowforge.py` - Main API routes (conversations, approvals, inventory, transcribe)
+- `/app/backend/services/flowforge_ai.py` - AI service (Claude + integration checking)
 - `/app/backend/services/duplicate_detection.py` - Duplicate detection service
 - `/app/backend/sql/flowforge_schema.sql` - Database schema
 - `/app/frontend/src/pages/FlowForgeChat.jsx` - Chat UI
+- `/app/frontend/src/components/flowforge/VoiceRecorder.jsx` - Voice recording component
 - `/app/frontend/src/components/FlowForgeFAB.jsx` - FAB button
 - `/app/frontend/src/components/UnitSelectionModal.jsx` - Unit picker
 - `/app/frontend/src/components/BuildHistory.jsx` - History component
