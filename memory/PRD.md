@@ -66,6 +66,7 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 ### FlowForge Files
 - `/app/backend/routers/flowforge.py` - Main API routes
 - `/app/backend/services/flowforge_ai.py` - AI service (Claude)
+- `/app/backend/services/duplicate_detection.py` - Duplicate detection service
 - `/app/backend/sql/flowforge_schema.sql` - Database schema
 - `/app/frontend/src/pages/FlowForgeChat.jsx` - Chat UI
 - `/app/frontend/src/components/FlowForgeFAB.jsx` - FAB button
