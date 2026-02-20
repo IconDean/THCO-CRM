@@ -865,7 +865,7 @@ async def generate_workflow_two_step(
     # ═══════════════════════════════════════════════════
     # STEP 2: WORKFLOW BUILDER — Generate the workflow
     # ═══════════════════════════════════════════════════
-    logger.info(f"[FlowForge] Step 2: Building workflow from spec")
+    logger.info("[FlowForge] Step 2: Building workflow from spec")
     
     builder = WorkflowBuilder()
     workflow_result = await builder.build_workflow(
@@ -873,7 +873,7 @@ async def generate_workflow_two_step(
         available_integrations=available_integrations
     )
     
-    logger.info(f"[FlowForge] Workflow built successfully")
+    logger.info("[FlowForge] Workflow built successfully")
     
     # Combine results
     return {
