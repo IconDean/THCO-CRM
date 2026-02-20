@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Send,
   Mic,
+  MicOff,
   Paperclip,
   Bot,
   User,
@@ -30,6 +31,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { toast } from "sonner";
 import { flowforgeAPI, authAPI } from "../lib/api";
+import VoiceRecorder from "../components/flowforge/VoiceRecorder";
 
 // Unit name mapping
 const UNIT_NAMES = {
