@@ -301,7 +301,7 @@ async def create_conversation(data: ConversationCreate, request: Request):
             'content': welcome_content,
             'message_index': 0,
             'created_at': now,
-            'has_workflow': False,
+            'has_workflow_preview': False,
             'has_action_buttons': False,
             'metadata': {'type': 'welcome_template', 'unit': data.unit}
         }
