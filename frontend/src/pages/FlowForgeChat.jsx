@@ -114,6 +114,9 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
     );
   }
 
+  // Check if this is a welcome template message
+  const isWelcomeTemplate = message.metadata?.type === 'welcome_template';
+
   return (
     <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : ""} mb-4`} data-testid={`chat-message-${message.role}`}>
       {/* Avatar */}
@@ -128,22 +131,52 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
       </div>
 
       {/* Message Content */}
-      <div className={`flex flex-col max-w-[75%] ${isUser ? "items-end" : "items-start"}`}>
-        <div className={`rounded-2xl px-4 py-3 ${
-          isUser 
-            ? "bg-[#7C64FF] text-white rounded-tr-sm" 
-            : "bg-gray-100 text-gray-800 rounded-tl-sm"
-        }`}>
-          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-          
-          {/* Voice transcription */}
-          {message.has_voice && message.voice_transcription && (
-            <div className="mt-2 pt-2 border-t border-white/20 text-xs opacity-80">
-              <Mic className="w-3 h-3 inline mr-1" />
-              Transcribed from voice
+      <div className={`flex flex-col max-w-[85%] ${isUser ? "items-end" : "items-start"}`}>
+        {isWelcomeTemplate ? (
+          // Styled Welcome Template
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden w-full" data-testid="welcome-template">
+            <div className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-white" />
+                <span className="font-medium text-white">FlowForge</span>
+              </div>
             </div>
-          )}
-        </div>
+            <div className="p-4">
+              <div 
+                className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-headings:font-semibold prose-p:text-gray-600 prose-strong:text-gray-700 prose-em:text-gray-500 prose-em:text-xs"
+                dangerouslySetInnerHTML={{ 
+                  __html: message.content
+                    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-[#7C64FF] mt-4 mb-2">$1</h2>')
+                    .replace(/^---$/gm, '<hr class="my-4 border-gray-200"/>')
+                    .replace(/✅/g, '<span class="text-green-500">✅</span>')
+                    .replace(/📝/g, '<span class="text-2xl">📝</span>')
+                    .replace(/🎤/g, '<span class="text-2xl">🎤</span>')
+                    .replace(/👇/g, '<span class="text-xl">👇</span>')
+                    .replace(/\n/g, '<br/>')
+                }}
+              />
+            </div>
+          </div>
+        ) : (
+          // Regular message
+          <div className={`rounded-2xl px-4 py-3 ${
+            isUser 
+              ? "bg-[#7C64FF] text-white rounded-tr-sm" 
+              : "bg-gray-100 text-gray-800 rounded-tl-sm"
+          }`}>
+            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+            
+            {/* Voice transcription */}
+            {message.has_voice && message.voice_transcription && (
+              <div className="mt-2 pt-2 border-t border-white/20 text-xs opacity-80">
+                <Mic className="w-3 h-3 inline mr-1" />
+                Transcribed from voice
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Workflow Preview - Enhanced for Two-Step Process */}
         {message.has_workflow && message.workflow_data && (
