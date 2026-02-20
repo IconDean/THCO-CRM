@@ -860,90 +860,101 @@ const FlowForgeChat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="px-6 py-4 border-t border-gray-100">
-        {/* Voice Recorder Overlay */}
-        {showVoiceRecorder && (
-          <div className="mb-4">
-            <VoiceRecorder
-              onTranscriptionComplete={(text, duration) => {
-                setInputValue(prev => prev ? `${prev}\n\n[Voice]: ${text}` : text);
-                setShowVoiceRecorder(false);
-                // Focus the input
-                inputRef.current?.focus();
-              }}
-              onCancel={() => setShowVoiceRecorder(false)}
+      {/* Input Area - Hidden when Problem Brief Form is showing */}
+      {!showProblemBriefForm && (
+        <div className="px-6 py-4 border-t border-gray-100">
+          {/* Voice Recorder Overlay */}
+          {showVoiceRecorder && (
+            <div className="mb-4">
+              <VoiceRecorder
+                onTranscriptionComplete={(text, duration) => {
+                  setInputValue(prev => prev ? `${prev}\n\n[Voice]: ${text}` : text);
+                  setShowVoiceRecorder(false);
+                  // Focus the input
+                  inputRef.current?.focus();
+                }}
+                onCancel={() => setShowVoiceRecorder(false)}
+                disabled={isSending}
+              />
+            </div>
+          )}
+          
+          <div className="flex items-end gap-3">
+            <div className="flex-1 relative">
+              <textarea
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message or click the mic to record..."
+                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] transition-all min-h-[48px] max-h-[200px]"
+                rows={1}
+                disabled={isSending || showVoiceRecorder}
+                data-testid="chat-input"
+              />
+            </div>
+
+            {/* Voice Recording Button */}
+            <Button
+              variant="outline"
+              size="icon"
+              className={`h-12 w-12 rounded-xl transition-all ${
+                showVoiceRecorder 
+                  ? "bg-red-50 border-red-200 text-red-500" 
+                  : "hover:bg-[#7C64FF]/10 hover:border-[#7C64FF]/50"
+              }`}
+              onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
               disabled={isSending}
-            />
+              data-testid="voice-record-btn"
+            >
+              {showVoiceRecorder ? (
+                <MicOff className="w-5 h-5" />
+              ) : (
+                <Mic className="w-5 h-5" />
+              )}
+            </Button>
+
+            {/* Attachment Button */}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 rounded-xl"
+              onClick={() => toast.info("Attachments coming soon!")}
+              disabled={showVoiceRecorder}
+              data-testid="attachment-btn"
+            >
+              <Paperclip className="w-5 h-5" />
+            </Button>
+
+            {/* Send Button */}
+            <Button
+              onClick={handleSendMessage}
+              disabled={!inputValue.trim() || isSending || showVoiceRecorder}
+              className="h-12 px-6 rounded-xl bg-[#7C64FF] hover:bg-[#6B55E0] text-white"
+              data-testid="send-message-btn"
+            >
+              {isSending ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
+            </Button>
           </div>
-        )}
-        
-        <div className="flex items-end gap-3">
-          <div className="flex-1 relative">
-            <textarea
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message or click the mic to record..."
-              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] transition-all min-h-[48px] max-h-[200px]"
-              rows={1}
-              disabled={isSending || showVoiceRecorder}
-              data-testid="chat-input"
-            />
-          </div>
 
-          {/* Voice Recording Button */}
-          <Button
-            variant="outline"
-            size="icon"
-            className={`h-12 w-12 rounded-xl transition-all ${
-              showVoiceRecorder 
-                ? "bg-red-50 border-red-200 text-red-500" 
-                : "hover:bg-[#7C64FF]/10 hover:border-[#7C64FF]/50"
-            }`}
-            onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-            disabled={isSending}
-            data-testid="voice-record-btn"
-          >
-            {showVoiceRecorder ? (
-              <MicOff className="w-5 h-5" />
-            ) : (
-              <Mic className="w-5 h-5" />
-            )}
-          </Button>
-
-          {/* Attachment Button */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-12 w-12 rounded-xl"
-            onClick={() => toast.info("Attachments coming soon!")}
-            disabled={showVoiceRecorder}
-            data-testid="attachment-btn"
-          >
-            <Paperclip className="w-5 h-5" />
-          </Button>
-
-          {/* Send Button */}
-          <Button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isSending || showVoiceRecorder}
-            className="h-12 px-6 rounded-xl bg-[#7C64FF] hover:bg-[#6B55E0] text-white"
-            data-testid="send-message-btn"
-          >
-            {isSending ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Send className="w-5 h-5" />
-            )}
-          </Button>
+          <p className="text-xs text-gray-400 mt-2 text-center">
+            Press Enter to send • Shift+Enter for new line • Click mic to record voice
+          </p>
         </div>
-
-        <p className="text-xs text-gray-400 mt-2 text-center">
-          Press Enter to send • Shift+Enter for new line • Click mic to record voice
-        </p>
-      </div>
+      )}
+      
+      {/* Hint when form is showing */}
+      {showProblemBriefForm && (
+        <div className="px-6 py-3 border-t border-gray-100 bg-gray-50">
+          <p className="text-xs text-gray-500 text-center">
+            Complete the form above to submit your tool request
+          </p>
+        </div>
+      )}
     </div>
   );
 };
