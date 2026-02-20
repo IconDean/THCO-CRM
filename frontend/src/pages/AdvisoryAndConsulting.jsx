@@ -214,10 +214,18 @@ const AdvisoryAndConsulting = () => {
               <p className="text-sm text-gray-400 mt-1">Lead: Christiana</p>
             </div>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            New Engagement
-          </Button>
+          <div className="flex gap-3">
+            <Link to="/advisory/build/new">
+              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+                <Zap className="w-4 h-4 mr-2" />
+                Build New Tool
+              </Button>
+            </Link>
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" />
+              New Engagement
+            </Button>
+          </div>
         </div>
       </div>
 
