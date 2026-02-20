@@ -848,8 +848,8 @@ const FlowForgeChat = () => {
           </div>
         )}
         
-        {/* Chat Messages */}
-        {messages.map((message, index) => (
+        {/* Chat Messages - Hide welcome template when form is showing */}
+        {!showProblemBriefForm && messages.map((message, index) => (
           <ChatMessage 
             key={message.id} 
             message={message} 
