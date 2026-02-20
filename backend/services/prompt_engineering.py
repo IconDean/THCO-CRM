@@ -764,17 +764,37 @@ class WorkflowBuilder:
     ) -> Dict[str, Any]:
         """Generate workflow from Build Specification"""
         
-        # Format integrations
-        integrations_text = "No integrations loaded"
+        # Format integrations concisely
+        integrations_text = "Available: Database, Email, Calendar, Slack, AI"
         if available_integrations:
-            integrations_text = "\n".join([
-                f"- {i['display_name']} (internal: {i.get('internal_type', 'unknown')}, status: {i['status']})"
-                for i in available_integrations
-            ])
+            connected = [i['display_name'] for i in available_integrations if i.get('status') == 'connected']
+            integrations_text = f"Connected: {', '.join(connected[:8])}"
         
-        system_prompt = WORKFLOW_BUILDER_SYSTEM.format(
-            integrations=integrations_text
-        )
+        system_prompt = f"""You are FlowForge Workflow Builder. Given a Build Specification, create a workflow structure.
+
+Available Integrations: {integrations_text}
+
+Output ONLY valid JSON in this format:
+{{
+  "tool_metadata": {{
+    "suggested_name": "Name from Build Spec",
+    "description": "Brief description",
+    "trigger_type": "scheduled|webhook|manual",
+    "trigger_description": "When this runs",
+    "systems_used": ["Email", "Database", "Slack"]
+  }},
+  "workflow_steps": [
+    {{"step_number": 1, "name": "Step name", "description": "What it does", "type": "trigger|action|condition"}}
+  ],
+  "explanation": {{
+    "summary": "3-4 sentence plain English summary for the user",
+    "warnings": ["Any potential issues"],
+    "future_enhancements": ["v2 improvements"]
+  }},
+  "integration_requirements": [
+    {{"display_name": "Email", "purpose": "Send follow-ups"}}
+  ]
+}}"""
         
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
