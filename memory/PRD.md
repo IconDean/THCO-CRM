@@ -48,12 +48,13 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - [x] Approval stats endpoint with counts
 - [x] Approval detail modal with full request information
 
-### Phase 3 - Duplicate Detection & Inventory (UPCOMING)
-- [ ] n8n workflow inventory sync (every 15 min)
-- [ ] Inventory search API (keyword + semantic similarity)
-- [ ] Duplicate detection integrated into chat flow
-- [ ] Similar tool cards shown in chat
-- [ ] User options: use existing, request update, build new
+### Phase 3 - Duplicate Detection & Inventory (COMPLETE ✅) - Feb 20, 2026
+- [x] n8n workflow inventory sync (20 workflows synced)
+- [x] Inventory search API (keyword-based text matching)
+- [x] Duplicate detection integrated into chat flow (triggers on first user message)
+- [x] "Related Tools" card shown in chat with match percentages
+- [x] User action buttons: "Yes, use this one", "Close, but needs changes", "No, build something new"
+- **Files**: `/app/backend/services/duplicate_detection.py`, `/app/backend/routers/flowforge.py` (inventory endpoints)
 
 ### Phase 4 - Voice Input & Integration Checks (UPCOMING)
 - [ ] Voice recording component (microphone, waveform, timer)
