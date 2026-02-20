@@ -77,6 +77,29 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
   - Combined typed + voice input formatted for Prompt Architect
 - **Files**: `/app/backend/services/prompt_engineering.py`, `/app/backend/services/guided_input.py`
 
+### Phase 4.6 - Interactive Problem Brief Form (COMPLETE ✅) - Feb 20, 2026
+- [x] **Interactive Form Component** - Replaced text template with full form UI
+  - 11 form fields: Tool Name, Problem, Trigger, Steps, Outcome, Who Is Involved, How Often, Systems & Tools, Exceptions, Anything Else, Voice Note
+  - Unit-specific placeholders (Talent, Sales, Marketing, etc.)
+  - Required field validation with inline error messages
+  - Conditional inputs (trigger detail, frequency detail, systems other)
+- [x] **Systems & Tools Tag Selector** - Visual chips that toggle on/off
+  - 16 system options with icons (Database, Gmail, Slack, WhatsApp, etc.)
+  - "Other" input appears when Other tag selected
+- [x] **Voice Note Section (Required)**
+  - Large purple microphone button
+  - Waveform visualization during recording
+  - Guided prompts displayed as bullet points
+  - Transcription preview with edit capability
+  - Re-record and confirm buttons
+  - Minimum 30 seconds warning (soft warning, not hard block)
+- [x] **Form Integration with Chat**
+  - Form replaces welcome template for new conversations
+  - Chat messages hidden when form showing
+  - Regular chat input hidden when form showing
+  - Form submission creates user message and triggers AI generation
+- **Files**: `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx`, `/app/frontend/src/pages/FlowForgeChat.jsx`
+
 ### Phase 5 - Polish & White-Label (UPCOMING)
 - [ ] Final UI polish and animations
 - [ ] Error handling improvements
@@ -90,6 +113,7 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - `/app/backend/services/duplicate_detection.py` - Duplicate detection service
 - `/app/backend/sql/flowforge_schema.sql` - Database schema
 - `/app/frontend/src/pages/FlowForgeChat.jsx` - Chat UI
+- `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx` - Interactive form component (NEW)
 - `/app/frontend/src/components/flowforge/VoiceRecorder.jsx` - Voice recording component
 - `/app/frontend/src/components/FlowForgeFAB.jsx` - FAB button
 - `/app/frontend/src/components/UnitSelectionModal.jsx` - Unit picker
