@@ -992,3 +992,88 @@ async def health_check():
     
     return status
 
+# ==================== VOICE TRANSCRIPTION ====================
+
+class TranscriptionResponse(BaseModel):
+    text: str
+    duration_seconds: Optional[float] = None
+    language: Optional[str] = None
+
+@router.post("/transcribe", response_model=TranscriptionResponse)
+async def transcribe_audio(
+    request: Request,
+    audio: UploadFile = File(...)
+):
+    """
+    Transcribe audio file to text using OpenAI Whisper
+    Supports: mp3, mp4, mpeg, mpga, m4a, wav, webm (max 25MB)
+    """
+    await get_current_user_from_request(request)  # Ensure authenticated
+    
+    # Validate file type
+    allowed_types = ['audio/webm', 'audio/wav', 'audio/mp3', 'audio/mpeg', 'audio/mp4', 'audio/m4a', 'audio/x-m4a']
+    allowed_extensions = ['.webm', '.wav', '.mp3', '.mp4', '.mpeg', '.mpga', '.m4a']
+    
+    file_ext = os.path.splitext(audio.filename or '')[1].lower()
+    
+    if audio.content_type not in allowed_types and file_ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Unsupported audio format. Allowed: {', '.join(allowed_extensions)}"
+        )
+    
+    # Check file size (25MB limit)
+    contents = await audio.read()
+    if len(contents) > 25 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Audio file too large. Maximum size is 25MB.")
+    
+    try:
+        from emergentintegrations.llm.openai import OpenAISpeechToText
+        from dotenv import load_dotenv
+        load_dotenv()
+        
+        EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=503, detail="Voice processing service not configured")
+        
+        # Initialize the STT service
+        stt = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY)
+        
+        # Create a temporary file for the audio
+        suffix = file_ext if file_ext else '.webm'
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp_file:
+            tmp_file.write(contents)
+            tmp_path = tmp_file.name
+        
+        try:
+            # Transcribe the audio
+            with open(tmp_path, 'rb') as audio_file:
+                response = await stt.transcribe(
+                    file=audio_file,
+                    model="whisper-1",
+                    response_format="verbose_json",
+                    language="en"  # Default to English, could be made configurable
+                )
+            
+            # Extract duration if available
+            duration = None
+            if hasattr(response, 'duration'):
+                duration = response.duration
+            
+            return TranscriptionResponse(
+                text=response.text,
+                duration_seconds=duration,
+                language="en"
+            )
+        finally:
+            # Clean up temp file
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+    
+    except ImportError as e:
+        logger.error(f"Missing dependency for transcription: {e}")
+        raise HTTPException(status_code=503, detail="Voice processing service unavailable")
+    except Exception as e:
+        logger.error(f"Transcription error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to transcribe audio: {str(e)}")
+
