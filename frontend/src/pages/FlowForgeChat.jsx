@@ -416,14 +416,20 @@ const FlowForgeChat = () => {
           setConversation(conv);
           setMessages(msgs);
           setToolName(conv.tool_name || "Untitled");
+          
+          // Check if this is a new conversation with no user messages yet - show the form
+          const hasUserMessages = msgs.some(m => m.role === 'user');
+          if (!hasUserMessages) {
+            setShowProblemBriefForm(true);
+          }
         } else {
-          // New conversation - create it (backend adds welcome template)
+          // New conversation - create it and show the problem brief form
           const newConv = await flowforgeAPI.createConversation({ unit });
           setConversation(newConv);
           
-          // Fetch the welcome message that was created by the backend
-          const msgs = await flowforgeAPI.getMessages(newConv.id);
-          setMessages(msgs);
+          // Show the problem brief form instead of loading text template
+          setShowProblemBriefForm(true);
+          setMessages([]); // No messages yet - form will handle initial input
           
           // Navigate after setting state
           navigate(`/${unit}/build/${newConv.id}`, { replace: true });
