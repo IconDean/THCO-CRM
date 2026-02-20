@@ -17,7 +17,8 @@ import {
   Share2,
   Plus,
   Filter,
-  PenTool
+  PenTool,
+  Zap
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
