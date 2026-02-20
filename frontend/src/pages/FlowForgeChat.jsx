@@ -293,7 +293,7 @@ const FlowForgeChat = () => {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setSending] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [toolName, setToolName] = useState("Untitled");
   const [isEditingName, setIsEditingName] = useState(false);
 
