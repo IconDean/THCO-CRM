@@ -212,17 +212,16 @@ def build_google_sheets_node(
     position: List[int] = None
 ) -> Dict:
     """Build a Google Sheets node"""
+    import uuid
     params = {
         "operation": operation,  # read, append, update, delete
-        "documentId": {"__rl": True, "mode": "list", "value": sheet_id or ""},
-        "sheetName": {"__rl": True, "mode": "list", "value": ""}
     }
     
     if operation == "read":
         params["options"] = {}
     
     return {
-        "id": f"sheets-{operation}",
+        "id": str(uuid.uuid4()),
         "name": f"Google Sheets - {operation.title()}",
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.5,
