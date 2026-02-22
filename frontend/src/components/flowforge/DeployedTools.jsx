@@ -189,7 +189,7 @@ const DeployedTools = ({ unit, limit = 10 }) => {
             {/* Actions */}
             <div className="flex items-center gap-2 ml-4">
               {/* Use Tool Button - Opens portal-native form modal */}
-              {tool.status === 'deployed' && (
+              {(tool.status === 'deployed' || tool.status === 'active') && (
                 <Button
                   size="sm"
                   className="bg-[#7C64FF] hover:bg-[#6B54EE] text-white"
