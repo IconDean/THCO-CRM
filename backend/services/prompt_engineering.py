@@ -685,11 +685,12 @@ Create a Build Specification with these sections:
 
 Be specific but concise. Use unit context to fill gaps intelligently."""
         
+        # Use a faster model for the spec creation (less critical for quality)
         self.chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"architect-{unit}",
             system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        ).with_model("anthropic", "claude-haiku-3-5-20241022")
     
     async def create_build_spec(
         self,
