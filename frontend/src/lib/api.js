@@ -508,6 +508,22 @@ export const flowforgeAPI = {
     const response = await apiClient.get('/flowforge/integrations/available');
     return response.data;
   },
+  
+  // Get form fields for a tool
+  getToolFormFields: async (toolId) => {
+    const response = await apiClient.get(`/flowforge/tools/${toolId}/form-fields`);
+    return response.data;
+  },
+  
+  // Execute a tool with form data
+  executeTool: async (toolId, formData) => {
+    const response = await apiClient.post(`/flowforge/tools/${toolId}/execute`, {
+      form_data: formData
+    }, {
+      timeout: 120000 // 2 minutes timeout for execution
+    });
+    return response.data;
+  },
 };
 
 export default apiClient;
