@@ -98,6 +98,19 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
   - Chat messages hidden when form showing
   - Regular chat input hidden when form showing
   - Form submission creates user message and triggers AI generation
+
+### Phase 4.7 - Structured Brief Detection (COMPLETE ✅) - Feb 22, 2026
+- [x] **BUG FIX: AI now recognizes structured briefs and generates workflows immediately**
+  - Added `_is_structured_brief()` function to detect form submissions
+  - Updated `_should_trigger_two_step()` to prioritize structured briefs 
+  - Updated PromptArchitect system prompt to never ask questions for structured briefs
+  - When form data with markers like **TOOL NAME:**, **THE PROBLEM:**, etc. is submitted, AI:
+    - Immediately generates workflow
+    - Does NOT ask clarifying questions like "What should be the tool name?"
+    - Returns workflow with correct tool name from form data
+    - Includes action buttons for "Submit for Approval" and "Make Changes"
+- **Files Updated**: `/app/backend/services/flowforge_ai.py`, `/app/backend/services/prompt_engineering.py`
+- **Test File**: `/app/backend/tests/test_structured_brief.py`
 - [x] **Build New Tool Button on ALL Unit Pages**
   - Added to all 11 business unit pages: Sales, Marketing, Advisory, Technology, Operations, Academy, Client Delivery, THCO HR, IT & Tools, Project Management, Talent
   - Consistent purple gradient button with Zap icon
