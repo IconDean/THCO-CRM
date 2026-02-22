@@ -19,6 +19,7 @@ import {
 import { Button } from "../ui/button";
 import { flowforgeAPI } from "../../lib/api";
 import { toast } from "sonner";
+import UseToolModal from "./UseToolModal";
 
 // Icon mapping for systems
 const SYSTEM_ICONS = {
