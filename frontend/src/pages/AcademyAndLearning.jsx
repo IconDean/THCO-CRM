@@ -18,10 +18,12 @@ import {
   UserCheck,
   Route,
   Code2,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+import BuildHistory from "../components/BuildHistory";
 
 // AI Agents for Academy & Learning (from Agent Registry)
 const AI_AGENTS = [
