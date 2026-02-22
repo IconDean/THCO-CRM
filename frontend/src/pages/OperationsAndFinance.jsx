@@ -194,6 +194,7 @@ const OperationsAndFinance = () => {
   const [invoices, setInvoices] = useState(SAMPLE_INVOICES);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredInvoices = invoices.filter(inv => {
     const matchesSearch = inv.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
