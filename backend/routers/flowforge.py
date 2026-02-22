@@ -1100,7 +1100,6 @@ async def list_deployed_tools(
             "status": conv['status'],
             "engine_workflow_id": conv.get('engine_workflow_id'),
             "engine_workflow_url": conv.get('engine_workflow_url'),
-            "form_url": conv.get('form_url'),
             "trigger_type": conv.get('trigger_type'),
             "trigger_description": conv.get('trigger_description'),
             "systems_used": conv.get('systems_used', []),
