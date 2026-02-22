@@ -208,15 +208,17 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - [ ] Documentation and help tooltips
 
 ### FlowForge Files
-- `/app/backend/routers/flowforge.py` - Main API routes (conversations, approvals, inventory, transcribe, tools)
+- `/app/backend/routers/flowforge.py` - Main API routes (conversations, approvals, inventory, transcribe, tools, execute)
 - `/app/backend/services/flowforge_ai.py` - AI service (Claude + integration checking)
 - `/app/backend/services/prompt_engineering.py` - Two-step Prompt Architect + Workflow Builder
-- `/app/backend/services/n8n_deployment.py` - n8n API integration for workflow deployment (NEW)
+- `/app/backend/services/n8n_deployment.py` - n8n API integration for workflow deployment + execution
 - `/app/backend/services/duplicate_detection.py` - Duplicate detection service
 - `/app/backend/sql/flowforge_schema.sql` - Database schema
 - `/app/frontend/src/pages/FlowForgeChat.jsx` - Chat UI
 - `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx` - Interactive form component
-- `/app/frontend/src/components/flowforge/DeployedTools.jsx` - Deployed tools list component (NEW)
+- `/app/frontend/src/components/flowforge/DeployedTools.jsx` - Deployed tools list with Use Tool button
+- `/app/frontend/src/components/flowforge/DynamicFormRenderer.jsx` - Dynamic form rendering from JSON schema
+- `/app/frontend/src/components/flowforge/UseToolModal.jsx` - Portal-native tool execution modal
 - `/app/frontend/src/components/flowforge/VoiceRecorder.jsx` - Voice recording component
 - `/app/frontend/src/components/FlowForgeFAB.jsx` - FAB button
 - `/app/frontend/src/components/UnitSelectionModal.jsx` - Unit picker
