@@ -943,6 +943,62 @@ async def get_unit_admins(unit: str, request: Request):
     return unique_admins
 
 
+# ==================== INTEGRATION ANALYSIS ROUTES ====================
+
+@router.get("/integrations/available")
+async def get_available_integrations(request: Request):
+    """Get list of available n8n integrations/credentials"""
+    await get_current_user_from_request(request)
+    
+    try:
+        from services.n8n_deployment import get_available_credentials, KNOWN_INTEGRATIONS
+        
+        available_creds = await get_available_credentials()
+        
+        integrations = []
+        for integration_id, info in KNOWN_INTEGRATIONS.items():
+            cred_type = info['credential_type']
+            is_available = cred_type in available_creds if cred_type else True
+            
+            integrations.append({
+                "id": integration_id,
+                "name": info['display_name'],
+                "icon": info['icon'],
+                "available": is_available,
+                "credential_configured": is_available
+            })
+        
+        return {
+            "integrations": integrations,
+            "total_configured": sum(1 for i in integrations if i['available'])
+        }
+    
+    except Exception as e:
+        logger.error(f"Error fetching integrations: {e}")
+        return {"integrations": [], "error": str(e)}
+
+
+@router.post("/integrations/analyze")
+async def analyze_brief_integrations(request: Request, data: Dict[str, Any]):
+    """Analyze a problem brief and identify required integrations"""
+    await get_current_user_from_request(request)
+    
+    brief_text = data.get('brief', '')
+    
+    if not brief_text:
+        raise HTTPException(status_code=400, detail="Brief text required")
+    
+    try:
+        from services.n8n_deployment import analyze_required_integrations
+        
+        result = await analyze_required_integrations(brief_text)
+        return result
+    
+    except Exception as e:
+        logger.error(f"Error analyzing integrations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== DEPLOYED TOOLS ROUTES ====================
 
 class DeployedToolResponse(BaseModel):
@@ -953,6 +1009,7 @@ class DeployedToolResponse(BaseModel):
     status: str
     engine_workflow_id: Optional[str]
     engine_workflow_url: Optional[str]
+    form_url: Optional[str] = None
     trigger_type: Optional[str]
     trigger_description: Optional[str]
     systems_used: List[str]
