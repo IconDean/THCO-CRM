@@ -253,7 +253,7 @@ class IntelligentWorkflowDesigner:
             lines.append("")
         return "\n".join(lines)
     
-    async def design_workflow(
+    def design_workflow(
         self,
         user_request: str,
         voice_transcription: str = None,
