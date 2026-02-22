@@ -637,6 +637,16 @@ const FlowForgeChat = () => {
       
       toast.info("Generating your automation... This may take up to 2 minutes.");
       
+      // Show a "thinking" message while AI processes
+      const thinkingMessage = {
+        id: `thinking-${Date.now()}`,
+        role: "assistant",
+        content: "🔄 **Analyzing your request...**\n\nI'm reviewing your brief and designing the automation. This typically takes 30-60 seconds.",
+        created_at: new Date().toISOString(),
+        is_thinking: true
+      };
+      setMessages(prev => [...prev, thinkingMessage]);
+      
       // Now call generate to get AI response (this can take time)
       try {
         const aiResponse = await flowforgeAPI.generateResponse(
@@ -645,6 +655,9 @@ const FlowForgeChat = () => {
           true,
           true
         );
+        
+        // Remove thinking message and add real response
+        setMessages(prev => prev.filter(m => !m.is_thinking));
         
         // Save AI response
         const aiMessage = {
