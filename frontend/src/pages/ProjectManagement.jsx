@@ -19,10 +19,12 @@ import {
   ChevronDown,
   Brain,
   LayoutDashboard,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import BuildHistory from "../components/BuildHistory";
 import {
   Dialog,
   DialogContent,
