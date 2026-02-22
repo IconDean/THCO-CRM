@@ -506,6 +506,8 @@ const ProjectManagement = () => {
           </tbody>
         </table>
       </div>
+      </>
+      )}
 
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
