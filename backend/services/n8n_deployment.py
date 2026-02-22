@@ -208,27 +208,16 @@ def build_n8n_workflow(
         
         prev_node_name = node["name"]
     
-    # Build the workflow object
+    # Build the workflow object with ONLY required fields
+    # n8n API rejects extra properties like tags, meta, staticData
     workflow = {
         "name": f"[FlowForge] {tool_name}",
         "nodes": nodes,
         "connections": connections,
-        "active": False,  # Start inactive - admin can activate
         "settings": {
-            "executionOrder": "v1",
-            "saveManualExecutions": True,
-            "saveDataSuccessExecution": "all"
-        },
-        "staticData": None,
-        "meta": {
-            "description": description,
-            "templateCredsSetupCompleted": False
+            "executionOrder": "v1"
         }
     }
-    
-    # Add tags if provided
-    if tags:
-        workflow["tags"] = tags
     
     return workflow
 
