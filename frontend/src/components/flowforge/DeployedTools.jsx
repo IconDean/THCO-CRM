@@ -263,6 +263,15 @@ const DeployedTools = ({ unit, limit = 10 }) => {
           </div>
         </div>
       ))}
+      
+      {/* Use Tool Modal */}
+      <UseToolModal
+        isOpen={useToolModal.open}
+        onClose={() => setUseToolModal({ open: false, toolId: null, toolName: "" })}
+        toolId={useToolModal.toolId}
+        toolName={useToolModal.toolName}
+        onExecutionComplete={() => loadTools()} // Reload to update stats
+      />
     </div>
   );
 };
