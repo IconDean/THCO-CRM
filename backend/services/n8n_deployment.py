@@ -20,7 +20,7 @@ def get_n8n_headers() -> Dict[str, str]:
     """Get headers for n8n API requests"""
     return {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {N8N_API_KEY}"
+        "X-N8N-API-KEY": N8N_API_KEY
     }
 
 
