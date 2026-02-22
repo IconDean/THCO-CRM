@@ -188,23 +188,20 @@ const DeployedTools = ({ unit, limit = 10 }) => {
 
             {/* Actions */}
             <div className="flex items-center gap-2 ml-4">
-              {/* Use Tool Button - Opens n8n form if workflow has form trigger */}
-              {tool.engine_workflow_url && tool.trigger_type === 'form' && (
+              {/* Use Tool Button - Opens portal-native form modal */}
+              {tool.status === 'deployed' && (
                 <Button
                   size="sm"
                   className="bg-[#7C64FF] hover:bg-[#6B54EE] text-white"
-                  asChild
+                  onClick={() => setUseToolModal({ 
+                    open: true, 
+                    toolId: tool.id, 
+                    toolName: tool.tool_name 
+                  })}
+                  data-testid={`use-tool-btn-${tool.id}`}
                 >
-                  <a
-                    href={`${tool.engine_workflow_url.replace('/workflow/', '/form/')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1"
-                    data-testid={`use-tool-btn-${tool.id}`}
-                  >
-                    <Play className="w-4 h-4" />
-                    Use Tool
-                  </a>
+                  <Play className="w-4 h-4 mr-1" />
+                  Use Tool
                 </Button>
               )}
 
