@@ -425,6 +425,8 @@ const THCOHRPage = () => {
           </div>
         </div>
       </div>
+      </>
+      )}
 
       {/* Back to Dashboard */}
       <Link 
