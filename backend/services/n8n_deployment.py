@@ -312,6 +312,7 @@ async def create_n8n_workflow(
 async def activate_n8n_workflow(workflow_id: str, active: bool = True) -> Dict[str, Any]:
     """
     Activate or deactivate a workflow in n8n
+    n8n API requires POST to /activate or /deactivate endpoints
     """
     
     if not N8N_BASE_URL or not N8N_API_KEY:
@@ -319,16 +320,39 @@ async def activate_n8n_workflow(workflow_id: str, active: bool = True) -> Dict[s
     
     try:
         async with httpx.AsyncClient(timeout=30) as client:
-            # Use PATCH to update workflow active status
-            response = await client.patch(
-                f"{N8N_BASE_URL}/api/v1/workflows/{workflow_id}",
-                headers=get_n8n_headers(),
-                json={"active": active}
+            # n8n v1 API uses POST to activate/deactivate endpoint
+            endpoint = "activate" if active else "deactivate"
+            response = await client.post(
+                f"{N8N_BASE_URL}/api/v1/workflows/{workflow_id}/{endpoint}",
+                headers=get_n8n_headers()
             )
             
             if response.status_code in [200, 201]:
                 return {"success": True, "active": active}
             else:
+                # Fallback: try PUT with full workflow if POST fails
+                logger.warning(f"POST to /{endpoint} failed with {response.status_code}, trying PUT method")
+                
+                # First get the workflow
+                get_response = await client.get(
+                    f"{N8N_BASE_URL}/api/v1/workflows/{workflow_id}",
+                    headers=get_n8n_headers()
+                )
+                
+                if get_response.status_code == 200:
+                    workflow_data = get_response.json()
+                    workflow_data['active'] = active
+                    
+                    # PUT with updated active status
+                    put_response = await client.put(
+                        f"{N8N_BASE_URL}/api/v1/workflows/{workflow_id}",
+                        headers=get_n8n_headers(),
+                        json=workflow_data
+                    )
+                    
+                    if put_response.status_code in [200, 201]:
+                        return {"success": True, "active": active}
+                    
                 return {
                     "success": False, 
                     "error": f"Failed to update workflow: {response.status_code}"
