@@ -233,20 +233,58 @@ class FlowForgeAI:
         ]
 
 
+def _is_structured_brief(user_message: str) -> bool:
+    """
+    Check if the message is a structured brief from the ProblemBriefForm.
+    
+    A structured brief contains these specific markers from the form:
+    - **TOOL NAME:**
+    - **THE PROBLEM:**
+    - **THE TRIGGER:**
+    - **THE STEPS:**
+    - **THE OUTCOME:**
+    - **HOW OFTEN:**
+    """
+    # These are the required markers from the ProblemBriefForm
+    required_markers = [
+        '**TOOL NAME:**',
+        '**THE PROBLEM:**',
+        '**THE TRIGGER:**',
+        '**THE STEPS:**',
+        '**THE OUTCOME:**',
+        '**HOW OFTEN:**'
+    ]
+    
+    # Count how many markers are present
+    markers_found = sum(1 for marker in required_markers if marker in user_message)
+    
+    # If at least 4 of 6 required markers are found, it's a structured brief
+    return markers_found >= 4
+
+
 def _should_trigger_two_step(user_message: str, conversation_history: List[Dict[str, Any]] = None) -> bool:
     """
-    Determine if the two-step build process should be triggered
+    Determine if the two-step build process should be triggered.
     
-    Two-step is triggered when:
-    1. The user has provided enough context (e.g., answered clarifying questions)
-    2. The message contains automation-related keywords
-    3. There are at least 2 exchanges in the conversation
+    IMMEDIATELY triggers for:
+    1. Structured briefs (form submissions with **TOOL NAME:**, **THE PROBLEM:**, etc.)
+    
+    Also triggers when:
+    2. The user has provided enough context (e.g., answered clarifying questions)
+    3. The message contains automation-related keywords
+    4. There are at least 2 exchanges in the conversation
     
     Returns False for:
     - Very short messages (likely clarifying questions)
     - First message without enough context
     - Messages that are questions to the AI
     """
+    # CRITICAL: Always trigger for structured briefs (form submissions)
+    # This is the highest priority check - forms have all the data we need
+    if _is_structured_brief(user_message):
+        logger.info("[FlowForge] Detected structured brief from form - triggering two-step build")
+        return True
+    
     # If no history, check if the message is detailed enough
     if not conversation_history:
         # Require at least 50 characters for first message
