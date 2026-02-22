@@ -850,6 +850,12 @@ const FlowForgeChat = () => {
     } else if (action === "dismiss") {
       // Just dismiss the error message - no action needed
       toast.info("You can type a new message below to try again.");
+    } else if (action === "open_n8n") {
+      // Open the n8n workflow URL
+      const btn = message.action_buttons?.find(b => b.action === "open_n8n");
+      if (btn?.url) {
+        window.open(btn.url, '_blank', 'noopener,noreferrer');
+      }
     }
   };
 
