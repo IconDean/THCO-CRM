@@ -186,7 +186,27 @@ const DeployedTools = ({ unit, limit = 10 }) => {
 
             {/* Actions */}
             <div className="flex items-center gap-2 ml-4">
-              {/* Activate/Deactivate Button (Admin only - shown for all for now) */}
+              {/* Use Tool Button - Primary action if form URL available */}
+              {tool.form_url && (
+                <Button
+                  size="sm"
+                  className="bg-[#7C64FF] hover:bg-[#6B54EE] text-white"
+                  asChild
+                >
+                  <a
+                    href={tool.form_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1"
+                    data-testid={`use-tool-btn-${tool.id}`}
+                  >
+                    <Play className="w-4 h-4" />
+                    Use Tool
+                  </a>
+                </Button>
+              )}
+
+              {/* Activate/Deactivate Button (Admin only) */}
               {tool.engine_workflow_id && (
                 <Button
                   variant="outline"
