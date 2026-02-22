@@ -15,8 +15,10 @@ import {
   Plus,
   Filter,
   Search,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
+import BuildHistory from "../components/BuildHistory";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
