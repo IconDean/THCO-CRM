@@ -943,8 +943,8 @@ class GenerateResponse(BaseModel):
     duplicate_data: Optional[Dict[str, Any]] = None
 
 @router.post("/generate", response_model=GenerateResponse)
-async def generate_workflow(data: GenerateRequest, request: Request):
-    """Generate AI response for workflow building"""
+async def generate_workflow(data: GenerateRequest, request: Request, background_tasks: BackgroundTasks):
+    """Generate AI response for workflow building - uses background task for long-running AI"""
     user = await get_current_user_from_request(request)
     sb = ensure_supabase()
     
@@ -970,26 +970,40 @@ async def generate_workflow(data: GenerateRequest, request: Request):
         if data.include_history:
             msg_result = sb.table('flowforge_messages').select('role,content').eq('conversation_id', data.conversation_id).order('message_index').execute()
             history = msg_result.data or []
-            # Check if this is the first user message
-            # Note: The current user message may already be saved before calling generate,
-            # so we check if there are 0 or 1 user messages (1 being the current one)
             user_messages = [m for m in history if m['role'] == 'user']
             is_first_message = len(user_messages) <= 1
         
-        # Generate AI response
-        response = await generate_ai_response(
-            conversation_id=data.conversation_id,
-            unit=conversation['unit'],
-            user_message=data.message,
-            conversation_history=history,
-            tool_status=conversation['status'],
-            execution_count=conversation.get('execution_count', 0),
-            last_error=conversation.get('last_error_message'),
-            check_duplicates=data.check_duplicates,
-            is_first_message=is_first_message
-        )
-        
-        return response
+        # For builds (first message with structured brief), process synchronously but with timeout handling
+        # This ensures immediate feedback while tolerating longer processing times
+        try:
+            response = await asyncio.wait_for(
+                generate_ai_response(
+                    conversation_id=data.conversation_id,
+                    unit=conversation['unit'],
+                    user_message=data.message,
+                    conversation_history=history,
+                    tool_status=conversation['status'],
+                    execution_count=conversation.get('execution_count', 0),
+                    last_error=conversation.get('last_error_message'),
+                    check_duplicates=data.check_duplicates,
+                    is_first_message=is_first_message
+                ),
+                timeout=150.0  # 2.5 minute timeout
+            )
+            return response
+            
+        except asyncio.TimeoutError:
+            logger.warning(f"AI generation timed out for conversation {data.conversation_id}")
+            # Return a "still processing" response that the frontend can handle
+            return GenerateResponse(
+                content="⏳ **Your automation is taking longer than expected to generate.**\n\nThis happens occasionally with complex requests. Your brief has been saved and the system is still working on it.\n\n**Please refresh this page in 30-60 seconds** to see the result, or try sending another message.",
+                has_workflow=False,
+                has_action_buttons=True,
+                action_buttons=[
+                    {"label": "Refresh Page", "action": "refresh", "primary": True},
+                    {"label": "Try Again", "action": "retry_generation", "primary": False}
+                ]
+            )
     
     except Exception as e:
         logger.error(f"AI generation error: {e}")
