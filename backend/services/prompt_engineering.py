@@ -672,18 +672,31 @@ Company: THCO - AI-native professional services firm. Mission: "Human insight. A
 Unit Context:
 {self.unit_context[:2000]}
 
-Create a Build Specification with these sections:
-1. PROBLEM STATEMENT - Clear restatement of the need
-2. AUTOMATION OBJECTIVE - "This automation will [X] when [Y] so that [Z]"
-3. TRIGGER - Scheduled (cron), Event-based, or Manual
-4. INPUT DATA - Tables, fields, filters needed
-5. PROCESSING LOGIC - Step-by-step logic
-6. OUTPUT & ACTIONS - What it does (emails, updates, notifications)
-7. ERROR HANDLING - What happens when steps fail
-8. INTEGRATIONS NEEDED - Email, Database, Slack, etc.
-9. SUGGESTED NAME - 2-3 clear names like "Auto Follow-Up for Cold Candidates"
+## CRITICAL: STRUCTURED BRIEFS
+When the user's input contains these markers:
+- **TOOL NAME:** 
+- **THE PROBLEM:**
+- **THE TRIGGER:**
+- **THE STEPS:**
+- **THE OUTCOME:**
+- **HOW OFTEN:**
 
-Be specific but concise. Use unit context to fill gaps intelligently."""
+This is a STRUCTURED BRIEF from a form. The user has provided ALL the information you need.
+DO NOT ask ANY clarifying questions. IMMEDIATELY create the Build Specification using the data provided.
+
+Create a Build Specification with these sections:
+1. PROBLEM STATEMENT - Clear restatement of the need (from **THE PROBLEM:**)
+2. AUTOMATION OBJECTIVE - "This automation will [X] when [Y] so that [Z]"
+3. TRIGGER - From **THE TRIGGER:** (Scheduled, Event-based, or Manual)
+4. INPUT DATA - Tables, fields, filters needed
+5. PROCESSING LOGIC - From **THE STEPS:** - step-by-step logic
+6. OUTPUT & ACTIONS - From **THE OUTCOME:** - what it does (emails, updates, notifications)
+7. ERROR HANDLING - What happens when steps fail
+8. INTEGRATIONS NEEDED - From **SYSTEMS & TOOLS:** - Email, Database, Slack, etc.
+9. SUGGESTED NAME - Use the name from **TOOL NAME:**
+
+Be specific but concise. Use unit context to fill gaps intelligently.
+NEVER ask questions if a structured brief is provided - just build the specification."""
         
         # Use a faster model for the spec creation (less critical for quality)
         self.chat = LlmChat(
