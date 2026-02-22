@@ -1057,7 +1057,7 @@ async def design_workflow(request: Request, data: WorkflowDesignRequest):
     try:
         from services.intelligent_workflow_designer import analyze_and_design_workflow
         
-        result = analyze_and_design_workflow(
+        result = await analyze_and_design_workflow(
             user_input=data.user_input,
             voice_transcription=data.voice_transcription,
             unit=data.unit
