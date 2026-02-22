@@ -810,7 +810,6 @@ const FlowForgeChat = () => {
     setShowProblemBriefForm(true);
     toast.info("Starting over. Describe what you want to build.");
   };
-  };
 
   // Format brief data as readable text
   const formatBriefAsText = (formData) => {
