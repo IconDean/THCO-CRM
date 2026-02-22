@@ -117,6 +117,29 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
   - Routes to unit-specific build page with tailored form placeholders
 - **Files**: `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx`, `/app/frontend/src/pages/FlowForgeChat.jsx`, all unit page files
 
+### Phase 4.8 - n8n Deployment & Tool Visibility (COMPLETE ✅) - Feb 22, 2026
+- [x] **n8n Workflow Deployment on Approval**
+  - Created `/app/backend/services/n8n_deployment.py` for n8n API integration
+  - When admin approves a tool, automatically creates workflow in n8n via `POST /api/v1/workflows`
+  - Uses `X-N8N-API-KEY` header for authentication
+  - Maps workflow steps to n8n nodes (Set, Gmail, Slack, Database, etc.)
+  - Stores `engine_workflow_id` and `engine_workflow_url` in conversation
+- [x] **Approval Status Messages in Chat**
+  - Posts detailed status message to conversation when approved/rejected
+  - Shows: Who approved, workflow ID, n8n URL link, next steps
+  - Action button "Open in Automation Engine" links directly to n8n
+- [x] **"My Tools" Tab on Unit Pages**
+  - Added "My Tools" tab next to "Tools" and "Build History"
+  - Shows deployed tools with: name, status (Ready/Active), trigger info
+  - Displays execution stats (runs, success, errors)
+  - Buttons: Activate, Open (n8n link), View (conversation)
+- [x] **Tool Activation/Deactivation**
+  - `POST /api/flowforge/tools/{id}/activate` endpoint for admins
+  - Updates workflow active status in n8n
+  - Updates local inventory status
+- **New Files**: `/app/backend/services/n8n_deployment.py`, `/app/frontend/src/components/flowforge/DeployedTools.jsx`
+- **Updated**: `/app/backend/routers/flowforge.py`, `/app/frontend/src/pages/TalentUnit.jsx`, `/app/frontend/src/lib/api.js`
+
 ### Phase 5 - Polish & White-Label (UPCOMING)
 - [ ] Final UI polish and animations
 - [ ] Error handling improvements
@@ -124,20 +147,22 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - [ ] Documentation and help tooltips
 
 ### FlowForge Files
-- `/app/backend/routers/flowforge.py` - Main API routes (conversations, approvals, inventory, transcribe)
+- `/app/backend/routers/flowforge.py` - Main API routes (conversations, approvals, inventory, transcribe, tools)
 - `/app/backend/services/flowforge_ai.py` - AI service (Claude + integration checking)
 - `/app/backend/services/prompt_engineering.py` - Two-step Prompt Architect + Workflow Builder
+- `/app/backend/services/n8n_deployment.py` - n8n API integration for workflow deployment (NEW)
 - `/app/backend/services/duplicate_detection.py` - Duplicate detection service
 - `/app/backend/sql/flowforge_schema.sql` - Database schema
 - `/app/frontend/src/pages/FlowForgeChat.jsx` - Chat UI
-- `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx` - Interactive form component (NEW)
+- `/app/frontend/src/components/flowforge/ProblemBriefForm.jsx` - Interactive form component
+- `/app/frontend/src/components/flowforge/DeployedTools.jsx` - Deployed tools list component (NEW)
 - `/app/frontend/src/components/flowforge/VoiceRecorder.jsx` - Voice recording component
 - `/app/frontend/src/components/FlowForgeFAB.jsx` - FAB button
 - `/app/frontend/src/components/UnitSelectionModal.jsx` - Unit picker
 - `/app/frontend/src/components/BuildHistory.jsx` - History component
 
 ### FlowForge Database (Supabase)
-- `flowforge_conversations` - Conversation/tool metadata
+- `flowforge_conversations` - Conversation/tool metadata (now includes engine_workflow_id, engine_workflow_url)
 - `flowforge_messages` - Chat messages (now stores build_spec, workflow_steps)
 - `flowforge_approvals` - Approval requests
 - `flowforge_admins` - Admin roles
