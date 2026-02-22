@@ -43,6 +43,7 @@ const DeployedTools = ({ unit, limit = 10 }) => {
   const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activatingId, setActivatingId] = useState(null);
+  const [useToolModal, setUseToolModal] = useState({ open: false, toolId: null, toolName: "" });
 
   useEffect(() => {
     loadTools();
