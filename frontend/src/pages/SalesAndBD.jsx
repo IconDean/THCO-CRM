@@ -265,6 +265,7 @@ const SalesAndBD = () => {
   const [selectedPath, setSelectedPath] = useState("all");
   const [selectedPillar, setSelectedPillar] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredLeads = leads.filter(lead => {
     const matchesSearch = lead.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
