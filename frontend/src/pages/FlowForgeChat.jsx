@@ -534,14 +534,32 @@ const FlowForgeChat = () => {
         }
       } catch (aiError) {
         console.error("AI generation error:", aiError);
-        // Fallback message if AI fails
-        const fallbackMessage = {
-          id: `fallback-${Date.now()}`,
+        // Save an error message with retry option
+        const errorMessage = {
           role: "assistant",
-          content: "I'm having trouble processing your request right now. Please try again in a moment.",
-          created_at: new Date().toISOString(),
+          content: "I'm sorry, the automation generation is taking longer than expected. This could be due to high demand.\n\n**Your message has been saved.** You can:\n1. Try sending your message again\n2. Wait a few minutes and try again\n\nWould you like me to try again?",
+          has_workflow: false,
+          has_action_buttons: true,
+          action_buttons: [
+            { label: "Try Again", action: "retry_generation", primary: true },
+            { label: "Cancel", action: "dismiss", primary: false }
+          ]
         };
-        setMessages((prev) => [...prev, fallbackMessage]);
+        
+        try {
+          const savedErrorMsg = await flowforgeAPI.addMessage(conversation.id, errorMessage);
+          setMessages((prev) => [...prev, savedErrorMsg]);
+        } catch (e) {
+          // If we can't save the error message, show a local fallback
+          const fallbackMessage = {
+            id: `fallback-${Date.now()}`,
+            role: "assistant",
+            content: "I'm having trouble processing your request right now. Please try again in a moment.",
+            created_at: new Date().toISOString(),
+          };
+          setMessages((prev) => [...prev, fallbackMessage]);
+        }
+        toast.error("Generation took too long. Please try again.");
       }
 
     } catch (error) {
