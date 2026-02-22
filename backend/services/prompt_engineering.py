@@ -879,7 +879,7 @@ async def generate_workflow_two_step(
     user_description: str,
     voice_transcription: Optional[str] = None,
     conversation_history: Optional[List[Dict]] = None,
-    timeout_seconds: int = 60
+    timeout_seconds: int = 120  # Increased from 60 to 120 seconds per step
 ) -> Dict[str, Any]:
     """
     Main entry point for the two-step workflow generation process
