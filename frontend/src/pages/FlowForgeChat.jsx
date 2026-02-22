@@ -604,6 +604,7 @@ const FlowForgeChat = () => {
     
     try {
       setSending(true);
+      setIsDesigning(true);
       setShowProblemBriefForm(false);
       
       // First, transcribe the audio if we have a blob but no transcription
@@ -622,7 +623,7 @@ const FlowForgeChat = () => {
       // Format the brief as a user message
       const briefText = formatBriefAsText(submissionData.form_data);
       
-      // Add user message with the formatted brief - SAVE THIS FIRST
+      // Add user message with the formatted brief
       const userMessage = {
         role: "user",
         content: briefText,
@@ -641,83 +642,174 @@ const FlowForgeChat = () => {
         });
       }
       
-      toast.info("Generating your automation... This may take up to 2 minutes.");
+      toast.info("Designing your automation... This takes about 30 seconds.");
       
-      // Show a "thinking" message while AI processes
+      // Show a "thinking" message while AI designs the workflow
       const thinkingMessage = {
         id: `thinking-${Date.now()}`,
         role: "assistant",
-        content: "🔄 **Analyzing your request...**\n\nI'm reviewing your brief and designing the automation. This typically takes 30-60 seconds.",
+        content: "🔄 **Analyzing your request...**\n\nI'm identifying the required integrations and designing your workflow. This typically takes 20-40 seconds.",
         created_at: new Date().toISOString(),
         is_thinking: true
       };
       setMessages(prev => [...prev, thinkingMessage]);
       
-      // Now call generate to get AI response (this can take time)
+      // Call the intelligent workflow designer
       try {
-        const aiResponse = await flowforgeAPI.generateResponse(
-          conversation.id,
+        const designResult = await flowforgeAPI.designWorkflow(
           briefText + (transcription ? `\n\n[Voice Note]:\n${transcription}` : ''),
-          true,
-          true
+          transcription,
+          unit
         );
-        
-        // Remove thinking message and add real response
-        setMessages(prev => prev.filter(m => !m.is_thinking));
-        
-        // Save AI response
-        const aiMessage = {
-          role: "assistant",
-          content: aiResponse.content,
-          has_workflow: aiResponse.has_workflow || false,
-          workflow_data: aiResponse.workflow_data || null,
-          workflow_steps: aiResponse.workflow_steps || null,
-          build_spec: aiResponse.build_spec || null,
-          has_action_buttons: aiResponse.has_action_buttons,
-          action_buttons: aiResponse.action_buttons,
-          has_duplicate_alert: aiResponse.has_duplicate_alert || false,
-          duplicate_data: aiResponse.duplicate_data || null,
-        };
-        
-        const savedAiMsg = await flowforgeAPI.addMessage(conversation.id, aiMessage);
-        setMessages(prev => [...prev, savedAiMsg]);
-        
-        toast.success("Automation generated successfully!");
-      } catch (aiError) {
-        console.error("AI generation failed:", aiError);
         
         // Remove thinking message
         setMessages(prev => prev.filter(m => !m.is_thinking));
         
-        // Save an error message so the user can see what happened
-        const errorMessage = {
-          role: "assistant",
-          content: "I'm sorry, the automation generation is taking longer than expected. This could be due to high demand.\n\n**Your brief has been saved.** You can:\n1. Try again by typing a message below\n2. Come back later - I'll remember your request\n\nWould you like me to try again?",
-          has_workflow: false,
-          has_action_buttons: true,
-          action_buttons: [
-            { label: "Try Again", action: "retry_generation", primary: true },
-            { label: "Start Over", action: "reset", primary: false }
-          ]
-        };
-        
-        try {
-          const savedErrorMsg = await flowforgeAPI.addMessage(conversation.id, errorMessage);
-          setMessages(prev => [...prev, savedErrorMsg]);
-        } catch (e) {
-          console.error("Failed to save error message:", e);
+        if (designResult.success && designResult.workflow) {
+          // Store the workflow design for preview
+          setWorkflowDesign(designResult.workflow);
+          
+          // Add AI response message
+          const aiMessage = {
+            id: `design-${Date.now()}`,
+            role: "assistant",
+            content: designResult.message || "I've designed your automation! Review the details below and click **Approve & Deploy** when you're ready.",
+            created_at: new Date().toISOString(),
+            is_workflow_design: true
+          };
+          setMessages(prev => [...prev, aiMessage]);
+          
+          toast.success("Workflow designed! Review and approve to deploy.");
+        } else {
+          throw new Error(designResult.error || "Failed to design workflow");
         }
+      } catch (designError) {
+        console.error("Workflow design failed:", designError);
         
-        toast.error("Generation is taking longer than expected. Please try again.");
+        // Remove thinking message
+        setMessages(prev => prev.filter(m => !m.is_thinking));
+        
+        // Fall back to legacy flow
+        const errorMessage = {
+          id: `error-${Date.now()}`,
+          role: "assistant",
+          content: "I had trouble designing the workflow automatically. Let me try the standard approach...",
+          created_at: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+        
+        // Try legacy generation
+        try {
+          const aiResponse = await flowforgeAPI.generateResponse(
+            conversation.id,
+            briefText + (transcription ? `\n\n[Voice Note]:\n${transcription}` : ''),
+            true,
+            true
+          );
+          
+          const aiMessage = {
+            role: "assistant",
+            content: aiResponse.content,
+            has_workflow: aiResponse.has_workflow || false,
+            workflow_data: aiResponse.workflow_data || null,
+            workflow_steps: aiResponse.workflow_steps || null,
+            has_action_buttons: aiResponse.has_action_buttons,
+            action_buttons: aiResponse.action_buttons,
+          };
+          
+          const savedAiMsg = await flowforgeAPI.addMessage(conversation.id, aiMessage);
+          setMessages(prev => [...prev, savedAiMsg]);
+        } catch (fallbackError) {
+          toast.error("Workflow generation failed. Please try again.");
+        }
       }
       
     } catch (error) {
       console.error("Failed to submit brief:", error);
       toast.error("Failed to submit brief. Please try again.");
-      setShowProblemBriefForm(true); // Re-show form on error
+      setShowProblemBriefForm(true);
     } finally {
       setSending(false);
+      setIsDesigning(false);
     }
+  };
+  
+  // Handle workflow design approval
+  const handleApproveWorkflowDesign = async () => {
+    if (!conversation || !workflowDesign) return;
+    
+    try {
+      setIsApproving(true);
+      
+      // Create an approval request with the designed workflow
+      const approvalData = {
+        conversation_id: conversation.id,
+        request_type: "new_tool",
+        tool_name: workflowDesign.workflow_design?.name || toolName,
+        request_summary: workflowDesign.workflow_design?.description || "",
+        request_details: {
+          trigger_type: workflowDesign.workflow_design?.trigger_type || "form",
+          trigger_description: workflowDesign.workflow_design?.trigger_description,
+          systems_used: workflowDesign.workflow_design?.integrations_needed?.map(i => i.display_name) || [],
+          steps: workflowDesign.workflow_design?.steps || [],
+          form_fields: workflowDesign.workflow_design?.form_fields || []
+        },
+        proposed_workflow_json: workflowDesign.workflow_design
+      };
+      
+      const approval = await flowforgeAPI.createApproval(approvalData);
+      
+      // Auto-approve since user clicked approve
+      const result = await flowforgeAPI.processApproval(approval.id, {
+        action: "approve",
+        note: "Auto-approved by user"
+      });
+      
+      // Clear the workflow design preview
+      setWorkflowDesign(null);
+      
+      // Show success message
+      const successMessage = {
+        id: `success-${Date.now()}`,
+        role: "assistant",
+        content: `🎉 **Your tool "${workflowDesign.workflow_design?.name}" has been deployed!**\n\nIt's now live in the automation engine. You can find it in your unit's "My Tools" tab.\n\n${result.deployment?.form_url ? `**[Open Form to Use Tool](${result.deployment.form_url})**` : ''}`,
+        created_at: new Date().toISOString(),
+        has_action_buttons: true,
+        action_buttons: result.deployment?.form_url ? [
+          { label: "Use Tool (Open Form)", action: "open_form", url: result.deployment.form_url, primary: true },
+          { label: "View My Tools", action: "view_tools", primary: false }
+        ] : [
+          { label: "View My Tools", action: "view_tools", primary: true }
+        ]
+      };
+      
+      await flowforgeAPI.addMessage(conversation.id, successMessage);
+      setMessages(prev => [...prev, successMessage]);
+      
+      toast.success("Tool deployed successfully!");
+      
+    } catch (error) {
+      console.error("Failed to approve workflow:", error);
+      toast.error("Failed to deploy tool. Please try again.");
+    } finally {
+      setIsApproving(false);
+    }
+  };
+  
+  // Handle workflow design edit request
+  const handleEditWorkflowDesign = () => {
+    // Clear design and show form again
+    setWorkflowDesign(null);
+    setShowProblemBriefForm(true);
+    toast.info("You can modify your request and submit again.");
+  };
+  
+  // Handle workflow design rejection
+  const handleRejectWorkflowDesign = () => {
+    setWorkflowDesign(null);
+    setShowProblemBriefForm(true);
+    toast.info("Starting over. Describe what you want to build.");
+  };
   };
 
   // Format brief data as readable text
