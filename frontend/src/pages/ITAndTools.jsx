@@ -410,6 +410,8 @@ const ITAndTools = () => {
           </div>
         </div>
       </div>
+      </>
+      )}
 
       {/* Back to Dashboard */}
       <Link 
