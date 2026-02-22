@@ -646,8 +646,22 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
                 ]
             
             # Get trigger info with safe defaults
-            trigger_type = request_details.get('trigger_type') or workflow_json.get('trigger_type') or 'manual'
+            # If tool needs user input, default to 'form' trigger
+            trigger_type = request_details.get('trigger_type') or workflow_json.get('trigger_type') or 'form'
             trigger_description = request_details.get('trigger_description') or workflow_json.get('trigger_description')
+            
+            # Get integrations/systems used
+            integrations = request_details.get('systems_used') or workflow_json.get('systems_used') or []
+            if not integrations:
+                integrations = conversation.get('systems_used', [])
+            
+            # Build form fields based on the steps/requirements
+            form_fields = request_details.get('form_fields') or workflow_json.get('form_fields') or []
+            if not form_fields and trigger_type == 'form':
+                # Auto-generate basic form fields from the tool description
+                form_fields = [
+                    {"name": "input_data", "label": "Input Data", "type": "textarea", "required": True, "placeholder": "Paste your data here..."},
+                ]
             
             # Create the workflow in n8n
             deployment_result = await create_n8n_workflow(
@@ -656,13 +670,17 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
                 workflow_steps=workflow_steps,
                 trigger_type=trigger_type,
                 trigger_description=trigger_description,
+                integrations=integrations,
+                form_fields=form_fields,
                 tags=[approval['unit'], 'flowforge'],
                 unit=approval['unit']
             )
             
+            n8n_form_url = None
             if deployment_result.get('success'):
                 n8n_workflow_id = deployment_result.get('workflow_id')
                 n8n_workflow_url = deployment_result.get('workflow_url')
+                n8n_form_url = deployment_result.get('form_url')
                 logger.info(f"Successfully deployed workflow to n8n: {n8n_workflow_id}")
             else:
                 logger.warning(f"Failed to deploy to n8n: {deployment_result.get('error')}")
