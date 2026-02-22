@@ -616,6 +616,8 @@ const SalesAndBD = () => {
           </div>
         )}
       </div>
+      </>
+      )}
 
       {/* Back to Dashboard */}
       <Link 
