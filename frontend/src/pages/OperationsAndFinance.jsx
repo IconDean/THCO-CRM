@@ -571,6 +571,8 @@ const OperationsAndFinance = () => {
           </table>
         </div>
       </div>
+      </>
+      )}
 
       {/* Back to Dashboard */}
       <Link 
