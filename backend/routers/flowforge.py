@@ -1035,6 +1035,52 @@ async def analyze_brief_integrations(request: Request, data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== INTELLIGENT WORKFLOW DESIGN ====================
+
+class WorkflowDesignRequest(BaseModel):
+    user_input: str
+    voice_transcription: Optional[str] = None
+    unit: str = "general"
+
+
+@router.post("/design-workflow")
+async def design_workflow(request: Request, data: WorkflowDesignRequest):
+    """
+    Use AI to analyze user input and design a complete workflow.
+    Returns workflow specification with form fields, steps, and integrations.
+    """
+    await get_current_user_from_request(request)
+    
+    if not data.user_input or len(data.user_input.strip()) < 10:
+        raise HTTPException(status_code=400, detail="Please provide a description of what you want to automate")
+    
+    try:
+        from services.intelligent_workflow_designer import analyze_and_design_workflow
+        
+        result = await analyze_and_design_workflow(
+            user_input=data.user_input,
+            voice_transcription=data.voice_transcription,
+            unit=data.unit
+        )
+        
+        if result.get('success'):
+            return {
+                "success": True,
+                "workflow": result['workflow'],
+                "message": result['workflow'].get('user_message', 'Workflow designed successfully!')
+            }
+        else:
+            return {
+                "success": False,
+                "error": result.get('error', 'Failed to design workflow'),
+                "raw_response": result.get('raw_response')
+            }
+    
+    except Exception as e:
+        logger.error(f"Error designing workflow: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== DEPLOYED TOOLS ROUTES ====================
 
 class DeployedToolResponse(BaseModel):
