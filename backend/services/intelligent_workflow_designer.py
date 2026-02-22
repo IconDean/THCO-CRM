@@ -283,7 +283,7 @@ class IntelligentWorkflowDesigner:
         
         try:
             # Call Claude to design the workflow
-            response = await self.chat.send_message(full_request)
+            response = await self.chat.send_message(UserMessage(full_request))
             
             # Extract JSON from response
             workflow_spec = self._extract_json(response)
