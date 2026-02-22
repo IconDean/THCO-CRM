@@ -1045,7 +1045,6 @@ class DeployedToolResponse(BaseModel):
     status: str
     engine_workflow_id: Optional[str]
     engine_workflow_url: Optional[str]
-    form_url: Optional[str] = None
     trigger_type: Optional[str]
     trigger_description: Optional[str]
     systems_used: List[str]
