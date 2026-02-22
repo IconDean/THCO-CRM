@@ -172,16 +172,16 @@ def _map_field_type(our_type: str) -> str:
 
 def build_webhook_trigger_node() -> Dict:
     """Build a webhook trigger node"""
+    import uuid
     return {
-        "id": "webhook-trigger",
+        "id": str(uuid.uuid4()),
         "name": "Webhook",
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2,
         "position": [0, 0],
-        "webhookId": None,
         "parameters": {
             "httpMethod": "POST",
-            "path": "flowforge-webhook",
+            "path": f"flowforge-{uuid.uuid4().hex[:8]}",
             "responseMode": "onReceived",
             "responseData": "allEntries"
         }
