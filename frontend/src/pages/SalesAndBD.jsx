@@ -28,7 +28,8 @@ import {
   Database,
   Mic,
   Repeat,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -41,6 +42,7 @@ import {
 } from "../components/ui/select";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 import { toast } from "sonner";
+import BuildHistory from "../components/BuildHistory";
 
 // The 4 Intake Paths from THCO Operating Cycle
 const INTAKE_PATHS = [
