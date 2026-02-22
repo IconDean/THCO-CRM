@@ -834,6 +834,22 @@ const FlowForgeChat = () => {
         content: "Understood! Let's build something new. Can you give me more details about what you need? I'll make sure it's distinct from the existing tools.",
       });
       setMessages(prev => [...prev, buildMessage]);
+    } else if (action === "refresh") {
+      // Refresh the page to get latest messages
+      window.location.reload();
+    } else if (action === "retry_generation") {
+      // Retry the last generation
+      toast.info("Retrying generation...");
+      // Find the last user message
+      const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+      if (lastUserMessage) {
+        setInputValue(lastUserMessage.content);
+        // Trigger send
+        handleSendMessage();
+      }
+    } else if (action === "dismiss") {
+      // Just dismiss the error message - no action needed
+      toast.info("You can type a new message below to try again.");
     }
   };
 
