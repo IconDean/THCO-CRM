@@ -680,6 +680,9 @@ const FlowForgeChat = () => {
       } catch (aiError) {
         console.error("AI generation failed:", aiError);
         
+        // Remove thinking message
+        setMessages(prev => prev.filter(m => !m.is_thinking));
+        
         // Save an error message so the user can see what happened
         const errorMessage = {
           role: "assistant",
