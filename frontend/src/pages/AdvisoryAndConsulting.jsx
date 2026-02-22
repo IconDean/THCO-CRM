@@ -171,6 +171,7 @@ const STATUS_CONFIG = {
 
 const AdvisoryAndConsulting = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredEngagements = SAMPLE_ENGAGEMENTS.filter(eng => 
     eng.client.toLowerCase().includes(searchTerm.toLowerCase()) ||

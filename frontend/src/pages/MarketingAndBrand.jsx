@@ -170,6 +170,7 @@ const STATUS_CONFIG = {
 
 const MarketingAndBrand = () => {
   const [selectedType, setSelectedType] = useState("all");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredContent = selectedType === "all" 
     ? RECENT_CONTENT 

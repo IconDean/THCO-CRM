@@ -217,6 +217,7 @@ const STATUS_CONFIG = {
 
 const TechnologyAndBuild = () => {
   const [selectedPod, setSelectedPod] = useState("all");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredProjects = selectedPod === "all" 
     ? SAMPLE_PROJECTS 
