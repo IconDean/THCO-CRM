@@ -653,6 +653,100 @@ async def delete_n8n_workflow(workflow_id: str) -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
+async def execute_n8n_workflow(
+    workflow_id: str,
+    input_data: Dict[str, Any],
+    user_id: str = None,
+    user_name: str = None
+) -> Dict[str, Any]:
+    """
+    Execute an n8n workflow by triggering it via the execution API.
+    
+    For workflows with form/webhook triggers, we use the /execute endpoint.
+    This is the portal-native alternative to using n8n forms directly.
+    """
+    
+    if not N8N_BASE_URL or not N8N_API_KEY:
+        return {"success": False, "error": "n8n credentials not configured"}
+    
+    try:
+        # Add metadata to input
+        execution_input = {
+            **input_data,
+            "_flowforge_metadata": {
+                "triggered_by": user_name or "Unknown",
+                "triggered_by_id": user_id,
+                "triggered_at": datetime.now(timezone.utc).isoformat(),
+                "source": "thco_portal"
+            }
+        }
+        
+        async with httpx.AsyncClient(timeout=60) as client:
+            # Use the workflow execution endpoint
+            # POST /api/v1/executions with workflow data
+            response = await client.post(
+                f"{N8N_BASE_URL}/api/v1/executions",
+                headers=get_n8n_headers(),
+                json={
+                    "workflowId": workflow_id,
+                    "data": execution_input
+                }
+            )
+            
+            if response.status_code in [200, 201]:
+                result = response.json()
+                
+                logger.info(f"Workflow {workflow_id} executed successfully")
+                
+                return {
+                    "success": True,
+                    "execution_id": result.get('id'),
+                    "status": result.get('status', 'running'),
+                    "data": result.get('data'),
+                    "finished": result.get('finished', False)
+                }
+            else:
+                error_text = response.text
+                logger.error(f"Workflow execution failed: {response.status_code} - {error_text}")
+                
+                # If direct execution isn't supported, try webhook approach
+                # First, get the workflow to find webhook info
+                workflow = await get_n8n_workflow(workflow_id)
+                if workflow:
+                    # Look for webhook/form trigger node
+                    for node in workflow.get('nodes', []):
+                        if node.get('webhookId'):
+                            webhook_path = node.get('parameters', {}).get('path', '')
+                            webhook_url = f"{N8N_BASE_URL}/webhook/{webhook_path}"
+                            
+                            # Try webhook
+                            webhook_response = await client.post(
+                                webhook_url,
+                                json=execution_input,
+                                timeout=30
+                            )
+                            
+                            if webhook_response.status_code in [200, 201]:
+                                return {
+                                    "success": True,
+                                    "data": webhook_response.json() if webhook_response.text else {},
+                                    "method": "webhook"
+                                }
+                
+                return {
+                    "success": False,
+                    "error": f"Execution failed: {response.status_code}",
+                    "detail": error_text
+                }
+    
+    except httpx.RequestError as e:
+        logger.error(f"n8n connection error during execution: {e}")
+        return {"success": False, "error": f"Connection error: {str(e)}"}
+    except Exception as e:
+        logger.error(f"Error executing workflow: {e}")
+        return {"success": False, "error": str(e)}
+
+
 # ==================== INTEGRATION ANALYSIS ====================
 
 KNOWN_INTEGRATIONS = {
