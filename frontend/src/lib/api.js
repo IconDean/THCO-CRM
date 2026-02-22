@@ -474,6 +474,24 @@ export const flowforgeAPI = {
     });
     return response.data;
   },
+  
+  // Deployed Tools
+  getDeployedTools: async (params = {}) => {
+    const response = await apiClient.get('/flowforge/tools', { params });
+    return response.data;
+  },
+  
+  getDeployedTool: async (toolId) => {
+    const response = await apiClient.get(`/flowforge/tools/${toolId}`);
+    return response.data;
+  },
+  
+  activateTool: async (toolId, active = true) => {
+    const response = await apiClient.post(`/flowforge/tools/${toolId}/activate`, null, {
+      params: { active }
+    });
+    return response.data;
+  },
 };
 
 export default apiClient;
