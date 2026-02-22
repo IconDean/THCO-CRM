@@ -365,7 +365,7 @@ class IntelligentWorkflowDesigner:
         return workflow_spec
 
 
-def analyze_and_design_workflow(
+async def analyze_and_design_workflow(
     user_input: str,
     voice_transcription: str = None,
     unit: str = "general"
@@ -374,7 +374,7 @@ def analyze_and_design_workflow(
     Main entry point: Analyze user input and design a complete workflow.
     """
     designer = IntelligentWorkflowDesigner(unit=unit)
-    return designer.design_workflow(
+    return await designer.design_workflow(
         user_request=user_input,
         voice_transcription=voice_transcription,
         context={"unit": unit}
