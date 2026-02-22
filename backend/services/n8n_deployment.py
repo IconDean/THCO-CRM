@@ -190,8 +190,9 @@ def build_webhook_trigger_node() -> Dict:
 
 def build_schedule_trigger_node(schedule: str = None) -> Dict:
     """Build a schedule trigger node"""
+    import uuid
     return {
-        "id": "schedule-trigger",
+        "id": str(uuid.uuid4()),
         "name": "Schedule Trigger",
         "type": "n8n-nodes-base.scheduleTrigger",
         "typeVersion": 1.2,
