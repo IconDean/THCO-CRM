@@ -272,8 +272,9 @@ def build_ai_agent_node(
     position: List[int] = None
 ) -> Dict:
     """Build an AI Agent node using Claude"""
+    import uuid
     return {
-        "id": "ai-agent",
+        "id": str(uuid.uuid4()),
         "name": "AI Agent",
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 1.7,
@@ -291,8 +292,9 @@ def build_code_node(
     position: List[int] = None
 ) -> Dict:
     """Build a Code node for custom JavaScript"""
+    import uuid
     return {
-        "id": f"code-{name.lower().replace(' ', '-')}",
+        "id": str(uuid.uuid4()),
         "name": name,
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -309,13 +311,14 @@ def build_set_node(
     position: List[int] = None
 ) -> Dict:
     """Build a Set node to transform data"""
+    import uuid
     assignments = [
-        {"id": f"field-{i}", "name": k, "value": v, "type": "string"}
-        for i, (k, v) in enumerate(data_to_set.items())
+        {"id": str(uuid.uuid4()), "name": k, "value": v, "type": "string"}
+        for k, v in data_to_set.items()
     ]
     
     return {
-        "id": f"set-{name.lower().replace(' ', '-')}",
+        "id": str(uuid.uuid4()),
         "name": name,
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
@@ -335,8 +338,9 @@ def build_http_request_node(
     position: List[int] = None
 ) -> Dict:
     """Build an HTTP Request node"""
+    import uuid
     return {
-        "id": f"http-{name.lower().replace(' ', '-')}",
+        "id": str(uuid.uuid4()),
         "name": name,
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
