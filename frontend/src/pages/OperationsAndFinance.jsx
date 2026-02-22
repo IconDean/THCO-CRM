@@ -21,11 +21,13 @@ import {
   UserCheck,
   ClipboardList,
   Timer,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+import BuildHistory from "../components/BuildHistory";
 
 // AI Agents for Operations & Finance (from Agent Registry)
 const AI_AGENTS = [
