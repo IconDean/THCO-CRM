@@ -492,6 +492,22 @@ export const flowforgeAPI = {
     });
     return response.data;
   },
+  
+  // Intelligent Workflow Design
+  designWorkflow: async (userInput, voiceTranscription = null, unit = "general") => {
+    const response = await apiClient.post('/flowforge/design-workflow', {
+      user_input: userInput,
+      voice_transcription: voiceTranscription,
+      unit: unit
+    });
+    return response.data;
+  },
+  
+  // Get available integrations
+  getAvailableIntegrations: async () => {
+    const response = await apiClient.get('/flowforge/integrations/available');
+    return response.data;
+  },
 };
 
 export default apiClient;
