@@ -448,13 +448,15 @@ export const flowforgeAPI = {
     return response.data;
   },
   
-  // AI Generation
+  // AI Generation - longer timeout for complex generation
   generateResponse: async (conversationId, message, includeHistory = true, checkDuplicates = true) => {
     const response = await apiClient.post('/flowforge/generate', {
       conversation_id: conversationId,
       message,
       include_history: includeHistory,
       check_duplicates: checkDuplicates
+    }, {
+      timeout: 180000 // 3 minutes timeout for AI generation
     });
     return response.data;
   },
