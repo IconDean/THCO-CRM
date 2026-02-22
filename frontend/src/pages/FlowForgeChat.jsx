@@ -954,6 +954,15 @@ const FlowForgeChat = () => {
       if (btn?.url) {
         window.open(btn.url, '_blank', 'noopener,noreferrer');
       }
+    } else if (action === "open_form") {
+      // Open the n8n form URL
+      const btn = message.action_buttons?.find(b => b.action === "open_form");
+      if (btn?.url) {
+        window.open(btn.url, '_blank', 'noopener,noreferrer');
+      }
+    } else if (action === "view_tools") {
+      // Navigate to My Tools tab
+      navigate(`/${unit}?tab=deployed`);
     }
   };
 
