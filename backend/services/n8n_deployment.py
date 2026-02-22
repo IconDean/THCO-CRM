@@ -107,6 +107,8 @@ def build_form_trigger_node(form_fields: List[Dict], workflow_name: str) -> Dict
     Build a Form Trigger node for n8n.
     This creates a form that users can fill out to trigger the workflow.
     """
+    import uuid
+    
     # Convert our form fields to n8n form field format
     n8n_fields = []
     for field in form_fields:
@@ -130,12 +132,11 @@ def build_form_trigger_node(form_fields: List[Dict], workflow_name: str) -> Dict
         n8n_fields.append(n8n_field)
     
     return {
-        "id": "form-trigger",
+        "id": str(uuid.uuid4()),
         "name": "Form Input",
         "type": "n8n-nodes-base.formTrigger",
         "typeVersion": 2.2,
         "position": [0, 0],
-        "webhookId": None,  # n8n will generate this
         "parameters": {
             "formTitle": workflow_name,
             "formDescription": "Fill out this form to run the automation",
