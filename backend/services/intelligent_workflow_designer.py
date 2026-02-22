@@ -253,7 +253,7 @@ class IntelligentWorkflowDesigner:
             lines.append("")
         return "\n".join(lines)
     
-    def design_workflow(
+    async def design_workflow(
         self,
         user_request: str,
         voice_transcription: str = None,
@@ -283,7 +283,7 @@ class IntelligentWorkflowDesigner:
         
         try:
             # Call Claude to design the workflow
-            response = self.chat.send_message(full_request)
+            response = await self.chat.send_message(full_request)
             
             # Extract JSON from response
             workflow_spec = self._extract_json(response)
