@@ -719,8 +719,7 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
         if n8n_workflow_id:
             conv_update['engine_workflow_id'] = n8n_workflow_id
             conv_update['engine_workflow_url'] = n8n_workflow_url
-        if n8n_form_url:
-            conv_update['form_url'] = n8n_form_url
+        # Note: form_url is stored in the approval message, not in a dedicated column
     
     sb.table('flowforge_conversations').update(conv_update).eq('id', approval['conversation_id']).execute()
     
