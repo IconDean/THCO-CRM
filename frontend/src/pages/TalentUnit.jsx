@@ -341,6 +341,12 @@ const TalentUnit = () => {
         Back to Dashboard
       </Link>
         </>
+      ) : activeTab === "deployed" ? (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Deployed Tools</h2>
+          <p className="text-sm text-gray-500 mb-6">Tools you've built and approved that are now live in the automation engine.</p>
+          <DeployedTools unit="talent" />
+        </div>
       ) : (
         <div>
           <BuildHistory unit="talent" />
