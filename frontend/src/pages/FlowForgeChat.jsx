@@ -399,6 +399,11 @@ const FlowForgeChat = () => {
   const [showProblemBriefForm, setShowProblemBriefForm] = useState(false);
   const [toolName, setToolName] = useState("Untitled");
   const [isEditingName, setIsEditingName] = useState(false);
+  
+  // Workflow design state
+  const [workflowDesign, setWorkflowDesign] = useState(null);
+  const [isDesigning, setIsDesigning] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
 
   // Load user and conversation data
   useEffect(() => {
