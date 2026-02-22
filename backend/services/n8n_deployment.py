@@ -660,10 +660,14 @@ async def execute_n8n_workflow(
     user_name: str = None
 ) -> Dict[str, Any]:
     """
-    Execute an n8n workflow by triggering it via the execution API.
+    Execute an n8n workflow by triggering it via webhook or form endpoint.
     
-    For workflows with form/webhook triggers, we use the /execute endpoint.
-    This is the portal-native alternative to using n8n forms directly.
+    n8n doesn't have a direct API to trigger workflows programmatically.
+    Workflows must have a Webhook or Form Trigger node to be executed externally.
+    
+    This function:
+    1. Gets the workflow details to find webhook/form URLs
+    2. Triggers via the appropriate endpoint (webhook, form, or test webhook)
     """
     
     if not N8N_BASE_URL or not N8N_API_KEY:
@@ -682,62 +686,109 @@ async def execute_n8n_workflow(
         }
         
         async with httpx.AsyncClient(timeout=60) as client:
-            # Use the workflow execution endpoint
-            # POST /api/v1/executions with workflow data
-            response = await client.post(
-                f"{N8N_BASE_URL}/api/v1/executions",
-                headers=get_n8n_headers(),
-                json={
-                    "workflowId": workflow_id,
-                    "data": execution_input
-                }
-            )
+            # First, get the workflow to find trigger node info
+            workflow = await get_n8n_workflow(workflow_id)
             
-            if response.status_code in [200, 201]:
-                result = response.json()
-                
-                logger.info(f"Workflow {workflow_id} executed successfully")
-                
+            if not workflow:
                 return {
-                    "success": True,
-                    "execution_id": result.get('id'),
-                    "status": result.get('status', 'running'),
-                    "data": result.get('data'),
-                    "finished": result.get('finished', False)
+                    "success": False,
+                    "error": "Workflow not found in n8n"
                 }
-            else:
-                error_text = response.text
-                logger.error(f"Workflow execution failed: {response.status_code} - {error_text}")
+            
+            # Look for trigger nodes that can receive external requests
+            for node in workflow.get('nodes', []):
+                node_type = node.get('type', '')
                 
-                # If direct execution isn't supported, try webhook approach
-                # First, get the workflow to find webhook info
-                workflow = await get_n8n_workflow(workflow_id)
-                if workflow:
-                    # Look for webhook/form trigger node
-                    for node in workflow.get('nodes', []):
-                        if node.get('webhookId'):
-                            webhook_path = node.get('parameters', {}).get('path', '')
-                            webhook_url = f"{N8N_BASE_URL}/webhook/{webhook_path}"
+                # Handle Form Trigger
+                if 'formTrigger' in node_type:
+                    # Form trigger URL pattern: {base}/form/{workflowId}
+                    # For test/production webhook URL: {base}/webhook-test/{path} or {base}/webhook/{path}
+                    webhook_id = node.get('webhookId', '')
+                    
+                    # Try test webhook first (works even if workflow is inactive)
+                    form_urls_to_try = [
+                        f"{N8N_BASE_URL}/webhook-test/{webhook_id}",  # Test webhook
+                        f"{N8N_BASE_URL}/webhook/{webhook_id}",       # Production webhook
+                        f"{N8N_BASE_URL}/form/{workflow_id}",         # Form URL
+                    ]
+                    
+                    for url in form_urls_to_try:
+                        if not webhook_id and 'webhook' in url:
+                            continue  # Skip webhook URLs if no webhookId
                             
-                            # Try webhook
-                            webhook_response = await client.post(
-                                webhook_url,
+                        try:
+                            logger.info(f"Trying to trigger workflow via: {url}")
+                            response = await client.post(
+                                url,
                                 json=execution_input,
+                                headers={"Content-Type": "application/json"},
                                 timeout=30
                             )
                             
-                            if webhook_response.status_code in [200, 201]:
+                            if response.status_code in [200, 201]:
+                                try:
+                                    result_data = response.json() if response.text else {}
+                                except:
+                                    result_data = {"raw_response": response.text}
+                                    
+                                logger.info(f"Workflow {workflow_id} executed via form trigger")
                                 return {
                                     "success": True,
-                                    "data": webhook_response.json() if webhook_response.text else {},
-                                    "method": "webhook"
+                                    "data": result_data,
+                                    "method": "form_trigger",
+                                    "message": "Tool executed successfully!"
                                 }
+                        except httpx.RequestError as e:
+                            logger.warning(f"Failed to trigger via {url}: {e}")
+                            continue
                 
-                return {
-                    "success": False,
-                    "error": f"Execution failed: {response.status_code}",
-                    "detail": error_text
-                }
+                # Handle Webhook Trigger
+                elif 'webhook' in node_type.lower():
+                    webhook_id = node.get('webhookId', '')
+                    webhook_path = node.get('parameters', {}).get('path', '')
+                    
+                    webhook_urls_to_try = []
+                    if webhook_id:
+                        webhook_urls_to_try.append(f"{N8N_BASE_URL}/webhook-test/{webhook_id}")
+                        webhook_urls_to_try.append(f"{N8N_BASE_URL}/webhook/{webhook_id}")
+                    if webhook_path:
+                        webhook_urls_to_try.append(f"{N8N_BASE_URL}/webhook-test/{webhook_path}")
+                        webhook_urls_to_try.append(f"{N8N_BASE_URL}/webhook/{webhook_path}")
+                    
+                    for url in webhook_urls_to_try:
+                        try:
+                            logger.info(f"Trying to trigger workflow via webhook: {url}")
+                            response = await client.post(
+                                url,
+                                json=execution_input,
+                                headers={"Content-Type": "application/json"},
+                                timeout=30
+                            )
+                            
+                            if response.status_code in [200, 201]:
+                                try:
+                                    result_data = response.json() if response.text else {}
+                                except:
+                                    result_data = {"raw_response": response.text}
+                                    
+                                logger.info(f"Workflow {workflow_id} executed via webhook")
+                                return {
+                                    "success": True,
+                                    "data": result_data,
+                                    "method": "webhook",
+                                    "message": "Tool executed successfully!"
+                                }
+                        except httpx.RequestError as e:
+                            logger.warning(f"Failed to trigger via {url}: {e}")
+                            continue
+            
+            # No suitable trigger node found
+            logger.error(f"Workflow {workflow_id} has no webhook or form trigger node")
+            return {
+                "success": False,
+                "error": "This workflow cannot be triggered externally. It needs a Webhook or Form Trigger node.",
+                "detail": "FlowForge workflows created via the approval process should have form triggers. Please check the workflow in n8n."
+            }
     
     except httpx.RequestError as e:
         logger.error(f"n8n connection error during execution: {e}")
