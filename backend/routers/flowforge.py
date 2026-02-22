@@ -926,6 +926,189 @@ async def get_unit_admins(unit: str, request: Request):
     
     return unique_admins
 
+
+# ==================== DEPLOYED TOOLS ROUTES ====================
+
+class DeployedToolResponse(BaseModel):
+    id: str
+    tool_name: str
+    description: Optional[str]
+    unit: str
+    status: str
+    engine_workflow_id: Optional[str]
+    engine_workflow_url: Optional[str]
+    trigger_type: Optional[str]
+    trigger_description: Optional[str]
+    systems_used: List[str]
+    execution_count: int
+    success_count: int
+    error_count: int
+    last_execution_at: Optional[str]
+    deployed_at: Optional[str]
+    created_by_name: str
+    is_active: bool
+
+
+@router.get("/tools", response_model=List[DeployedToolResponse])
+async def list_deployed_tools(
+    request: Request,
+    unit: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = 50
+):
+    """List deployed tools (conversations with status = deployed or active)"""
+    await get_current_user_from_request(request)
+    sb = ensure_supabase()
+    
+    # Query deployed conversations
+    query = sb.table('flowforge_conversations').select('*')
+    
+    # Filter by unit if specified
+    if unit:
+        query = query.eq('unit', unit)
+    
+    # Filter by status - default to deployed/active tools
+    if status:
+        query = query.eq('status', status)
+    else:
+        query = query.in_('status', ['deployed', 'active'])
+    
+    result = query.order('deployed_at', desc=True).limit(limit).execute()
+    
+    tools = []
+    for conv in (result.data or []):
+        # Check if workflow is active in inventory
+        is_active = False
+        if conv.get('engine_workflow_id'):
+            inv_result = sb.table('flowforge_workflow_inventory').select('is_active').eq('engine_workflow_id', conv['engine_workflow_id']).execute()
+            if inv_result.data:
+                is_active = inv_result.data[0].get('is_active', False)
+        
+        tools.append({
+            "id": conv['id'],
+            "tool_name": conv.get('tool_name') or 'Untitled Tool',
+            "description": conv.get('description'),
+            "unit": conv['unit'],
+            "status": conv['status'],
+            "engine_workflow_id": conv.get('engine_workflow_id'),
+            "engine_workflow_url": conv.get('engine_workflow_url'),
+            "trigger_type": conv.get('trigger_type'),
+            "trigger_description": conv.get('trigger_description'),
+            "systems_used": conv.get('systems_used', []),
+            "execution_count": conv.get('execution_count', 0),
+            "success_count": conv.get('success_count', 0),
+            "error_count": conv.get('error_count', 0),
+            "last_execution_at": conv.get('last_execution_at'),
+            "deployed_at": conv.get('deployed_at'),
+            "created_by_name": conv.get('created_by_name', 'Unknown'),
+            "is_active": is_active
+        })
+    
+    return tools
+
+
+@router.get("/tools/{tool_id}")
+async def get_deployed_tool(tool_id: str, request: Request):
+    """Get details of a specific deployed tool"""
+    await get_current_user_from_request(request)
+    sb = ensure_supabase()
+    
+    result = sb.table('flowforge_conversations').select('*').eq('id', tool_id).execute()
+    
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Tool not found")
+    
+    conv = result.data[0]
+    
+    # Get approval info if any
+    approval_result = sb.table('flowforge_approvals').select('*').eq('conversation_id', tool_id).order('created_at', desc=True).limit(1).execute()
+    approval = approval_result.data[0] if approval_result.data else None
+    
+    # Check inventory status
+    is_active = False
+    if conv.get('engine_workflow_id'):
+        inv_result = sb.table('flowforge_workflow_inventory').select('is_active').eq('engine_workflow_id', conv['engine_workflow_id']).execute()
+        if inv_result.data:
+            is_active = inv_result.data[0].get('is_active', False)
+    
+    return {
+        "id": conv['id'],
+        "tool_name": conv.get('tool_name') or 'Untitled Tool',
+        "description": conv.get('description'),
+        "unit": conv['unit'],
+        "status": conv['status'],
+        "engine_workflow_id": conv.get('engine_workflow_id'),
+        "engine_workflow_url": conv.get('engine_workflow_url'),
+        "trigger_type": conv.get('trigger_type'),
+        "trigger_description": conv.get('trigger_description'),
+        "systems_used": conv.get('systems_used', []),
+        "execution_count": conv.get('execution_count', 0),
+        "success_count": conv.get('success_count', 0),
+        "error_count": conv.get('error_count', 0),
+        "last_execution_at": conv.get('last_execution_at'),
+        "deployed_at": conv.get('deployed_at'),
+        "created_by_name": conv.get('created_by_name', 'Unknown'),
+        "created_at": conv.get('created_at'),
+        "is_active": is_active,
+        "approval": {
+            "status": approval['status'],
+            "decided_by_name": approval.get('decided_by_name'),
+            "decided_at": approval.get('decided_at'),
+            "decision_note": approval.get('decision_note')
+        } if approval else None
+    }
+
+
+@router.post("/tools/{tool_id}/activate")
+async def activate_tool(tool_id: str, request: Request, active: bool = True):
+    """Activate or deactivate a deployed tool in n8n"""
+    user = await get_current_user_from_request(request)
+    sb = ensure_supabase()
+    
+    # Check admin permissions
+    if user.get('role') not in ['super_admin', 'company_admin']:
+        raise HTTPException(status_code=403, detail="Only admins can activate tools")
+    
+    # Get the conversation/tool
+    result = sb.table('flowforge_conversations').select('*').eq('id', tool_id).execute()
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Tool not found")
+    
+    conv = result.data[0]
+    
+    if not conv.get('engine_workflow_id'):
+        raise HTTPException(status_code=400, detail="Tool has not been deployed to automation engine")
+    
+    # Activate in n8n
+    try:
+        from services.n8n_deployment import activate_n8n_workflow
+        
+        result = await activate_n8n_workflow(conv['engine_workflow_id'], active)
+        
+        if result.get('success'):
+            # Update inventory
+            sb.table('flowforge_workflow_inventory').update({
+                'is_active': active
+            }).eq('engine_workflow_id', conv['engine_workflow_id']).execute()
+            
+            # Update conversation status
+            new_status = 'active' if active else 'deployed'
+            sb.table('flowforge_conversations').update({
+                'status': new_status,
+                'updated_at': datetime.now(timezone.utc).isoformat()
+            }).eq('id', tool_id).execute()
+            
+            return {
+                "message": f"Tool {'activated' if active else 'deactivated'} successfully",
+                "is_active": active
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get('error', 'Failed to update workflow'))
+    
+    except Exception as e:
+        logger.error(f"Error activating tool: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ==================== INTEGRATION ROUTES ====================
 
 @router.get("/integrations", response_model=List[IntegrationResponse])
