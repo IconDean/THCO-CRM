@@ -140,6 +140,44 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
 - **New Files**: `/app/backend/services/n8n_deployment.py`, `/app/frontend/src/components/flowforge/DeployedTools.jsx`
 - **Updated**: `/app/backend/routers/flowforge.py`, `/app/frontend/src/pages/TalentUnit.jsx`, `/app/frontend/src/lib/api.js`
 
+### Phase 4.9 - Intelligent Workflow Designer (COMPLETE ✅) - Feb 22, 2026
+- [x] **AI-Powered Workflow Design**
+  - Created `/app/backend/services/intelligent_workflow_designer.py`
+  - Uses Claude Sonnet to analyze natural language requests
+  - Automatically identifies required integrations (Gmail, Google Sheets, Claude AI, etc.)
+  - Generates complete workflow specifications with:
+    - Form fields for user input (text, textarea, email, select, etc.)
+    - Workflow steps with integration mappings
+    - n8n node configurations with credential references
+- [x] **Integration Discovery**
+  - Scans existing n8n workflows to discover configured credentials
+  - Maps user requests to available integrations
+  - Shows which integrations are configured vs. need setup
+- [x] **Workflow Design Preview Component**
+  - Created `/app/frontend/src/components/flowforge/WorkflowDesignPreview.jsx`
+  - Shows AI-designed workflow with:
+    - List of required integrations (with availability status)
+    - Generated form fields preview
+    - Workflow steps with integration badges
+  - Action buttons: Approve & Deploy, Make Changes, Start Over
+- [x] **End-to-End Flow**
+  - User describes what they want → AI designs workflow
+  - User reviews form fields and steps → Approves
+  - System creates approval → Deploys to n8n with Form Trigger
+  - User gets form URL to interact with the tool
+
+**Example Flow:**
+- Input: "I want a tool that reads candidates from a Google Sheet, generates personalized emails using AI, and sends via Gmail"
+- Output: 
+  - 7 form fields (Spreadsheet URL, Email Subject, Tone selector, etc.)
+  - 3 workflow steps (Read Sheet → AI Generate → Send Gmail)
+  - n8n workflow with Form Trigger + 3 nodes with credentials
+
+- **New Files**: 
+  - `/app/backend/services/intelligent_workflow_designer.py`
+  - `/app/frontend/src/components/flowforge/WorkflowDesignPreview.jsx`
+- **New Endpoint**: `POST /api/flowforge/design-workflow`
+
 ### Phase 5 - Polish & White-Label (UPCOMING)
 - [ ] Final UI polish and animations
 - [ ] Error handling improvements
