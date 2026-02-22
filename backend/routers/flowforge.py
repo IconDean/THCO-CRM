@@ -697,6 +697,7 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
     
     if data.action == 'approve':
         conv_update['deployed_at'] = now
+        conv_update['tool_name'] = approval['tool_name']  # Update tool name from approval
         if n8n_workflow_id:
             conv_update['engine_workflow_id'] = n8n_workflow_id
             conv_update['engine_workflow_url'] = n8n_workflow_url
