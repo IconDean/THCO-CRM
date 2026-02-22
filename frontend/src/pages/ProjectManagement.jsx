@@ -168,6 +168,7 @@ const ProjectManagement = () => {
   const [filterPhase, setFilterPhase] = useState("all");
   const [filterPillar, setFilterPillar] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("main");
   const [newProject, setNewProject] = useState({
     name: "",
     client: "",
