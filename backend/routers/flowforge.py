@@ -719,6 +719,8 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
         if n8n_workflow_id:
             conv_update['engine_workflow_id'] = n8n_workflow_id
             conv_update['engine_workflow_url'] = n8n_workflow_url
+        if n8n_form_url:
+            conv_update['form_url'] = n8n_form_url
     
     sb.table('flowforge_conversations').update(conv_update).eq('id', approval['conversation_id']).execute()
     
@@ -730,11 +732,20 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
             tool_name=approval['tool_name'],
             note=data.note,
             deployment_result=deployment_result,
-            n8n_workflow_url=n8n_workflow_url
+            n8n_workflow_url=n8n_workflow_url,
+            n8n_form_url=n8n_form_url
         )
         
         # Get next message index
         msg_index = get_next_message_index(approval['conversation_id'])
+        
+        # Build action buttons
+        action_buttons = []
+        if data.action == 'approve':
+            if n8n_form_url:
+                action_buttons.append({"label": "Use Tool (Open Form)", "action": "open_form", "url": n8n_form_url, "primary": True})
+            if n8n_workflow_url:
+                action_buttons.append({"label": "Edit in Automation Engine", "action": "open_n8n", "url": n8n_workflow_url, "primary": False})
         
         status_message = {
             'id': str(uuid.uuid4()),
@@ -744,10 +755,8 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
             'message_index': msg_index,
             'created_at': now,
             'has_workflow_preview': False,
-            'has_action_buttons': data.action == 'approve' and n8n_workflow_url is not None,
-            'action_buttons': [
-                {"label": "Open in Automation Engine", "action": "open_n8n", "url": n8n_workflow_url, "primary": True}
-            ] if data.action == 'approve' and n8n_workflow_url else None
+            'has_action_buttons': len(action_buttons) > 0,
+            'action_buttons': action_buttons if action_buttons else None
         }
         
         sb.table('flowforge_messages').insert(status_message).execute()
