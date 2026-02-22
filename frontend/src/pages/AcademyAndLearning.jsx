@@ -187,6 +187,7 @@ const STATUS_CONFIG = {
 
 const AcademyAndLearning = () => {
   const [selectedTrack, setSelectedTrack] = useState("all");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredTrainees = selectedTrack === "all"
     ? SAMPLE_TRAINEES
