@@ -495,6 +495,8 @@ const MarketingAndBrand = () => {
           </table>
         </div>
       </div>
+      </>
+      )}
 
       {/* Back to Dashboard */}
       <Link 
