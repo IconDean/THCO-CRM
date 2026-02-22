@@ -15,7 +15,7 @@ import os
 import json
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ai-builder-222.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://workflow-portal-6.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "joshua@thcohq.com"
