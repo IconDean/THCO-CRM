@@ -21,8 +21,10 @@ import {
   Bug,
   Scale,
   TestTube,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
+import BuildHistory from "../components/BuildHistory";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 

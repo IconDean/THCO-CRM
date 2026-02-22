@@ -18,10 +18,12 @@ import {
   Plus,
   Filter,
   PenTool,
-  Zap
+  Zap,
+  History
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
+import BuildHistory from "../components/BuildHistory";
 
 // AI Agents for Marketing & Brand (from Agent Registry)
 const AI_AGENTS = [
