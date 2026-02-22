@@ -1,6 +1,7 @@
 """
-n8n Deployment Service
-Creates and manages workflows in n8n via their REST API
+n8n Deployment Service v2
+Creates REAL, functional workflows in n8n with proper credentials and nodes.
+Also extracts available credentials from existing n8n workflows.
 """
 
 import os
@@ -24,176 +25,427 @@ def get_n8n_headers() -> Dict[str, str]:
     }
 
 
-def map_trigger_to_n8n_node(trigger_type: str, trigger_description: str = None) -> Dict[str, Any]:
-    """Map our trigger type to an n8n trigger node"""
+# ==================== CREDENTIAL DISCOVERY ====================
+
+async def get_available_credentials() -> Dict[str, Dict[str, Any]]:
+    """
+    Extract all available credentials from existing n8n workflows.
+    Since n8n doesn't have a credentials list API, we scan existing workflows.
     
-    if trigger_type == "scheduled":
-        # Parse schedule from description if possible
-        return {
-            "parameters": {
-                "rule": {
-                    "interval": [{"field": "hours", "hoursInterval": 24}]
+    Returns a dict mapping credential types to their details.
+    """
+    if not N8N_BASE_URL or not N8N_API_KEY:
+        logger.warning("n8n credentials not configured")
+        return {}
+    
+    credentials = {}
+    
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.get(
+                f"{N8N_BASE_URL}/api/v1/workflows",
+                headers=get_n8n_headers()
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                for workflow in data.get('data', []):
+                    for node in workflow.get('nodes', []):
+                        for cred_type, cred_info in node.get('credentials', {}).items():
+                            cred_id = cred_info.get('id')
+                            if cred_id and cred_type not in credentials:
+                                credentials[cred_type] = {
+                                    'id': cred_id,
+                                    'name': cred_info.get('name'),
+                                    'type': cred_type,
+                                    'node_type': node.get('type')
+                                }
+                
+                logger.info(f"Discovered {len(credentials)} credential types from n8n")
+    
+    except Exception as e:
+        logger.error(f"Error fetching n8n credentials: {e}")
+    
+    return credentials
+
+
+def get_credential_for_integration(integration: str, available_creds: Dict) -> Optional[Dict]:
+    """
+    Match an integration name to an available n8n credential.
+    """
+    integration_lower = integration.lower()
+    
+    # Mapping of integration keywords to credential types
+    credential_map = {
+        'gmail': 'gmailOAuth2',
+        'email': 'gmailOAuth2',
+        'google sheets': 'googleSheetsOAuth2Api',
+        'spreadsheet': 'googleSheetsOAuth2Api',
+        'sheets': 'googleSheetsOAuth2Api',
+        'google drive': 'googleDriveOAuth2Api',
+        'drive': 'googleDriveOAuth2Api',
+        'anthropic': 'anthropicApi',
+        'claude': 'anthropicApi',
+        'openai': 'openAiApi',
+        'gpt': 'openAiApi',
+        'serpapi': 'serpApi',
+        'serp': 'serpApi',
+    }
+    
+    for keyword, cred_type in credential_map.items():
+        if keyword in integration_lower:
+            if cred_type in available_creds:
+                return available_creds[cred_type]
+    
+    return None
+
+
+# ==================== NODE BUILDERS ====================
+
+def build_form_trigger_node(form_fields: List[Dict], workflow_name: str) -> Dict:
+    """
+    Build a Form Trigger node for n8n.
+    This creates a form that users can fill out to trigger the workflow.
+    """
+    # Convert our form fields to n8n form field format
+    n8n_fields = []
+    for field in form_fields:
+        field_type = field.get('type', 'text')
+        n8n_field = {
+            "fieldLabel": field.get('label', field.get('name', 'Field')),
+            "fieldType": _map_field_type(field_type),
+            "requiredField": field.get('required', False)
+        }
+        
+        # Add placeholder if provided
+        if field.get('placeholder'):
+            n8n_field["placeholder"] = field['placeholder']
+        
+        # Add options for select fields
+        if field_type == 'select' and field.get('options'):
+            n8n_field["fieldOptions"] = {
+                "values": [{"option": opt} for opt in field['options']]
+            }
+        
+        n8n_fields.append(n8n_field)
+    
+    return {
+        "id": "form-trigger",
+        "name": "Form Input",
+        "type": "n8n-nodes-base.formTrigger",
+        "typeVersion": 2.2,
+        "position": [0, 0],
+        "webhookId": None,  # n8n will generate this
+        "parameters": {
+            "formTitle": workflow_name,
+            "formDescription": "Fill out this form to run the automation",
+            "formFields": {
+                "values": n8n_fields
+            },
+            "options": {
+                "respondWithOptions": {
+                    "values": {
+                        "respondWith": "text",
+                        "formSubmittedText": "Your request has been submitted successfully!"
+                    }
                 }
-            },
-            "id": "trigger-node",
-            "name": "Schedule Trigger",
-            "type": "n8n-nodes-base.scheduleTrigger",
-            "typeVersion": 1.2,
-            "position": [0, 0]
+            }
         }
-    elif trigger_type == "webhook":
-        return {
-            "parameters": {
-                "httpMethod": "POST",
-                "path": "flowforge-webhook",
-                "responseMode": "onReceived",
-                "responseData": "allEntries"
-            },
-            "id": "trigger-node",
-            "name": "Webhook Trigger",
-            "type": "n8n-nodes-base.webhook",
-            "typeVersion": 2,
-            "position": [0, 0]
-        }
-    else:  # manual
-        return {
-            "parameters": {},
-            "id": "trigger-node",
-            "name": "Manual Trigger",
-            "type": "n8n-nodes-base.manualTrigger",
-            "typeVersion": 1,
-            "position": [0, 0]
-        }
+    }
 
 
-def map_step_to_n8n_node(step: Dict[str, Any], index: int) -> Dict[str, Any]:
-    """Map a workflow step to an n8n node"""
+def _map_field_type(our_type: str) -> str:
+    """Map our field types to n8n form field types"""
+    type_map = {
+        'text': 'text',
+        'textarea': 'textarea',
+        'email': 'email',
+        'number': 'number',
+        'select': 'dropdown',
+        'date': 'date',
+        'file': 'file',
+        'checkbox': 'text',  # n8n doesn't have checkbox in forms
+    }
+    return type_map.get(our_type, 'text')
+
+
+def build_webhook_trigger_node() -> Dict:
+    """Build a webhook trigger node"""
+    return {
+        "id": "webhook-trigger",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [0, 0],
+        "webhookId": None,
+        "parameters": {
+            "httpMethod": "POST",
+            "path": "flowforge-webhook",
+            "responseMode": "onReceived",
+            "responseData": "allEntries"
+        }
+    }
+
+
+def build_schedule_trigger_node(schedule: str = None) -> Dict:
+    """Build a schedule trigger node"""
+    return {
+        "id": "schedule-trigger",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [0, 0],
+        "parameters": {
+            "rule": {
+                "interval": [{"field": "days", "daysInterval": 1}]
+            }
+        }
+    }
+
+
+def build_google_sheets_node(
+    operation: str,
+    credential: Dict,
+    sheet_id: str = None,
+    position: List[int] = None
+) -> Dict:
+    """Build a Google Sheets node"""
+    params = {
+        "operation": operation,  # read, append, update, delete
+        "documentId": {"__rl": True, "mode": "list", "value": sheet_id or ""},
+        "sheetName": {"__rl": True, "mode": "list", "value": ""}
+    }
     
-    step_name = step.get('name', f'Step {index + 1}')
-    step_type = step.get('type', 'action')
-    integration = step.get('integration', '').lower() if step.get('integration') else ''
-    description = step.get('description', '')
+    if operation == "read":
+        params["options"] = {}
     
-    # Position nodes in a horizontal line
-    x_pos = (index + 1) * 250
-    y_pos = 0
+    return {
+        "id": f"sheets-{operation}",
+        "name": f"Google Sheets - {operation.title()}",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": position or [250, 0],
+        "credentials": {
+            "googleSheetsOAuth2Api": {
+                "id": credential['id'],
+                "name": credential['name']
+            }
+        },
+        "parameters": params
+    }
+
+
+def build_gmail_node(
+    operation: str,
+    credential: Dict,
+    position: List[int] = None
+) -> Dict:
+    """Build a Gmail node"""
+    params = {
+        "operation": operation,  # send, reply, getDraft
+    }
     
-    # Default to a "Set" node that passes data through with a note
-    node = {
+    if operation == "send":
+        params.update({
+            "sendTo": "={{ $json.email }}",
+            "subject": "={{ $json.subject }}",
+            "message": "={{ $json.message }}",
+            "options": {}
+        })
+    
+    return {
+        "id": f"gmail-{operation}",
+        "name": f"Gmail - {operation.title()}",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": position or [500, 0],
+        "credentials": {
+            "gmailOAuth2": {
+                "id": credential['id'],
+                "name": credential['name']
+            }
+        },
+        "parameters": params
+    }
+
+
+def build_ai_agent_node(
+    credential: Dict,
+    prompt: str = None,
+    position: List[int] = None
+) -> Dict:
+    """Build an AI Agent node using Claude"""
+    return {
+        "id": "ai-agent",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": position or [750, 0],
+        "parameters": {
+            "text": prompt or "={{ $json.prompt }}",
+            "options": {}
+        }
+    }
+
+
+def build_code_node(
+    code: str,
+    name: str = "Process Data",
+    position: List[int] = None
+) -> Dict:
+    """Build a Code node for custom JavaScript"""
+    return {
+        "id": f"code-{name.lower().replace(' ', '-')}",
+        "name": name,
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": position or [250, 0],
+        "parameters": {
+            "jsCode": code
+        }
+    }
+
+
+def build_set_node(
+    data_to_set: Dict[str, str],
+    name: str = "Set Data",
+    position: List[int] = None
+) -> Dict:
+    """Build a Set node to transform data"""
+    assignments = [
+        {"id": f"field-{i}", "name": k, "value": v, "type": "string"}
+        for i, (k, v) in enumerate(data_to_set.items())
+    ]
+    
+    return {
+        "id": f"set-{name.lower().replace(' ', '-')}",
+        "name": name,
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": position or [250, 0],
         "parameters": {
             "mode": "manual",
             "duplicateItem": False,
-            "assignments": {
-                "assignments": [
-                    {
-                        "id": f"step-{index + 1}",
-                        "name": "step_description",
-                        "value": description,
-                        "type": "string"
-                    }
-                ]
-            }
-        },
-        "id": f"step-{index + 1}",
-        "name": step_name,
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [x_pos, y_pos],
-        "notes": description
+            "assignments": {"assignments": assignments}
+        }
     }
-    
-    # Map specific integrations to n8n node types
-    if 'email' in integration or 'gmail' in integration:
-        node["type"] = "n8n-nodes-base.gmail"
-        node["typeVersion"] = 2.1
-        node["parameters"] = {
-            "operation": "send",
-            "sendTo": "={{ $json.email }}",
-            "subject": "={{ $json.subject }}",
-            "message": "={{ $json.message }}"
-        }
-    elif 'slack' in integration:
-        node["type"] = "n8n-nodes-base.slack"
-        node["typeVersion"] = 2.2
-        node["parameters"] = {
-            "operation": "post",
-            "channel": "={{ $json.channel }}",
-            "text": "={{ $json.message }}"
-        }
-    elif 'database' in integration or 'supabase' in integration:
-        node["type"] = "n8n-nodes-base.postgres"
-        node["typeVersion"] = 2.5
-        node["parameters"] = {
-            "operation": "select",
-            "query": "-- Query placeholder"
-        }
-    elif 'spreadsheet' in integration or 'sheet' in integration:
-        node["type"] = "n8n-nodes-base.googleSheets"
-        node["typeVersion"] = 4.5
-        node["parameters"] = {
-            "operation": "read"
-        }
-    elif 'ai' in integration or 'text generation' in integration:
-        node["type"] = "@n8n/n8n-nodes-langchain.openAi"
-        node["typeVersion"] = 1.2
-        node["parameters"] = {
-            "model": "gpt-4",
-            "prompt": "={{ $json.prompt }}"
-        }
-    elif 'http' in integration or 'api' in integration:
-        node["type"] = "n8n-nodes-base.httpRequest"
-        node["typeVersion"] = 4.2
-        node["parameters"] = {
-            "method": "GET",
-            "url": "={{ $json.url }}"
-        }
-    elif step_type == "condition":
-        node["type"] = "n8n-nodes-base.if"
-        node["typeVersion"] = 2
-        node["parameters"] = {
-            "conditions": {
-                "options": {
-                    "caseSensitive": True,
-                    "leftValue": "",
-                    "typeValidation": "strict"
-                },
-                "conditions": []
-            }
-        }
-    elif step_type == "loop":
-        node["type"] = "n8n-nodes-base.splitInBatches"
-        node["typeVersion"] = 3
-        node["parameters"] = {
-            "batchSize": 10
-        }
-    
-    return node
 
 
-def build_n8n_workflow(
+def build_http_request_node(
+    url: str,
+    method: str = "GET",
+    name: str = "HTTP Request",
+    position: List[int] = None
+) -> Dict:
+    """Build an HTTP Request node"""
+    return {
+        "id": f"http-{name.lower().replace(' ', '-')}",
+        "name": name,
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": position or [250, 0],
+        "parameters": {
+            "method": method,
+            "url": url,
+            "options": {}
+        }
+    }
+
+
+# ==================== WORKFLOW BUILDER ====================
+
+async def build_workflow_from_spec(
     tool_name: str,
     description: str,
-    workflow_steps: List[Dict[str, Any]],
-    trigger_type: str = "manual",
-    trigger_description: str = None,
-    tags: List[str] = None,
-    unit: str = None
-) -> Dict[str, Any]:
+    trigger_type: str,
+    integrations: List[str],
+    steps: List[Dict],
+    form_fields: List[Dict] = None
+) -> Dict:
     """
-    Build a complete n8n workflow JSON from our workflow definition
+    Build a complete, functional n8n workflow from a specification.
+    
+    Args:
+        tool_name: Name of the tool
+        description: What the tool does
+        trigger_type: 'form', 'webhook', 'schedule', or 'manual'
+        integrations: List of required integrations ['Gmail', 'Google Sheets', etc.]
+        steps: List of workflow steps with actions
+        form_fields: Form fields if trigger_type is 'form'
+    
+    Returns:
+        Complete n8n workflow JSON ready for deployment
     """
+    
+    # Get available credentials
+    available_creds = await get_available_credentials()
     
     nodes = []
     connections = {}
     
-    # Add trigger node
-    trigger_node = map_trigger_to_n8n_node(trigger_type, trigger_description)
-    nodes.append(trigger_node)
+    # 1. Build trigger node
+    if trigger_type == 'form' and form_fields:
+        trigger = build_form_trigger_node(form_fields, tool_name)
+    elif trigger_type == 'webhook':
+        trigger = build_webhook_trigger_node()
+    elif trigger_type == 'schedule':
+        trigger = build_schedule_trigger_node()
+    else:
+        trigger = {
+            "id": "manual-trigger",
+            "name": "Manual Trigger",
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [0, 0],
+            "parameters": {}
+        }
     
-    # Add step nodes
-    prev_node_name = trigger_node["name"]
-    for i, step in enumerate(workflow_steps):
-        node = map_step_to_n8n_node(step, i)
+    nodes.append(trigger)
+    prev_node_name = trigger["name"]
+    
+    # 2. Build step nodes based on integrations and steps
+    x_pos = 250
+    
+    for i, step in enumerate(steps):
+        step_integration = step.get('integration', '').lower()
+        step_action = step.get('action', step.get('name', ''))
+        
+        node = None
+        
+        # Match step to appropriate node type
+        if 'sheet' in step_integration or 'spreadsheet' in step_integration:
+            cred = get_credential_for_integration('google sheets', available_creds)
+            if cred:
+                operation = 'read' if 'read' in step_action.lower() else 'append'
+                node = build_google_sheets_node(operation, cred, position=[x_pos, 0])
+        
+        elif 'gmail' in step_integration or 'email' in step_integration:
+            cred = get_credential_for_integration('gmail', available_creds)
+            if cred:
+                operation = 'send'
+                node = build_gmail_node(operation, cred, position=[x_pos, 0])
+        
+        elif 'ai' in step_integration or 'generate' in step_action.lower():
+            cred = get_credential_for_integration('anthropic', available_creds)
+            if cred:
+                node = build_ai_agent_node(cred, position=[x_pos, 0])
+        
+        elif 'code' in step_integration or 'process' in step_action.lower():
+            code = step.get('code', '// Process data\nreturn items;')
+            node = build_code_node(code, step_action, position=[x_pos, 0])
+        
+        elif 'http' in step_integration or 'api' in step_action.lower():
+            url = step.get('url', 'https://api.example.com')
+            node = build_http_request_node(url, 'POST', step_action, position=[x_pos, 0])
+        
+        # Default: Create a Set node with step info
+        if not node:
+            node = build_set_node(
+                {"step": step_action, "description": step.get('description', '')},
+                step_action,
+                position=[x_pos, 0]
+            )
+        
         nodes.append(node)
         
         # Connect to previous node
@@ -207,9 +459,9 @@ def build_n8n_workflow(
         })
         
         prev_node_name = node["name"]
+        x_pos += 250
     
-    # Build the workflow object with ONLY required fields
-    # n8n API rejects extra properties like tags, meta, staticData
+    # Build final workflow
     workflow = {
         "name": f"[FlowForge] {tool_name}",
         "nodes": nodes,
@@ -222,20 +474,24 @@ def build_n8n_workflow(
     return workflow
 
 
+# ==================== DEPLOYMENT ====================
+
 async def create_n8n_workflow(
     tool_name: str,
     description: str,
     workflow_steps: List[Dict[str, Any]],
     trigger_type: str = "manual",
     trigger_description: str = None,
+    integrations: List[str] = None,
+    form_fields: List[Dict] = None,
     tags: List[str] = None,
     unit: str = None
 ) -> Dict[str, Any]:
     """
-    Create a workflow in n8n via their API
+    Create a workflow in n8n via their API.
     
     Returns:
-        Dict with workflow_id, workflow_url, and status
+        Dict with workflow_id, workflow_url, form_url, and status
     """
     
     if not N8N_BASE_URL or not N8N_API_KEY:
@@ -244,18 +500,18 @@ async def create_n8n_workflow(
             "success": False,
             "error": "n8n credentials not configured",
             "workflow_id": None,
-            "workflow_url": None
+            "workflow_url": None,
+            "form_url": None
         }
     
-    # Build the workflow JSON
-    workflow_json = build_n8n_workflow(
+    # Build the workflow
+    workflow_json = await build_workflow_from_spec(
         tool_name=tool_name,
         description=description,
-        workflow_steps=workflow_steps,
         trigger_type=trigger_type,
-        trigger_description=trigger_description,
-        tags=tags,
-        unit=unit
+        integrations=integrations or [],
+        steps=workflow_steps,
+        form_fields=form_fields
     )
     
     try:
@@ -270,14 +526,22 @@ async def create_n8n_workflow(
                 result = response.json()
                 workflow_id = result.get('id')
                 
+                # Get the form URL if it's a form trigger workflow
+                form_url = None
+                if trigger_type == 'form':
+                    # Form URL pattern: {base_url}/form/{workflow_id}
+                    form_url = f"{N8N_BASE_URL}/form/{workflow_id}"
+                
                 logger.info(f"Created n8n workflow: {workflow_id}")
                 
                 return {
                     "success": True,
                     "workflow_id": workflow_id,
                     "workflow_url": f"{N8N_BASE_URL}/workflow/{workflow_id}",
+                    "form_url": form_url,
                     "workflow_name": result.get('name'),
-                    "active": result.get('active', False)
+                    "active": result.get('active', False),
+                    "nodes_created": len(workflow_json.get('nodes', []))
                 }
             else:
                 error_msg = response.text
@@ -288,7 +552,8 @@ async def create_n8n_workflow(
                     "error": f"n8n API error: {response.status_code}",
                     "error_detail": error_msg,
                     "workflow_id": None,
-                    "workflow_url": None
+                    "workflow_url": None,
+                    "form_url": None
                 }
     
     except httpx.RequestError as e:
@@ -297,7 +562,8 @@ async def create_n8n_workflow(
             "success": False,
             "error": f"Connection error: {str(e)}",
             "workflow_id": None,
-            "workflow_url": None
+            "workflow_url": None,
+            "form_url": None
         }
     except Exception as e:
         logger.error(f"Unexpected error creating n8n workflow: {e}")
@@ -305,22 +571,20 @@ async def create_n8n_workflow(
             "success": False,
             "error": f"Unexpected error: {str(e)}",
             "workflow_id": None,
-            "workflow_url": None
+            "workflow_url": None,
+            "form_url": None
         }
 
 
 async def activate_n8n_workflow(workflow_id: str, active: bool = True) -> Dict[str, Any]:
-    """
-    Activate or deactivate a workflow in n8n
-    n8n API requires POST to /activate or /deactivate endpoints
-    """
+    """Activate or deactivate a workflow in n8n"""
     
     if not N8N_BASE_URL or not N8N_API_KEY:
         return {"success": False, "error": "n8n credentials not configured"}
     
     try:
         async with httpx.AsyncClient(timeout=30) as client:
-            # n8n v1 API uses POST to activate/deactivate endpoint
+            # n8n uses POST to /activate or /deactivate endpoints
             endpoint = "activate" if active else "deactivate"
             response = await client.post(
                 f"{N8N_BASE_URL}/api/v1/workflows/{workflow_id}/{endpoint}",
@@ -330,32 +594,9 @@ async def activate_n8n_workflow(workflow_id: str, active: bool = True) -> Dict[s
             if response.status_code in [200, 201]:
                 return {"success": True, "active": active}
             else:
-                # Fallback: try PUT with full workflow if POST fails
-                logger.warning(f"POST to /{endpoint} failed with {response.status_code}, trying PUT method")
-                
-                # First get the workflow
-                get_response = await client.get(
-                    f"{N8N_BASE_URL}/api/v1/workflows/{workflow_id}",
-                    headers=get_n8n_headers()
-                )
-                
-                if get_response.status_code == 200:
-                    workflow_data = get_response.json()
-                    workflow_data['active'] = active
-                    
-                    # PUT with updated active status
-                    put_response = await client.put(
-                        f"{N8N_BASE_URL}/api/v1/workflows/{workflow_id}",
-                        headers=get_n8n_headers(),
-                        json=workflow_data
-                    )
-                    
-                    if put_response.status_code in [200, 201]:
-                        return {"success": True, "active": active}
-                    
                 return {
-                    "success": False, 
-                    "error": f"Failed to update workflow: {response.status_code}"
+                    "success": False,
+                    "error": f"Failed to {endpoint} workflow: {response.status_code} - {response.text}"
                 }
     
     except Exception as e:
@@ -364,9 +605,7 @@ async def activate_n8n_workflow(workflow_id: str, active: bool = True) -> Dict[s
 
 
 async def get_n8n_workflow(workflow_id: str) -> Optional[Dict[str, Any]]:
-    """
-    Get workflow details from n8n
-    """
+    """Get workflow details from n8n"""
     
     if not N8N_BASE_URL or not N8N_API_KEY:
         return None
@@ -388,9 +627,7 @@ async def get_n8n_workflow(workflow_id: str) -> Optional[Dict[str, Any]]:
 
 
 async def delete_n8n_workflow(workflow_id: str) -> Dict[str, Any]:
-    """
-    Delete a workflow from n8n
-    """
+    """Delete a workflow from n8n"""
     
     if not N8N_BASE_URL or not N8N_API_KEY:
         return {"success": False, "error": "n8n credentials not configured"}
@@ -413,3 +650,94 @@ async def delete_n8n_workflow(workflow_id: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"Error deleting workflow: {e}")
         return {"success": False, "error": str(e)}
+
+
+# ==================== INTEGRATION ANALYSIS ====================
+
+KNOWN_INTEGRATIONS = {
+    "google_sheets": {
+        "display_name": "Google Sheets",
+        "icon": "📊",
+        "credential_type": "googleSheetsOAuth2Api",
+        "node_type": "n8n-nodes-base.googleSheets",
+        "keywords": ["spreadsheet", "sheet", "google sheets", "excel"]
+    },
+    "gmail": {
+        "display_name": "Gmail",
+        "icon": "📧",
+        "credential_type": "gmailOAuth2",
+        "node_type": "n8n-nodes-base.gmail",
+        "keywords": ["email", "gmail", "mail", "send email"]
+    },
+    "google_drive": {
+        "display_name": "Google Drive",
+        "icon": "📁",
+        "credential_type": "googleDriveOAuth2Api",
+        "node_type": "n8n-nodes-base.googleDrive",
+        "keywords": ["drive", "google drive", "file", "upload", "download"]
+    },
+    "anthropic": {
+        "display_name": "AI (Claude)",
+        "icon": "🤖",
+        "credential_type": "anthropicApi",
+        "node_type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "keywords": ["ai", "claude", "anthropic", "generate", "text generation"]
+    },
+    "openai": {
+        "display_name": "AI (OpenAI)",
+        "icon": "🤖",
+        "credential_type": "openAiApi",
+        "node_type": "@n8n/n8n-nodes-langchain.openAi",
+        "keywords": ["openai", "gpt", "chatgpt"]
+    },
+    "slack": {
+        "display_name": "Slack",
+        "icon": "💬",
+        "credential_type": "slackOAuth2Api",
+        "node_type": "n8n-nodes-base.slack",
+        "keywords": ["slack", "message", "notification", "team"]
+    },
+    "webhook": {
+        "display_name": "Webhook / API",
+        "icon": "🔗",
+        "credential_type": None,
+        "node_type": "n8n-nodes-base.webhook",
+        "keywords": ["webhook", "api", "http", "external"]
+    }
+}
+
+
+async def analyze_required_integrations(brief_text: str) -> Dict[str, Any]:
+    """
+    Analyze a problem brief and determine what integrations are needed.
+    Also checks which integrations are available in n8n.
+    """
+    available_creds = await get_available_credentials()
+    
+    required = []
+    missing = []
+    
+    brief_lower = brief_text.lower()
+    
+    for integration_id, info in KNOWN_INTEGRATIONS.items():
+        # Check if any keyword matches
+        if any(kw in brief_lower for kw in info['keywords']):
+            cred_type = info['credential_type']
+            
+            integration_info = {
+                "id": integration_id,
+                "name": info['display_name'],
+                "icon": info['icon'],
+                "available": cred_type in available_creds if cred_type else True
+            }
+            
+            if integration_info['available']:
+                required.append(integration_info)
+            else:
+                missing.append(integration_info)
+    
+    return {
+        "required": required,
+        "missing": missing,
+        "all_available": len(missing) == 0
+    }
