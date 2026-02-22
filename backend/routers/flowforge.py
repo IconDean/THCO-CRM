@@ -592,7 +592,7 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
         if not admin_result.data:
             raise HTTPException(status_code=403, detail="Only admins can process approvals")
     
-    # Get approval
+    # Get approval with all details
     approval_result = sb.table('flowforge_approvals').select('*').eq('id', approval_id).execute()
     if not approval_result.data:
         raise HTTPException(status_code=404, detail="Approval request not found")
@@ -610,6 +610,51 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
         'reject': 'rejected',
         'request_changes': 'changes_requested'
     }
+    
+    # Initialize deployment result
+    deployment_result = None
+    n8n_workflow_id = None
+    n8n_workflow_url = None
+    
+    # If approving, deploy to n8n
+    if data.action == 'approve':
+        try:
+            from services.n8n_deployment import create_n8n_workflow
+            
+            # Get the workflow data from the approval
+            workflow_json = approval.get('proposed_workflow_json', {})
+            request_details = approval.get('request_details', {})
+            
+            # Get conversation for more details
+            conv_result = sb.table('flowforge_conversations').select('*').eq('id', approval['conversation_id']).execute()
+            conversation = conv_result.data[0] if conv_result.data else {}
+            
+            # Build workflow steps from request_details
+            workflow_steps = request_details.get('steps', [])
+            if not workflow_steps and workflow_json.get('steps'):
+                workflow_steps = workflow_json.get('steps', [])
+            
+            # Create the workflow in n8n
+            deployment_result = await create_n8n_workflow(
+                tool_name=approval['tool_name'],
+                description=approval.get('request_summary', ''),
+                workflow_steps=workflow_steps,
+                trigger_type=request_details.get('trigger_type', workflow_json.get('trigger_type', 'manual')),
+                trigger_description=request_details.get('trigger_description', workflow_json.get('trigger_description')),
+                tags=[approval['unit'], 'flowforge'],
+                unit=approval['unit']
+            )
+            
+            if deployment_result.get('success'):
+                n8n_workflow_id = deployment_result.get('workflow_id')
+                n8n_workflow_url = deployment_result.get('workflow_url')
+                logger.info(f"Successfully deployed workflow to n8n: {n8n_workflow_id}")
+            else:
+                logger.warning(f"Failed to deploy to n8n: {deployment_result.get('error')}")
+                
+        except Exception as e:
+            logger.error(f"Error deploying to n8n: {e}")
+            deployment_result = {"success": False, "error": str(e)}
     
     # Update approval
     update_doc = {
@@ -637,14 +682,156 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
     
     if data.action == 'approve':
         conv_update['deployed_at'] = now
+        if n8n_workflow_id:
+            conv_update['engine_workflow_id'] = n8n_workflow_id
+            conv_update['engine_workflow_url'] = n8n_workflow_url
     
     sb.table('flowforge_conversations').update(conv_update).eq('id', approval['conversation_id']).execute()
+    
+    # Post approval status message to conversation
+    try:
+        message_content = _build_approval_status_message(
+            action=data.action,
+            admin_name=user['name'],
+            tool_name=approval['tool_name'],
+            note=data.note,
+            deployment_result=deployment_result,
+            n8n_workflow_url=n8n_workflow_url
+        )
+        
+        # Get next message index
+        msg_index = get_next_message_index(approval['conversation_id'])
+        
+        status_message = {
+            'id': str(uuid.uuid4()),
+            'conversation_id': approval['conversation_id'],
+            'role': 'system',
+            'content': message_content,
+            'message_index': msg_index,
+            'created_at': now,
+            'has_workflow_preview': False,
+            'has_action_buttons': data.action == 'approve' and n8n_workflow_url is not None,
+            'action_buttons': [
+                {"label": "Open in Automation Engine", "action": "open_n8n", "url": n8n_workflow_url, "primary": True}
+            ] if data.action == 'approve' and n8n_workflow_url else None
+        }
+        
+        sb.table('flowforge_messages').insert(status_message).execute()
+        logger.info(f"Posted approval status message to conversation {approval['conversation_id']}")
+        
+    except Exception as e:
+        logger.warning(f"Failed to post approval status message: {e}")
+    
+    # If approved and deployed, add to workflow inventory
+    if data.action == 'approve' and n8n_workflow_id:
+        try:
+            inventory_doc = {
+                'id': str(uuid.uuid4()),
+                'engine_workflow_id': n8n_workflow_id,
+                'name': approval['tool_name'],
+                'description': approval.get('request_summary'),
+                'unit': approval['unit'],
+                'conversation_id': approval['conversation_id'],
+                'is_flowforge_created': True,
+                'is_active': False,  # Starts inactive
+                'tags': ['flowforge', approval['unit']],
+                'last_synced_at': now
+            }
+            sb.table('flowforge_workflow_inventory').upsert(inventory_doc, on_conflict='engine_workflow_id').execute()
+        except Exception as e:
+            logger.warning(f"Failed to add to inventory: {e}")
     
     return {
         "message": f"Approval {data.action}d successfully",
         "approval_id": approval_id,
-        "status": status_map[data.action]
+        "status": status_map[data.action],
+        "deployment": deployment_result
     }
+
+
+def _build_approval_status_message(
+    action: str,
+    admin_name: str,
+    tool_name: str,
+    note: str = None,
+    deployment_result: Dict = None,
+    n8n_workflow_url: str = None
+) -> str:
+    """Build the approval status message for the conversation"""
+    
+    if action == 'approve':
+        parts = [
+            f"**✅ APPROVED by {admin_name}**",
+            "",
+            f"Your tool **\"{tool_name}\"** has been approved!"
+        ]
+        
+        if deployment_result and deployment_result.get('success'):
+            parts.extend([
+                "",
+                "**Deployment Status:**",
+                "• Created in THCO Automation Engine",
+                "• Status: **Ready** (inactive - awaiting activation)",
+                f"• Workflow ID: `{deployment_result.get('workflow_id')}`"
+            ])
+            if n8n_workflow_url:
+                parts.append(f"• [Open in Automation Engine]({n8n_workflow_url})")
+        elif deployment_result:
+            parts.extend([
+                "",
+                "**Deployment Status:**",
+                f"• ⚠️ Deployment pending: {deployment_result.get('error', 'Manual setup required')}",
+                "• An admin will set this up in the automation engine manually."
+            ])
+        
+        if note:
+            parts.extend(["", f"**Admin Note:** {note}"])
+        
+        parts.extend([
+            "",
+            "**Next Steps:**",
+            "1. Tool is now visible in your unit's tool list",
+            "2. An admin will configure credentials and activate the workflow",
+            "3. You'll be notified when it's live and ready to use"
+        ])
+        
+    elif action == 'reject':
+        parts = [
+            f"**❌ REJECTED by {admin_name}**",
+            "",
+            f"Your tool request for **\"{tool_name}\"** was not approved."
+        ]
+        
+        if note:
+            parts.extend(["", f"**Reason:** {note}"])
+        
+        parts.extend([
+            "",
+            "**What you can do:**",
+            "• Review the feedback and make changes",
+            "• Submit a revised version for approval",
+            "• Ask questions in this chat if you need clarification"
+        ])
+        
+    else:  # request_changes
+        parts = [
+            f"**🔄 CHANGES REQUESTED by {admin_name}**",
+            "",
+            f"Your tool **\"{tool_name}\"** needs some adjustments before approval."
+        ]
+        
+        if note:
+            parts.extend(["", f"**Requested Changes:** {note}"])
+        
+        parts.extend([
+            "",
+            "**Next Steps:**",
+            "• Make the requested changes to your tool",
+            "• Describe what you've modified",
+            "• Submit for approval again"
+        ])
+    
+    return "\n".join(parts)
 
 # ==================== ADMIN ROUTES ====================
 
