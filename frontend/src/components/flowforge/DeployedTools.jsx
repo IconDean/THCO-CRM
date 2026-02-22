@@ -186,15 +186,15 @@ const DeployedTools = ({ unit, limit = 10 }) => {
 
             {/* Actions */}
             <div className="flex items-center gap-2 ml-4">
-              {/* Use Tool Button - Primary action if form URL available */}
-              {tool.form_url && (
+              {/* Use Tool Button - Opens n8n form if workflow has form trigger */}
+              {tool.engine_workflow_url && tool.trigger_type === 'form' && (
                 <Button
                   size="sm"
                   className="bg-[#7C64FF] hover:bg-[#6B54EE] text-white"
                   asChild
                 >
                   <a
-                    href={tool.form_url}
+                    href={`${tool.engine_workflow_url.replace('/workflow/', '/form/')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1"
