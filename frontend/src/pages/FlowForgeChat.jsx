@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { flowforgeAPI, authAPI } from "../lib/api";
 import VoiceRecorder from "../components/flowforge/VoiceRecorder";
 import ProblemBriefForm from "../components/flowforge/ProblemBriefForm";
+import WorkflowDesignPreview from "../components/flowforge/WorkflowDesignPreview";
 
 // Unit name mapping
 const UNIT_NAMES = {
