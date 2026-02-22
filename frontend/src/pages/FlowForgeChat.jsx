@@ -1048,6 +1048,20 @@ const FlowForgeChat = () => {
             onActionClick={handleActionClick}
           />
         ))}
+        
+        {/* Workflow Design Preview */}
+        {workflowDesign && (
+          <div className="px-4 py-4">
+            <WorkflowDesignPreview
+              design={workflowDesign}
+              onApprove={handleApproveWorkflowDesign}
+              onEdit={handleEditWorkflowDesign}
+              onReject={handleRejectWorkflowDesign}
+              isApproving={isApproving}
+            />
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
 
