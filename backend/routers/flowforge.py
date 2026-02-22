@@ -798,7 +798,8 @@ def _build_approval_status_message(
     tool_name: str,
     note: str = None,
     deployment_result: Dict = None,
-    n8n_workflow_url: str = None
+    n8n_workflow_url: str = None,
+    n8n_form_url: str = None
 ) -> str:
     """Build the approval status message for the conversation"""
     
@@ -812,13 +813,22 @@ def _build_approval_status_message(
         if deployment_result and deployment_result.get('success'):
             parts.extend([
                 "",
-                "**Deployment Status:**",
+                "**🚀 Deployment Status:**",
                 "• Created in THCO Automation Engine",
-                "• Status: **Ready** (inactive - awaiting activation)",
+                "• Status: **Ready** (activate to go live)",
                 f"• Workflow ID: `{deployment_result.get('workflow_id')}`"
             ])
+            
+            # Show form URL prominently if available
+            if n8n_form_url:
+                parts.extend([
+                    "",
+                    "**📝 Use Your Tool:**",
+                    f"• [Open Form to Use Tool]({n8n_form_url})"
+                ])
+            
             if n8n_workflow_url:
-                parts.append(f"• [Open in Automation Engine]({n8n_workflow_url})")
+                parts.append(f"• [Edit in Automation Engine]({n8n_workflow_url})")
         elif deployment_result:
             parts.extend([
                 "",
@@ -833,9 +843,9 @@ def _build_approval_status_message(
         parts.extend([
             "",
             "**Next Steps:**",
-            "1. Tool is now visible in your unit's tool list",
+            "1. Tool is now visible in your unit's 'My Tools' tab",
             "2. An admin will configure credentials and activate the workflow",
-            "3. You'll be notified when it's live and ready to use"
+            "3. Once activated, use the form link above to run the tool"
         ])
         
     elif action == 'reject':
