@@ -1263,6 +1263,110 @@ async def activate_tool(tool_id: str, request: Request, active: bool = True):
         logger.error(f"Error activating tool: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+class ToolExecutionRequest(BaseModel):
+    form_data: Dict[str, Any]
+
+
+@router.post("/tools/{tool_id}/execute")
+async def execute_tool(tool_id: str, data: ToolExecutionRequest, request: Request):
+    """
+    Execute a deployed tool by triggering its n8n workflow.
+    This is the portal-native alternative to n8n forms.
+    """
+    user = await get_current_user_from_request(request)
+    sb = ensure_supabase()
+    
+    # Get the tool/conversation
+    result = sb.table('flowforge_conversations').select('*').eq('id', tool_id).execute()
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Tool not found")
+    
+    tool = result.data[0]
+    
+    if not tool.get('engine_workflow_id'):
+        raise HTTPException(status_code=400, detail="Tool has not been deployed to automation engine")
+    
+    # Get the workflow details from n8n to find the webhook URL
+    try:
+        from services.n8n_deployment import execute_n8n_workflow
+        
+        execution_result = await execute_n8n_workflow(
+            workflow_id=tool['engine_workflow_id'],
+            input_data=data.form_data,
+            user_id=user['user_id'],
+            user_name=user['name']
+        )
+        
+        # Update execution stats
+        now = datetime.now(timezone.utc).isoformat()
+        update_data = {
+            'execution_count': (tool.get('execution_count') or 0) + 1,
+            'last_execution_at': now,
+            'updated_at': now
+        }
+        
+        if execution_result.get('success'):
+            update_data['success_count'] = (tool.get('success_count') or 0) + 1
+        else:
+            update_data['error_count'] = (tool.get('error_count') or 0) + 1
+        
+        sb.table('flowforge_conversations').update(update_data).eq('id', tool_id).execute()
+        
+        if execution_result.get('success'):
+            return {
+                "success": True,
+                "message": "Tool executed successfully!",
+                "result": execution_result.get('data'),
+                "execution_id": execution_result.get('execution_id')
+            }
+        else:
+            raise HTTPException(
+                status_code=500, 
+                detail=execution_result.get('error', 'Tool execution failed')
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error executing tool: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/tools/{tool_id}/form-fields")
+async def get_tool_form_fields(tool_id: str, request: Request):
+    """Get the form fields for a tool to render in the portal"""
+    await get_current_user_from_request(request)
+    sb = ensure_supabase()
+    
+    # Get the tool
+    result = sb.table('flowforge_conversations').select('*').eq('id', tool_id).execute()
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Tool not found")
+    
+    tool = result.data[0]
+    
+    # Get the approval to find the form fields
+    approval_result = sb.table('flowforge_approvals').select('*').eq('conversation_id', tool_id).order('created_at', desc=True).limit(1).execute()
+    
+    form_fields = []
+    if approval_result.data:
+        approval = approval_result.data[0]
+        request_details = approval.get('request_details') or {}
+        form_fields = request_details.get('form_fields') or []
+        
+        # Also check proposed_workflow_json
+        if not form_fields:
+            workflow_json = approval.get('proposed_workflow_json') or {}
+            form_fields = workflow_json.get('form_fields') or []
+    
+    return {
+        "tool_id": tool_id,
+        "tool_name": tool.get('tool_name', 'Untitled Tool'),
+        "form_fields": form_fields,
+        "trigger_type": tool.get('trigger_type', 'form')
+    }
+
 # ==================== INTEGRATION ROUTES ====================
 
 @router.get("/integrations", response_model=List[IntegrationResponse])
