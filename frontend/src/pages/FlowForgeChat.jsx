@@ -591,13 +591,14 @@ const FlowForgeChat = () => {
           submissionData.form_data.voice_recording.transcription = transcription;
         } catch (e) {
           console.error("Transcription failed:", e);
+          toast.warning("Voice transcription failed, but continuing with text...");
         }
       }
       
       // Format the brief as a user message
       const briefText = formatBriefAsText(submissionData.form_data);
       
-      // Add user message with the formatted brief
+      // Add user message with the formatted brief - SAVE THIS FIRST
       const userMessage = {
         role: "user",
         content: briefText,
@@ -616,32 +617,59 @@ const FlowForgeChat = () => {
         });
       }
       
-      // Now call generate to get AI response
-      const aiResponse = await flowforgeAPI.generateResponse(
-        conversation.id,
-        briefText + (transcription ? `\n\n[Voice Note]:\n${transcription}` : ''),
-        true,
-        true
-      );
+      toast.info("Generating your automation... This may take up to 2 minutes.");
       
-      // Save AI response
-      const aiMessage = {
-        role: "assistant",
-        content: aiResponse.content,
-        has_workflow: aiResponse.has_workflow || false,
-        workflow_data: aiResponse.workflow_data || null,
-        workflow_steps: aiResponse.workflow_steps || null,
-        build_spec: aiResponse.build_spec || null,
-        has_action_buttons: aiResponse.has_action_buttons,
-        action_buttons: aiResponse.action_buttons,
-        has_duplicate_alert: aiResponse.has_duplicate_alert || false,
-        duplicate_data: aiResponse.duplicate_data || null,
-      };
-      
-      const savedAiMsg = await flowforgeAPI.addMessage(conversation.id, aiMessage);
-      setMessages(prev => [...prev, savedAiMsg]);
-      
-      toast.success("Brief submitted! AI is reviewing...");
+      // Now call generate to get AI response (this can take time)
+      try {
+        const aiResponse = await flowforgeAPI.generateResponse(
+          conversation.id,
+          briefText + (transcription ? `\n\n[Voice Note]:\n${transcription}` : ''),
+          true,
+          true
+        );
+        
+        // Save AI response
+        const aiMessage = {
+          role: "assistant",
+          content: aiResponse.content,
+          has_workflow: aiResponse.has_workflow || false,
+          workflow_data: aiResponse.workflow_data || null,
+          workflow_steps: aiResponse.workflow_steps || null,
+          build_spec: aiResponse.build_spec || null,
+          has_action_buttons: aiResponse.has_action_buttons,
+          action_buttons: aiResponse.action_buttons,
+          has_duplicate_alert: aiResponse.has_duplicate_alert || false,
+          duplicate_data: aiResponse.duplicate_data || null,
+        };
+        
+        const savedAiMsg = await flowforgeAPI.addMessage(conversation.id, aiMessage);
+        setMessages(prev => [...prev, savedAiMsg]);
+        
+        toast.success("Automation generated successfully!");
+      } catch (aiError) {
+        console.error("AI generation failed:", aiError);
+        
+        // Save an error message so the user can see what happened
+        const errorMessage = {
+          role: "assistant",
+          content: "I'm sorry, the automation generation is taking longer than expected. This could be due to high demand.\n\n**Your brief has been saved.** You can:\n1. Try again by typing a message below\n2. Come back later - I'll remember your request\n\nWould you like me to try again?",
+          has_workflow: false,
+          has_action_buttons: true,
+          action_buttons: [
+            { label: "Try Again", action: "retry_generation", primary: true },
+            { label: "Start Over", action: "reset", primary: false }
+          ]
+        };
+        
+        try {
+          const savedErrorMsg = await flowforgeAPI.addMessage(conversation.id, errorMessage);
+          setMessages(prev => [...prev, savedErrorMsg]);
+        } catch (e) {
+          console.error("Failed to save error message:", e);
+        }
+        
+        toast.error("Generation is taking longer than expected. Please try again.");
+      }
       
     } catch (error) {
       console.error("Failed to submit brief:", error);
