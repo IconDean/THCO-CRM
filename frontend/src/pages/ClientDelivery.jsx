@@ -122,6 +122,7 @@ const STATUS_CONFIG = {
 const ClientDelivery = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredStaff = SAMPLE_DEPLOYED_STAFF.filter(staff => {
     const matchesSearch = staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

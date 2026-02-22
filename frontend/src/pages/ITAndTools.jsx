@@ -138,6 +138,7 @@ const STATUS_CONFIG = {
 
 const ITAndTools = () => {
   const [selectedAgent, setSelectedAgent] = useState(null);
+  const [activeTab, setActiveTab] = useState("main");
 
   const activeAgents = ALL_AGENTS.filter(a => a.status === "active").length;
   const comingSoonAgents = ALL_AGENTS.filter(a => a.status === "coming_soon").length;

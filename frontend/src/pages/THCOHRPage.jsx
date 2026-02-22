@@ -103,6 +103,7 @@ const DEPARTMENTS = ["Executive", "Technology", "Sales", "Operations", "Marketin
 const THCOHRPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [activeTab, setActiveTab] = useState("main");
 
   const filteredEmployees = SAMPLE_EMPLOYEES.filter(emp => {
     const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
