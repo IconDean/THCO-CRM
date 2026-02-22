@@ -242,21 +242,17 @@ def build_gmail_node(
     position: List[int] = None
 ) -> Dict:
     """Build a Gmail node"""
+    import uuid
     params = {
-        "operation": operation,  # send, reply, getDraft
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.message }}",
+        "options": {}
     }
     
-    if operation == "send":
-        params.update({
-            "sendTo": "={{ $json.email }}",
-            "subject": "={{ $json.subject }}",
-            "message": "={{ $json.message }}",
-            "options": {}
-        })
-    
     return {
-        "id": f"gmail-{operation}",
-        "name": f"Gmail - {operation.title()}",
+        "id": str(uuid.uuid4()),
+        "name": f"Gmail - Send Email",
         "type": "n8n-nodes-base.gmail",
         "typeVersion": 2.1,
         "position": position or [500, 0],
