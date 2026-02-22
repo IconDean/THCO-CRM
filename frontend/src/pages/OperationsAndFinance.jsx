@@ -257,6 +257,37 @@ const OperationsAndFinance = () => {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab("main")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeTab === "main" 
+              ? "bg-white text-gray-900 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          data-testid="tab-main"
+        >
+          Overview
+        </button>
+        <button
+          onClick={() => setActiveTab("build-history")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+            activeTab === "build-history" 
+              ? "bg-white text-gray-900 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          data-testid="tab-build-history"
+        >
+          <History className="w-4 h-4" />
+          Build History
+        </button>
+      </div>
+
+      {activeTab === "build-history" ? (
+        <BuildHistory unit="operations" />
+      ) : (
+      <>
       {/* Financial Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <motion.div 
