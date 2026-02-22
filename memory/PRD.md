@@ -178,6 +178,29 @@ FlowForge is THCO's internal AI-powered automation platform embedded into the th
   - `/app/frontend/src/components/flowforge/WorkflowDesignPreview.jsx`
 - **New Endpoint**: `POST /api/flowforge/design-workflow`
 
+### Phase 4.10 - Portal-Native Forms (COMPLETE ✅) - Feb 22, 2026
+- [x] **Portal-Native Form Execution**
+  - Users can now use deployed tools directly within the THCO portal
+  - No longer redirects to n8n forms - fully white-labeled experience
+  - Form fields are dynamically rendered from the AI-generated specification
+- [x] **New Components**
+  - `DynamicFormRenderer.jsx` - Renders forms from JSON schema (text, textarea, select, email, number, date)
+  - `UseToolModal.jsx` - Modal component for tool execution with loading, error, and success states
+- [x] **Backend Endpoints**
+  - `GET /api/flowforge/tools/{id}/form-fields` - Returns form field configuration from approval data
+  - `POST /api/flowforge/tools/{id}/execute` - Triggers n8n workflow with user-submitted form data
+- [x] **UI Updates**
+  - "Use Tool" button on deployed tools opens portal-native form modal
+  - Execution stats displayed on tool cards (runs, errors)
+  - Form validation with inline error messages
+  - Copy result to clipboard functionality
+- **Known Limitation**: n8n workflows created via API require manual activation in n8n UI to generate webhook URLs. This is an n8n platform limitation, not a bug.
+- **New Files**: 
+  - `/app/frontend/src/components/flowforge/DynamicFormRenderer.jsx`
+  - `/app/frontend/src/components/flowforge/UseToolModal.jsx`
+  - `/app/backend/tests/test_portal_native_forms.py`
+- **Updated**: `/app/frontend/src/lib/api.js`, `/app/frontend/src/components/flowforge/DeployedTools.jsx`
+
 ### Phase 5 - Polish & White-Label (UPCOMING)
 - [ ] Final UI polish and animations
 - [ ] Error handling improvements
