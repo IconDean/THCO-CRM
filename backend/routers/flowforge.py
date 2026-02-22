@@ -622,25 +622,40 @@ async def process_approval_action(approval_id: str, data: ApprovalAction, reques
             from services.n8n_deployment import create_n8n_workflow
             
             # Get the workflow data from the approval
-            workflow_json = approval.get('proposed_workflow_json', {})
-            request_details = approval.get('request_details', {})
+            workflow_json = approval.get('proposed_workflow_json') or {}
+            request_details = approval.get('request_details') or {}
             
             # Get conversation for more details
             conv_result = sb.table('flowforge_conversations').select('*').eq('id', approval['conversation_id']).execute()
             conversation = conv_result.data[0] if conv_result.data else {}
             
-            # Build workflow steps from request_details
-            workflow_steps = request_details.get('steps', [])
-            if not workflow_steps and workflow_json.get('steps'):
-                workflow_steps = workflow_json.get('steps', [])
+            # Build workflow steps from request_details or workflow_json
+            workflow_steps = request_details.get('steps') or []
+            if not workflow_steps and workflow_json:
+                workflow_steps = workflow_json.get('steps') or []
+            
+            # If still no steps, create a basic placeholder step
+            if not workflow_steps:
+                workflow_steps = [
+                    {
+                        "step_number": 1,
+                        "name": "Process Request",
+                        "description": approval.get('request_summary', 'Process the automation request'),
+                        "type": "action"
+                    }
+                ]
+            
+            # Get trigger info with safe defaults
+            trigger_type = request_details.get('trigger_type') or workflow_json.get('trigger_type') or 'manual'
+            trigger_description = request_details.get('trigger_description') or workflow_json.get('trigger_description')
             
             # Create the workflow in n8n
             deployment_result = await create_n8n_workflow(
                 tool_name=approval['tool_name'],
                 description=approval.get('request_summary', ''),
                 workflow_steps=workflow_steps,
-                trigger_type=request_details.get('trigger_type', workflow_json.get('trigger_type', 'manual')),
-                trigger_description=request_details.get('trigger_description', workflow_json.get('trigger_description')),
+                trigger_type=trigger_type,
+                trigger_description=trigger_description,
                 tags=[approval['unit'], 'flowforge'],
                 unit=approval['unit']
             )
