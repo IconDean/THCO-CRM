@@ -322,6 +322,36 @@ Each page now shows:
 4. **User Management** - Full RBAC with Super Admin, Mini Admin, Team Member
 5. **Login Records & Device Locking** - Security features
 6. **Procure AI Presentations** - V1, V2, V3, V4 with PDF download
+7. **THCO Town Hall 2026 Presentation** - 33-slide animated CEO presentation (NEW - Feb 23, 2026)
+
+## Interactive Presentations
+
+### THCO Town Hall 2026 V2 (NEW - Feb 23, 2026)
+- **File**: `/app/frontend/src/pages/THCOTownHall2026V2.jsx`
+- **Public Route**: `/proposals/town-hall-2026`
+- **Preview Route**: `/proposals/preview/town-hall-2026`
+- **Features**:
+  - 33 animated slides with page-by-page navigation
+  - Keyboard navigation (Arrow keys, Space, Escape)
+  - Pagination dots for direct slide access
+  - Smooth page transitions with Framer Motion
+  - Decorative animated ovals in background
+  - Dark/light slide alternation for visual rhythm
+  - Section dividers for major topic transitions
+  - Stat boxes with animated counters
+  - Card components with hover effects
+  - Download PDF button (placeholder)
+- **Content Sections**:
+  1. Opening (Slides 1-2): Title and "Line in the Sand" 
+  2. Pattern of History (Slides 3-6): Industrial revolutions, Nokia vs Apple
+  3. Two Futures (Slides 7-9): THCO choices, Africa's adoption gap
+  4. What THCO Is Becoming (Slides 10-12): Five Pillars, Delivery Model
+  5. The Machine (Slides 13-18): AI Agent Fleet, Engines, Flywheel
+  6. Products (Slides 19-21): Day Learning, Pebbles, MOMIA
+  7. New Structure (Slides 22-25): Three Layers, Role Upgrades
+  8. The Standard (Slides 26-28): Extreme Ownership, Leadership Programme
+  9. Big Goals (Slides 29-31): December 2027 targets, Excellence Rewarded
+  10. Closing (Slides 32-33): Commitments and Rally
 
 ## Prioritized Backlog
 
