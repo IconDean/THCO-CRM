@@ -582,7 +582,7 @@ const Slide12 = () => (
     
     <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-3 mb-8">
       {[
-        { layer: "Senior Consultants", desc: "Client-facing. Strategic judgment. Trust.", width: "100%", color: colors.purple, highlight: false },
+        { layer: "Consultants", desc: "Client-facing. Strategic judgment. Trust.", width: "100%", color: colors.purple, highlight: false },
         { layer: "Expert Network", desc: "Domain specialists activated on demand.", width: "85%", color: colors.purple, highlight: false },
         { layer: "Proprietary AI", desc: "70% of all analytical work. Our moat.", width: "70%", highlight: true, color: colors.deepPurple },
         { layer: "Nigeria Operations", desc: "Execution, coordination, quality. The backbone.", width: "55%", color: colors.teal, highlight: false },
