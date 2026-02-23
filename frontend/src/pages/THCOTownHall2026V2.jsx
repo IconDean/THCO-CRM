@@ -919,18 +919,11 @@ const Slide21 = () => (
       Product Portfolio
     </motion.h1>
     
-    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-2 gap-6 mb-6">
+    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="mb-6">
       <motion.div variants={fadeInLeft}>
         <Card headerColor={colors.teal} header="Pebbles">
           <p className="text-sm" style={{ color: colors.bodyText }}>
             Benefits election & payroll support platform for the Nigerian market. Compliance-safe. Auditable. Enterprise-grade. <span className="font-bold">Services scale linearly. Products scale exponentially.</span>
-          </p>
-        </Card>
-      </motion.div>
-      <motion.div variants={fadeInRight}>
-        <Card headerColor={colors.purple} header="MOMIA">
-          <p className="text-sm" style={{ color: colors.bodyText }}>
-            Our AI platform. Seven master systems: Orchestrator, Intake, Generator, Knowledge Vault, Enterprise Copilot, Review/QA, Model Router
           </p>
         </Card>
       </motion.div>
