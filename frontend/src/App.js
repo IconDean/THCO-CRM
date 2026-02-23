@@ -43,6 +43,8 @@ import ProcureAIExecutivePackV3Public from "./pages/ProcureAIExecutivePackV3Publ
 import ProcureAIProposalPublic from "./pages/ProcureAIProposalPublic";
 import ProcureAIScrollPublic from "./pages/ProcureAIScrollPublic";
 import ProcureAIProposalV1Public from "./pages/ProcureAIProposalV1Public";
+import ProcureAITWGSession from "./pages/ProcureAITWGSession";
+import ProcureAITWGSessionPublic from "./pages/ProcureAITWGSessionPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
