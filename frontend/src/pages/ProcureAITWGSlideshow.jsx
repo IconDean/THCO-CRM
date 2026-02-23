@@ -505,7 +505,6 @@ const Page7 = () => (
                 <li>• IHS owns everything: hardware, model, data</li>
                 <li>• Total physical control and sovereignty</li>
               </ul>
-              <p className="font-bold" style={{ color: colors.orange }}>Cost: $15-30K hardware + ongoing maintenance</p>
               <p style={{ color: colors.orange }}>Lower AI capability vs enterprise models</p>
               <p style={{ color: colors.orange }}>IHS team manages model updates</p>
               <div className="mt-3 pt-3 border-t" style={{ borderColor: colors.border }}>
