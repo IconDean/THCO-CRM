@@ -211,6 +211,7 @@ const AppRouter = () => {
       <Route path="/proposals/procure-ai-v1" element={<ProcureAIProposalV1Public />} />
       <Route path="/proposals/procure-ai-twg" element={<ProcureAITWGSessionPublic />} />
       <Route path="/proposals/twg-slideshow" element={<ProcureAITWGSlideshowPublic />} />
+      <Route path="/proposals/town-hall-2026" element={<THCOTownHall2026V2Public />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
