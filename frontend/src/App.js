@@ -221,6 +221,7 @@ const AppRouter = () => {
       <Route path="/proposals/preview/procure-ai-v1" element={<ProcureAIProposal />} />
       <Route path="/proposals/preview/procure-ai-twg" element={<ProcureAITWGSession />} />
       <Route path="/proposals/preview/twg-slideshow" element={<ProcureAITWGSlideshow />} />
+      <Route path="/proposals/preview/town-hall-2026" element={<THCOTownHall2026V2 />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
