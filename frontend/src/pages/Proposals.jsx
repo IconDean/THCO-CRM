@@ -459,11 +459,11 @@ const Proposals = () => {
                     <Presentation className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex items-center gap-1 text-xs text-white/70 bg-white/10 px-2 py-1 rounded-full">
-                    <Sparkles className="w-3 h-3" />
-                    NEW
+                    <FolderOpen className="w-3 h-3" />
+                    Scroll
                   </div>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-1">TWG Session</h3>
+                <h3 className="text-lg font-semibold text-white mb-1">TWG Session (Scroll)</h3>
                 <p className="text-sm text-white/70 mb-4">
                   Technical Working Group - Architecture & Security Walkthrough
                 </p>
@@ -471,6 +471,38 @@ const Proposals = () => {
                   <span>14 Sections</span>
                   <span>•</span>
                   <span>PDF Export</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Procure AI TWG Slideshow - Page-by-Page */}
+            <Link
+              to="/proposals/twg-slideshow"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-teal-300 hover:shadow-lg transition-all"
+              data-testid="procure-ai-twg-slideshow-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0D9488] to-[#1E2761] opacity-90" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                    <Presentation className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-white/70 bg-white/10 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">TWG Slideshow</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Technical Working Group - Animated Page-by-Page Presentation
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>14 Slides</span>
+                  <span>•</span>
+                  <span>Keyboard Nav</span>
                 </div>
                 <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
                   <ChevronRight className="w-4 h-4 text-white" />
