@@ -45,6 +45,8 @@ import ProcureAIScrollPublic from "./pages/ProcureAIScrollPublic";
 import ProcureAIProposalV1Public from "./pages/ProcureAIProposalV1Public";
 import ProcureAITWGSession from "./pages/ProcureAITWGSession";
 import ProcureAITWGSessionPublic from "./pages/ProcureAITWGSessionPublic";
+import ProcureAITWGSlideshow from "./pages/ProcureAITWGSlideshow";
+import ProcureAITWGSlideshowPublic from "./pages/ProcureAITWGSlideshowPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
