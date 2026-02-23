@@ -485,7 +485,6 @@ const Page7 = () => (
                 <li>• IHS chooses Azure region for data residency</li>
                 <li>• Full GPT-4 capability for all AI functions</li>
               </ul>
-              <p className="font-bold" style={{ color: colors.teal }}>Cost: ~$2-5K/month on existing Azure billing</p>
               <p style={{ color: colors.teal }}>No hardware to buy or models to maintain</p>
               <div className="mt-3 pt-3 border-t" style={{ borderColor: colors.border }}>
                 <p className="font-bold" style={{ color: colors.navy }}>How it works:</p>
