@@ -510,6 +510,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* THCO Town Hall 2026 - Internal Presentation */}
+            <Link
+              to="/proposals/town-hall-2026"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all"
+              data-testid="thco-town-hall-2026-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0B0620] to-[#7C3AED] opacity-90" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                    <Presentation className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-white/70 bg-white/10 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">THCO Town Hall 2026</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Internal CEO presentation - The Future Is Now
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>33 Slides</span>
+                  <span>•</span>
+                  <span>Animated</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* Procure AI Executive Pack - GCIO Kick-Off */}
             <Link
               to="/proposals/procure-ai-executive"
