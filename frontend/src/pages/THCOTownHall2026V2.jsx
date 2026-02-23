@@ -997,7 +997,6 @@ const Slide24 = () => (
     
     <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-4 z-10">
       {[
-        { before: "Recruiter", after: "Talent Engineer", change: "Manage sourcing agents, interpret screening data, advise with real-time market intelligence" },
         { before: "Operations", after: "Operations Strategist", change: "Start every morning with an automated briefing. Move from gathering data to making decisions" },
         { before: "Marketing", after: "Brand Architect", change: "Direct an engine that produces content at the scale of a team 10x your size" },
         { before: "Technology", after: "AI Systems Builder", change: "Build the agent infrastructure that powers this entire company" },
