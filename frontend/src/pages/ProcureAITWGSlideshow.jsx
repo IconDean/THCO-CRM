@@ -1274,9 +1274,9 @@ const ProcureAITWGSlideshow = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const navigate = useNavigate();
-  const totalPages = 14;
+  const totalPages = 20;
 
-  const pages = [Page1, Page2, Page3, Page4, Page5, Page6, Page7, Page8, Page9, Page10, Page11, Page12, Page13, Page14];
+  const pages = [Page1, Page2, Page3, Page4, Page5, Page6, Page7, Page8, Page9, Page10, Page11, Page12, Page13, Page14, Page15, Page16, Page17, Page18, Page19, Page20];
   const CurrentPageComponent = pages[currentPage - 1];
 
   const goToPage = useCallback((page) => {
