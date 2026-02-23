@@ -13,7 +13,7 @@ import os
 import time
 
 # Use public URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://workflow-portal-6.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://procure-ai-twg.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "joshua@thcohq.com"

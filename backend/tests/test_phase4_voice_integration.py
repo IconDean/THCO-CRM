@@ -11,7 +11,7 @@ import wave
 import struct
 from typing import Dict, Any
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://workflow-portal-6.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://procure-ai-twg.preview.emergentagent.com').rstrip('/')
 
 class TestPhase4VoiceAndIntegrations:
     """Phase 4: Voice Transcription and Integration Check tests"""
