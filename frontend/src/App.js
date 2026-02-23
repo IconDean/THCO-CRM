@@ -208,6 +208,7 @@ const AppRouter = () => {
       <Route path="/proposals/procure-ai-scroll" element={<ProcureAIScrollPublic />} />
       <Route path="/proposals/procure-ai-v1" element={<ProcureAIProposalV1Public />} />
       <Route path="/proposals/procure-ai-twg" element={<ProcureAITWGSessionPublic />} />
+      <Route path="/proposals/twg-slideshow" element={<ProcureAITWGSlideshowPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
@@ -216,6 +217,7 @@ const AppRouter = () => {
       <Route path="/proposals/preview/procure-ai-scroll" element={<ProcureAIScrollPresentation />} />
       <Route path="/proposals/preview/procure-ai-v1" element={<ProcureAIProposal />} />
       <Route path="/proposals/preview/procure-ai-twg" element={<ProcureAITWGSession />} />
+      <Route path="/proposals/preview/twg-slideshow" element={<ProcureAITWGSlideshow />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
