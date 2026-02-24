@@ -49,6 +49,8 @@ import ProcureAITWGSlideshow from "./pages/ProcureAITWGSlideshow";
 import ProcureAITWGSlideshowPublic from "./pages/ProcureAITWGSlideshowPublic";
 import THCOTownHall2026V2 from "./pages/THCOTownHall2026V2";
 import THCOTownHall2026V2Public from "./pages/THCOTownHall2026V2Public";
+import ProcureAIGCIOPack from "./pages/ProcureAIGCIOPack";
+import ProcureAIGCIOPackPublic from "./pages/ProcureAIGCIOPackPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
