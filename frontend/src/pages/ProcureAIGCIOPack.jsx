@@ -277,7 +277,7 @@ const Page1 = () => (
   </div>
 );
 
-// Page 2: Session Agenda
+// Page 2: Session Agenda - ENHANCED
 const Page2 = () => {
   const agenda = [
     { num: "01", topic: "Strategic Framing", time: "15–20 min", desc: "Objectives, transformation thesis, phased capability model" },
@@ -295,20 +295,41 @@ const Page2 = () => {
   return (
     <div className="h-full flex flex-col p-8 pb-12" style={{ backgroundColor: colors.white }}>
       <SectionHeader title="Session Agenda" subtitle="1.5–2 hour strategic validation — structured for executive decision" />
-      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="flex-1 space-y-1">
+      <motion.div 
+        variants={staggerContainer} 
+        initial="initial" 
+        animate="animate" 
+        className="flex-1 space-y-1"
+      >
         {agenda.map((item, i) => (
           <motion.div 
             key={i} 
             variants={staggerItem}
-            className="flex items-center gap-4 px-4 py-2 rounded"
+            whileHover={{ x: 8, scale: 1.01, transition: { duration: 0.2 } }}
+            className="flex items-center gap-4 px-4 py-2 rounded cursor-pointer"
             style={{ backgroundColor: i % 2 === 0 ? colors.navy : colors.navyLight }}
           >
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: colors.teal }}>{item.num}</div>
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: i * 0.05 + 0.2, type: "spring", stiffness: 200 }}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" 
+              style={{ backgroundColor: colors.teal }}
+            >
+              {item.num}
+            </motion.div>
             <div className="flex-1">
               <p className="font-bold text-white text-sm">{item.topic}</p>
               <p className="text-xs" style={{ color: colors.iceBlue }}>{item.desc}</p>
             </div>
-            <p className="text-xs text-white">{item.time}</p>
+            <motion.p 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 + 0.3 }}
+              className="text-xs text-white"
+            >
+              {item.time}
+            </motion.p>
           </motion.div>
         ))}
       </motion.div>
