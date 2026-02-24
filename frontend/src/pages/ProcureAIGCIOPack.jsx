@@ -1439,7 +1439,7 @@ const Page16 = () => (
   </div>
 );
 
-// Page 17: Appendix
+// Page 17: Appendix - ENHANCED
 const Page17 = () => (
   <div className="h-full flex flex-col p-8 pb-12" style={{ backgroundColor: colors.white }}>
     <SectionHeader title="Appendix: TN Macaulay Credentials" subtitle="Pioneering enterprise AI in Nigeria since 2016" />
@@ -1451,10 +1451,27 @@ const Page17 = () => (
         { year: "2018", title: "Enterprise Financial Wallet", desc: "Multi-tenant platform for P&G, Vodafone, Dangote, Oando. D365 reconciliation. 50,000+ users across tenants." },
         { year: "2018–Present", title: "Multi-Tenant AI Platform", desc: "15+ enterprises on shared infra. Kubernetes-based isolation. 50K+ monthly transactions. HR, CX, and operations." },
       ].map((cred, i) => (
-        <motion.div key={i} variants={staggerItem} className="rounded-lg overflow-hidden shadow-sm" style={{ border: `1px solid ${colors.lightBg}` }}>
+        <motion.div 
+          key={i} 
+          variants={staggerItem}
+          initial={{ opacity: 0, y: 40, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: i * 0.1, type: "spring", stiffness: 150 }}
+          whileHover={{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.15)", transition: { duration: 0.2 } }}
+          className="rounded-lg overflow-hidden shadow-sm cursor-pointer" 
+          style={{ border: `1px solid ${colors.lightBg}` }}
+        >
           <div className="p-3 flex items-center justify-between" style={{ backgroundColor: colors.navy }}>
             <span className="text-white font-bold text-sm">{cred.title}</span>
-            <span className="px-2 py-0.5 rounded text-[10px] font-medium text-white" style={{ backgroundColor: colors.teal }}>{cred.year}</span>
+            <motion.span 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: i * 0.1 + 0.3, type: "spring" }}
+              className="px-2 py-0.5 rounded text-[10px] font-medium text-white" 
+              style={{ backgroundColor: colors.teal }}
+            >
+              {cred.year}
+            </motion.span>
           </div>
           <div className="p-3">
             <p className="text-xs" style={{ color: colors.body }}>{cred.desc}</p>
@@ -1463,7 +1480,12 @@ const Page17 = () => (
       ))}
     </motion.div>
 
-    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="flex justify-center gap-8">
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5 }}
+      className="flex justify-center gap-8"
+    >
       {[
         { value: "8+", label: "Years D365/Azure" },
         { value: "15+", label: "Enterprise tenants" },
@@ -1471,8 +1493,22 @@ const Page17 = () => (
         { value: "50K+", label: "Monthly txns" },
         { value: "12", label: "Azure apps live" },
       ].map((stat, i) => (
-        <motion.div key={i} variants={countUp} className="text-center">
-          <div className="text-4xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>{stat.value}</div>
+        <motion.div 
+          key={i} 
+          initial={{ opacity: 0, scale: 0, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ delay: 0.6 + i * 0.1, type: "spring", stiffness: 200 }}
+          whileHover={{ scale: 1.15, transition: { duration: 0.2 } }}
+          className="text-center cursor-pointer"
+        >
+          <motion.div 
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+            className="text-4xl font-bold" 
+            style={{ fontFamily: "Georgia, serif", color: colors.teal }}
+          >
+            {stat.value}
+          </motion.div>
           <div className="text-[10px] mt-1" style={{ color: colors.slate }}>{stat.label}</div>
         </motion.div>
       ))}
