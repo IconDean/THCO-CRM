@@ -1217,7 +1217,7 @@ const Page14 = () => (
   </div>
 );
 
-// Page 15: Decision Points
+// Page 15: Decision Points - ENHANCED WITH DRAMATIC ANIMATIONS
 const Page15 = () => (
   <div className="h-full flex flex-col p-8 pb-12" style={{ backgroundColor: colors.white }}>
     <SectionHeader number="11" title="Decision Points" subtitle="Three decisions required to proceed with 1 March 2026 mobilisation" />
@@ -1228,15 +1228,54 @@ const Page15 = () => (
         { num: "02", title: "Approve Governance Model & Team Allocation", badge: "APPROVE", badgeColor: colors.blue, desc: "Endorse SteerCo composition, reporting cadence, RACI matrix, and escalation protocol. Confirm IHS project team roles (Project Owner, IT Lead, 2 BAs, SMEs, Change Champions).", accent: colors.navy },
         { num: "03", title: "IT to Provision Infrastructure Access", badge: "APPROVE", badgeColor: colors.blue, desc: "Direct IHS IT to provision: Azure subscription (Week 1), D365 API credentials (Week 2), VPN access for dev team (Week 1), and ServiceNow specs (Month 2).", accent: colors.navy },
       ].map((item, i) => (
-        <motion.div key={i} variants={staggerItem} className="rounded-lg p-5" style={{ borderLeft: `6px solid ${item.accent}`, backgroundColor: colors.lightBg }}>
+        <motion.div 
+          key={i} 
+          variants={staggerItem}
+          initial={{ opacity: 0, x: -80, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          transition={{ delay: i * 0.15, duration: 0.5, type: "spring", stiffness: 100 }}
+          whileHover={{ 
+            scale: 1.02, 
+            x: 10,
+            boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+            transition: { duration: 0.2 } 
+          }}
+          className="rounded-lg p-5 cursor-pointer" 
+          style={{ borderLeft: `6px solid ${item.accent}`, backgroundColor: colors.lightBg }}
+        >
           <div className="flex items-start justify-between mb-2">
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: colors.teal }}>{item.num}</span>
+              <motion.span 
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: i * 0.15 + 0.2, type: "spring", stiffness: 200 }}
+                className="text-3xl font-bold" 
+                style={{ fontFamily: "Georgia, serif", color: colors.teal }}
+              >
+                {item.num}
+              </motion.span>
               <h3 className="text-lg font-bold" style={{ color: colors.navy }}>{item.title}</h3>
             </div>
-            <span className="px-4 py-2 rounded text-sm font-bold text-white" style={{ backgroundColor: item.badgeColor }}>{item.badge}</span>
+            <motion.span 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: i * 0.15 + 0.3, type: "spring", stiffness: 300 }}
+              whileHover={{ scale: 1.1 }}
+              className="px-4 py-2 rounded text-sm font-bold text-white" 
+              style={{ backgroundColor: item.badgeColor }}
+            >
+              {item.badge}
+            </motion.span>
           </div>
-          <p className="text-sm ml-12" style={{ color: colors.body }}>{item.desc}</p>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: i * 0.15 + 0.4 }}
+            className="text-sm ml-12" 
+            style={{ color: colors.body }}
+          >
+            {item.desc}
+          </motion.p>
         </motion.div>
       ))}
     </motion.div>
