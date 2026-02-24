@@ -1573,23 +1573,50 @@ const ProcureAIGCIOPack = () => {
         </AnimatePresence>
       </div>
 
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows - ENHANCED */}
       {currentPage > 1 && (
-        <button onClick={prevPage} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform z-40 bg-white/80 backdrop-blur-sm shadow-lg" style={{ border: `1px solid ${colors.lightBg}` }}>
-          <ChevronLeft className="w-5 h-5" style={{ color: colors.navy }} />
-        </button>
+        <motion.button 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.15, x: -5 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={prevPage} 
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center z-40 bg-white/90 backdrop-blur-sm shadow-lg" 
+          style={{ border: `2px solid ${colors.teal}` }}
+        >
+          <ChevronLeft className="w-6 h-6" style={{ color: colors.teal }} />
+        </motion.button>
       )}
       {currentPage < totalPages && (
-        <button onClick={nextPage} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform z-40 bg-white/80 backdrop-blur-sm shadow-lg" style={{ border: `1px solid ${colors.lightBg}` }}>
-          <ChevronRight className="w-5 h-5" style={{ color: colors.navy }} />
-        </button>
+        <motion.button 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.15, x: 5 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={nextPage} 
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center z-40 shadow-lg text-white" 
+          style={{ backgroundColor: colors.teal }}
+        >
+          <ChevronRight className="w-6 h-6" />
+        </motion.button>
       )}
 
-      {/* Pagination Dots */}
+      {/* Pagination Dots - ENHANCED */}
       {currentPage > 1 && (
         <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5 z-40">
           {Array.from({ length: totalPages }, (_, i) => (
-            <button key={i} onClick={() => goToPage(i + 1)} className="w-2 h-2 rounded-full transition-all hover:scale-125" style={{ backgroundColor: currentPage === i + 1 ? colors.teal : colors.slate + '40' }} />
+            <motion.button 
+              key={i} 
+              onClick={() => goToPage(i + 1)} 
+              whileHover={{ scale: 1.5 }}
+              whileTap={{ scale: 0.8 }}
+              animate={{ 
+                scale: currentPage === i + 1 ? 1.3 : 1,
+                backgroundColor: currentPage === i + 1 ? colors.teal : colors.slate + '40'
+              }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="w-2 h-2 rounded-full"
+            />
           ))}
         </div>
       )}
