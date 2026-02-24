@@ -338,7 +338,7 @@ const Page2 = () => {
   );
 };
 
-// Page 3: Strategic Framing
+// Page 3: Strategic Framing - ENHANCED
 const Page3 = () => {
   const current = [
     "Manual Excel-based procurement across all categories",
@@ -362,48 +362,92 @@ const Page3 = () => {
       <SectionHeader number="01" title="Strategic Framing" subtitle="Programme objectives and transformation thesis" />
       
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <Card header="CURRENT STATE" headerBg={colors.slate}>
-          <div className="space-y-2">
-            {current.map((item, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm">
-                <X className="w-4 h-4 mt-0.5 text-red-500 flex-shrink-0" />
-                <span style={{ color: colors.body }}>{item}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-        <Card header="FUTURE STATE (PROCURE AI)" headerBg={colors.teal}>
-          <div className="space-y-2">
-            {future.map((item, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm">
-                <Check className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: colors.teal }} />
-                <span style={{ color: colors.body }}>{item}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card header="CURRENT STATE" headerBg={colors.slate}>
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-2">
+              {current.map((item, i) => (
+                <motion.div 
+                  key={i} 
+                  variants={staggerItem}
+                  whileHover={{ x: 5 }}
+                  className="flex items-start gap-2 text-sm"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: 180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: i * 0.1 + 0.3 }}
+                  >
+                    <X className="w-4 h-4 mt-0.5 text-red-500 flex-shrink-0" />
+                  </motion.div>
+                  <span style={{ color: colors.body }}>{item}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+          </Card>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card header="FUTURE STATE (PROCURE AI)" headerBg={colors.teal}>
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-2">
+              {future.map((item, i) => (
+                <motion.div 
+                  key={i} 
+                  variants={staggerItem}
+                  whileHover={{ x: 5 }}
+                  className="flex items-start gap-2 text-sm"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: i * 0.1 + 0.4, type: "spring", stiffness: 300 }}
+                  >
+                    <Check className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: colors.teal }} />
+                  </motion.div>
+                  <span style={{ color: colors.body }}>{item}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+          </Card>
+        </motion.div>
       </div>
 
-      <div className="mb-2">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="mb-2"
+      >
         <h3 className="text-sm font-bold mb-3" style={{ color: colors.navy }}>Phased Capability Model</h3>
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg p-3 text-white text-center" style={{ backgroundColor: colors.teal }}>
-            <p className="text-xs font-bold mb-1">PHASE 1: Foundation & Core</p>
-            <p className="text-[10px] opacity-90">Vendor Portal, Due Diligence, Risk Monitor, AI Bot, Reverse Auction</p>
-            <p className="text-[10px] mt-2 font-medium">Feb–May 2026 (4 mo)</p>
-          </div>
-          <div className="rounded-lg p-3 text-white text-center" style={{ backgroundColor: colors.navy }}>
-            <p className="text-xs font-bold mb-1">PHASE 2: RFx Workflows</p>
-            <p className="text-[10px] opacity-90">RFx Creation, Vendor Sourcing, Scope Validation, BAFO, Templates</p>
-            <p className="text-[10px] mt-2 font-medium">Jun–Oct 2026 (5 mo)</p>
-          </div>
-          <div className="rounded-lg p-3 text-white text-center" style={{ backgroundColor: colors.dark }}>
-            <p className="text-xs font-bold mb-1">PHASE 3: Intelligence</p>
-            <p className="text-[10px] opacity-90">Forecasting, Category Mgmt, TCO Reporting, Audit, Settings</p>
-            <p className="text-[10px] mt-2 font-medium">Nov 2026–Feb 2027 (4 mo)</p>
-          </div>
+          {[
+            { name: "PHASE 1: Foundation & Core", modules: "Vendor Portal, Due Diligence, Risk Monitor, AI Bot, Reverse Auction", period: "Feb–May 2026 (4 mo)", color: colors.teal, delay: 0 },
+            { name: "PHASE 2: RFx Workflows", modules: "RFx Creation, Vendor Sourcing, Scope Validation, BAFO, Templates", period: "Jun–Oct 2026 (5 mo)", color: colors.navy, delay: 0.1 },
+            { name: "PHASE 3: Intelligence", modules: "Forecasting, Category Mgmt, TCO Reporting, Audit, Settings", period: "Nov 2026–Feb 2027 (4 mo)", color: colors.dark, delay: 0.2 },
+          ].map((phase, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 40, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.7 + phase.delay, type: "spring", stiffness: 150 }}
+              whileHover={{ scale: 1.03, y: -5, transition: { duration: 0.2 } }}
+              className="rounded-lg p-3 text-white text-center cursor-pointer" 
+              style={{ backgroundColor: phase.color }}
+            >
+              <p className="text-xs font-bold mb-1">{phase.name}</p>
+              <p className="text-[10px] opacity-90">{phase.modules}</p>
+              <p className="text-[10px] mt-2 font-medium">{phase.period}</p>
+            </motion.div>
+          ))}
         </div>
-      </div>
+      </motion.div>
       <Footer />
     </div>
   );
