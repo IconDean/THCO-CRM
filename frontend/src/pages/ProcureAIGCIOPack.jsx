@@ -666,7 +666,7 @@ const Page6 = () => (
   </div>
 );
 
-// Page 7: Human Oversight
+// Page 7: Human Oversight - ENHANCED
 const Page7 = () => {
   const oversight = [
     { cat: "Vendor Scoring", catColor: colors.teal, ai: "AI scores and recommends vendors", human: "Procurement officer approves shortlist" },
@@ -679,38 +679,104 @@ const Page7 = () => {
     <div className="h-full flex flex-col p-8 pb-12" style={{ backgroundColor: colors.white }}>
       <SectionHeader number="03" title="Human Oversight in AI Decisions" subtitle="Every AI recommendation requires human approval before action" />
       
-      <div className="rounded-lg p-4 text-white text-center mb-4" style={{ backgroundColor: colors.navy }}>
-        <p className="font-bold">AI is advisory, not authoritative.</p>
-        <p className="text-sm">No financial, contractual, or reputational commitment is made without human sign-off.</p>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: -20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="rounded-lg p-4 text-white text-center mb-4" 
+        style={{ backgroundColor: colors.navy }}
+      >
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="font-bold"
+        >
+          AI is advisory, not authoritative.
+        </motion.p>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-sm"
+        >
+          No financial, contractual, or reputational commitment is made without human sign-off.
+        </motion.p>
+      </motion.div>
 
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-3 mb-4">
         {oversight.map((item, i) => (
-          <motion.div key={i} variants={staggerItem} className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded text-xs font-bold text-white" style={{ backgroundColor: item.catColor }}>{item.cat}</span>
-            <div className="flex-1 rounded p-2 flex items-center gap-2" style={{ backgroundColor: colors.lightBg }}>
+          <motion.div 
+            key={i} 
+            variants={staggerItem}
+            initial={{ opacity: 0, x: -60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.1 + 0.2 }}
+            whileHover={{ x: 10, transition: { duration: 0.2 } }}
+            className="flex items-center gap-3 cursor-pointer"
+          >
+            <motion.span 
+              whileHover={{ scale: 1.1 }}
+              className="px-3 py-1 rounded text-xs font-bold text-white" 
+              style={{ backgroundColor: item.catColor }}
+            >
+              {item.cat}
+            </motion.span>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="flex-1 rounded p-2 flex items-center gap-2" 
+              style={{ backgroundColor: colors.lightBg }}
+            >
               <Bot className="w-4 h-4" style={{ color: colors.slate }} />
               <span className="text-xs" style={{ color: colors.body }}>{item.ai}</span>
-            </div>
-            <ArrowRight className="w-4 h-4" style={{ color: colors.teal }} />
-            <div className="flex-1 rounded p-2 flex items-center gap-2" style={{ backgroundColor: `${colors.green}15` }}>
+            </motion.div>
+            <motion.div
+              animate={{ x: [0, 5, 0] }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              <ArrowRight className="w-4 h-4" style={{ color: colors.teal }} />
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="flex-1 rounded p-2 flex items-center gap-2" 
+              style={{ backgroundColor: `${colors.green}15` }}
+            >
               <Users className="w-4 h-4" style={{ color: colors.green }} />
               <span className="text-xs" style={{ color: colors.body }}>{item.human}</span>
-            </div>
-            <Badge color={colors.green}>APPROVED</Badge>
+            </motion.div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: i * 0.1 + 0.5, type: "spring", stiffness: 300 }}
+            >
+              <Badge color={colors.green}>APPROVED</Badge>
+            </motion.div>
           </motion.div>
         ))}
       </motion.div>
 
-      <div className="grid grid-cols-3 gap-4 p-4 rounded-lg mb-4" style={{ backgroundColor: colors.navy }}>
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="grid grid-cols-3 gap-4 p-4 rounded-lg mb-4" 
+        style={{ backgroundColor: colors.navy }}
+      >
         <StatBox value="100%" label="of financial decisions require human approval" />
         <StatBox value="Zero" label="autonomous AI actions on contracts or payments" />
         <StatBox value="Full Audit" label="trail on every AI recommendation + human decision" />
-      </div>
+      </motion.div>
 
-      <div className="rounded-lg p-3 text-sm text-white" style={{ backgroundColor: colors.teal }}>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.8 }}
+        whileHover={{ scale: 1.01 }}
+        className="rounded-lg p-3 text-sm text-white" 
+        style={{ backgroundColor: colors.teal }}
+      >
         Procure AI amplifies human judgment — it never replaces it. Every AI output includes confidence scores and reasoning so humans make informed decisions.
-      </div>
+      </motion.div>
       <Footer />
     </div>
   );
