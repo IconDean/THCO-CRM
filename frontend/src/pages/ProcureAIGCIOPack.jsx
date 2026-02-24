@@ -96,39 +96,85 @@ const SectionHeader = ({ number, title, subtitle }) => (
   </motion.div>
 );
 
-// Card Component
+// Card Component with enhanced animations
 const Card = ({ children, accent, header, headerBg, className = "" }) => (
   <motion.div 
     variants={staggerItem}
+    whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(0,0,0,0.12)", transition: { duration: 0.2 } }}
     className={`rounded-lg overflow-hidden bg-white shadow-sm ${className}`}
     style={{ borderLeft: accent ? `4px solid ${accent}` : undefined }}
   >
     {header && (
-      <div className="px-4 py-2 text-xs font-bold tracking-wide" style={{ backgroundColor: headerBg || colors.navy, color: colors.white }}>
+      <motion.div 
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="px-4 py-2 text-xs font-bold tracking-wide" 
+        style={{ backgroundColor: headerBg || colors.navy, color: colors.white }}
+      >
         {header}
-      </div>
+      </motion.div>
     )}
     <div className="p-4">{children}</div>
   </motion.div>
 );
 
-// Stat Box
+// Stat Box with animated counter
 const StatBox = ({ value, label, color = colors.teal }) => (
-  <motion.div variants={countUp} className="text-center">
-    <div className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color }}>{value}</div>
-    <div className="text-xs mt-1" style={{ color: colors.slate }}>{label}</div>
+  <motion.div 
+    variants={countUp}
+    whileHover={{ scale: 1.08, transition: { duration: 0.2 } }}
+    className="text-center"
+  >
+    <motion.div 
+      initial={{ scale: 0, rotate: -10 }}
+      animate={{ scale: 1, rotate: 0 }}
+      transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+      className="text-3xl font-bold" 
+      style={{ fontFamily: "Georgia, serif", color }}
+    >
+      {value}
+    </motion.div>
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="text-xs mt-1" 
+      style={{ color: colors.slate }}
+    >
+      {label}
+    </motion.div>
   </motion.div>
 );
 
-// Badge Component
+// Badge Component with pop animation
 const Badge = ({ children, color = colors.green }) => (
-  <span className="px-2 py-1 rounded text-xs font-bold text-white" style={{ backgroundColor: color }}>{children}</span>
+  <motion.span 
+    initial={{ scale: 0 }}
+    animate={{ scale: 1 }}
+    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+    whileHover={{ scale: 1.1 }}
+    className="px-2 py-1 rounded text-xs font-bold text-white" 
+    style={{ backgroundColor: color }}
+  >
+    {children}
+  </motion.span>
 );
 
-// Risk Level Pill
+// Risk Level Pill with animation
 const RiskPill = ({ level }) => {
   const bg = level === "High" ? colors.red : level === "Med" ? colors.orange : colors.green;
-  return <span className="px-2 py-0.5 rounded text-xs font-medium text-white" style={{ backgroundColor: bg }}>{level}</span>;
+  return (
+    <motion.span 
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ type: "spring", stiffness: 500 }}
+      className="px-2 py-0.5 rounded text-xs font-medium text-white" 
+      style={{ backgroundColor: bg }}
+    >
+      {level}
+    </motion.span>
+  );
 };
 
 // ============ PAGE COMPONENTS ============
