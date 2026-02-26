@@ -397,6 +397,22 @@ Each page now shows:
 - Password: THCOAdmin2024!
 - Role: Super Admin (full access)
 
+## Interactive Presentations & Dashboards
+
+### Completed Presentations
+- **ProcureAI Proposal V2** - Main page-based proposal
+- **ProcureAI Executive Pack V3/V4** - Executive pack presentations
+- **ProcureAI Scroll Presentation** - Vertical scroll format
+- **ProcureAI TWG Session/Slideshow** - Technical Working Group presentations
+- **THCO Town Hall 2026 V2** - 33-slide internal CEO presentation (modified per user feedback)
+- **GCIO Executive Pack** - 17-page premium CIO kick-off presentation (animations in progress)
+- **Sagicor Progress Dashboard** - 8-section executive progress dashboard (COMPLETED Feb 26, 2026)
+  - Route: `/proposals/sagicor-progress` (public), `/proposals/preview/sagicor-progress` (preview)
+  - File: `frontend/src/pages/SagicorProgressDashboard.jsx`
+  - Features: Animated KPI counters, scroll-reveal sections, pulsing timeline, regional performance cards, efficiency analysis, blocker tracking, methodology overview
+  - Color palette: Sagicor Navy #1B3A5C, Gold #D4A843
+  - All data hardcoded (Phase 2: connect to Supabase analytics)
+
 ## Agent Connection Architecture
 Each agent follows the pattern:
 1. **Trigger**: Cron schedule, event, or manual
