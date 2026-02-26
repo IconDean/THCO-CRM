@@ -51,6 +51,8 @@ import THCOTownHall2026V2 from "./pages/THCOTownHall2026V2";
 import THCOTownHall2026V2Public from "./pages/THCOTownHall2026V2Public";
 import ProcureAIGCIOPack from "./pages/ProcureAIGCIOPack";
 import ProcureAIGCIOPackPublic from "./pages/ProcureAIGCIOPackPublic";
+import SagicorProgressDashboard from "./pages/SagicorProgressDashboard";
+import SagicorProgressDashboardPublic from "./pages/SagicorProgressDashboardPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
