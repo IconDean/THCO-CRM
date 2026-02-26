@@ -318,7 +318,7 @@ export default function SagicorProgressDashboard() {
   }, []);
 
   return (
-    <div style={{ background: C.offWhite, fontFamily: "'Calibri', 'Segoe UI', sans-serif" }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.offWhite, fontFamily: "'Calibri', 'Segoe UI', sans-serif" }} className="min-h-screen">
       {/* ─── Print Styles ─── */}
       <style>{`
         @media print {
