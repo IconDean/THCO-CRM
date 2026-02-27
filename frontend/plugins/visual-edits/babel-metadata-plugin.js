@@ -1361,7 +1361,8 @@ const babelMetadataPlugin = ({ types: t }) => {
 
   // bring in parser/traverse for dynamic analysis
   const parser = require("@babel/parser");
-  const traverse = require("@babel/traverse").default;
+  const traverseMod2 = require("@babel/traverse");
+  const traverse = traverseMod2.default || traverseMod2;
 
   function pathHasDynamicJSX(targetPath) {
     if (!targetPath || !targetPath.node) return false;
