@@ -1938,6 +1938,7 @@ PROPOSAL_NAMES = {
     "procure-ai-v1": "Procure AI V1",
     "sagicor-progress": "Sagicor Progress Dashboard",
     "ai-banking": "AI for Banking - From Monitoring to Intelligence",
+    "pebbles-brand": "Pebbles - Brand Identity & Vision",
 }
 
 @api_router.post("/proposals/viewers/register")
