@@ -1936,6 +1936,8 @@ PROPOSAL_NAMES = {
     "procure-ai-executive": "Executive Kick-Off Pack",
     "procure-ai-executive-v3": "Executive Pack V3",
     "procure-ai-v1": "Procure AI V1",
+    "sagicor-progress": "Sagicor Progress Dashboard",
+    "ai-banking": "AI for Banking - From Monitoring to Intelligence",
 }
 
 @api_router.post("/proposals/viewers/register")
