@@ -202,7 +202,7 @@ const Proposals = () => {
       setDeleteProposalDialog({ open: false, proposal: null });
       toast.success("Proposal deleted successfully");
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to delete proposal");
+      toast.error(typeof error.response?.data?.detail === 'string' ? error.response.data.detail : "Failed to delete proposal");
     }
   };
 
