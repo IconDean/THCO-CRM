@@ -55,6 +55,8 @@ import SagicorProgressDashboard from "./pages/SagicorProgressDashboard";
 import SagicorProgressDashboardPublic from "./pages/SagicorProgressDashboardPublic";
 import AIBankingPresentation from "./pages/AIBankingPresentation";
 import AIBankingPresentationPublic from "./pages/AIBankingPresentationPublic";
+import PebblesBrandPresentation from "./pages/PebblesBrandPresentation";
+import PebblesBrandPresentationPublic from "./pages/PebblesBrandPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
