@@ -843,7 +843,9 @@ const babelMetadataPlugin = ({ types: t }) => {
    * Lazily finds prop sources by scanning cached ASTs for component usages.
    */
   function lazyEvaluatePropSource(propName, componentName, componentFile) {
-    const traverse = require("@babel/traverse").default;
+    const traverseMod = require("@babel/traverse");
+    const traverse = traverseMod.default || traverseMod;
+    if (!traverse || typeof traverse !== "function") return null;
 
     for (const [absPath, cached] of FILE_AST_CACHE) {
       if (absPath === componentFile) continue;
