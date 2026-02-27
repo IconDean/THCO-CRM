@@ -237,6 +237,7 @@ const AppRouter = () => {
       <Route path="/proposals/preview/gcio-pack" element={<ProcureAIGCIOPack />} />
       <Route path="/proposals/preview/sagicor-progress" element={<SagicorProgressDashboard />} />
       <Route path="/proposals/preview/ai-banking" element={<AIBankingPresentation />} />
+      <Route path="/proposals/preview/pebbles-brand" element={<PebblesBrandPresentation />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
