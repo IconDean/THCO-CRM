@@ -118,7 +118,7 @@ const EmailGate = ({ proposalSlug, proposalTitle, children }) => {
         setHasAccess(true);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to register. Please try again.');
+      setError(typeof err.response?.data?.detail === 'string' ? err.response.data.detail : 'Failed to register. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
