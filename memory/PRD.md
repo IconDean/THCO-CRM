@@ -412,6 +412,12 @@ Each page now shows:
   - Features: Animated KPI counters, scroll-reveal sections, pulsing timeline, regional performance cards, efficiency analysis, blocker tracking, methodology overview
   - Color palette: Sagicor Navy #1B3A5C, Gold #D4A843
   - All data hardcoded (Phase 2: connect to Supabase analytics)
+- **AI for Banking Presentation** - 32-slide cinematic presentation (COMPLETED Feb 27, 2026)
+  - Route: `/proposals/ai-banking` (public), `/proposals/preview/ai-banking` (preview)
+  - File: `frontend/src/pages/AIBankingPresentation.jsx`
+  - Features: Frosted glass nav, keyboard/arrow navigation, progress dots, animated counters, staggered reveals, pyramid visualization, agentic architecture diagram, case study cards, interactive discussion slides
+  - Color palette: Dark #0A1628, Navy #1B3A5C, Blue #2E75B6, Gold #C5963A
+  - 32 slides covering: AI layers, case studies, risk matrix, merger integration, governance, team readiness
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
