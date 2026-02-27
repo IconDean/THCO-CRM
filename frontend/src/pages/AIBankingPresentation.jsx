@@ -162,7 +162,7 @@ const Slide1 = () => (
       <motion.h1 variants={fadeUp} custom={1} className="text-5xl md:text-7xl font-bold mb-3" style={{ color: P.white, fontFamily: "Inter, sans-serif" }}>AI for Banking</motion.h1>
       <motion.p variants={fadeUp} custom={2} className="text-2xl md:text-4xl font-light mb-6" style={{ color: P.blue }}>From Monitoring to Intelligence</motion.p>
       <motion.div variants={fadeIn} custom={3} className="w-28 h-[2px] mx-auto mb-6" style={{ background: P.gold }} />
-      <motion.p variants={fadeUp} custom={4} className="text-sm mb-2" style={{ color: "#8896A7" }}>Presented by TH Holding in partnership with Collaborative Technology</motion.p>
+      <motion.p variants={fadeUp} custom={4} className="text-sm mb-2" style={{ color: "#8896A7" }}>Presented by THCO in partnership with Collaborative Technology</motion.p>
       <motion.p variants={fadeUp} custom={5} className="text-sm" style={{ color: "#8896A7" }}>February 2026</motion.p>
       <motion.div variants={fadeUp} custom={6} className="flex items-center justify-center gap-6 mt-8">
         {["TH Holding", "CoTi"].map((n, i) => <div key={i} className="px-5 py-2 rounded-lg text-xs font-semibold" style={{ background: P.navy, color: P.iceBlue, border: `1px solid ${P.blue}44` }}>{n}</div>)}
