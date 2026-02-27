@@ -3,7 +3,7 @@ import SagicorProgressDashboard from "./SagicorProgressDashboard";
 
 export default function SagicorProgressDashboardPublic() {
   return (
-    <EmailGate proposalTitle="Sagicor Progress Dashboard">
+    <EmailGate proposalSlug="sagicor-progress" proposalTitle="Sagicor Progress Dashboard">
       <SagicorProgressDashboard />
     </EmailGate>
   );
