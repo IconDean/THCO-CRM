@@ -1014,7 +1014,9 @@ const babelMetadataPlugin = ({ types: t }) => {
    */
   function findExportedVariableInfo(absPath, exportName) {
     const parser = require("@babel/parser");
-    const traverse = require("@babel/traverse").default;
+    const traverseMod = require("@babel/traverse");
+    const traverse = traverseMod.default || traverseMod;
+    if (!traverse || typeof traverse !== "function") return null;
 
     const ast = parseFileAst(absPath, parser);
     if (!ast) return null;
