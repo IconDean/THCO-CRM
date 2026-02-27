@@ -141,7 +141,7 @@ const Proposals = () => {
       setDeleteClientDialog({ open: false, client: null });
       toast.success("Client deleted successfully");
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to delete client");
+      toast.error(typeof error.response?.data?.detail === 'string' ? error.response.data.detail : "Failed to delete client");
     }
   };
 
