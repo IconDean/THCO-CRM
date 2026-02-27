@@ -128,7 +128,7 @@ const Proposals = () => {
       setNewClientDescription("");
       toast.success(`Client "${data.name}" created successfully`);
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to create client");
+      toast.error(typeof error.response?.data?.detail === 'string' ? error.response.data.detail : "Failed to create client");
     }
   };
 
