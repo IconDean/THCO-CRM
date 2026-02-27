@@ -177,7 +177,7 @@ const Proposals = () => {
       
       toast.success("Proposal uploaded successfully");
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to upload proposal");
+      toast.error(typeof error.response?.data?.detail === 'string' ? error.response.data.detail : "Failed to upload proposal");
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
