@@ -53,6 +53,8 @@ import ProcureAIGCIOPack from "./pages/ProcureAIGCIOPack";
 import ProcureAIGCIOPackPublic from "./pages/ProcureAIGCIOPackPublic";
 import SagicorProgressDashboard from "./pages/SagicorProgressDashboard";
 import SagicorProgressDashboardPublic from "./pages/SagicorProgressDashboardPublic";
+import AIBankingPresentation from "./pages/AIBankingPresentation";
+import AIBankingPresentationPublic from "./pages/AIBankingPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
