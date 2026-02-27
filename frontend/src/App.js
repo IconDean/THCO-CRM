@@ -220,6 +220,7 @@ const AppRouter = () => {
       <Route path="/proposals/town-hall-2026" element={<THCOTownHall2026V2Public />} />
       <Route path="/proposals/gcio-pack" element={<ProcureAIGCIOPackPublic />} />
       <Route path="/proposals/sagicor-progress" element={<SagicorProgressDashboardPublic />} />
+      <Route path="/proposals/ai-banking" element={<AIBankingPresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
