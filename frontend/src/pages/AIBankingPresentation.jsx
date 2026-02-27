@@ -204,34 +204,49 @@ const Slide2 = () => (
 );
 
 /* SLIDE 3 — WHY NOW */
-const Slide3 = () => (
-  <SlideContainer dark>
-    <div className="px-6">
-      <div className="text-center mb-8">
-        <SectionLabel>CONTEXT</SectionLabel>
-        <Headline light>Why This Matters — Right Now</Headline>
+const Slide3 = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const branches = useCountUp(229, 1800, inView);
+  const assets = useCountUp(53, 1800, inView);
+  const stats = [
+    { display: `~${branches}`, label: "Combined Branches", sub: "Nationwide presence across Nigeria" },
+    { display: `₦${(assets / 10).toFixed(1)}T`, label: "Combined Assets", sub: "As of June 2025 reporting" },
+    { display: "~9th", label: "Largest Bank by Assets", sub: "Post-merger ranking" },
+  ];
+  return (
+    <SlideContainer dark>
+      <div ref={ref} className="px-6">
+        <div className="text-center mb-8">
+          <SectionLabel>CONTEXT</SectionLabel>
+          <Headline light>Why This Matters — Right Now</Headline>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {stats.map((s, i) => (
+            <motion.div key={i} variants={fadeIn} custom={i} className="rounded-xl p-5 text-center" style={{ background: `${P.navy}88`, border: `1px solid ${P.navy}`, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
+              <div className="text-4xl md:text-5xl font-bold mb-1" style={{ color: P.gold, fontFamily: "Inter, sans-serif" }}>{s.display}</div>
+              <div className="text-sm font-semibold mb-0.5" style={{ color: P.white }}>{s.label}</div>
+              <div className="text-xs" style={{ color: "#8896A7" }}>{s.sub}</div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            { icon: <Shield className="w-5 h-5" />, text: "CBN's fintech direction emphasises trust, safety, data governance, responsible AI" },
+            { icon: <Scale className="w-5 h-5" />, text: "NDPA/NDPR requirements on automated decision-making" },
+            { icon: <Globe className="w-5 h-5" />, text: "ISO/IEC 42001:2023 — first international AI management standard" },
+            { icon: <Zap className="w-5 h-5" />, text: "Banks that operationalise governance early move faster with less risk" },
+          ].map((item, i) => (
+            <motion.div key={i} variants={fadeUp} custom={i + 4} className="flex gap-3 items-start rounded-lg p-3" style={{ background: P.navy + "66" }}>
+              <div style={{ color: P.gold }}>{item.icon}</div>
+              <span className="text-sm" style={{ color: P.iceBlue }}>{item.text}</span>
+            </motion.div>
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard value="229" label="Combined Branches" sublabel="Nationwide presence across Nigeria" delay={0} />
-        <StatCard value="5.3" label="Trillion Naira in Assets" sublabel="As of June 2025 reporting" delay={1} prefix="₦" suffix="T" />
-        <StatCard value="~9th" label="Largest Bank by Assets" sublabel="Post-merger ranking" delay={2} />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {[
-          { icon: <Shield className="w-5 h-5" />, text: "CBN's fintech direction emphasises trust, safety, data governance, responsible AI" },
-          { icon: <Scale className="w-5 h-5" />, text: "NDPA/NDPR requirements on automated decision-making" },
-          { icon: <Globe className="w-5 h-5" />, text: "ISO/IEC 42001:2023 — first international AI management standard" },
-          { icon: <Zap className="w-5 h-5" />, text: "Banks that operationalise governance early move faster with less risk" },
-        ].map((item, i) => (
-          <motion.div key={i} variants={fadeUp} custom={i + 4} className="flex gap-3 items-start rounded-lg p-3" style={{ background: P.navy + "66" }}>
-            <div style={{ color: P.gold }}>{item.icon}</div>
-            <span className="text-sm" style={{ color: P.iceBlue }}>{item.text}</span>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  </SlideContainer>
-);
+    </SlideContainer>
+  );
+};
 
 /* SLIDE 4 — AI vs AUTOMATION */
 const Slide4 = () => (
