@@ -165,7 +165,7 @@ const Slide1 = () => (
       <motion.p variants={fadeUp} custom={4} className="text-sm mb-2" style={{ color: "#8896A7" }}>Presented by THCO in partnership with Collaborative Technology</motion.p>
       <motion.p variants={fadeUp} custom={5} className="text-sm" style={{ color: "#8896A7" }}>February 2026</motion.p>
       <motion.div variants={fadeUp} custom={6} className="flex items-center justify-center gap-6 mt-8">
-        {["TH Holding", "CoTi"].map((n, i) => <div key={i} className="px-5 py-2 rounded-lg text-xs font-semibold" style={{ background: P.navy, color: P.iceBlue, border: `1px solid ${P.blue}44` }}>{n}</div>)}
+        {["THCO", "CoTi"].map((n, i) => <div key={i} className="px-5 py-2 rounded-lg text-xs font-semibold" style={{ background: P.navy, color: P.iceBlue, border: `1px solid ${P.blue}44` }}>{n}</div>)}
       </motion.div>
     </div>
   </SlideContainer>
