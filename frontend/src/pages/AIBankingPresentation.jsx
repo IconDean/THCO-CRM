@@ -1020,7 +1020,7 @@ const Slide32 = () => (
       </motion.p>
       <motion.div variants={fadeIn} custom={7} className="w-20 h-[2px] mx-auto mb-6" style={{ background: P.gold }} />
       <motion.div variants={fadeUp} custom={8} className="flex items-center justify-center gap-6">
-        {["TH Holding", "CoTi"].map((n, i) => <div key={i} className="px-5 py-2 rounded-lg text-xs font-semibold" style={{ background: P.navy, color: P.iceBlue, border: `1px solid ${P.blue}44` }}>{n}</div>)}
+        {["THCO", "CoTi"].map((n, i) => <div key={i} className="px-5 py-2 rounded-lg text-xs font-semibold" style={{ background: P.navy, color: P.iceBlue, border: `1px solid ${P.blue}44` }}>{n}</div>)}
       </motion.div>
     </div>
   </SlideContainer>
