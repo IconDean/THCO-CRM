@@ -418,6 +418,12 @@ Each page now shows:
   - Features: Frosted glass nav, keyboard/arrow navigation, progress dots, animated counters, staggered reveals, pyramid visualization, agentic architecture diagram, case study cards, interactive discussion slides
   - Color palette: Dark #0A1628, Navy #1B3A5C, Blue #2E75B6, Gold #C5963A
   - 32 slides covering: AI layers, case studies, risk matrix, merger integration, governance, team readiness
+- **Pebbles Brand Identity** - 8-slide brand presentation (COMPLETED Feb 27, 2026)
+  - Route: `/proposals/pebbles-brand` (public), `/proposals/preview/pebbles-brand` (preview)
+  - File: `frontend/src/pages/PebblesBrandPresentation.jsx`
+  - Features: Alternating dark/light slides, pink accent bars, scripture references, icon triple-meaning cards, employer/employee dual cards, vision roadmap, frosted glass nav, keyboard navigation
+  - Color palette: Pink #FF2D8A, Dark #0D0D0D, White #FFFFFF
+  - Logo assets: `/public/logos/pebbles/` (logo_white.png, icon_color.png, icon_white.png)
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
