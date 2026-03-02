@@ -57,6 +57,8 @@ import AIBankingPresentation from "./pages/AIBankingPresentation";
 import AIBankingPresentationPublic from "./pages/AIBankingPresentationPublic";
 import PebblesBrandPresentation from "./pages/PebblesBrandPresentation";
 import PebblesBrandPresentationPublic from "./pages/PebblesBrandPresentationPublic";
+import ProcureAIEYPresentation from "./pages/ProcureAIEYPresentation";
+import ProcureAIEYPresentationPublic from "./pages/ProcureAIEYPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
