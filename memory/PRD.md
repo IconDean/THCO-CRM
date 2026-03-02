@@ -424,6 +424,11 @@ Each page now shows:
   - Features: Alternating dark/light slides, pink accent bars, scripture references, icon triple-meaning cards, employer/employee dual cards, vision roadmap, frosted glass nav, keyboard navigation
   - Color palette: Pink #FF2D8A, Dark #0D0D0D, White #FFFFFF
   - Logo assets: `/public/logos/pebbles/` (logo_white.png, icon_color.png, icon_white.png)
+- **Procure AI EY Alignment** - 15-slide enterprise PMO presentation (COMPLETED Feb 27, 2026)
+  - Route: `/proposals/procure-ai-ey` (public), `/proposals/preview/procure-ai-ey` (preview)
+  - File: `frontend/src/pages/ProcureAIEYPresentation.jsx`
+  - Features: 6 microservice architecture, RACI matrix, governance tiers, escalation pathway, 13-month roadmap, risk register, team table, reporting framework, clean enterprise tables with navy headers
+  - Color palette: Navy #1A2744, Teal #0D9488
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
