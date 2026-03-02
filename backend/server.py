@@ -1939,6 +1939,7 @@ PROPOSAL_NAMES = {
     "sagicor-progress": "Sagicor Progress Dashboard",
     "ai-banking": "AI for Banking - From Monitoring to Intelligence",
     "pebbles-brand": "Pebbles - Brand Identity & Vision",
+    "procure-ai-ey": "Procure AI - PMO/TQA Alignment Session",
 }
 
 @api_router.post("/proposals/viewers/register")
