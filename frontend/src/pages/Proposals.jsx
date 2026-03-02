@@ -510,6 +510,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* Procure AI EY Alignment */}
+            <Link
+              to="/proposals/procure-ai-ey"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#0D9488] hover:shadow-lg transition-all"
+              data-testid="procure-ai-ey-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1A2744] to-[#1E3A5F] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <Presentation className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#0D9488] bg-[#0D9488]/15 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Procure AI — EY Alignment</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  PMO/TQA Alignment Session — IHS Towers
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>15 Slides</span>
+                  <span>•</span>
+                  <span>Enterprise PMO</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#0D9488]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* Pebbles Brand Identity */}
             <Link
               to="/proposals/pebbles-brand"
