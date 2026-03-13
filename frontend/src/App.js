@@ -59,6 +59,10 @@ import PebblesBrandPresentation from "./pages/PebblesBrandPresentation";
 import PebblesBrandPresentationPublic from "./pages/PebblesBrandPresentationPublic";
 import ProcureAIEYPresentation from "./pages/ProcureAIEYPresentation";
 import ProcureAIEYPresentationPublic from "./pages/ProcureAIEYPresentationPublic";
+import ProcureAIMeetTheTeam from "./pages/ProcureAIMeetTheTeam";
+import ProcureAIMeetTheTeamPublic from "./pages/ProcureAIMeetTheTeamPublic";
+import GDLPebblesPresentation from "./pages/GDLPebblesPresentation";
+import GDLPebblesPresentationPublic from "./pages/GDLPebblesPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -227,6 +231,8 @@ const AppRouter = () => {
       <Route path="/proposals/ai-banking" element={<AIBankingPresentationPublic />} />
       <Route path="/proposals/pebbles-brand" element={<PebblesBrandPresentationPublic />} />
       <Route path="/proposals/procure-ai-ey" element={<ProcureAIEYPresentationPublic />} />
+      <Route path="/proposals/procure-ai-team" element={<ProcureAIMeetTheTeamPublic />} />
+      <Route path="/proposals/gdl-pebbles" element={<GDLPebblesPresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
@@ -242,6 +248,8 @@ const AppRouter = () => {
       <Route path="/proposals/preview/ai-banking" element={<AIBankingPresentation />} />
       <Route path="/proposals/preview/pebbles-brand" element={<PebblesBrandPresentation />} />
       <Route path="/proposals/preview/procure-ai-ey" element={<ProcureAIEYPresentation />} />
+      <Route path="/proposals/preview/procure-ai-team" element={<ProcureAIMeetTheTeam />} />
+      <Route path="/proposals/preview/gdl-pebbles" element={<GDLPebblesPresentation />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />

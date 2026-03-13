@@ -1940,6 +1940,8 @@ PROPOSAL_NAMES = {
     "ai-banking": "AI for Banking - From Monitoring to Intelligence",
     "pebbles-brand": "Pebbles - Brand Identity & Vision",
     "procure-ai-ey": "Procure AI - PMO/TQA Alignment Session",
+    "procure-ai-team": "Procure AI - Meet the Team",
+    "gdl-pebbles": "GDL x Pebbles - Strategic Assessment & Partnership Proposal",
 }
 
 @api_router.post("/proposals/viewers/register")

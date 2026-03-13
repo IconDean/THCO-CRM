@@ -18,7 +18,8 @@ import {
   ArrowLeft,
   FolderOpen,
   Play,
-  Sparkles
+  Sparkles,
+  Users
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -510,6 +511,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* GDL x Pebbles Presentation */}
+            <Link
+              to="/proposals/gdl-pebbles"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#B03140] hover:shadow-lg transition-all"
+              data-testid="gdl-pebbles-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0A1628] to-[#132036] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <Presentation className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#B03140] bg-[#B03140]/15 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">GDL × Pebbles</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Strategic Assessment & Partnership Proposal
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>12 Slides</span>
+                  <span>•</span>
+                  <span>Executive Deck</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#B03140]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* Procure AI EY Alignment */}
             <Link
               to="/proposals/procure-ai-ey"
@@ -535,6 +568,38 @@ const Proposals = () => {
                   <span>15 Slides</span>
                   <span>•</span>
                   <span>Enterprise PMO</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#0D9488]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Procure AI Meet the Team */}
+            <Link
+              to="/proposals/procure-ai-team"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#0D9488] hover:shadow-lg transition-all"
+              data-testid="procure-ai-team-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1E2761] to-[#263175] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#0D9488] bg-[#0D9488]/15 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Procure AI — Meet the Team</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Delivery Team — IHS Towers Engagement
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>5 Slides</span>
+                  <span>•</span>
+                  <span>Team Profiles</span>
                 </div>
                 <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#0D9488]/30 transition-colors">
                   <ChevronRight className="w-4 h-4 text-white" />
