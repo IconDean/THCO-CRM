@@ -429,6 +429,19 @@ Each page now shows:
   - File: `frontend/src/pages/ProcureAIEYPresentation.jsx`
   - Features: 6 microservice architecture, RACI matrix, governance tiers, escalation pathway, 13-month roadmap, risk register, team table, reporting framework, clean enterprise tables with navy headers
   - Color palette: Navy #1A2744, Teal #0D9488
+- **Procure AI Meet the Team** - 5-slide team profile deck (COMPLETED Mar 13, 2026)
+  - Route: `/proposals/procure-ai-team` (public), `/proposals/preview/procure-ai-team` (preview)
+  - File: `frontend/src/pages/ProcureAIMeetTheTeam.jsx`
+  - Features: Dark navy header bar per member, two-column layout (bio + experience), teal accent icons, certification/security badges, keyboard navigation
+  - Color palette: Navy #1E2761, Teal #0D9488
+  - Team: Emmanuel Daniel, David Temitope, James Anih, Ayo Omomia
+- **GDL × Pebbles Strategic Assessment** - 12-slide boardroom executive deck (COMPLETED Mar 13, 2026)
+  - Route: `/proposals/gdl-pebbles` (public), `/proposals/preview/gdl-pebbles` (preview)
+  - File: `frontend/src/pages/GDLPebblesPresentation.jsx`
+  - Features: CSS-only animations, animated SVG architecture diagram, counter animations, full-screen vertical slide transitions, dot grid texture, touch/swipe navigation, dark/light alternating rhythm
+  - Color palette: GDL Crimson #B03140, Pebbles Dark #0A1628, Pebbles Teal #1D9E75
+  - 12 slides: Cover, What We Heard, Current State, Complexity, Gap Assessment, Architecture Diagram, Pebbles Is, Capabilities, Demo, Path A vs B, 30-Day Plan, Closing
+  - Prepared for: Kola Ayeye, Executive Vice Chairman & GCEO of GDL
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
