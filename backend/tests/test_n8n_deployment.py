@@ -13,7 +13,7 @@ import os
 import time
 
 # Use public URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://animated-gcio-kick.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://executive-decks.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "joshua@thcohq.com"
