@@ -442,6 +442,14 @@ Each page now shows:
   - Color palette: GDL Crimson #B03140, Pebbles Dark #0A1628, Pebbles Teal #1D9E75
   - 12 slides: Cover, What We Heard, Current State, Complexity, Gap Assessment, Architecture Diagram, Pebbles Is, Capabilities, Demo, Path A vs B, 30-Day Plan, Closing
   - Prepared for: Kola Ayeye, Executive Vice Chairman & GCEO of GDL
+- **INGABO — Rise of the Thousand Hills** - 24-page cinematic lookbook & proposal (COMPLETED Mar 15, 2026)
+  - Route: `/proposals/ingabo` (public), `/proposals/preview/ingabo` (preview)
+  - File: `frontend/src/pages/IngaboPresentation.jsx`
+  - Features: CSS-only animations (letter-by-letter reveal, typewriter text, gold dust particles, brightness transitions), character reveal pages with full-bleed images, autoplay video on page 2, crossfade page transitions, dark/cold temperature shifts, animated SVG signal pulses, touch/swipe navigation, keyboard shortcuts
+  - Color palette: Dark #12121E, Gold #C4933F, Cyan #5DCAA5, Off-white #F0EBE0
+  - Typography: Playfair Display serif headings, Inter sans-serif body
+  - Assets: 11 custom images + 50MB video in `/public/images/ingabo/`
+  - 24 pages: Title Reveal, Video, Cover, Pitch Line, Built from Your Words, Why Rwanda, The Language, The Blackout, 5 Character Reveals (New Ingabo/Gasore/Mukamana/Keza Nkusi/Akavunja), Full Cast, Game Loop, Umuganda, Why Historic, Ibisigo Legacy, Monetisation, Rwanda Partnership, Roadmap, Five Chapters, The Ask, Back Cover
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
