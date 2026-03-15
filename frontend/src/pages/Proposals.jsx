@@ -543,6 +543,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* THE FORGE V2 Presentation */}
+            <Link
+              to="/proposals/the-forge-v2"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#E87A2A] hover:shadow-lg transition-all"
+              data-testid="the-forge-v2-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0A0705] to-[#1A1208] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#E87A2A]/20 flex items-center justify-center">
+                    <span className="text-[#E87A2A] font-bold text-lg" style={{ fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase' }}>F2</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#E87A2A] bg-[#E87A2A]/15 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">THE FORGE V2</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Fire and Memory — Industrial Edition
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>24 Pages</span>
+                  <span>•</span>
+                  <span>Cinematic Deck</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#E87A2A]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* INGABO Presentation */}
             <Link
               to="/proposals/ingabo"

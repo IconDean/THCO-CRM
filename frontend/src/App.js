@@ -67,6 +67,8 @@ import IngaboPresentation from "./pages/IngaboPresentation";
 import IngaboPresentationPublic from "./pages/IngaboPresentationPublic";
 import TheForgePresentation from "./pages/TheForgePresentation";
 import TheForgePresentationPublic from "./pages/TheForgePresentationPublic";
+import TheForgeV2Presentation from "./pages/TheForgeV2Presentation";
+import TheForgeV2PresentationPublic from "./pages/TheForgeV2PresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -239,6 +241,7 @@ const AppRouter = () => {
       <Route path="/proposals/gdl-pebbles" element={<GDLPebblesPresentationPublic />} />
       <Route path="/proposals/ingabo" element={<IngaboPresentationPublic />} />
       <Route path="/proposals/the-forge" element={<TheForgePresentationPublic />} />
+      <Route path="/proposals/the-forge-v2" element={<TheForgeV2PresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
@@ -258,6 +261,7 @@ const AppRouter = () => {
       <Route path="/proposals/preview/gdl-pebbles" element={<GDLPebblesPresentation />} />
       <Route path="/proposals/preview/ingabo" element={<IngaboPresentation />} />
       <Route path="/proposals/preview/the-forge" element={<TheForgePresentation />} />
+      <Route path="/proposals/preview/the-forge-v2" element={<TheForgeV2Presentation />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />

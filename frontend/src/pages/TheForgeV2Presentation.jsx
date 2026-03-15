@@ -596,7 +596,7 @@ export default function TheForgeV2Presentation() {
       <style>{css}</style>
       <div className={`fv2-flash ${flash ? "active" : ""}`} />
       {PAGES.map((PC, i) => (
-        <div key={i} className="fv2-pg" data-active={i === cur ? "true" : "false"} data-testid={`forgev2-page-${i + 1}`} style={{ zIndex: i === cur ? 10 : 0 }}>
+        <div key={i} className="fv2-pg" data-active={i === cur ? "true" : "false"} data-testid={`forgev2-page-${i + 1}`} style={{ position: "absolute", inset: 0, zIndex: i === cur ? 10 : 0, visibility: i === cur ? "visible" : "hidden" }}>
           <PC active={i === cur} />
         </div>
       ))}
