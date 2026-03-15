@@ -1942,6 +1942,7 @@ PROPOSAL_NAMES = {
     "procure-ai-ey": "Procure AI - PMO/TQA Alignment Session",
     "procure-ai-team": "Procure AI - Meet the Team",
     "gdl-pebbles": "GDL x Pebbles - Strategic Assessment & Partnership Proposal",
+    "ingabo": "INGABO - Rise of the Thousand Hills",
 }
 
 @api_router.post("/proposals/viewers/register")
