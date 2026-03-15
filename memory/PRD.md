@@ -450,6 +450,14 @@ Each page now shows:
   - Typography: Playfair Display serif headings, Inter sans-serif body
   - Assets: 11 custom images + 50MB video in `/public/images/ingabo/`
   - 24 pages: Title Reveal, Video, Cover, Pitch Line, Built from Your Words, Why Rwanda, The Language, The Blackout, 5 Character Reveals (New Ingabo/Gasore/Mukamana/Keza Nkusi/Akavunja), Full Cast, Game Loop, Umuganda, Why Historic, Ibisigo Legacy, Monetisation, Rwanda Partnership, Roadmap, Five Chapters, The Ask, Back Cover
+- **THE FORGE: Fire and Memory** - 24-page cinematic lookbook & proposal (COMPLETED Mar 15, 2026)
+  - Route: `/proposals/the-forge` (public), `/proposals/preview/the-forge` (preview)
+  - File: `frontend/src/pages/TheForgePresentation.jsx`
+  - Features: CSS-only forge ignition animation, ember particles drifting upward, typewriter text, character reveal pages (Keeper/Adesuwa/Ketura/Aduke/Marcus Hale), cold blue temperature shift for villain page (#080C14), PENDING RETURN amber glow badge, brightness transitions, crossfade page transitions, touch/swipe/keyboard navigation
+  - Color palette: Warm Black #0E0C09, Gold #C4841A, Amber #E87A2A, Cold Blue #080C14 (villain only), Off-white #F5ECD7
+  - Typography: Playfair Display serif headings, Inter sans-serif body
+  - Assets: 16 custom images + 81MB video in `/public/images/theforge/`
+  - 24 pages: Title Reveal, Video, Cover, Pitch Line, Built from Your Words, Three Roots (Meroë/Benin/Dahomey), The World, The Forge Lore, Bronze Hall, 5 Character Reveals, Three Heirs, Five Rivals, Game Loop, Oja Ìfé, Why Historic, Monetisation, Roadmap, Five Chapters, The Ask, Back Cover
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
