@@ -458,6 +458,15 @@ Each page now shows:
   - Typography: Playfair Display serif headings, Inter sans-serif body
   - Assets: 16 custom images + 81MB video in `/public/images/theforge/`
   - 24 pages: Title Reveal, Video, Cover, Pitch Line, Built from Your Words, Three Roots (Meroë/Benin/Dahomey), The World, The Forge Lore, Bronze Hall, 5 Character Reveals, Three Heirs, Five Rivals, Game Loop, Oja Ìfé, Why Historic, Monetisation, Roadmap, Five Chapters, The Ask, Back Cover
+- **THE FORGE V2: Fire and Memory (Industrial Edition)** - 24-page cinematic lookbook & proposal (COMPLETED Mar 15, 2026)
+  - Route: `/proposals/the-forge-v2` (public), `/proposals/preview/the-forge-v2` (preview)
+  - File: `frontend/src/pages/TheForgeV2Presentation.jsx`
+  - Features: Left-aligned industrial design language, Oswald condensed sans-serif headings, amber flash hard-cut transitions (50ms), ember particles, character split-layout pages (50/50), cold blue villain page (#070B12), heat-line animated dividers, vertical stamp text, numbered amber boxes, CSS-only animations (burn/drop/slide/fade/rise/ignite/bright), progress bar, touch/swipe/keyboard navigation
+  - Color palette: Industrial Black #0A0705, Amber #E8791A, Bronze #A0622A, Cold Blue #070B12 (villain), Warm White #F5EAD7
+  - Typography: Oswald condensed sans-serif headings, Inter sans-serif body
+  - Assets: Reuses 16 images + video from V1 in `/public/images/theforge/`
+  - 24 pages: Title Reveal, Video, Cover, Pitch Line, Built from Your Words, Three Civilisations, The World, Forge System, Bronze Hall, 5 Character Reveals (Keeper/Adesuwa/Ketura/Aduke/Marcus Hale), Three Heirs, Grand Oja, Game Loop, Oja Ìfé, Why Historic, Monetisation, Roadmap, Five Chapters, The Ask, Back Cover
+  - Distinct from V1: Left-aligned vs centered, Oswald vs Playfair Display, hard-cut flash vs crossfade, industrial vs warm aesthetic
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
