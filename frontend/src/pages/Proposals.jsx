@@ -575,6 +575,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* TIDE WAR Presentation */}
+            <Link
+              to="/proposals/tide-war"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#D4860A] hover:shadow-lg transition-all"
+              data-testid="tide-war-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#04080F] to-[#0A1018] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#D4860A]/20 flex items-center justify-center">
+                    <span className="text-[#D4860A] font-bold text-lg" style={{ fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase', letterSpacing: '0.1em' }}>TW</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#D4860A] bg-[#D4860A]/15 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">TIDE WAR</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Current Shift — Lookbook & Proposal
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>26 Pages</span>
+                  <span>•</span>
+                  <span>Cinematic Deck</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#D4860A]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* INGABO Presentation */}
             <Link
               to="/proposals/ingabo"

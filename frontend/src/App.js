@@ -69,6 +69,8 @@ import TheForgePresentation from "./pages/TheForgePresentation";
 import TheForgePresentationPublic from "./pages/TheForgePresentationPublic";
 import TheForgeV2Presentation from "./pages/TheForgeV2Presentation";
 import TheForgeV2PresentationPublic from "./pages/TheForgeV2PresentationPublic";
+import TideWarPresentation from "./pages/TideWarPresentation";
+import TideWarPresentationPublic from "./pages/TideWarPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -242,6 +244,7 @@ const AppRouter = () => {
       <Route path="/proposals/ingabo" element={<IngaboPresentationPublic />} />
       <Route path="/proposals/the-forge" element={<TheForgePresentationPublic />} />
       <Route path="/proposals/the-forge-v2" element={<TheForgeV2PresentationPublic />} />
+      <Route path="/proposals/tide-war" element={<TideWarPresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
@@ -262,6 +265,7 @@ const AppRouter = () => {
       <Route path="/proposals/preview/ingabo" element={<IngaboPresentation />} />
       <Route path="/proposals/preview/the-forge" element={<TheForgePresentation />} />
       <Route path="/proposals/preview/the-forge-v2" element={<TheForgeV2Presentation />} />
+      <Route path="/proposals/preview/tide-war" element={<TideWarPresentation />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
