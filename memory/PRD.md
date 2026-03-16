@@ -467,6 +467,15 @@ Each page now shows:
   - Assets: Reuses 16 images + video from V1 in `/public/images/theforge/`
   - 24 pages: Title Reveal, Video, Cover, Pitch Line, Built from Your Words, Three Civilisations, The World, Forge System, Bronze Hall, 5 Character Reveals (Keeper/Adesuwa/Ketura/Aduke/Marcus Hale), Three Heirs, Grand Oja, Game Loop, Oja Ìfé, Why Historic, Monetisation, Roadmap, Five Chapters, The Ask, Back Cover
   - Distinct from V1: Left-aligned vs centered, Oswald vs Playfair Display, hard-cut flash vs crossfade, industrial vs warm aesthetic
+- **TIDE WAR: Current Shift** - 26-page cinematic lookbook & proposal (COMPLETED Mar 16, 2026)
+  - Route: `/proposals/tide-war` (public), `/proposals/preview/tide-war` (preview)
+  - File: `frontend/src/pages/TideWarPresentation.jsx`
+  - Features: Ocean/nautical design language, wide-tracked Oswald uppercase headings, Libre Baskerville serif body, current-sweep page transitions (amber line left-to-right), horizontal current-line particles, Closure Clock on every page after page 3, diagonal grid layout, wave-curve copper dividers, vertical chart annotations, character split-layouts, villain cold-color-shift (page 18), numbered amber boxes, CSS-only animations (drift/fade/rise/drop/reveal/bright), progress bar, keyboard/touch/swipe navigation, fullscreen mode
+  - Color palette: Deep Ocean Black #04080F, Amber-Gold #D4860A, Copper-Bronze #8B5E2A, Sea-Glass White #E8F0EC, Guild Grey #2C3540, Cold Institutional #070C12 (villain)
+  - Typography: Oswald wide-tracked heavy uppercase headings, Libre Baskerville serif body
+  - Assets: 14 images + 1 video in `/public/images/tidewar/`
+  - 26 pages: Title Reveal, One-Sentence Pitch, Cover, Built From Your Words, The Hundred Isles, Three Histories, Gate Keys, Closure Clock, The Captain, Rael Marcelin, Naya Celestin, Marlene Durand, Kezia Joseph, Dr. Simone Beaumont, Admiral Lennox Carty, Solange Rivière, Simonette Baas, Sable Fontaine (villain), Dock-Fortress, Game Loop, The Great Crossing, Monetisation, Roadmap, The Ask, Video, Back Cover
+  - Distinct from Ingabo/Forge: Ocean black vs warm/cool black, wide-tracked vs condensed/serif, current sweep vs flash/crossfade, diagonal grid vs centered/left, Libre Baskerville vs Playfair/Inter, horizontal current particles vs ember/dust
 
 ## Agent Connection Architecture
 Each agent follows the pattern:
