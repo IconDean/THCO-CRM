@@ -100,7 +100,17 @@ const Dot = ({ x, y, size, color, label, count, delay, active }) => {
 
 /* ═══ SLIDES ═══ */
 
-/* 1 — TITLE MAP */
+/* 1 — TITLE COVER */
+const S0 = () => (
+  <div style={{ height: "100%", background: C.dark, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", position: "relative" }}>
+    <p className="afd" style={{ ...d(400), color: C.blue, fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.25em", marginBottom: 16 }}>Sagicor Technology</p>
+    <h1 className="afu sg-h" style={{ ...d(800), fontSize: "clamp(48px, 7vw, 100px)", color: C.white, lineHeight: 1.05 }}>STEC Executive Briefing</h1>
+    <div className="af" style={{ ...d(1400), width: 60, height: 2, background: C.gold, margin: "24px auto" }} />
+    <p className="af" style={{ ...d(1800), color: C.gray, fontSize: 14, letterSpacing: "0.08em" }}>Technology Capability Assessment</p>
+  </div>
+);
+
+/* 2 — THE MAP */
 const S1 = ({ active }) => (
   <div style={{ height: "100%", background: C.dark, position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
     <div style={{ position: "relative", width: "80%", height: "70%" }}>
@@ -690,7 +700,7 @@ const S20 = ({ active }) => {
 };
 
 /* ═══ MAIN ENGINE ═══ */
-const SLIDES = [S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19, S20];
+const SLIDES = [S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19, S20];
 const TOTAL = SLIDES.length;
 
 export default function SagicorSTECPresentation() {
