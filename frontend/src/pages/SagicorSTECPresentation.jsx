@@ -652,18 +652,18 @@ const S15 = () => {
             <span style={{ color: C.green, fontWeight: 800, fontSize: 10, background: `${C.green}18`, padding: "2px 6px", borderRadius: 3 }}>SOLVED</span>
           </div>
         </span>))}
-        {/* IN PROGRESS ROW */}
-        <div className="afl" style={{ ...d(200 + 9 * 140), background: `${C.gold}12`, borderRadius: 4, padding: "5px 10px", border: `1px solid ${C.gold}30` }}>
-          <span style={{ color: C.gold, fontWeight: 600 }}>Platform issues reported by users</span>
+        {/* IN PROGRESS ROW — same style as solved rows */}
+        <div className="afl" style={{ ...d(200 + 9 * 140), background: `${C.white}05`, borderRadius: 4, padding: "5px 10px" }}>
+          <span style={{ color: C.light }}>Platform issues reported by users</span>
         </div>
         <div className="af" style={{ ...d(300 + 9 * 140), textAlign: "center" }}>
           <span style={{ color: C.gray, fontSize: 12 }}>&rarr;</span>
         </div>
-        <div className="afr" style={{ ...d(400 + 9 * 140), background: `${C.gold}0a`, borderRadius: 4, padding: "5px 10px", border: `1px solid ${C.gold}20` }}>
-          <span style={{ color: C.gold }}>Team receiving feedback and actively working on fixes</span>
+        <div className="afr" style={{ ...d(400 + 9 * 140), background: `${C.green}0a`, borderRadius: 4, padding: "5px 10px" }}>
+          <span style={{ color: C.light }}>Team receiving feedback and actively working on fixes</span>
         </div>
         <div className="af" style={{ ...d(500 + 9 * 140), textAlign: "center" }}>
-          <span style={{ color: C.gold, fontWeight: 800, fontSize: 9, background: `${C.gold}20`, padding: "2px 5px", borderRadius: 3, whiteSpace: "nowrap" }}>IN PROGRESS</span>
+          <span style={{ color: C.green, fontWeight: 800, fontSize: 10, background: `${C.green}18`, padding: "2px 6px", borderRadius: 3, whiteSpace: "nowrap" }}>IN PROGRESS</span>
         </div>
       </div>
       <div className="af" style={{ ...d(2200), textAlign: "center", marginTop: 12 }}>
