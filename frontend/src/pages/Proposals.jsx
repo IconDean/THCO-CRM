@@ -607,6 +607,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* Sagicor STEC Presentation */}
+            <Link
+              to="/proposals/sagicor-stec"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#00D4FF] hover:shadow-lg transition-all"
+              data-testid="sagicor-stec-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0A1628] to-[#1A1A2E] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#00D4FF]/15 flex items-center justify-center">
+                    <span className="text-[#00D4FF] font-bold text-sm" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}>ST</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#00D4FF] bg-[#00D4FF]/10 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">SAGICOR STEC</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Technology Capability Assessment
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>20 Slides</span>
+                  <span>•</span>
+                  <span>Executive Briefing</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#00D4FF]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* INGABO Presentation */}
             <Link
               to="/proposals/ingabo"

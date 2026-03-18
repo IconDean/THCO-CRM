@@ -1946,6 +1946,7 @@ PROPOSAL_NAMES = {
     "the-forge": "THE FORGE - Fire and Memory",
     "the-forge-v2": "THE FORGE V2 - Fire and Memory",
     "tide-war": "TIDE WAR - Current Shift",
+    "sagicor-stec": "Sagicor STEC - Technology Capability Assessment",
 }
 
 @api_router.post("/proposals/viewers/register")

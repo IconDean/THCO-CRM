@@ -71,6 +71,8 @@ import TheForgeV2Presentation from "./pages/TheForgeV2Presentation";
 import TheForgeV2PresentationPublic from "./pages/TheForgeV2PresentationPublic";
 import TideWarPresentation from "./pages/TideWarPresentation";
 import TideWarPresentationPublic from "./pages/TideWarPresentationPublic";
+import SagicorSTECPresentation from "./pages/SagicorSTECPresentation";
+import SagicorSTECPresentationPublic from "./pages/SagicorSTECPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -245,6 +247,7 @@ const AppRouter = () => {
       <Route path="/proposals/the-forge" element={<TheForgePresentationPublic />} />
       <Route path="/proposals/the-forge-v2" element={<TheForgeV2PresentationPublic />} />
       <Route path="/proposals/tide-war" element={<TideWarPresentationPublic />} />
+      <Route path="/proposals/sagicor-stec" element={<SagicorSTECPresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
@@ -266,6 +269,7 @@ const AppRouter = () => {
       <Route path="/proposals/preview/the-forge" element={<TheForgePresentation />} />
       <Route path="/proposals/preview/the-forge-v2" element={<TheForgeV2Presentation />} />
       <Route path="/proposals/preview/tide-war" element={<TideWarPresentation />} />
+      <Route path="/proposals/preview/sagicor-stec" element={<SagicorSTECPresentation />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />
