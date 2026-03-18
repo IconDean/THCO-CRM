@@ -445,34 +445,49 @@ const S10 = ({ active }) => {
 
 /* 11 — WHAT SCORES TELL US */
 const S11 = ({ active }) => {
-  const segs = [
-    { range: "4.0-5.0", pct: 6, count: 17, color: C.green },
-    { range: "3.0-4.0", pct: 59, count: 172, color: C.gold },
-    { range: "2.0-3.0", pct: 34, count: 99, color: C.gray },
-    { range: "1.0-2.0", pct: 1, count: 4, color: `${C.coral}88` },
+  const bands = [
+    { range: "4.0 - 5.0", meaning: "Proficient to Expert — handles complexity, guides others, deep mastery", pct: 6, count: 17, color: C.green },
+    { range: "3.0 - 4.0", meaning: "Competent — works independently on standard tasks, solid foundation", pct: 59, count: 172, color: C.gold },
+    { range: "2.0 - 3.0", meaning: "Developing — basic awareness, needs support on complex work", pct: 34, count: "~99", color: C.gray },
+    { range: "1.0 - 2.0", meaning: "Early Stage — minimal experience, requires significant guidance", pct: 1, count: "~3", color: `${C.coral}88` },
   ];
   return (
-    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
-      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 28 }}>What the Scores Tell Us</h2>
-      <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
-        <div className="asi" style={{ ...d(400), width: 200, height: 200, borderRadius: "50%", background: `conic-gradient(${C.green} 0% 6%, ${C.gold} 6% 65%, ${C.gray} 65% 99%, ${C.coral}88 99% 100%)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ width: 130, height: 130, borderRadius: "50%", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 36, fontWeight: 900, color: C.gold }}>59%</span>
-            <span style={{ fontSize: 10, color: C.gray }}>3.0-4.0 range</span>
+    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(24px, 4vw, 70px)" }}>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(24px, 2.5vw, 38px)", marginBottom: 6 }}>What the Scores Tell Us</h2>
+      <p className="af" style={{ ...d(250), color: C.light, fontSize: 13, marginBottom: 20, maxWidth: 600 }}>Employees rated themselves on a 1-5 scale across technical skills, tools, processes, and behaviors.</p>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 32 }}>
+        {/* Donut Chart */}
+        <div className="asi" style={{ ...d(400), width: 170, height: 170, borderRadius: "50%", background: `conic-gradient(${C.green} 0% 6%, ${C.gold} 6% 65%, ${C.gray} 65% 99%, ${C.coral}88 99% 100%)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{ width: 110, height: 110, borderRadius: "50%", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 30, fontWeight: 900, color: C.gold }}>59%</span>
+            <span style={{ fontSize: 9, color: C.gray }}>3.0-4.0 range</span>
           </div>
         </div>
-        <div>
-          {segs.map((s, i) => (
-            <div key={i} className="afl" style={{ ...d(600 + i * 200), display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-              <div style={{ width: 12, height: 12, borderRadius: 2, background: s.color }} />
-              <span style={{ color: C.light, fontSize: 13 }}>{s.range}:</span>
-              <span style={{ color: C.white, fontSize: 14, fontWeight: 700 }}>{s.pct}%</span>
-              <span style={{ color: C.gray, fontSize: 11 }}>({s.count})</span>
-            </div>
-          ))}
+        {/* Score Band Table */}
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 50px 50px", gap: "0", fontSize: 11 }}>
+            <div className="af" style={{ ...d(500), color: C.gray, fontWeight: 700, padding: "4px 6px", borderBottom: `1px solid ${C.white}15`, textTransform: "uppercase", fontSize: 9 }}>Score</div>
+            <div className="af" style={{ ...d(500), color: C.gray, fontWeight: 700, padding: "4px 6px", borderBottom: `1px solid ${C.white}15`, textTransform: "uppercase", fontSize: 9 }}>What It Means</div>
+            <div className="af" style={{ ...d(500), color: C.gray, fontWeight: 700, padding: "4px 6px", borderBottom: `1px solid ${C.white}15`, textTransform: "uppercase", fontSize: 9, textAlign: "right" }}>%</div>
+            <div className="af" style={{ ...d(500), color: C.gray, fontWeight: 700, padding: "4px 6px", borderBottom: `1px solid ${C.white}15`, textTransform: "uppercase", fontSize: 9, textAlign: "right" }}>Count</div>
+            {bands.map((b, i) => (<span key={i} style={{ display: "contents" }}>
+              <div className="afl" style={{ ...d(600 + i * 150), padding: "6px", display: "flex", alignItems: "center", gap: 6, borderBottom: `1px solid ${C.white}06` }}>
+                <div style={{ width: 8, height: 8, borderRadius: 2, background: b.color, flexShrink: 0 }} />
+                <span style={{ color: C.white, fontWeight: 700 }}>{b.range}</span>
+              </div>
+              <div className="af" style={{ ...d(700 + i * 150), padding: "6px", color: C.light, fontSize: 10, lineHeight: 1.4, borderBottom: `1px solid ${C.white}06` }}>{b.meaning}</div>
+              <div className="af" style={{ ...d(800 + i * 150), padding: "6px", color: C.white, fontWeight: 700, textAlign: "right", borderBottom: `1px solid ${C.white}06` }}>{b.pct}%</div>
+              <div className="af" style={{ ...d(800 + i * 150), padding: "6px", color: C.gray, textAlign: "right", borderBottom: `1px solid ${C.white}06` }}>({b.count})</div>
+            </span>))}
+          </div>
         </div>
       </div>
-      <p className="af" style={{ ...d(1800), color: C.gray, fontSize: 14, fontStyle: "italic", marginTop: 24 }}>This is acceleration, not remediation.</p>
+      {/* Key Insight Callout */}
+      <div className="afu" style={{ ...d(1600), marginTop: 18, background: `${C.gold}10`, border: `1px solid ${C.gold}25`, borderRadius: 6, padding: "12px 18px", maxWidth: 600 }}>
+        <p style={{ color: C.gold, fontSize: 14, fontWeight: 700, marginBottom: 4 }}>59% of the workforce has a solid foundation.</p>
+        <p style={{ color: C.light, fontSize: 12, lineHeight: 1.5 }}>These are the employees ready for targeted investment — the "medium talent" who can become "top talent" with the right development.</p>
+      </div>
+      <p className="af" style={{ ...d(2000), color: C.gray, fontSize: 12, fontStyle: "italic", marginTop: 10 }}>Only 1% rated themselves at the lowest tier. The workforce is not starting from zero.</p>
     </div>
   );
 };
@@ -516,22 +531,65 @@ const S13 = ({ active }) => {
     { label: "IT Operations (Jamaica)", score: 7.3 },
     { label: "Service Delivery", score: 7.1 },
   ];
+  const scale = [
+    ["9.0 - 10.0", "Exceptional — highly engaged, strong advocacy", C.gold],
+    ["8.0 - 8.9", "Very Positive — engaged, collaborative, satisfied", C.green],
+    ["7.0 - 7.9", "Positive — functional, stable, some room to grow", C.blue],
+    ["6.0 - 6.9", "Neutral — neither strong positive nor negative signals", C.gray],
+    ["Below 6.0", "Attention needed — friction, disengagement, or concerns", C.coral],
+  ];
   return (
-    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
-      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(24px, 2.5vw, 38px)", marginBottom: 24 }}>Sentiment by Department</h2>
-      {depts.map((dep, i) => {
-        const color = dep.score >= 9 ? C.gold : dep.score >= 7.5 ? C.green : C.blue;
-        return (
-          <div key={i} className="afl" style={{ ...d(200 + i * 150), display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-            <span style={{ color: C.light, fontSize: 12, width: 180, textAlign: "right" }}>{dep.label}</span>
-            <div style={{ flex: 1, height: 22, background: `${C.white}06`, borderRadius: 3, overflow: "hidden" }}>
-              <div style={{ height: "100%", background: color, borderRadius: 3, width: active ? `${(dep.score / 10) * 100}%` : "0%", transition: `width 600ms ease-out ${200 + i * 150}ms` }} />
-            </div>
-            <span style={{ color, fontSize: 15, fontWeight: 800, width: 36 }}>{dep.score}</span>
+    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(24px, 4vw, 70px)" }}>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(24px, 2.5vw, 38px)", marginBottom: 4 }}>Sentiment by Department</h2>
+      <p className="af" style={{ ...d(200), color: C.light, fontSize: 12, marginBottom: 14, maxWidth: 650 }}>Sentiment score reflects how positively employees describe their work environment, team dynamics, and manager relationships — derived from qualitative response analysis.</p>
+      <div style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
+        {/* Bar Chart */}
+        <div style={{ flex: 1 }}>
+          {depts.map((dep, i) => {
+            const color = dep.score >= 9 ? C.gold : dep.score >= 8 ? C.green : C.blue;
+            return (
+              <div key={i} className="afl" style={{ ...d(300 + i * 120), display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                <span style={{ color: C.light, fontSize: 11, width: 160, textAlign: "right", flexShrink: 0 }}>{dep.label}</span>
+                <div style={{ flex: 1, height: 20, background: `${C.white}06`, borderRadius: 3, overflow: "hidden", position: "relative" }}>
+                  <div style={{ height: "100%", background: color, borderRadius: 3, width: active ? `${(dep.score / 10) * 100}%` : "0%", transition: `width 600ms ease-out ${300 + i * 120}ms` }} />
+                  {/* 7.0 Threshold Line */}
+                  <div style={{ position: "absolute", left: "70%", top: 0, bottom: 0, width: 1, background: `${C.white}30`, borderLeft: "1px dashed rgba(255,255,255,0.25)" }} />
+                </div>
+                <span style={{ color, fontSize: 14, fontWeight: 800, width: 32 }}>{dep.score}</span>
+              </div>
+            );
+          })}
+          <div className="af" style={{ ...d(1600), display: "flex", alignItems: "center", gap: 6, marginLeft: 172, marginTop: 2 }}>
+            <div style={{ width: 12, borderTop: "1px dashed rgba(255,255,255,0.4)" }} />
+            <span style={{ color: C.gray, fontSize: 9 }}>7.0 Positive Threshold</span>
           </div>
-        );
-      })}
-      <p className="af" style={{ ...d(2000), color: C.gray, fontSize: 13, fontStyle: "italic", marginTop: 16 }}>Every single department exceeds 6/10. No department is in crisis.</p>
+        </div>
+        {/* Score Interpretation */}
+        <div className="afr" style={{ ...d(1200), width: 220, flexShrink: 0 }}>
+          <p style={{ color: C.gray, fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Score Interpretation</p>
+          {scale.map(([range, desc, c], i) => (
+            <div key={i} style={{ display: "flex", gap: 6, marginBottom: 5, alignItems: "flex-start" }}>
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: c, marginTop: 3, flexShrink: 0 }} />
+              <div>
+                <span style={{ color: C.white, fontSize: 10, fontWeight: 700 }}>{range}</span>
+                <p style={{ color: C.light, fontSize: 9, lineHeight: 1.3 }}>{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Key Insight Callout */}
+      <div className="afu" style={{ ...d(1800), marginTop: 12, background: `${C.green}10`, border: `1px solid ${C.green}25`, borderRadius: 6, padding: "10px 16px", display: "flex", gap: 20, alignItems: "center" }}>
+        <div>
+          <p style={{ color: C.green, fontSize: 13, fontWeight: 700 }}>Every department scores above 7.0.</p>
+          <p style={{ color: C.light, fontSize: 11 }}>No department is in crisis. Even Service Delivery at 7.1 is in positive territory.</p>
+        </div>
+        <div style={{ height: 30, width: 1, background: `${C.white}15`, flexShrink: 0 }} />
+        <div>
+          <p style={{ color: C.gold, fontSize: 11, fontWeight: 600 }}>Application Dev (USA) leads at 9.4 — exceptional engagement.</p>
+          <p style={{ color: C.gray, fontSize: 10, marginTop: 2 }}>The 2.3-point spread suggests consistency, not isolated pockets of concern.</p>
+        </div>
+      </div>
     </div>
   );
 };
@@ -559,18 +617,18 @@ const S14 = ({ active }) => (
   </div>
 );
 
-/* 15 — WHAT WE NAVIGATED (ALL SOLVED) */
+/* 15 — WHAT WE NAVIGATED */
 const S15 = () => {
-  const items = [
-    ["Data fragmented across 12+ sources", "Unified roster of 498 employees built"],
-    ["Reporting lines mismatched between files", "Real-time corrections; validation links reissued"],
-    ["Assessment questions caused anxiety (N. America)", "Blueprint revised; repositioned as development"],
-    ["Wrong employees included in scope", "12 individuals removed on stakeholder confirmation"],
-    ["Employees mapped to outdated roles", "Profile corrections made; flagged for Phase 2/3"],
-    ["DPA execution — signatory confirmation", "DPA v2.2 finalized; signatories confirmed"],
-    ["SBBL data — missing manager details", "Manager names and classifications obtained"],
-    ["Southern Caribbean — missing job titles", "Job titles and manager emails received from HR"],
-    ["Central America — missing employee profiles", "Complete employee data received; assessments live"],
+  const solved = [
+    ["Data fragmented across 12+ sources", "Unified roster built"],
+    ["Reporting lines mismatched", "Real-time corrections"],
+    ["Assessment caused anxiety (North America)", "Blueprint revised"],
+    ["Wrong employees in scope", "Removed on confirmation"],
+    ["Outdated role mappings", "Profiles corrected"],
+    ["DPA awaiting signatories", "Signatories confirmed"],
+    ["SBBL missing manager data", "Data received"],
+    ["Southern Caribbean gaps", "Titles/emails received"],
+    ["Central America incomplete", "Profiles complete"],
   ];
   return (
     <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(24px, 4vw, 60px)" }}>
@@ -580,23 +638,36 @@ const S15 = () => {
         <div />
         <p className="af" style={{ ...d(150), color: C.green, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: 4 }}>Resolution</p>
         <p className="af" style={{ ...d(150), color: C.green, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: 4, textAlign: "center" }}>Status</p>
-        {items.map(([ch, res], i) => (<>
-          <div key={`ch${i}`} className="afl" style={{ ...d(200 + i * 180), background: `${C.white}05`, borderRadius: 4, padding: "6px 10px" }}>
+        {solved.map(([ch, res], i) => (<span key={`row${i}`} style={{ display: "contents" }}>
+          <div className="afl" style={{ ...d(200 + i * 140), background: `${C.white}05`, borderRadius: 4, padding: "5px 10px" }}>
             <span style={{ color: C.light }}>{ch}</span>
           </div>
-          <div key={`ar${i}`} className="af" style={{ ...d(300 + i * 180), textAlign: "center" }}>
+          <div className="af" style={{ ...d(300 + i * 140), textAlign: "center" }}>
             <span style={{ color: C.gray, fontSize: 12 }}>&rarr;</span>
           </div>
-          <div key={`rs${i}`} className="afr" style={{ ...d(400 + i * 180), background: `${C.green}0a`, borderRadius: 4, padding: "6px 10px" }}>
+          <div className="afr" style={{ ...d(400 + i * 140), background: `${C.green}0a`, borderRadius: 4, padding: "5px 10px" }}>
             <span style={{ color: C.light }}>{res}</span>
           </div>
-          <div key={`st${i}`} className="af" style={{ ...d(500 + i * 180), textAlign: "center" }}>
+          <div className="af" style={{ ...d(500 + i * 140), textAlign: "center" }}>
             <span style={{ color: C.green, fontWeight: 800, fontSize: 10, background: `${C.green}18`, padding: "2px 6px", borderRadius: 3 }}>SOLVED</span>
           </div>
-        </>))}
+        </span>))}
+        {/* IN PROGRESS ROW */}
+        <div className="afl" style={{ ...d(200 + 9 * 140), background: `${C.gold}12`, borderRadius: 4, padding: "5px 10px", border: `1px solid ${C.gold}30` }}>
+          <span style={{ color: C.gold, fontWeight: 600 }}>Platform issues reported by users</span>
+        </div>
+        <div className="af" style={{ ...d(300 + 9 * 140), textAlign: "center" }}>
+          <span style={{ color: C.gray, fontSize: 12 }}>&rarr;</span>
+        </div>
+        <div className="afr" style={{ ...d(400 + 9 * 140), background: `${C.gold}0a`, borderRadius: 4, padding: "5px 10px", border: `1px solid ${C.gold}20` }}>
+          <span style={{ color: C.gold }}>Team receiving feedback and actively working on fixes</span>
+        </div>
+        <div className="af" style={{ ...d(500 + 9 * 140), textAlign: "center" }}>
+          <span style={{ color: C.gold, fontWeight: 800, fontSize: 9, background: `${C.gold}20`, padding: "2px 5px", borderRadius: 3, whiteSpace: "nowrap" }}>IN PROGRESS</span>
+        </div>
       </div>
-      <div className="af" style={{ ...d(2200), textAlign: "center", marginTop: 16 }}>
-        <p style={{ color: C.green, fontSize: 16, fontWeight: 700 }}>40+ issues identified. All resolved.</p>
+      <div className="af" style={{ ...d(2200), textAlign: "center", marginTop: 12 }}>
+        <p style={{ color: C.green, fontSize: 15, fontWeight: 700 }}>40+ issues identified. 9 resolved. 1 actively being addressed.</p>
         <p style={{ color: C.light, fontSize: 12, marginTop: 4 }}>Platform fully operational across all six countries.</p>
       </div>
     </div>
