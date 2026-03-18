@@ -291,31 +291,64 @@ const S6 = ({ active }) => {
   );
 };
 
-/* 7 — ENGAGEMENT SIGNAL */
+/* 7 — ENGAGEMENT SIGNAL (with score explanation) */
 const S7 = ({ active }) => {
   const tiers = [
     { label: "Low Response (<30)", count: 48, score: "3.05", color: C.gray },
     { label: "Medium Response (30-50)", count: 112, score: "3.13", color: C.blue },
     { label: "High Response (50+)", count: 82, score: "3.26", color: C.gold },
   ];
+  const scale = [
+    ["1", "No experience or exposure", C.coral],
+    ["2", "Basic awareness, needs support", C.gray],
+    ["3", "Competent, works independently", C.blue],
+    ["4", "Proficient, handles complexity, guides others", C.green],
+    ["5", "Expert, deep mastery, leads and innovates", C.gold],
+  ];
   return (
-    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
-      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 32 }}>The Engagement Signal</h2>
-      <div style={{ width: "100%", maxWidth: 600 }}>
+    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(32px, 4vw, 70px)" }}>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(24px, 2.5vw, 38px)", marginBottom: 18 }}>The Engagement Signal</h2>
+      <div style={{ display: "flex", gap: 14, marginBottom: 18 }}>
         {tiers.map((t, i) => (
-          <div key={i} className="afu" style={{ ...d(400 + i * 500), display: "flex", alignItems: "center", gap: 16, marginBottom: 16, background: C.card, borderRadius: 6, padding: "16px 20px", borderLeft: `4px solid ${t.color}` }}>
-            <div style={{ flex: 1 }}>
-              <p style={{ color: C.light, fontSize: 12, fontWeight: 500 }}>{t.label}</p>
-              <p style={{ color: C.white, fontSize: 18, fontWeight: 700, marginTop: 2 }}>{t.count} employees</p>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <p style={{ color: C.gray, fontSize: 10, textTransform: "uppercase" }}>Avg Score</p>
-              <p style={{ color: t.color, fontSize: 28, fontWeight: 900 }}>{t.score}</p>
+          <div key={i} className="afu" style={{ ...d(300 + i * 400), flex: 1, background: C.card, borderRadius: 6, padding: "14px 16px", borderLeft: `4px solid ${t.color}` }}>
+            <p style={{ color: C.light, fontSize: 11, fontWeight: 500 }}>{t.label}</p>
+            <p style={{ color: C.white, fontSize: 16, fontWeight: 700, marginTop: 2 }}>{t.count} employees</p>
+            <div style={{ marginTop: 6 }}>
+              <p style={{ color: C.gray, fontSize: 9, textTransform: "uppercase" }}>Avg Score</p>
+              <p style={{ color: t.color, fontSize: 26, fontWeight: 900 }}>{t.score}</p>
             </div>
           </div>
         ))}
       </div>
-      <p className="af" style={{ ...d(2200), color: C.gold, fontSize: 16, fontWeight: 600, marginTop: 20, textAlign: "center" }}>Employees who invested more, scored higher.</p>
+      <div className="af" style={{ ...d(1600), height: 1, background: `${C.white}12`, margin: "4px 0 14px" }} />
+      <div style={{ display: "flex", gap: 28 }}>
+        <div style={{ flex: "0 0 280px" }}>
+          <p className="af" style={{ ...d(1800), color: C.blue, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>The 1-5 Scale</p>
+          {scale.map(([n, desc, c], i) => (
+            <div key={i} className="afl" style={{ ...d(2000 + i * 150), display: "flex", gap: 8, marginBottom: 4, alignItems: "baseline" }}>
+              <span style={{ color: c, fontSize: 14, fontWeight: 800, width: 14 }}>{n}</span>
+              <span style={{ color: C.light, fontSize: 11 }}>{desc}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ flex: 1 }}>
+          <p className="af" style={{ ...d(2800), color: C.gold, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>The Insight</p>
+          <div className="afr" style={{ ...d(3000), display: "flex", gap: 16, marginBottom: 10 }}>
+            <div style={{ textAlign: "center" }}>
+              <span style={{ color: C.gray, fontSize: 22, fontWeight: 900 }}>3.05</span>
+              <p style={{ color: C.light, fontSize: 10, marginTop: 2 }}>Competent</p>
+            </div>
+            <span style={{ color: C.gray, fontSize: 18, alignSelf: "center" }}>&rarr;</span>
+            <div style={{ textAlign: "center" }}>
+              <span style={{ color: C.gold, fontSize: 22, fontWeight: 900 }}>3.26</span>
+              <p style={{ color: C.light, fontSize: 10, marginTop: 2 }}>Toward Proficient</p>
+            </div>
+          </div>
+          <p className="afr" style={{ ...d(3400), color: C.light, fontSize: 11, lineHeight: 1.5, marginBottom: 8 }}>The 0.21 gap matters. High responders handle complex scenarios and guide others. Depth of articulation correlates with depth of capability.</p>
+          <p className="afr" style={{ ...d(3800), color: C.gold, fontSize: 12, fontWeight: 600 }}>These 82 employees are candidates to watch for development investment.</p>
+        </div>
+      </div>
+      <p className="af" style={{ ...d(4200), color: C.gray, fontSize: 12, fontStyle: "italic", marginTop: 10 }}>Employees who invested more, scored higher.</p>
     </div>
   );
 };
@@ -526,35 +559,46 @@ const S14 = ({ active }) => (
   </div>
 );
 
-/* 15 — WHAT WE NAVIGATED */
-const S15 = ({ active }) => {
+/* 15 — WHAT WE NAVIGATED (ALL SOLVED) */
+const S15 = () => {
   const items = [
-    ["Multilingual workforce", "Localized communications"],
-    ["Platform access issues", "Direct technical support"],
-    ["Low initial awareness", "Targeted manager outreach"],
-    ["Cultural hesitation", "Jamaica peer champions"],
-    ["Data inconsistencies", "Validation checkpoints"],
+    ["Data fragmented across 12+ sources", "Unified roster of 498 employees built"],
+    ["Reporting lines mismatched between files", "Real-time corrections; validation links reissued"],
+    ["Assessment questions caused anxiety (N. America)", "Blueprint revised; repositioned as development"],
+    ["Wrong employees included in scope", "12 individuals removed on stakeholder confirmation"],
+    ["Employees mapped to outdated roles", "Profile corrections made; flagged for Phase 2/3"],
+    ["DPA execution — signatory confirmation", "DPA v2.2 finalized; signatories confirmed"],
+    ["SBBL data — missing manager details", "Manager names and classifications obtained"],
+    ["Southern Caribbean — missing job titles", "Job titles and manager emails received from HR"],
+    ["Central America — missing employee profiles", "Complete employee data received; assessments live"],
   ];
   return (
-    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(32px, 5vw, 80px)" }}>
-      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 24 }}>What We Navigated</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 40px 1fr", gap: 8, alignItems: "center" }}>
-        <p style={{ color: C.coral, fontSize: 11, fontWeight: 700, textTransform: "uppercase", textAlign: "center", letterSpacing: "0.1em" }}>Challenge</p>
+    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(24px, 4vw, 60px)" }}>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(24px, 2.5vw, 38px)", marginBottom: 16 }}>What We Navigated</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 28px 1fr 56px", gap: "4px 6px", alignItems: "center", fontSize: 11 }}>
+        <p className="af" style={{ ...d(150), color: C.gray, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: 4 }}>Challenge</p>
         <div />
-        <p style={{ color: C.green, fontSize: 11, fontWeight: 700, textTransform: "uppercase", textAlign: "center", letterSpacing: "0.1em" }}>Resolution</p>
+        <p className="af" style={{ ...d(150), color: C.green, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: 4 }}>Resolution</p>
+        <p className="af" style={{ ...d(150), color: C.green, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: 4, textAlign: "center" }}>Status</p>
         {items.map(([ch, res], i) => (<>
-          <div key={`ch${i}`} className="afl" style={{ ...d(300 + i * 300), background: `${C.coral}12`, border: `1px solid ${C.coral}25`, borderRadius: 6, padding: "10px 14px" }}>
-            <span style={{ color: C.light, fontSize: 13 }}>{ch}</span>
+          <div key={`ch${i}`} className="afl" style={{ ...d(200 + i * 180), background: `${C.white}05`, borderRadius: 4, padding: "6px 10px" }}>
+            <span style={{ color: C.light }}>{ch}</span>
           </div>
-          <div key={`ar${i}`} className="af" style={{ ...d(500 + i * 300), textAlign: "center" }}>
-            <span style={{ color: C.gray, fontSize: 16 }}>&rarr;</span>
+          <div key={`ar${i}`} className="af" style={{ ...d(300 + i * 180), textAlign: "center" }}>
+            <span style={{ color: C.gray, fontSize: 12 }}>&rarr;</span>
           </div>
-          <div key={`rs${i}`} className="afr" style={{ ...d(700 + i * 300), background: `${C.green}12`, border: `1px solid ${C.green}25`, borderRadius: 6, padding: "10px 14px" }}>
-            <span style={{ color: C.light, fontSize: 13 }}>{res}</span>
+          <div key={`rs${i}`} className="afr" style={{ ...d(400 + i * 180), background: `${C.green}0a`, borderRadius: 4, padding: "6px 10px" }}>
+            <span style={{ color: C.light }}>{res}</span>
+          </div>
+          <div key={`st${i}`} className="af" style={{ ...d(500 + i * 180), textAlign: "center" }}>
+            <span style={{ color: C.green, fontWeight: 800, fontSize: 10, background: `${C.green}18`, padding: "2px 6px", borderRadius: 3 }}>SOLVED</span>
           </div>
         </>))}
       </div>
-      <p className="afu" style={{ ...d(2400), color: C.blue, fontSize: 16, fontWeight: 700, textAlign: "center", marginTop: 20 }}>40+ issues resolved.</p>
+      <div className="af" style={{ ...d(2200), textAlign: "center", marginTop: 16 }}>
+        <p style={{ color: C.green, fontSize: 16, fontWeight: 700 }}>40+ issues identified. All resolved.</p>
+        <p style={{ color: C.light, fontSize: 12, marginTop: 4 }}>Platform fully operational across all six countries.</p>
+      </div>
     </div>
   );
 };
@@ -700,7 +744,7 @@ const S20 = ({ active }) => {
 };
 
 /* ═══ MAIN ENGINE ═══ */
-const SLIDES = [S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19, S20];
+const SLIDES = [S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S17, S18, S19, S20];
 const TOTAL = SLIDES.length;
 
 export default function SagicorSTECPresentation() {
