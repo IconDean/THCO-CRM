@@ -629,28 +629,32 @@ const S16 = () => {
   );
 };
 
-/* 17 — FINAL PHASE */
+/* 17 — WHAT'S NEXT (ENHANCED) */
 const S17 = ({ active }) => {
-  const milestones = [
-    { label: "Now", desc: "Self-Assessment Phase", color: C.green, done: true },
-    { label: "MONDAY", desc: "Technical Assessment + Hands-On Simulation", color: C.blue, highlight: true },
-    { label: "April", desc: "Assessment completion", color: C.gray },
-    { label: "End of April", desc: "Final results delivered", color: C.gold },
+  const phases = [
+    { label: "THIS WEEK", items: ["Manager validations continue — need 50-100 before Phase 2/3 merges", "Dashboard links to unit heads going out"], color: C.blue },
+    { label: "MONDAY", items: ["Phase 2/3: Technical Assessment + Hands-On Simulation", "Validates practical capability through real scenarios", "Produces observable, comparable data across all regions"], color: C.green, highlight: true },
+    { label: "APRIL", items: ["Executive readout", "Final analysis and recommendations presented to leadership"], color: "#9B59B6" },
+    { label: "FOLLOWING", items: ["Employees receive development plans", "Personalized, actionable plans for every employee"], color: C.gold },
   ];
   return (
-    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
-      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 36 }}>The Final Phase</h2>
-      <div style={{ display: "flex", alignItems: "center", gap: 0, width: "100%", maxWidth: 700 }}>
-        {milestones.map((m, i) => (
-          <div key={i} className="afu" style={{ ...d(300 + i * 400), flex: 1, textAlign: "center", position: "relative" }}>
-            <div style={{ width: 20, height: 20, borderRadius: "50%", background: m.highlight ? C.blue : m.done ? C.green : `${C.white}20`, border: m.highlight ? `3px solid ${C.blue}` : "none", margin: "0 auto", boxShadow: m.highlight && active ? `0 0 20px ${C.blue}` : "none", animation: m.highlight && active ? "sg-pulse 2s ease-in-out infinite" : "none" }} />
-            {i < milestones.length - 1 && <div style={{ position: "absolute", top: 9, left: "50%", width: "100%", height: 2, background: `${C.white}15` }} />}
-            <p style={{ color: m.highlight ? C.blue : C.white, fontSize: m.highlight ? 16 : 13, fontWeight: m.highlight ? 900 : 600, marginTop: 10 }}>{m.label}</p>
-            <p style={{ color: C.gray, fontSize: 11, marginTop: 4 }}>{m.desc}</p>
+    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(24px, 4vw, 60px)" }}>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 24 }}>What's Next</h2>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 0, position: "relative" }}>
+        <div className="af" style={{ ...d(300), position: "absolute", top: 20, left: 0, right: 0, height: 2, background: `${C.white}12` }} />
+        {phases.map((p, i) => (
+          <div key={i} className="afu" style={{ ...d(400 + i * 500), flex: 1, position: "relative", paddingTop: 32 }}>
+            <div style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", width: 16, height: 16, borderRadius: "50%", background: p.highlight ? p.color : `${p.color}60`, border: `2px solid ${p.color}`, boxShadow: p.highlight && active ? `0 0 16px ${p.color}` : "none", zIndex: 2 }} />
+            <div style={{ background: C.card, border: `1px solid ${p.color}25`, borderTop: `3px solid ${p.color}`, borderRadius: 6, padding: "14px 12px", margin: "0 6px" }}>
+              <p style={{ color: p.color, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>{p.label}</p>
+              {p.items.map((it, j) => (
+                <p key={j} style={{ color: C.light, fontSize: 11, lineHeight: 1.5, marginBottom: 4 }}>{it}</p>
+              ))}
+            </div>
           </div>
         ))}
       </div>
-      <p className="af" style={{ ...d(2200), color: C.white, fontSize: 15, fontWeight: 600, marginTop: 32, textAlign: "center" }}>The final phase proceeds regardless of current manager validation numbers.</p>
+      <p className="af" style={{ ...d(2800), color: C.gold, fontSize: 15, fontWeight: 700, textAlign: "center", marginTop: 24 }}>The work continues. The investment is real.</p>
     </div>
   );
 };
@@ -688,7 +692,7 @@ const S18 = () => (
   </div>
 );
 
-/* 19 — THREE ASKS */
+/* 19 — WHAT WE NEED FROM YOU */
 const S19 = () => {
   const asks = [
     { n: "1", title: "Drive Manager Validation Completion", desc: "50-100 responses before Monday", color: C.coral },
@@ -697,7 +701,7 @@ const S19 = () => {
   ];
   return (
     <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
-      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 28 }}>The Three Asks</h2>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 28 }}>What We Need From You</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
         {asks.map((a, i) => (
           <Card key={i} delay={400 + i * 500} style={{ borderTop: `3px solid ${a.color}`, textAlign: "center", padding: "28px 20px" }}>
@@ -711,7 +715,62 @@ const S19 = () => {
   );
 };
 
-/* 20 — BOTTOM LINE */
+/* NEW — WHAT EMPLOYEES WILL RECEIVE */
+const SReceive = () => {
+  const items = [
+    { title: "Personal Capability Profile", desc: "Where they stand across technical skills, behaviors, and AI readiness", color: C.blue },
+    { title: "Development Plan", desc: "Actionable steps tailored to their role and growth trajectory", color: C.green },
+    { title: "Training Recommendations", desc: "Specific courses, certifications, and learning paths", color: C.gold },
+    { title: "Milestones", desc: "Clear markers of progress they can track", color: "#9B59B6" },
+  ];
+  return (
+    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 8 }}>What Every Employee Gets</h2>
+      <p className="af" style={{ ...d(300), color: C.light, fontSize: 14, marginBottom: 24 }}>Once the full assessment is complete, every technology employee will receive:</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+        {items.map((it, i) => (
+          <Card key={i} delay={500 + i * 300} style={{ borderLeft: `3px solid ${it.color}` }}>
+            <p className="sg-h" style={{ color: it.color, fontSize: 15, marginBottom: 6 }}>{it.title}</p>
+            <p style={{ color: C.light, fontSize: 12, lineHeight: 1.5 }}>{it.desc}</p>
+          </Card>
+        ))}
+      </div>
+      <p className="af" style={{ ...d(1800), color: C.light, fontSize: 13, marginBottom: 8 }}>This is not a one-time report. This is an ongoing development journey.</p>
+      <p className="af" style={{ ...d(2200), color: C.gold, fontSize: 16, fontWeight: 700 }}>Goal: 95%+ of employees with actionable development plans and clear evidence of progress.</p>
+    </div>
+  );
+};
+
+/* NEW — TRAINING IS BEING LINED UP */
+const STraining = () => {
+  const items = [
+    { title: "Structured Learning Paths", desc: "Role-specific development tracks being designed", color: C.blue },
+    { title: "Mentorship and Coaching", desc: "Pairing emerging builders with senior technical leaders", color: C.green },
+    { title: "Ongoing Capability Building", desc: "Not a one-time event — continuous investment", color: C.gold },
+  ];
+  return (
+    <div style={{ height: "100%", background: C.bg, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
+      <h2 className="afu sg-h" style={{ ...d(100), fontSize: "clamp(26px, 2.8vw, 42px)", marginBottom: 8 }}>Development Investment is Coming</h2>
+      <p className="af" style={{ ...d(300), color: C.light, fontSize: 14, marginBottom: 24 }}>Training capabilities are being prepared:</p>
+      <div style={{ maxWidth: 560 }}>
+        {items.map((it, i) => (
+          <div key={i} className="afl" style={{ ...d(500 + i * 500), display: "flex", gap: 16, marginBottom: 18, background: C.card, borderRadius: 6, padding: "18px 20px", borderLeft: `4px solid ${it.color}` }}>
+            <div>
+              <p className="sg-h" style={{ color: it.color, fontSize: 15, marginBottom: 4 }}>{it.title}</p>
+              <p style={{ color: C.light, fontSize: 13, lineHeight: 1.5 }}>{it.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="af" style={{ ...d(2200), marginTop: 20 }}>
+        <p style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>The assessment tells us WHO to invest in and WHAT they need.</p>
+        <p style={{ color: C.gold, fontSize: 14, fontWeight: 600, marginTop: 6 }}>The training program delivers that investment.</p>
+      </div>
+    </div>
+  );
+};
+
+/* 20 — THE BOTTOM LINE (ENHANCED) */
 const S20 = ({ active }) => {
   const [phase, setPhase] = useState(0);
   useEffect(() => {
@@ -721,30 +780,41 @@ const S20 = ({ active }) => {
       setTimeout(() => setPhase(2), 1800),
       setTimeout(() => setPhase(3), 3200),
       setTimeout(() => setPhase(4), 4600),
+      setTimeout(() => setPhase(5), 6000),
     ];
     return () => timers.forEach(clearTimeout);
   }, [active]);
   return (
     <div style={{ height: "100%", background: C.dark, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 clamp(32px, 6vw, 100px)" }}>
-      {phase >= 1 && <p className="afu" style={{ color: C.white, fontSize: "clamp(22px, 2.5vw, 36px)", fontWeight: 700, maxWidth: 600 }}>The workforce is not waiting to be convinced.</p>}
-      {phase >= 2 && <p className="afu" style={{ color: C.gold, fontSize: "clamp(22px, 2.5vw, 36px)", fontWeight: 700, marginTop: 12, maxWidth: 600 }}>They are waiting for investment.</p>}
+      {phase >= 1 && <p className="afu" style={{ color: C.white, fontSize: "clamp(20px, 2.2vw, 32px)", fontWeight: 700, maxWidth: 600 }}>The workforce is not waiting to be convinced.</p>}
+      {phase >= 2 && <p className="afu" style={{ color: C.gold, fontSize: "clamp(20px, 2.2vw, 32px)", fontWeight: 700, marginTop: 12, maxWidth: 600 }}>They are waiting for investment.</p>}
       {phase >= 3 && (
-        <div style={{ display: "flex", gap: 20, marginTop: 32, flexWrap: "wrap", justifyContent: "center" }}>
-          {[["2", "fear AI", C.blue], ["252", "asked for training", C.gold], ["9:1", "positive ratio", C.green]].map(([v, l, c], i) => (
-            <div key={i} className="asi" style={{ ...d(i * 200), background: C.card, border: `1px solid ${c}30`, borderRadius: 6, padding: "12px 20px", textAlign: "center" }}>
-              <span style={{ fontSize: 28, fontWeight: 900, color: c }}>{v}</span>
-              <p style={{ color: C.gray, fontSize: 11, marginTop: 2 }}>{l}</p>
+        <div style={{ marginTop: 24 }}>
+          {[
+            ["Where they stand", "Clear, data-driven capability picture"],
+            ["Where they're going", "Personalized development pathway"],
+            ["How they'll get there", "Training, mentorship, and support"],
+            ["That leadership is serious", "Real investment, not just talk"],
+          ].map(([bold, desc], i) => (
+            <div key={i} className="afl" style={{ ...d(i * 200), display: "flex", gap: 10, marginBottom: 6, justifyContent: "center" }}>
+              <span style={{ color: C.gold, fontSize: 13, fontWeight: 700 }}>{bold}</span>
+              <span style={{ color: C.gray, fontSize: 13 }}>— {desc}</span>
             </div>
           ))}
         </div>
       )}
-      {phase >= 4 && <p className="afu" style={{ color: C.light, fontSize: "clamp(14px, 1.2vw, 18px)", marginTop: 32, maxWidth: 600, lineHeight: 1.6 }}>The final phase launches Monday. The workforce has shown up. Now leadership shows up.</p>}
+      {phase >= 4 && (
+        <div className="asi" style={{ marginTop: 24, background: C.card, border: `1px solid ${C.gold}30`, borderRadius: 8, padding: "16px 28px" }}>
+          <p style={{ color: C.light, fontSize: 14, fontStyle: "italic" }}>"They're really serious. They're really investing in us."</p>
+        </div>
+      )}
+      {phase >= 5 && <p className="afu" style={{ color: C.gold, fontSize: 16, fontWeight: 700, marginTop: 20 }}>This assessment is how that investment begins.</p>}
     </div>
   );
 };
 
 /* ═══ MAIN ENGINE ═══ */
-const SLIDES = [S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S17, S18, S19, S20];
+const SLIDES = [S0, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S18, SReceive, STraining, S17, S19, S20];
 const TOTAL = SLIDES.length;
 
 export default function SagicorSTECPresentation() {
