@@ -73,6 +73,8 @@ import TideWarPresentation from "./pages/TideWarPresentation";
 import TideWarPresentationPublic from "./pages/TideWarPresentationPublic";
 import SagicorSTECPresentation from "./pages/SagicorSTECPresentation";
 import SagicorSTECPresentationPublic from "./pages/SagicorSTECPresentationPublic";
+import ReallocPresentation from "./pages/ReallocPresentation";
+import ReallocPresentationPublic from "./pages/ReallocPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -248,6 +250,7 @@ const AppRouter = () => {
       <Route path="/proposals/the-forge-v2" element={<TheForgeV2PresentationPublic />} />
       <Route path="/proposals/tide-war" element={<TideWarPresentationPublic />} />
       <Route path="/proposals/sagicor-stec" element={<SagicorSTECPresentationPublic />} />
+      <Route path="/proposals/realloc" element={<ReallocPresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
