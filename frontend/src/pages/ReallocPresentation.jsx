@@ -56,8 +56,8 @@ const useCount = (target, active, dur = 800, delay = 0) => {
 /* ═══ SHARED CHROME ═══ */
 const Header = () => (
   <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 40px", zIndex: 5 }}>
-    <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: 13, letterSpacing: "0.15em", color: C.white }}>REALLOC</span>
-    <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: C.muted }}>Prepared for Sagicor Financial Company</span>
+    <span style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800, fontSize: 15, letterSpacing: "0.15em", color: C.white }}>REALLOC</span>
+    <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 14, color: C.muted }}>Prepared for Sagicor Financial Company</span>
   </div>
 );
 
@@ -73,12 +73,12 @@ const DataCard = ({ children, delay = 0, style = {} }) => (
 const S1 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", position: "relative" }}>
     <Header />
-    <span className="af rl-pf" style={{ ...dl(400), fontSize: "clamp(48px,6vw,72px)", fontWeight: 700, letterSpacing: "0.08em", color: C.white }}>REALLOC</span>
-    <p className="au" style={{ ...dl(800), fontSize: 20, color: C.white, marginTop: 16 }}>AI Capability Program for Sagicor Financial Company</p>
-    <p className="af" style={{ ...dl(1200), fontSize: 14, color: C.muted, marginTop: 12 }}>Diagnose. Reallocate. Equip.</p>
+    <span className="af rl-pf" style={{ ...dl(400), fontSize: "clamp(54px,6.5vw,80px)", fontWeight: 700, letterSpacing: "0.08em", color: C.white }}>REALLOC</span>
+    <p className="au" style={{ ...dl(800), fontSize: 23, color: C.white, marginTop: 16 }}>AI Capability Program for Sagicor Financial Company</p>
+    <p className="af" style={{ ...dl(1200), fontSize: 16, color: C.muted, marginTop: 12 }}>Diagnose. Reallocate. Equip.</p>
     <div style={{ position: "absolute", bottom: 60, textAlign: "center" }}>
-      <p className="af" style={{ ...dl(1600), fontSize: 13, color: C.muted }}>Prepared by THCO | Powered by the Realloc Platform | March 2026</p>
-      <p className="af" style={{ ...dl(2000), fontSize: 12, color: C.sec, marginTop: 8, maxWidth: 600 }}>Supported by 269 vetted AI practitioners from Meta, McKinsey, NVIDIA, OpenAI, Morgan Stanley, xAI, IBM, SAP, AWS, and 50+ other leading organizations.</p>
+      <p className="af" style={{ ...dl(1600), fontSize: 15, color: C.muted }}>Prepared by THCO | Powered by the Realloc Platform | March 2026</p>
+      <p className="af" style={{ ...dl(2000), fontSize: 14, color: C.sec, marginTop: 8, maxWidth: 600 }}>Supported by 269 vetted AI practitioners from Meta, McKinsey, NVIDIA, OpenAI, Morgan Stanley, xAI, IBM, SAP, AWS, and 50+ other leading organizations.</p>
     </div>
   </div>
 );
@@ -87,7 +87,7 @@ const S1 = () => (
 const S2 = () => (
   <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 clamp(40px,10vw,200px)" }}>
     <Header />
-    <p className="au rl-pf" style={{ ...dl(600), fontSize: "clamp(22px,2.4vw,28px)", fontWeight: 400, fontStyle: "italic", color: C.white, lineHeight: 1.6, textAlign: "center", maxWidth: 700 }}>
+    <p className="au rl-pf" style={{ ...dl(600), fontSize: "clamp(26px,2.6vw,34px)", fontWeight: 400, fontStyle: "italic", color: C.white, lineHeight: 1.6, textAlign: "center", maxWidth: 700 }}>
       "The question is no longer whether AI will change your workforce. The question is whether you will lead that change or react to it."
     </p>
   </div>
@@ -99,14 +99,14 @@ const S3 = () => (
     <Header />
     <div style={{ maxWidth: "60%" }}>
       <Badge text="THE CHALLENGE" delay={200} />
-      <h2 className="au rl-pf" style={{ ...dl(400), fontSize: "clamp(28px,3vw,40px)", fontWeight: 700, lineHeight: 1.2, marginBottom: 24 }}>AI Is Restructuring Work. Right Now. Inside Sagicor.</h2>
-      <p className="au" style={{ ...dl(700), fontSize: 16, color: C.text, lineHeight: 1.8 }}>
+      <h2 className="au rl-pf" style={{ ...dl(400), fontSize: "clamp(32px,3.2vw,46px)", fontWeight: 700, lineHeight: 1.2, marginBottom: 24 }}>AI Is Restructuring Work. Right Now. Inside Sagicor.</h2>
+      <p className="au" style={{ ...dl(700), fontSize: 18, color: C.text, lineHeight: 1.8 }}>
         AI is not eliminating jobs overnight. It is changing what makes each role valuable.
       </p>
-      <p className="au" style={{ ...dl(900), fontSize: 16, color: C.text, lineHeight: 1.8, marginTop: 16 }}>
+      <p className="au" style={{ ...dl(900), fontSize: 18, color: C.text, lineHeight: 1.8, marginTop: 16 }}>
         Some of Sagicor's 498 technology employees are about to become more valuable than ever. Others are in roles that AI is actively commoditizing.
       </p>
-      <p className="au" style={{ ...dl(1100), fontSize: 16, color: C.text, lineHeight: 1.8, marginTop: 16 }}>
+      <p className="au" style={{ ...dl(1100), fontSize: 18, color: C.text, lineHeight: 1.8, marginTop: 16 }}>
         Until now, there has been no way to tell which is which.
       </p>
     </div>
@@ -124,16 +124,16 @@ const S4 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 32 }}>How Companies Typically Respond</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 32 }}>How Companies Typically Respond</h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
         {cards.map((c, i) => (
           <DataCard key={i} delay={400 + i * 200}>
-            <p style={{ fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 12 }}>{c.t}</p>
-            {c.l.map((line, j) => <p key={j} style={{ fontSize: 14, color: C.sec, lineHeight: 1.6, marginBottom: 4 }}>{line}</p>)}
+            <p style={{ fontSize: 18, fontWeight: 600, color: C.white, marginBottom: 12 }}>{c.t}</p>
+            {c.l.map((line, j) => <p key={j} style={{ fontSize: 16, color: C.sec, lineHeight: 1.6, marginBottom: 4 }}>{line}</p>)}
           </DataCard>
         ))}
       </div>
-      <p className="au" style={{ ...dl(1400), fontSize: 16, fontWeight: 700, color: C.white, marginTop: 28 }}>All four approaches start without data.</p>
+      <p className="au" style={{ ...dl(1400), fontSize: 18, fontWeight: 700, color: C.white, marginTop: 28 }}>All four approaches start without data.</p>
     </div>
   );
 };
@@ -156,9 +156,9 @@ const S5 = ({ active }) => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,8vw,120px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,3vw,40px)", fontWeight: 700, marginBottom: 32 }}>What If You Already Had the Data?</h2>
-      {lines.map((l, i) => phase > i && <p key={i} className="au" style={{ fontSize: 16, color: C.text, lineHeight: 1.8, marginBottom: 6 }}>{l}</p>)}
-      {phase >= 6 && <p className="au" style={{ fontSize: 18, fontWeight: 700, color: C.white, marginTop: 28 }}>Sagicor already has that data.</p>}
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(32px,3.2vw,46px)", fontWeight: 700, marginBottom: 32 }}>What If You Already Had the Data?</h2>
+      {lines.map((l, i) => phase > i && <p key={i} className="au" style={{ fontSize: 18, color: C.text, lineHeight: 1.8, marginBottom: 6 }}>{l}</p>)}
+      {phase >= 6 && <p className="au" style={{ fontSize: 20, fontWeight: 700, color: C.white, marginTop: 28 }}>Sagicor already has that data.</p>}
     </div>
   );
 };
@@ -179,20 +179,20 @@ const S6 = ({ active }) => {
     <div style={{ height: "100%", display: "flex", alignItems: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
       <div style={{ flex: 1 }}>
-        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, lineHeight: 1.3, maxWidth: 500 }}>The Most Comprehensive Technology Workforce Assessment in Sagicor's History</h2>
+        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, lineHeight: 1.3, maxWidth: 500 }}>The Most Comprehensive Technology Workforce Assessment in Sagicor's History</h2>
       </div>
       <div className="au rl-card" style={{ ...dl(500), width: 340 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
           <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.green }} />
-          <span style={{ fontSize: 11, fontWeight: 600, color: C.sec, textTransform: "uppercase", letterSpacing: "0.1em" }}>LIVE METRICS</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: C.sec, textTransform: "uppercase", letterSpacing: "0.1em" }}>LIVE METRICS</span>
         </div>
         {metrics.map((m, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "10px 0", borderBottom: `1px solid ${C.border}` }}>
-            <span className="rl-mono" style={{ fontSize: 24, fontWeight: 700, color: C.white }}>{m.s ? m.v : v1 === 0 ? 0 : m.v}</span>
-            <span style={{ fontSize: 13, color: C.sec }}>{m.l}</span>
+            <span className="rl-mono" style={{ fontSize: 28, fontWeight: 700, color: C.white }}>{m.s ? m.v : v1 === 0 ? 0 : m.v}</span>
+            <span style={{ fontSize: 15, color: C.sec }}>{m.l}</span>
           </div>
         ))}
-        <p style={{ fontSize: 12, color: C.muted, marginTop: 16 }}>Jamaica. Canada. USA. Barbados. Trinidad and Tobago. Curacao.</p>
+        <p style={{ fontSize: 14, color: C.muted, marginTop: 16 }}>Jamaica. Canada. USA. Barbados. Trinidad and Tobago. Curacao.</p>
       </div>
     </div>
   );
@@ -209,20 +209,20 @@ const S7 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>Where We Are in the Assessment Process</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>Where We Are in the Assessment Process</h2>
       {phases.map((p, i) => (
         <DataCard key={i} delay={400 + i * 250} style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 20 }}>
-          <span style={{ fontSize: 12, color: C.muted, fontWeight: 600, textTransform: "uppercase", width: 60 }}>{p.n}</span>
-          <span style={{ fontSize: 16, fontWeight: 600, color: C.white, width: 200 }}>{p.t}</span>
+          <span style={{ fontSize: 14, color: C.muted, fontWeight: 600, textTransform: "uppercase", width: 60 }}>{p.n}</span>
+          <span style={{ fontSize: 18, fontWeight: 600, color: C.white, width: 200 }}>{p.t}</span>
           <span style={{ display: "flex", alignItems: "center", gap: 6, width: 100 }}>
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: p.sc }} />
-            <span style={{ fontSize: 12, color: p.sc, fontWeight: 500 }}>{p.s}</span>
+            <span style={{ fontSize: 14, color: p.sc, fontWeight: 500 }}>{p.s}</span>
           </span>
-          <span style={{ fontSize: 14, color: C.sec, flex: 1 }}>{p.d}</span>
+          <span style={{ fontSize: 16, color: C.sec, flex: 1 }}>{p.d}</span>
         </DataCard>
       ))}
       <DataCard delay={1500} style={{ marginTop: 8, borderColor: `${C.muted}40` }}>
-        <p style={{ fontSize: 12, color: C.muted, lineHeight: 1.6 }}>All displacement scores, builder core rankings, and group distributions in this presentation are based on Self-Assessment inference and Manager Validation data received so far. They are directional, not definitive. As Technical Assessments complete, these will sharpen.</p>
+        <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.6 }}>All displacement scores, builder core rankings, and group distributions in this presentation are based on Self-Assessment inference and Manager Validation data received so far. They are directional, not definitive. As Technical Assessments complete, these will sharpen.</p>
       </DataCard>
     </div>
   );
@@ -238,15 +238,15 @@ const S8 = ({ active }) => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 6 }}>Early Signals: Your Workforce Falls Into Three Groups</h2>
-      <p className="af" style={{ ...dl(400), fontSize: 13, color: C.muted, marginBottom: 28 }}>Based on SA inference and MV data to date.</p>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 6 }}>Early Signals: Your Workforce Falls Into Three Groups</h2>
+      <p className="af" style={{ ...dl(400), fontSize: 15, color: C.muted, marginBottom: 28 }}>Based on SA inference and MV data to date.</p>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
         {groups.map((g, i) => (
           <DataCard key={i} delay={600 + i * 300} style={{ borderTop: `2px solid ${g.color}` }}>
-            <span className="rl-mono" style={{ fontSize: 48, fontWeight: 700, color: g.color, lineHeight: 1 }}>{g.pct}</span>
-            <p style={{ fontSize: 11, fontWeight: 700, color: g.color, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 8, marginBottom: 12 }}>{g.label}</p>
-            <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.6, marginBottom: 12 }}>{g.desc}</p>
-            <p style={{ fontSize: 14, fontWeight: 700, color: C.white }}>{g.act}</p>
+            <span className="rl-mono" style={{ fontSize: 54, fontWeight: 700, color: g.color, lineHeight: 1 }}>{g.pct}</span>
+            <p style={{ fontSize: 13, fontWeight: 700, color: g.color, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 8, marginBottom: 12 }}>{g.label}</p>
+            <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.6, marginBottom: 12 }}>{g.desc}</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: C.white }}>{g.act}</p>
           </DataCard>
         ))}
       </div>
@@ -271,18 +271,18 @@ const S9 = ({ active }) => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,5vw,80px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 20 }}>Workforce Heatmap: 498 Workers Visualized</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 20 }}>Workforce Heatmap: 498 Workers Visualized</h2>
       <div className="as" style={{ ...dl(600), position: "relative", width: "100%", height: 360, background: C.card, border: `1px solid ${C.border}`, borderRadius: 2 }}>
         {/* Axes */}
-        <span style={{ position: "absolute", left: -32, top: "50%", transform: "rotate(-90deg) translateX(50%)", fontSize: 10, color: C.muted, whiteSpace: "nowrap" }}>Capability Score (1-5)</span>
-        <span style={{ position: "absolute", bottom: -24, left: "50%", transform: "translateX(-50%)", fontSize: 10, color: C.muted }}>Displacement Direction Score (1-10)</span>
+        <span style={{ position: "absolute", left: -32, top: "50%", transform: "rotate(-90deg) translateX(50%)", fontSize: 12, color: C.muted, whiteSpace: "nowrap" }}>Capability Score (1-5)</span>
+        <span style={{ position: "absolute", bottom: -24, left: "50%", transform: "translateX(-50%)", fontSize: 12, color: C.muted }}>Displacement Direction Score (1-10)</span>
         {/* Grid lines */}
-        {[1,2,3,4,5].map(v => <div key={v} style={{ position: "absolute", left: 40, right: 10, top: `${10 + (5 - v) * 68}px`, height: 1, background: `${C.white}06` }}><span style={{ position: "absolute", left: -28, top: -6, fontSize: 9, color: C.muted }}>{v}</span></div>)}
-        {[1,2,3,4,5,6,7,8,9,10].map(v => <div key={v} style={{ position: "absolute", top: 10, bottom: 24, left: `${40 + (v - 1) * ((100 - 6) / 9)}%`, width: 1, background: `${C.white}06` }}><span style={{ position: "absolute", bottom: -16, left: -4, fontSize: 9, color: C.muted }}>{v}</span></div>)}
+        {[1,2,3,4,5].map(v => <div key={v} style={{ position: "absolute", left: 40, right: 10, top: `${10 + (5 - v) * 68}px`, height: 1, background: `${C.white}06` }}><span style={{ position: "absolute", left: -28, top: -6, fontSize: 11, color: C.muted }}>{v}</span></div>)}
+        {[1,2,3,4,5,6,7,8,9,10].map(v => <div key={v} style={{ position: "absolute", top: 10, bottom: 24, left: `${40 + (v - 1) * ((100 - 6) / 9)}%`, width: 1, background: `${C.white}06` }}><span style={{ position: "absolute", bottom: -16, left: -4, fontSize: 11, color: C.muted }}>{v}</span></div>)}
         {/* Zone labels */}
-        <div style={{ position: "absolute", top: 14, left: 60, fontSize: 10, color: `${C.red}80`, fontWeight: 600 }}>AT RISK</div>
-        <div style={{ position: "absolute", top: 14, left: "42%", fontSize: 10, color: `${C.grey}80`, fontWeight: 600 }}>STABLE</div>
-        <div style={{ position: "absolute", top: 14, right: 40, fontSize: 10, color: `${C.blue}80`, fontWeight: 600 }}>RISING</div>
+        <div style={{ position: "absolute", top: 14, left: 60, fontSize: 12, color: `${C.red}80`, fontWeight: 600 }}>AT RISK</div>
+        <div style={{ position: "absolute", top: 14, left: "42%", fontSize: 12, color: `${C.grey}80`, fontWeight: 600 }}>STABLE</div>
+        <div style={{ position: "absolute", top: 14, right: 40, fontSize: 12, color: `${C.blue}80`, fontWeight: 600 }}>RISING</div>
         {/* Dots */}
         {dots.map((dot, i) => (
           <div key={i} style={{
@@ -297,10 +297,10 @@ const S9 = ({ active }) => {
       </div>
       <div className="au" style={{ ...dl(1400), display: "flex", gap: 28, marginTop: 20, justifyContent: "center" }}>
         {[["164 Rising", C.blue], ["199 Stable", C.grey], ["135 At Risk", C.red]].map(([l, c], i) => (
-          <span key={i} className="rl-mono" style={{ fontSize: 14, color: c, fontWeight: 500 }}>{l}</span>
+          <span key={i} className="rl-mono" style={{ fontSize: 16, color: c, fontWeight: 500 }}>{l}</span>
         ))}
       </div>
-      <p className="af" style={{ ...dl(1800), fontSize: 12, color: C.muted, marginTop: 10 }}>Based on SA inference and MV data. Click any dot in the live platform to see that person's full diagnostic.</p>
+      <p className="af" style={{ ...dl(1800), fontSize: 14, color: C.muted, marginTop: 10 }}>Based on SA inference and MV data. Click any dot in the live platform to see that person's full diagnostic.</p>
     </div>
   );
 };
@@ -321,14 +321,14 @@ const S10 = ({ active }) => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 20, alignSelf: "flex-start" }}>From Assessment to Action</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 20, alignSelf: "flex-start" }}>From Assessment to Action</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: 0, width: "100%", maxWidth: 700 }}>
         {steps.map(([t, d], i) => (
           <div key={i}>
             <div className="al" style={{ ...dl(300 + i * 150), display: "flex", alignItems: "center", gap: 16, padding: "8px 16px", background: active && i <= Math.floor((Date.now() / 300) % 20) ? C.card : C.card, border: `1px solid ${C.border}`, borderRadius: 2 }}>
-              <span className="rl-mono" style={{ fontSize: 12, color: C.muted, width: 16 }}>{i + 1}</span>
-              <span style={{ fontSize: 14, fontWeight: 600, color: C.white, width: 260 }}>{t}</span>
-              <span style={{ fontSize: 13, color: C.sec }}>{d}</span>
+              <span className="rl-mono" style={{ fontSize: 14, color: C.muted, width: 16 }}>{i + 1}</span>
+              <span style={{ fontSize: 16, fontWeight: 600, color: C.white, width: 260 }}>{t}</span>
+              <span style={{ fontSize: 15, color: C.sec }}>{d}</span>
             </div>
             {i < steps.length - 1 && <div className="af" style={{ ...dl(350 + i * 150), width: 1, height: 8, background: C.border, marginLeft: 24 }} />}
           </div>
@@ -342,11 +342,11 @@ const S10 = ({ active }) => {
 const S11 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,8vw,120px)", position: "relative" }}>
     <Header />
-    <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,3vw,40px)", fontWeight: 700, lineHeight: 1.2, marginBottom: 28 }}>Why No Competitor Can Replicate This</h2>
-    <p className="au" style={{ ...dl(600), fontSize: 16, color: C.text, lineHeight: 1.8, maxWidth: 600 }}>The assessment was the precursor to everything in this proposal.</p>
-    <p className="au" style={{ ...dl(800), fontSize: 16, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 600 }}>Every training path, every cohort selection, every mentor match, every business outcome projection is built from Sagicor's own workforce data.</p>
-    <p className="au" style={{ ...dl(1000), fontSize: 16, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 600 }}>Any vendor who wants to compete must first replicate the assessment. That means starting four months behind.</p>
-    <p className="au" style={{ ...dl(1400), fontSize: 20, fontWeight: 700, color: C.white, marginTop: 36, maxWidth: 600 }}>THCO is not asking Sagicor to start over. THCO is asking Sagicor to activate the data it already owns.</p>
+    <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(32px,3.2vw,46px)", fontWeight: 700, lineHeight: 1.2, marginBottom: 28 }}>Why No Competitor Can Replicate This</h2>
+    <p className="au" style={{ ...dl(600), fontSize: 18, color: C.text, lineHeight: 1.8, maxWidth: 600 }}>The assessment was the precursor to everything in this proposal.</p>
+    <p className="au" style={{ ...dl(800), fontSize: 18, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 600 }}>Every training path, every cohort selection, every mentor match, every business outcome projection is built from Sagicor's own workforce data.</p>
+    <p className="au" style={{ ...dl(1000), fontSize: 18, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 600 }}>Any vendor who wants to compete must first replicate the assessment. That means starting four months behind.</p>
+    <p className="au" style={{ ...dl(1400), fontSize: 23, fontWeight: 700, color: C.white, marginTop: 36, maxWidth: 600 }}>THCO is not asking Sagicor to start over. THCO is asking Sagicor to activate the data it already owns.</p>
   </div>
 );
 
@@ -354,10 +354,10 @@ const S11 = () => (
 const S12 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,8vw,120px)", position: "relative" }}>
     <Header />
-    <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,3vw,40px)", fontWeight: 700, marginBottom: 24 }}>Identifying Who to Invest In First</h2>
-    <p className="au" style={{ ...dl(600), fontSize: 16, color: C.text, lineHeight: 1.8, maxWidth: 580 }}>Not everyone should go through intensive training at the same time. The first cohort should be the people with the highest return on investment.</p>
-    <p className="au" style={{ ...dl(900), fontSize: 16, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 580 }}>We identified the builder core using three quantitative signals from the assessment data.</p>
-    <p className="af" style={{ ...dl(1300), fontSize: 12, color: C.muted, marginTop: 28 }}>Current rankings based on Self-Assessment and Manager Validation data. Will be refined as Technical Assessment completes.</p>
+    <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(32px,3.2vw,46px)", fontWeight: 700, marginBottom: 24 }}>Identifying Who to Invest In First</h2>
+    <p className="au" style={{ ...dl(600), fontSize: 18, color: C.text, lineHeight: 1.8, maxWidth: 580 }}>Not everyone should go through intensive training at the same time. The first cohort should be the people with the highest return on investment.</p>
+    <p className="au" style={{ ...dl(900), fontSize: 18, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 580 }}>We identified the builder core using three quantitative signals from the assessment data.</p>
+    <p className="af" style={{ ...dl(1300), fontSize: 14, color: C.muted, marginTop: 28 }}>Current rankings based on Self-Assessment and Manager Validation data. Will be refined as Technical Assessment completes.</p>
   </div>
 );
 
@@ -371,16 +371,16 @@ const S13 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>Three Criteria. All From the Data.</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>Three Criteria. All From the Data.</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
         {cards.map((c, i) => (
           <DataCard key={i} delay={500 + i * 300}>
-            <p style={{ fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 12 }}>{c.t}</p>
-            <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.7 }}>{c.d}</p>
+            <p style={{ fontSize: 18, fontWeight: 600, color: C.white, marginBottom: 12 }}>{c.t}</p>
+            <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.7 }}>{c.d}</p>
           </DataCard>
         ))}
       </div>
-      <p className="au rl-mono" style={{ ...dl(1600), fontSize: 13, color: C.sec, marginTop: 24 }}>Composite Score = (SA Average x 0.30) + (MV Average x 0.50) + (Strategic Fit x 0.20)</p>
+      <p className="au rl-mono" style={{ ...dl(1600), fontSize: 15, color: C.sec, marginTop: 24 }}>Composite Score = (SA Average x 0.30) + (MV Average x 0.50) + (Strategic Fit x 0.20)</p>
     </div>
   );
 };
@@ -389,20 +389,20 @@ const S13 = () => {
 const BuilderCard = ({ rank, name, role, sa, mv, comp, gap, gapLabel, gapColor, desc, delay = 0 }) => (
   <DataCard delay={delay} style={{ borderTop: `2px solid ${C.border}` }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-      <span className="rl-mono" style={{ fontSize: 12, color: C.muted }}>#{rank}</span>
-      <span style={{ fontSize: 10, color: gapColor, padding: "2px 8px", border: `1px solid ${gapColor}40`, borderRadius: 2 }}>{gapLabel}</span>
+      <span className="rl-mono" style={{ fontSize: 14, color: C.muted }}>#{rank}</span>
+      <span style={{ fontSize: 12, color: gapColor, padding: "2px 8px", border: `1px solid ${gapColor}40`, borderRadius: 2 }}>{gapLabel}</span>
     </div>
-    <p style={{ fontSize: 16, fontWeight: 700, color: C.white, marginBottom: 4 }}>{name}</p>
-    <p style={{ fontSize: 12, color: C.sec, marginBottom: 12 }}>{role}</p>
+    <p style={{ fontSize: 18, fontWeight: 700, color: C.white, marginBottom: 4 }}>{name}</p>
+    <p style={{ fontSize: 14, color: C.sec, marginBottom: 12 }}>{role}</p>
     <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
       {[["SA", sa], ["MV", mv], ["Comp", comp], ["Gap", gap]].map(([l, v], i) => (
         <div key={i}>
-          <span style={{ fontSize: 10, color: C.muted, textTransform: "uppercase" }}>{l}</span>
-          <p className="rl-mono" style={{ fontSize: 16, fontWeight: 700, color: C.white }}>{v}</p>
+          <span style={{ fontSize: 12, color: C.muted, textTransform: "uppercase" }}>{l}</span>
+          <p className="rl-mono" style={{ fontSize: 18, fontWeight: 700, color: C.white }}>{v}</p>
         </div>
       ))}
     </div>
-    <p style={{ fontSize: 13, color: C.sec, lineHeight: 1.6 }}>{desc}</p>
+    <p style={{ fontSize: 15, color: C.sec, lineHeight: 1.6 }}>{desc}</p>
   </DataCard>
 );
 
@@ -451,27 +451,27 @@ const S17 = () => (
   <div style={{ height: "100%", display: "flex", alignItems: "center", padding: "0 clamp(40px,6vw,100px)", gap: 40, position: "relative" }}>
     <Header />
     <div style={{ flex: 1 }}>
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 20 }}>Builder Core Composition</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 20 }}>Builder Core Composition</h2>
       <div className="au" style={{ ...dl(500), marginBottom: 16 }}>
-        <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.7 }}>From 51 employees with both SA and MV data complete</p>
-        <p style={{ fontSize: 14, color: C.white, fontWeight: 600, marginTop: 8 }}>Top 10: Canada (10)</p>
-        <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.7, marginTop: 8 }}>Jamaica appears from rank 11: Charis Pringle, Shanakaye Ferguson, Carllel Colquhoun, Damion Case, Tatianna Thomas-Hill, Shona Richards</p>
-        <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.7, marginTop: 8 }}>Barbados, USA: No candidates with both SA + MV complete yet</p>
+        <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.7 }}>From 51 employees with both SA and MV data complete</p>
+        <p style={{ fontSize: 16, color: C.white, fontWeight: 600, marginTop: 8 }}>Top 10: Canada (10)</p>
+        <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.7, marginTop: 8 }}>Jamaica appears from rank 11: Charis Pringle, Shanakaye Ferguson, Carllel Colquhoun, Damion Case, Tatianna Thomas-Hill, Shona Richards</p>
+        <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.7, marginTop: 8 }}>Barbados, USA: No candidates with both SA + MV complete yet</p>
       </div>
     </div>
     <DataCard delay={800} style={{ width: 360 }}>
-      <p style={{ fontSize: 13, fontWeight: 600, color: C.white, marginBottom: 14 }}>What Changes as More Data Arrives</p>
+      <p style={{ fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 14 }}>What Changes as More Data Arrives</p>
       {[
         ["More MV from Caribbean", "Caribbean candidates enter top 20"],
         ["Technical Assessment", "Objective capability, may reorder rankings"],
         ["Hands On Simulation", "Applied problem-solving, may surface hidden talent"],
       ].map(([phase, impact], i) => (
         <div key={i} style={{ display: "flex", gap: 12, padding: "8px 0", borderBottom: `1px solid ${C.border}` }}>
-          <span style={{ fontSize: 13, color: C.white, fontWeight: 500, width: 160 }}>{phase}</span>
-          <span style={{ fontSize: 13, color: C.sec }}>{impact}</span>
+          <span style={{ fontSize: 15, color: C.white, fontWeight: 500, width: 160 }}>{phase}</span>
+          <span style={{ fontSize: 15, color: C.sec }}>{impact}</span>
         </div>
       ))}
-      <p style={{ fontSize: 12, color: C.muted, marginTop: 12 }}>Full top 20 list with diagnostic profiles provided as separate deliverable.</p>
+      <p style={{ fontSize: 14, color: C.muted, marginTop: 12 }}>Full top 20 list with diagnostic profiles provided as separate deliverable.</p>
     </DataCard>
   </div>
 );
@@ -486,17 +486,17 @@ const S18 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>Training 20 People. Impacting 60+.</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>Training 20 People. Impacting 60+.</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 28 }}>
         {leaders.map(([name, role, impact], i) => (
           <DataCard key={i} delay={500 + i * 250}>
-            <p style={{ fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{name}</p>
-            <p style={{ fontSize: 12, color: C.sec, marginBottom: 12 }}>{role}</p>
-            <p style={{ fontSize: 14, color: C.blue }}>{impact}</p>
+            <p style={{ fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 4 }}>{name}</p>
+            <p style={{ fontSize: 14, color: C.sec, marginBottom: 12 }}>{role}</p>
+            <p style={{ fontSize: 16, color: C.blue }}>{impact}</p>
           </DataCard>
         ))}
       </div>
-      <p className="au" style={{ ...dl(1300), fontSize: 16, fontWeight: 700, color: C.white }}>Conservative estimate: Training 20 people directly impacts 40-60 through knowledge transfer.</p>
+      <p className="au" style={{ ...dl(1300), fontSize: 18, fontWeight: 700, color: C.white }}>Conservative estimate: Training 20 people directly impacts 40-60 through knowledge transfer.</p>
     </div>
   );
 };
@@ -505,11 +505,11 @@ const S18 = () => {
 const S19 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,8vw,120px)", position: "relative" }}>
     <Header />
-    <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,3vw,40px)", fontWeight: 700, marginBottom: 24 }}>This Is Also a Retention Strategy</h2>
-    <p className="au" style={{ ...dl(600), fontSize: 16, color: C.text, lineHeight: 1.8, maxWidth: 560 }}>Top technology talent is being actively recruited by consulting firms and competitors.</p>
-    <p className="au" style={{ ...dl(800), fontSize: 16, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 560 }}>At least one Sagicor team member has already been recruited away.</p>
-    <p className="au" style={{ ...dl(1000), fontSize: 16, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 560 }}>A personalized development program with access to practitioners from Meta, McKinsey, OpenAI, and leading banks sends a clear signal:</p>
-    <p className="au" style={{ ...dl(1400), fontSize: 24, fontWeight: 700, color: C.white, marginTop: 28, maxWidth: 560 }}>"We see you. We are investing in you. Your future is here."</p>
+    <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(32px,3.2vw,46px)", fontWeight: 700, marginBottom: 24 }}>This Is Also a Retention Strategy</h2>
+    <p className="au" style={{ ...dl(600), fontSize: 18, color: C.text, lineHeight: 1.8, maxWidth: 560 }}>Top technology talent is being actively recruited by consulting firms and competitors.</p>
+    <p className="au" style={{ ...dl(800), fontSize: 18, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 560 }}>At least one Sagicor team member has already been recruited away.</p>
+    <p className="au" style={{ ...dl(1000), fontSize: 18, color: C.text, lineHeight: 1.8, marginTop: 16, maxWidth: 560 }}>A personalized development program with access to practitioners from Meta, McKinsey, OpenAI, and leading banks sends a clear signal:</p>
+    <p className="au" style={{ ...dl(1400), fontSize: 28, fontWeight: 700, color: C.white, marginTop: 28, maxWidth: 560 }}>"We see you. We are investing in you. Your future is here."</p>
   </div>
 );
 
@@ -528,9 +528,9 @@ const S20 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,4vw,60px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 20 }}>How THCO + Realloc Compares</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 20 }}>How THCO + Realloc Compares</h2>
       <div className="au" style={{ ...dl(500) }}>
-        <div style={{ display: "grid", gridTemplateColumns: "160px 1fr 1fr 1fr", fontSize: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "160px 1fr 1fr 1fr", fontSize: 14 }}>
           <div style={{ padding: "10px 12px", borderBottom: `1px solid ${C.border}` }} />
           {["Consulting Firm", "Technology Vendor", "THCO + Realloc"].map((h, i) => (
             <div key={i} style={{ padding: "10px 12px", borderBottom: `1px solid ${C.border}`, fontWeight: 600, color: i === 2 ? C.white : C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</div>
@@ -557,14 +557,14 @@ const S21 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 28 }}>Three Layers. One System. All Connected by Data.</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 28 }}>Three Layers. One System. All Connected by Data.</h2>
       {layers.map((l, i) => (
         <DataCard key={i} delay={500 + i * 350} style={{ marginBottom: 12, borderTop: `2px solid ${l.bc}` }}>
-          <p style={{ fontSize: 14, fontWeight: 700, color: C.white, marginBottom: 6, letterSpacing: "0.04em" }}>{l.t}</p>
-          <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.7 }}>{l.d}</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: C.white, marginBottom: 6, letterSpacing: "0.04em" }}>{l.t}</p>
+          <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.7 }}>{l.d}</p>
         </DataCard>
       ))}
-      <p className="au" style={{ ...dl(1800), fontSize: 15, fontWeight: 600, color: C.sec, marginTop: 12 }}>THCO teaches. Realloc prescribes. The Expert Community mentors.</p>
+      <p className="au" style={{ ...dl(1800), fontSize: 17, fontWeight: 600, color: C.sec, marginTop: 12 }}>THCO teaches. Realloc prescribes. The Expert Community mentors.</p>
     </div>
   );
 };
@@ -579,17 +579,17 @@ const S22 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 24 }}>How the Three Layers Work Together</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 24 }}>How the Three Layers Work Together</h2>
       {rows.map(([layer, role, ex], i) => (
         <DataCard key={i} delay={500 + i * 350} style={{ marginBottom: 12, display: "flex", gap: 20, alignItems: "flex-start" }}>
           <div style={{ width: 200, flexShrink: 0 }}>
-            <p style={{ fontSize: 14, fontWeight: 600, color: C.white }}>{layer}</p>
-            <p style={{ fontSize: 12, color: C.blue, marginTop: 2 }}>{role}</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: C.white }}>{layer}</p>
+            <p style={{ fontSize: 14, color: C.blue, marginTop: 2 }}>{role}</p>
           </div>
-          <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.6, fontStyle: "italic" }}>{ex}</p>
+          <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.6, fontStyle: "italic" }}>{ex}</p>
         </DataCard>
       ))}
-      <p className="au" style={{ ...dl(1700), fontSize: 14, color: C.sec, lineHeight: 1.7, marginTop: 12, maxWidth: 600 }}>No other provider has all three layers. A consulting firm has people but no diagnostic platform. A technology vendor has a platform but no practitioner community. A training company has content but no assessment data.</p>
+      <p className="au" style={{ ...dl(1700), fontSize: 16, color: C.sec, lineHeight: 1.7, marginTop: 12, maxWidth: 600 }}>No other provider has all three layers. A consulting firm has people but no diagnostic platform. A technology vendor has a platform but no practitioner community. A training company has content but no assessment data.</p>
     </div>
   );
 };
@@ -598,7 +598,7 @@ const S22 = () => {
 const S23 = () => (
   <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 clamp(40px,10vw,200px)", position: "relative" }}>
     <Header />
-    <p className="au rl-pf" style={{ ...dl(600), fontSize: "clamp(20px,2.2vw,26px)", fontWeight: 400, fontStyle: "italic", color: C.white, lineHeight: 1.6, textAlign: "center", maxWidth: 700 }}>
+    <p className="au rl-pf" style={{ ...dl(600), fontSize: "clamp(24px,2.4vw,32px)", fontWeight: 400, fontStyle: "italic", color: C.white, lineHeight: 1.6, textAlign: "center", maxWidth: 700 }}>
       "The person reviewing your team's work is not a junior consultant. They are a practitioner who has built exactly what Sagicor needs to build."
     </p>
   </div>
@@ -619,18 +619,18 @@ const S24 = ({ active }) => {
     <div style={{ height: "100%", display: "flex", alignItems: "center", padding: "0 clamp(40px,6vw,100px)", gap: 40, position: "relative" }}>
       <Header />
       <div style={{ flex: "0 0 auto" }}>
-        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700 }}>
-          <span className="rl-mono" style={{ fontSize: 48 }}>{v}</span><br />Vetted AI Practitioners
+        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700 }}>
+          <span className="rl-mono" style={{ fontSize: 54 }}>{v}</span><br />Vetted AI Practitioners
         </h2>
       </div>
       <div style={{ flex: 1 }}>
         {data.map(([cat, detail], i) => (
           <div key={i} className="al" style={{ ...dl(500 + i * 150), display: "flex", gap: 16, padding: "10px 0", borderBottom: `1px solid ${C.border}` }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: C.white, width: 180, flexShrink: 0 }}>{cat}</span>
-            <span style={{ fontSize: 13, color: C.sec }}>{detail}</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: C.white, width: 180, flexShrink: 0 }}>{cat}</span>
+            <span style={{ fontSize: 15, color: C.sec }}>{detail}</span>
           </div>
         ))}
-        <p className="af" style={{ ...dl(1600), fontSize: 13, color: C.muted, marginTop: 16 }}>These are not career trainers. They are active practitioners who build, deploy, and maintain AI systems in production.</p>
+        <p className="af" style={{ ...dl(1600), fontSize: 15, color: C.muted, marginTop: 16 }}>These are not career trainers. They are active practitioners who build, deploy, and maintain AI systems in production.</p>
       </div>
     </div>
   );
@@ -646,19 +646,19 @@ const S25 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 28 }}>Assessment Data Drives Mentor Assignment</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 28 }}>Assessment Data Drives Mentor Assignment</h2>
       {matches.map(([gap, mentor], i) => (
         <div key={i} className="au" style={{ ...dl(500 + i * 350), display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
           <div className="rl-card" style={{ flex: 1, padding: "16px 20px" }}>
-            <p style={{ fontSize: 14, color: C.sec }}>{gap}</p>
+            <p style={{ fontSize: 16, color: C.sec }}>{gap}</p>
           </div>
           <ChevronRight size={16} color={C.blue} />
           <div className="rl-card" style={{ flex: 1, padding: "16px 20px", borderColor: `${C.blue}30` }}>
-            <p style={{ fontSize: 14, color: C.white }}>{mentor}</p>
+            <p style={{ fontSize: 16, color: C.white }}>{mentor}</p>
           </div>
         </div>
       ))}
-      <p className="af" style={{ ...dl(1800), fontSize: 14, fontWeight: 600, color: C.sec, marginTop: 12 }}>This matching is impossible without the assessment data.</p>
+      <p className="af" style={{ ...dl(1800), fontSize: 16, fontWeight: 600, color: C.sec, marginTop: 12 }}>This matching is impossible without the assessment data.</p>
     </div>
   );
 };
@@ -667,8 +667,8 @@ const S25 = () => {
 const S26 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", padding: "0 clamp(40px,8vw,120px)", position: "relative" }}>
     <Header />
-    <h2 className="au rl-pf" style={{ ...dl(300), fontSize: "clamp(28px,3vw,42px)", fontWeight: 700, lineHeight: 1.2 }}>One Platform. Three Views.<br />Connected by Data.</h2>
-    <p className="au" style={{ ...dl(800), fontSize: 16, color: C.sec, marginTop: 16 }}>This is not a PDF report. It is live enterprise infrastructure.</p>
+    <h2 className="au rl-pf" style={{ ...dl(300), fontSize: "clamp(32px,3.2vw,48px)", fontWeight: 700, lineHeight: 1.2 }}>One Platform. Three Views.<br />Connected by Data.</h2>
+    <p className="au" style={{ ...dl(800), fontSize: 18, color: C.sec, marginTop: 16 }}>This is not a PDF report. It is live enterprise infrastructure.</p>
   </div>
 );
 
@@ -680,11 +680,11 @@ const S27 = ({ active }) => {
     <div style={{ height: "100%", display: "flex", alignItems: "center", padding: "0 clamp(40px,5vw,80px)", gap: 32, position: "relative" }}>
       <Header />
       <div style={{ flex: 1 }}>
-        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 20 }}>What Sagicor Leadership Sees</h2>
+        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 20 }}>What Sagicor Leadership Sees</h2>
         {features.map((f, i) => (
           <div key={i} className="al" style={{ ...dl(400 + i * 200), display: "flex", alignItems: "baseline", gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, color: C.sec }}>-</span>
-            <span style={{ fontSize: 14, color: C.text, lineHeight: 1.6 }}>{f}</span>
+            <span style={{ fontSize: 16, color: C.sec }}>-</span>
+            <span style={{ fontSize: 16, color: C.text, lineHeight: 1.6 }}>{f}</span>
           </div>
         ))}
       </div>
@@ -692,8 +692,8 @@ const S27 = ({ active }) => {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
           {[["498", "Workers"], ["6", "Countries"], ["1", "Active Cohort"], ["73%", "Completion"]].map(([v, l], i) => (
             <div key={i} style={{ background: `${C.white}06`, padding: "12px", borderRadius: 2 }}>
-              <span className="rl-mono" style={{ fontSize: 20, fontWeight: 700, color: C.white }}>{v}</span>
-              <p style={{ fontSize: 10, color: C.sec, marginTop: 2 }}>{l}</p>
+              <span className="rl-mono" style={{ fontSize: 23, fontWeight: 700, color: C.white }}>{v}</span>
+              <p style={{ fontSize: 12, color: C.sec, marginTop: 2 }}>{l}</p>
             </div>
           ))}
         </div>
@@ -702,7 +702,7 @@ const S27 = ({ active }) => {
           <div style={{ width: "41%", background: C.grey }} />
           <div style={{ width: "27%", background: C.red }} />
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.sec }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.sec }}>
           <span>32% Rising</span><span>41% Stable</span><span>27% At Risk</span>
         </div>
       </div>
@@ -719,28 +719,28 @@ const S28 = ({ active }) => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 32 }}>The Business Case</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 32 }}>The Business Case</h2>
       <div style={{ display: "flex", gap: 40, alignItems: "center", marginBottom: 28 }}>
         <DataCard delay={500} style={{ textAlign: "center", padding: "28px 36px" }}>
-          <p style={{ fontSize: 12, color: C.sec, textTransform: "uppercase", marginBottom: 8 }}>Cost to Retrain</p>
-          <span className="rl-mono" style={{ fontSize: 36, fontWeight: 700, color: C.white }}>{fmt(retrain)}</span>
-          <p style={{ fontSize: 12, color: C.muted, marginTop: 8 }}>14 workers x $12,000</p>
+          <p style={{ fontSize: 14, color: C.sec, textTransform: "uppercase", marginBottom: 8 }}>Cost to Retrain</p>
+          <span className="rl-mono" style={{ fontSize: 42, fontWeight: 700, color: C.white }}>{fmt(retrain)}</span>
+          <p style={{ fontSize: 14, color: C.muted, marginTop: 8 }}>14 workers x $12,000</p>
         </DataCard>
         <DataCard delay={700} style={{ textAlign: "center", padding: "28px 36px", borderColor: `${C.red}30` }}>
-          <p style={{ fontSize: 12, color: C.sec, textTransform: "uppercase", marginBottom: 8 }}>Cost to Replace</p>
-          <span className="rl-mono" style={{ fontSize: 36, fontWeight: 700, color: C.red }}>{fmt(replace)}</span>
-          <p style={{ fontSize: 12, color: C.muted, marginTop: 8 }}>14 workers x $145,000</p>
+          <p style={{ fontSize: 14, color: C.sec, textTransform: "uppercase", marginBottom: 8 }}>Cost to Replace</p>
+          <span className="rl-mono" style={{ fontSize: 42, fontWeight: 700, color: C.red }}>{fmt(replace)}</span>
+          <p style={{ fontSize: 14, color: C.muted, marginTop: 8 }}>14 workers x $145,000</p>
         </DataCard>
       </div>
       <div className="au" style={{ ...dl(1000), textAlign: "center" }}>
-        <p style={{ fontSize: 12, color: C.sec, textTransform: "uppercase", marginBottom: 4 }}>Projected Annual Savings</p>
-        <span className="rl-mono" style={{ fontSize: 48, fontWeight: 700, color: C.green }}>{fmt(savings)}</span>
+        <p style={{ fontSize: 14, color: C.sec, textTransform: "uppercase", marginBottom: 4 }}>Projected Annual Savings</p>
+        <span className="rl-mono" style={{ fontSize: 54, fontWeight: 700, color: C.green }}>{fmt(savings)}</span>
       </div>
       <div className="au" style={{ ...dl(1500), display: "flex", gap: 20, marginTop: 24 }}>
         {[["120", "Hours Reclaimed/Week"], ["35%", "Speed Improvement"], ["95%+", "Actionable Development Plans"]].map(([v, l], i) => (
           <div key={i} className="rl-card" style={{ padding: "16px 20px", textAlign: "center" }}>
-            <span className="rl-mono" style={{ fontSize: 22, fontWeight: 700, color: C.white }}>{v}</span>
-            <p style={{ fontSize: 11, color: C.sec, marginTop: 4 }}>{l}</p>
+            <span className="rl-mono" style={{ fontSize: 26, fontWeight: 700, color: C.white }}>{v}</span>
+            <p style={{ fontSize: 13, color: C.sec, marginTop: 4 }}>{l}</p>
           </div>
         ))}
       </div>
@@ -755,11 +755,11 @@ const S29 = () => {
     <div style={{ height: "100%", display: "flex", alignItems: "center", padding: "0 clamp(40px,5vw,80px)", gap: 32, position: "relative" }}>
       <Header />
       <div style={{ flex: 1 }}>
-        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 20 }}>What Your People See</h2>
+        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 20 }}>What Your People See</h2>
         {features.map((f, i) => (
           <div key={i} className="al" style={{ ...dl(400 + i * 150), display: "flex", alignItems: "baseline", gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, color: C.sec }}>-</span>
-            <span style={{ fontSize: 14, color: C.text, lineHeight: 1.6 }}>{f}</span>
+            <span style={{ fontSize: 16, color: C.sec }}>-</span>
+            <span style={{ fontSize: 16, color: C.text, lineHeight: 1.6 }}>{f}</span>
           </div>
         ))}
       </div>
@@ -769,14 +769,14 @@ const S29 = () => {
           <svg width="100" height="100" viewBox="0 0 100 100" style={{ margin: "0 auto", display: "block" }}>
             <circle cx="50" cy="50" r="40" fill="none" stroke={`${C.white}10`} strokeWidth="6" />
             <circle cx="50" cy="50" r="40" fill="none" stroke={C.blue} strokeWidth="6" strokeDasharray="251" strokeDashoffset="170" strokeLinecap="round" transform="rotate(-90 50 50)" />
-            <text x="50" y="50" textAnchor="middle" dominantBaseline="central" fill={C.white} fontFamily="'JetBrains Mono'" fontSize="18" fontWeight="700">32%</text>
+            <text x="50" y="50" textAnchor="middle" dominantBaseline="central" fill={C.white} fontFamily="'JetBrains Mono'" fontSize="20" fontWeight="700">32%</text>
           </svg>
-          <p style={{ fontSize: 10, color: C.sec, marginTop: 4 }}>AI Readiness Score</p>
+          <p style={{ fontSize: 12, color: C.sec, marginTop: 4 }}>AI Readiness Score</p>
         </div>
         {/* Domain progress */}
         {[["Production AI", 25], ["AI Architecture", 35], ["Data Engineering", 25], ["Capstone", 15]].map(([l, v], i) => (
           <div key={i} style={{ marginBottom: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.sec, marginBottom: 3 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.sec, marginBottom: 3 }}>
               <span>{l}</span><span>{v}%</span>
             </div>
             <div style={{ height: 4, background: `${C.white}10`, borderRadius: 1 }}>
@@ -801,21 +801,21 @@ const S30 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,4vw,60px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 20 }}>Every Worker. Fully Diagnosed.</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 20 }}>Every Worker. Fully Diagnosed.</h2>
       <div style={{ display: "flex", gap: 24 }}>
         {/* Displacement Gauge */}
         <DataCard delay={500} style={{ flex: 1 }}>
-          <p style={{ fontSize: 11, color: C.sec, textTransform: "uppercase", marginBottom: 12 }}>Displacement Direction</p>
+          <p style={{ fontSize: 13, color: C.sec, textTransform: "uppercase", marginBottom: 12 }}>Displacement Direction</p>
           <div style={{ height: 20, borderRadius: 2, background: `linear-gradient(90deg, ${C.red}, ${C.grey}, ${C.blue})`, position: "relative", marginBottom: 8 }}>
             <div style={{ position: "absolute", top: -4, left: "68%", width: 3, height: 28, background: C.white, borderRadius: 1 }} />
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.muted }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted }}>
             <span>Commoditizing</span><span>Specializing</span>
           </div>
         </DataCard>
         {/* Growth Radar */}
         <DataCard delay={700} style={{ width: 200, textAlign: "center" }}>
-          <p style={{ fontSize: 11, color: C.sec, textTransform: "uppercase", marginBottom: 8 }}>Growth Radar</p>
+          <p style={{ fontSize: 13, color: C.sec, textTransform: "uppercase", marginBottom: 8 }}>Growth Radar</p>
           <svg width="140" height="120" viewBox="0 0 140 120" style={{ margin: "0 auto" }}>
             {[0,1,2,3,4,5].map(i => { const a = (Math.PI * 2 * i) / 6 - Math.PI/2; return <line key={i} x1="70" y1="60" x2={70+Math.cos(a)*45} y2={60+Math.sin(a)*45} stroke={`${C.white}10`} />; })}
             <polygon points={[0,1,2,3,4,5].map(i => { const a = (Math.PI * 2 * i) / 6 - Math.PI/2; const r = [30,25,35,20,28,32][i]; return `${70+Math.cos(a)*r},${60+Math.sin(a)*r}`; }).join(" ")} fill={`${C.blue}20`} stroke={C.blue} strokeWidth="1.5" />
@@ -825,10 +825,10 @@ const S30 = () => {
       </div>
       {/* Task Table */}
       <DataCard delay={1000} style={{ marginTop: 12 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 100px", gap: 0, fontSize: 13 }}>
-          <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.muted, fontWeight: 600, fontSize: 11, textTransform: "uppercase" }}>Task</div>
-          <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.muted, fontWeight: 600, fontSize: 11, textTransform: "uppercase" }}>AI Impact</div>
-          <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.muted, fontWeight: 600, fontSize: 11, textTransform: "uppercase" }}>Direction</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 100px", gap: 0, fontSize: 15 }}>
+          <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.muted, fontWeight: 600, fontSize: 13, textTransform: "uppercase" }}>Task</div>
+          <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.muted, fontWeight: 600, fontSize: 13, textTransform: "uppercase" }}>AI Impact</div>
+          <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.muted, fontWeight: 600, fontSize: 13, textTransform: "uppercase" }}>Direction</div>
           {tasks.map(([t, imp, dir, col], i) => (<span key={i} style={{ display: "contents" }}>
             <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.text }}>{t}</div>
             <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, color: C.sec }}>{imp}</div>
@@ -836,7 +836,7 @@ const S30 = () => {
           </span>))}
         </div>
       </DataCard>
-      <p className="af" style={{ ...dl(1500), fontSize: 13, color: C.muted, marginTop: 10 }}>When a board member asks "show me one specific person," this is the page you open.</p>
+      <p className="af" style={{ ...dl(1500), fontSize: 15, color: C.muted, marginTop: 10 }}>When a board member asks "show me one specific person," this is the page you open.</p>
     </div>
   );
 };
@@ -845,7 +845,7 @@ const S30 = () => {
 const S31 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", padding: "0 clamp(40px,8vw,120px)", position: "relative" }}>
     <Header />
-    <h2 className="au rl-pf" style={{ ...dl(400), fontSize: "clamp(32px,3.5vw,44px)", fontWeight: 700, lineHeight: 1.2 }}>12 Weeks. Personalized.<br />Mentored. Measured.</h2>
+    <h2 className="au rl-pf" style={{ ...dl(400), fontSize: "clamp(36px,3.8vw,50px)", fontWeight: 700, lineHeight: 1.2 }}>12 Weeks. Personalized.<br />Mentored. Measured.</h2>
   </div>
 );
 
@@ -860,16 +860,16 @@ const S32 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>The 12-Week Journey</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>The 12-Week Journey</h2>
       <div style={{ display: "flex", gap: 0, position: "relative" }}>
         <div className="af" style={{ ...dl(400), position: "absolute", top: 20, left: 0, right: 0, height: 1, background: C.border }} />
         {blocks.map((b, i) => (
           <div key={i} className="au" style={{ ...dl(500 + i * 350), flex: 1, position: "relative", paddingTop: 32 }}>
             <div style={{ position: "absolute", top: 14, left: "50%", transform: "translateX(-50%)", width: 12, height: 12, borderRadius: "50%", background: i === 0 ? C.white : C.card, border: `2px solid ${C.white}`, zIndex: 2 }} />
             <div className="rl-card" style={{ margin: "0 6px", padding: "16px 14px" }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: C.white, letterSpacing: "0.06em", marginBottom: 6 }}>{b.t}</p>
-              <p style={{ fontSize: 11, color: C.blue, marginBottom: 8 }}>{b.w}</p>
-              <p style={{ fontSize: 13, color: C.sec, lineHeight: 1.6 }}>{b.d}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: C.white, letterSpacing: "0.06em", marginBottom: 6 }}>{b.t}</p>
+              <p style={{ fontSize: 13, color: C.blue, marginBottom: 8 }}>{b.w}</p>
+              <p style={{ fontSize: 15, color: C.sec, lineHeight: 1.6 }}>{b.d}</p>
             </div>
           </div>
         ))}
@@ -884,11 +884,11 @@ const S33 = () => {
   const b = [["Data Architecture for AI Systems", "35%"], ["AI-Augmented Data Engineering", "25%"], ["Data Governance for AI", "25%"], ["Capstone", "15%"]];
   const Table = ({ data, title, delay }) => (
     <DataCard delay={delay}>
-      <p style={{ fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 14 }}>{title}</p>
+      <p style={{ fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 14 }}>{title}</p>
       {data.map(([d, w], i) => (
         <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${C.border}` }}>
-          <span style={{ fontSize: 13, color: C.sec }}>{d}</span>
-          <span className="rl-mono" style={{ fontSize: 13, color: C.white, fontWeight: 700 }}>{w}</span>
+          <span style={{ fontSize: 15, color: C.sec }}>{d}</span>
+          <span className="rl-mono" style={{ fontSize: 15, color: C.white, fontWeight: 700 }}>{w}</span>
         </div>
       ))}
     </DataCard>
@@ -896,12 +896,12 @@ const S33 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>No Two Programs Are the Same</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>No Two Programs Are the Same</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <Table data={a} title="Participant A: Technical Lead" delay={500} />
         <Table data={b} title="Participant B: Data Architect" delay={700} />
       </div>
-      <p className="au" style={{ ...dl(1200), fontSize: 15, fontWeight: 700, color: C.white, marginTop: 24 }}>Same cohort. Same boot camp. Same mentors. Fundamentally different programs. Because the assessment identified different gaps.</p>
+      <p className="au" style={{ ...dl(1200), fontSize: 17, fontWeight: 700, color: C.white, marginTop: 24 }}>Same cohort. Same boot camp. Same mentors. Fundamentally different programs. Because the assessment identified different gaps.</p>
     </div>
   );
 };
@@ -917,19 +917,19 @@ const S34 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 24 }}>How Each Week Works</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 24 }}>How Each Week Works</h2>
       <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
         {days.map((d, i) => (
           <DataCard key={i} delay={400 + i * 250} style={{ flex: 1 }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: C.blue, marginBottom: 6 }}>{d[0]}</p>
-            <p style={{ fontSize: 13, color: C.sec, lineHeight: 1.6 }}>{d[1]}</p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: C.blue, marginBottom: 6 }}>{d[0]}</p>
+            <p style={{ fontSize: 15, color: C.sec, lineHeight: 1.6 }}>{d[1]}</p>
           </DataCard>
         ))}
       </div>
       <DataCard delay={1400} style={{ borderLeft: `2px solid ${C.blue}`, maxWidth: 600 }}>
-        <p style={{ fontSize: 14, color: C.text, fontStyle: "italic", lineHeight: 1.7 }}>"This module addresses your identified growth area: AI integration for modernization workflows. Your assessment showed strength in architecture with a gap in prompt engineering."</p>
+        <p style={{ fontSize: 16, color: C.text, fontStyle: "italic", lineHeight: 1.7 }}>"This module addresses your identified growth area: AI integration for modernization workflows. Your assessment showed strength in architecture with a gap in prompt engineering."</p>
       </DataCard>
-      <p className="af" style={{ ...dl(1800), fontSize: 14, color: C.sec, marginTop: 16 }}>The participant always knows WHY they are learning what they are learning.</p>
+      <p className="af" style={{ ...dl(1800), fontSize: 16, color: C.sec, marginTop: 16 }}>The participant always knows WHY they are learning what they are learning.</p>
     </div>
   );
 };
@@ -941,17 +941,17 @@ const S35 = () => {
     <div style={{ height: "100%", display: "flex", alignItems: "center", padding: "0 clamp(40px,6vw,100px)", gap: 32, position: "relative" }}>
       <Header />
       <div style={{ flex: 1 }}>
-        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 16 }}>Every Capstone Targets Real Business Value</h2>
-        <p className="au" style={{ ...dl(500), fontSize: 15, color: C.text, lineHeight: 1.7 }}>Before building, each participant submits a structured business case:</p>
+        <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 16 }}>Every Capstone Targets Real Business Value</h2>
+        <p className="au" style={{ ...dl(500), fontSize: 17, color: C.text, lineHeight: 1.7 }}>Before building, each participant submits a structured business case:</p>
       </div>
       <DataCard delay={700} style={{ width: 360 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: C.sec, textTransform: "uppercase", marginBottom: 14 }}>Business Case Form</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: C.sec, textTransform: "uppercase", marginBottom: 14 }}>Business Case Form</p>
         {fields.map((f, i) => (
           <div key={i} style={{ padding: "10px 12px", marginBottom: 6, background: `${C.white}04`, border: `1px solid ${C.border}`, borderRadius: 2 }}>
-            <span style={{ fontSize: 12, color: C.sec }}>{f}</span>
+            <span style={{ fontSize: 14, color: C.sec }}>{f}</span>
           </div>
         ))}
-        <p style={{ fontSize: 11, color: C.muted, marginTop: 10 }}>The Realloc platform suggests capstone topics from the participant's task decomposition. The data scopes the opportunity.</p>
+        <p style={{ fontSize: 13, color: C.muted, marginTop: 10 }}>The Realloc platform suggests capstone topics from the participant's task decomposition. The data scopes the opportunity.</p>
       </DataCard>
     </div>
   );
@@ -968,16 +968,16 @@ const S36 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 28 }}>Measured by Business Impact. Not Completion Rates.</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 28 }}>Measured by Business Impact. Not Completion Rates.</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 16 }}>
         {cats.map(([t, d], i) => (
           <DataCard key={i} delay={400 + i * 250} style={{ borderTop: `2px solid ${C.white}` }}>
-            <p style={{ fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 10 }}>{t}</p>
-            <p style={{ fontSize: 13, color: C.sec, lineHeight: 1.6 }}>{d}</p>
+            <p style={{ fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 10 }}>{t}</p>
+            <p style={{ fontSize: 15, color: C.sec, lineHeight: 1.6 }}>{d}</p>
           </DataCard>
         ))}
       </div>
-      <p className="af" style={{ ...dl(1600), fontSize: 14, color: C.sec, marginTop: 20 }}>Each project quantifies projected impact before deployment and measures actual impact 30 days after.</p>
+      <p className="af" style={{ ...dl(1600), fontSize: 16, color: C.sec, marginTop: 20 }}>Each project quantifies projected impact before deployment and measures actual impact 30 days after.</p>
     </div>
   );
 };
@@ -997,12 +997,12 @@ const S37 = ({ active }) => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 clamp(40px,5vw,80px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 20, alignSelf: "flex-start" }}>The Trend Line That Matters</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 20, alignSelf: "flex-start" }}>The Trend Line That Matters</h2>
       <svg className="as" style={{ ...dl(600) }} width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
         {/* Grid */}
         {[20, 25, 30, 35, 40].map(v => <line key={v} x1={px} y1={yr(v)} x2={w - px} y2={yr(v)} stroke={`${C.white}08`} />)}
-        {[20, 25, 30, 35, 40].map(v => <text key={v} x={px - 8} y={yr(v) + 4} fill={C.muted} fontSize="10" textAnchor="end" fontFamily="'JetBrains Mono'">{v}%</text>)}
-        {months.map((m, i) => <text key={i} x={x(i)} y={h - 8} fill={C.muted} fontSize="10" textAnchor="middle" fontFamily="'Inter'">{m}</text>)}
+        {[20, 25, 30, 35, 40].map(v => <text key={v} x={px - 8} y={yr(v) + 4} fill={C.muted} fontSize="12" textAnchor="end" fontFamily="'JetBrains Mono'">{v}%</text>)}
+        {months.map((m, i) => <text key={i} x={x(i)} y={h - 8} fill={C.muted} fontSize="12" textAnchor="middle" fontFamily="'Inter'">{m}</text>)}
         {/* Areas */}
         <path d={areaA} fill={`${C.red}15`} opacity={active ? 1 : 0} style={{ transition: "opacity 1s ease-out 800ms" }} />
         <path d={areaR} fill={`${C.blue}15`} opacity={active ? 1 : 0} style={{ transition: "opacity 1s ease-out 800ms" }} />
@@ -1010,10 +1010,10 @@ const S37 = ({ active }) => {
         <path d={pathA} fill="none" stroke={C.red} strokeWidth="2" opacity={active ? 1 : 0} style={{ transition: "opacity 800ms ease-out 1000ms" }} />
         <path d={pathR} fill="none" stroke={C.blue} strokeWidth="2" opacity={active ? 1 : 0} style={{ transition: "opacity 800ms ease-out 1000ms" }} />
         {/* Labels */}
-        <text x={x(5) + 8} y={yr(24)} fill={C.red} fontSize="11" fontFamily="'Inter'" fontWeight="600">At Risk {atRisk[5]}%</text>
-        <text x={x(5) + 8} y={yr(34)} fill={C.blue} fontSize="11" fontFamily="'Inter'" fontWeight="600">Rising {rising[5]}%</text>
+        <text x={x(5) + 8} y={yr(24)} fill={C.red} fontSize="13" fontFamily="'Inter'" fontWeight="600">At Risk {atRisk[5]}%</text>
+        <text x={x(5) + 8} y={yr(34)} fill={C.blue} fontSize="13" fontFamily="'Inter'" fontWeight="600">Rising {rising[5]}%</text>
       </svg>
-      <p className="af" style={{ ...dl(1600), fontSize: 14, color: C.sec, marginTop: 16, maxWidth: 600, textAlign: "center" }}>As the assessment and training program progresses, at-risk declines and rising increases. The widening gap is Sagicor's AI transformation in motion.</p>
+      <p className="af" style={{ ...dl(1600), fontSize: 16, color: C.sec, marginTop: 16, maxWidth: 600, textAlign: "center" }}>As the assessment and training program progresses, at-risk declines and rising increases. The widening gap is Sagicor's AI transformation in motion.</p>
     </div>
   );
 };
@@ -1035,14 +1035,14 @@ const S38 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, marginBottom: 24 }}>What Sagicor Reports to the Board</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,2.8vw,40px)", fontWeight: 700, marginBottom: 24 }}>What Sagicor Reports to the Board</h2>
       {items.map((it, i) => (
         <div key={i} className="al" style={{ ...dl(400 + i * 120), display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
           <Check size={14} color={C.white} style={{ flexShrink: 0 }} />
-          <span style={{ fontSize: 14, color: C.text, lineHeight: 1.5 }}>{it}</span>
+          <span style={{ fontSize: 16, color: C.text, lineHeight: 1.5 }}>{it}</span>
         </div>
       ))}
-      <p className="af" style={{ ...dl(1800), fontSize: 13, color: C.muted, marginTop: 16 }}>One-click board report from the Realloc platform. PDF. Ready for the CEO.</p>
+      <p className="af" style={{ ...dl(1800), fontSize: 15, color: C.muted, marginTop: 16 }}>One-click board report from the Realloc platform. PDF. Ready for the CEO.</p>
     </div>
   );
 };
@@ -1057,14 +1057,14 @@ const S39 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>The Path to Self-Sufficiency</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>The Path to Self-Sufficiency</h2>
       {stages.map((s, i) => (
         <DataCard key={i} delay={500 + i * 400} style={{ marginBottom: 12, borderLeft: `2px solid ${i === 2 ? C.white : C.border}` }}>
-          <p style={{ fontSize: 14, fontWeight: 700, color: C.white, marginBottom: 6 }}>{s.t}</p>
-          <p style={{ fontSize: 14, color: C.sec, lineHeight: 1.7 }}>{s.d}</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: C.white, marginBottom: 6 }}>{s.t}</p>
+          <p style={{ fontSize: 16, color: C.sec, lineHeight: 1.7 }}>{s.d}</p>
         </DataCard>
       ))}
-      <p className="au" style={{ ...dl(1800), fontSize: 16, fontWeight: 700, color: C.white, marginTop: 16 }}>12 months from vendor-dependent to self-sufficient.</p>
+      <p className="au" style={{ ...dl(1800), fontSize: 18, fontWeight: 700, color: C.white, marginTop: 16 }}>12 months from vendor-dependent to self-sufficient.</p>
     </div>
   );
 };
@@ -1079,12 +1079,12 @@ const S40 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>The Bigger Vision</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>The Bigger Vision</h2>
       <div className="as" style={{ ...dl(600), position: "relative", width: 400, height: 400 }}>
         {/* Center hub */}
         <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 140, height: 140, borderRadius: "50%", border: `1px solid ${C.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: C.card }}>
-          <span style={{ fontSize: 14, fontWeight: 800, letterSpacing: "0.1em" }}>REALLOC</span>
-          <span style={{ fontSize: 9, color: C.sec, marginTop: 4, textAlign: "center" }}>Diagnostic and<br />Orchestration Layer</span>
+          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>REALLOC</span>
+          <span style={{ fontSize: 11, color: C.sec, marginTop: 4, textAlign: "center" }}>Diagnostic and<br />Orchestration Layer</span>
         </div>
         {/* Spokes */}
         {spokes.map((s, i) => {
@@ -1099,13 +1099,13 @@ const S40 = () => {
                 <line x1={lx} y1={ly} x2={cx} y2={cy} stroke={C.border} strokeWidth="1" />
               </svg>
               <div style={{ position: "absolute", left: cx, top: cy, transform: "translate(-50%,-50%)", background: C.card, border: `1px solid ${C.border}`, borderRadius: 2, padding: "8px 12px", whiteSpace: "nowrap" }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: C.white }}>{s.l}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: C.white }}>{s.l}</span>
               </div>
             </div>
           );
         })}
       </div>
-      <p className="af" style={{ ...dl(1200), fontSize: 14, color: C.sec, marginTop: 16 }}>One platform. Multiple partners. All driven by Sagicor's assessment data.</p>
+      <p className="af" style={{ ...dl(1200), fontSize: 16, color: C.sec, marginTop: 16 }}>One platform. Multiple partners. All driven by Sagicor's assessment data.</p>
     </div>
   );
 };
@@ -1127,13 +1127,13 @@ const S41 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 24 }}>Timeline</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 24 }}>Timeline</h2>
       <div style={{ position: "relative", paddingLeft: 24 }}>
         <div className="af" style={{ ...dl(300), position: "absolute", left: 4, top: 0, bottom: 0, width: 1, background: C.border }} />
         {ms.map(([date, desc, highlight], i) => (
           <div key={i} className="al" style={{ ...dl(400 + i * 120), display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 10, position: "relative" }}>
             <div style={{ position: "absolute", left: -23, top: 6, width: highlight ? 10 : 8, height: highlight ? 10 : 8, borderRadius: "50%", background: highlight ? C.white : C.card, border: `2px solid ${highlight ? C.white : C.sec}` }} />
-            <span style={{ fontSize: 12, color: highlight ? C.white : C.sec, fontWeight: 600, width: 150, flexShrink: 0 }}>{date}</span>
+            <span style={{ fontSize: 14, color: highlight ? C.white : C.sec, fontWeight: 600, width: 150, flexShrink: 0 }}>{date}</span>
             <span style={{ fontSize: highlight ? 15 : 14, color: highlight ? C.white : C.text, fontWeight: highlight ? 700 : 400 }}>{desc}</span>
           </div>
         ))}
@@ -1157,11 +1157,11 @@ const S42 = () => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,8vw,120px)", position: "relative" }}>
       <Header />
-      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(26px,2.8vw,36px)", fontWeight: 700, marginBottom: 28 }}>Next Steps</h2>
+      <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(30px,3vw,42px)", fontWeight: 700, marginBottom: 28 }}>Next Steps</h2>
       {steps.map((s, i) => (
         <div key={i} className="al" style={{ ...dl(400 + i * 150), display: "flex", alignItems: "baseline", gap: 16, marginBottom: 12 }}>
-          <span className="rl-mono" style={{ fontSize: 16, fontWeight: 700, color: C.white, width: 24 }}>{i + 1}</span>
-          <span style={{ fontSize: 16, color: C.text }}>{s}</span>
+          <span className="rl-mono" style={{ fontSize: 18, fontWeight: 700, color: C.white, width: 24 }}>{i + 1}</span>
+          <span style={{ fontSize: 18, color: C.text }}>{s}</span>
         </div>
       ))}
     </div>
@@ -1185,9 +1185,9 @@ const S43 = ({ active }) => {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", position: "relative" }}>
       <Header />
-      {lines.map((l, i) => phase > i && <p key={i} className="au rl-pf" style={{ fontSize: "clamp(24px,2.8vw,34px)", fontWeight: 700, color: C.white, marginBottom: 12 }}>{l}</p>)}
-      {phase >= 5 && <p className="au" style={{ fontSize: "clamp(20px,2.2vw,28px)", fontWeight: 700, color: C.white, marginTop: 24 }}>The only remaining question is when to start.</p>}
-      {phase >= 6 && <p className="au" style={{ fontSize: "clamp(18px,2vw,24px)", color: C.sec, marginTop: 12 }}>We recommend April.</p>}
+      {lines.map((l, i) => phase > i && <p key={i} className="au rl-pf" style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 700, color: C.white, marginBottom: 12 }}>{l}</p>)}
+      {phase >= 5 && <p className="au" style={{ fontSize: "clamp(24px,2.5vw,34px)", fontWeight: 700, color: C.white, marginTop: 24 }}>The only remaining question is when to start.</p>}
+      {phase >= 6 && <p className="au" style={{ fontSize: "clamp(22px,2.2vw,30px)", color: C.sec, marginTop: 12 }}>We recommend April.</p>}
     </div>
   );
 };
@@ -1196,8 +1196,8 @@ const S43 = ({ active }) => {
 const S44 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", position: "relative" }}>
     <Header />
-    <p className="af" style={{ ...dl(500), fontSize: 16, color: C.sec, letterSpacing: "0.06em" }}>THCO | Powered by the Realloc Platform</p>
-    <p className="af" style={{ ...dl(800), fontSize: 14, color: C.muted, marginTop: 8 }}>reallocai.com</p>
+    <p className="af" style={{ ...dl(500), fontSize: 18, color: C.sec, letterSpacing: "0.06em" }}>THCO | Powered by the Realloc Platform</p>
+    <p className="af" style={{ ...dl(800), fontSize: 16, color: C.muted, marginTop: 8 }}>reallocai.com</p>
   </div>
 );
 
@@ -1251,11 +1251,11 @@ export default function ReallocPresentation() {
       <div style={{ position: "fixed", bottom: 16, right: 24, zIndex: 50, display: "flex", alignItems: "center", gap: 10 }}>
         <button onClick={() => setGrid(true)} title="Slide Overview (Esc)" style={{ width: 28, height: 28, background: "transparent", border: `1px solid ${C.border}`, borderRadius: 2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.5, marginRight: 4 }} data-testid="realloc-grid"><Grid size={12} color={C.white} /></button>
         <button onClick={() => go(cur - 1)} disabled={cur === 0} style={{ width: 28, height: 28, background: "transparent", border: `1px solid ${C.border}`, borderRadius: 2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: cur === 0 ? 0.15 : 0.5 }} data-testid="realloc-prev"><ChevronLeft size={14} color={C.white} /></button>
-        <span className="rl-mono" style={{ fontSize: 12, color: C.muted, minWidth: 50, textAlign: "center" }} data-testid="realloc-counter">{cur + 1} / {TOTAL}</span>
+        <span className="rl-mono" style={{ fontSize: 14, color: C.muted, minWidth: 50, textAlign: "center" }} data-testid="realloc-counter">{cur + 1} / {TOTAL}</span>
         <button onClick={() => go(cur + 1)} disabled={cur === TOTAL - 1} style={{ width: 28, height: 28, background: "transparent", border: `1px solid ${C.border}`, borderRadius: 2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: cur === TOTAL - 1 ? 0.15 : 0.5 }} data-testid="realloc-next"><ChevronRight size={14} color={C.white} /></button>
       </div>
       {/* Slide number bottom right */}
-      <span className="rl-mono" style={{ position: "fixed", bottom: 50, right: 32, fontSize: 10, color: C.muted, zIndex: 50 }}>{String(cur + 1).padStart(2, "0")}</span>
+      <span className="rl-mono" style={{ position: "fixed", bottom: 50, right: 32, fontSize: 12, color: C.muted, zIndex: 50 }}>{String(cur + 1).padStart(2, "0")}</span>
       {/* Thumbnail Grid */}
       {grid && (
         <div className="rl-grid-overlay" onClick={() => setGrid(false)}>
