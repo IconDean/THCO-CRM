@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 /* ═══ PALETTE ═══ */
 const C = {
@@ -891,6 +893,9 @@ const TOTAL = SLIDES.length;
 export default function SagicorSTECPresentation() {
   const [cur, setCur] = useState(0);
   const [sweep, setSweep] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [dlProgress, setDlProgress] = useState(0);
+  const containerRef = useRef(null);
 
   const go = useCallback((i) => {
     if (i >= 0 && i < TOTAL && i !== cur) {
@@ -898,6 +903,53 @@ export default function SagicorSTECPresentation() {
       setTimeout(() => { setCur(i); setSweep(false); }, 300);
     }
   }, [cur]);
+
+  const downloadPDF = useCallback(async () => {
+    if (downloading) return;
+    setDownloading(true);
+    setDlProgress(0);
+    const container = containerRef.current;
+    if (!container) return;
+
+    const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [1920, 1080] });
+    const pages = container.querySelectorAll(".sg-pg");
+
+    for (let i = 0; i < pages.length; i++) {
+      setDlProgress(Math.round(((i + 1) / pages.length) * 100));
+      // Show this slide, hide others
+      pages.forEach((p, j) => {
+        p.style.visibility = j === i ? "visible" : "hidden";
+        p.style.zIndex = j === i ? "10" : "0";
+        p.setAttribute("data-active", j === i ? "true" : "false");
+      });
+      // Wait for animations to settle
+      await new Promise(r => setTimeout(r, 1800));
+
+      const canvas = await html2canvas(pages[i], {
+        backgroundColor: null,
+        scale: 2,
+        width: container.offsetWidth,
+        height: container.offsetHeight,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
+      if (i > 0) pdf.addPage([1920, 1080], "landscape");
+      pdf.addImage(imgData, "JPEG", 0, 0, 1920, 1080);
+    }
+
+    // Restore current slide
+    pages.forEach((p, j) => {
+      p.style.visibility = j === cur ? "visible" : "hidden";
+      p.style.zIndex = j === cur ? "10" : "0";
+      p.setAttribute("data-active", j === cur ? "true" : "false");
+    });
+
+    pdf.save("STEC-Executive-Briefing.pdf");
+    setDownloading(false);
+    setDlProgress(0);
+  }, [downloading, cur]);
 
   useEffect(() => {
     const h = (e) => {
@@ -919,7 +971,7 @@ export default function SagicorSTECPresentation() {
   }, [cur, go]);
 
   return (
-    <div className="sg" style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden" }} data-testid="sagicor-stec-presentation">
+    <div className="sg" ref={containerRef} style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden" }} data-testid="sagicor-stec-presentation">
       <style>{css}</style>
       <div className={`sg-sweep ${sweep ? "active" : ""}`}><div className="sg-sweep-line" /></div>
       {SLIDES.map((SC, i) => (
@@ -927,7 +979,18 @@ export default function SagicorSTECPresentation() {
           <SC active={i === cur} />
         </div>
       ))}
+      {/* Download overlay */}
+      {downloading && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.85)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+          <p style={{ color: C.white, fontSize: 18, fontWeight: 600 }}>Generating PDF...</p>
+          <div style={{ width: 240, height: 4, background: `${C.white}15`, borderRadius: 2, overflow: "hidden" }}>
+            <div style={{ height: "100%", background: C.blue, borderRadius: 2, width: `${dlProgress}%`, transition: "width 300ms ease-out" }} />
+          </div>
+          <p style={{ color: C.gray, fontSize: 13 }}>{dlProgress}% — Capturing slide {Math.ceil((dlProgress / 100) * TOTAL)} of {TOTAL}</p>
+        </div>
+      )}
       <div style={{ position: "fixed", bottom: 16, right: 24, zIndex: 50, display: "flex", alignItems: "center", gap: 10 }}>
+        <button onClick={downloadPDF} disabled={downloading} title="Download PDF" style={{ width: 30, height: 30, background: `${C.white}08`, border: `1px solid ${C.white}15`, borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.6, marginRight: 6 }} data-testid="stec-download"><Download size={13} color={C.white} /></button>
         <button onClick={() => go(cur - 1)} disabled={cur === 0} style={{ width: 30, height: 30, background: `${C.white}08`, border: `1px solid ${C.white}15`, borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: cur === 0 ? 0.2 : 0.6 }} data-testid="stec-prev"><ChevronLeft size={14} color={C.white} /></button>
         <span style={{ fontSize: 12, fontWeight: 600, color: `${C.white}60`, minWidth: 50, textAlign: "center", fontFamily: "'Inter', sans-serif" }} data-testid="stec-counter">{cur + 1} / {TOTAL}</span>
         <button onClick={() => go(cur + 1)} disabled={cur === TOTAL - 1} style={{ width: 30, height: 30, background: `${C.white}08`, border: `1px solid ${C.white}15`, borderRadius: 4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: cur === TOTAL - 1 ? 0.2 : 0.6 }} data-testid="stec-next"><ChevronRight size={14} color={C.white} /></button>
