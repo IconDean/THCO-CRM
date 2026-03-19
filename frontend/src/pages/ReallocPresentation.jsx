@@ -159,7 +159,6 @@ const S5 = ({ active }) => {
       <h2 className="au rl-pf" style={{ ...dl(200), fontSize: "clamp(28px,3vw,40px)", fontWeight: 700, marginBottom: 32 }}>What If You Already Had the Data?</h2>
       {lines.map((l, i) => phase > i && <p key={i} className="au" style={{ fontSize: 16, color: C.text, lineHeight: 1.8, marginBottom: 6 }}>{l}</p>)}
       {phase >= 6 && <p className="au" style={{ fontSize: 18, fontWeight: 700, color: C.white, marginTop: 28 }}>Sagicor already has that data.</p>}
-      {phase >= 7 && <p className="au" style={{ fontSize: 18, fontWeight: 700, color: C.white, marginTop: 4 }}>It lives inside the Realloc platform right now.</p>}
     </div>
   );
 };
@@ -205,7 +204,7 @@ const S7 = () => {
     { n: "Phase 1", t: "Self-Assessment", s: "Complete", sc: C.green, d: "242 responses. How workers perceive their own capabilities." },
     { n: "Phase 2", t: "Manager Validation", s: "Underway", sc: C.amber, d: "How managers independently rate capability and classify builders." },
     { n: "Phase 3", t: "Technical Assessment", s: "Upcoming", sc: C.grey, d: "Objective measurement through structured simulations." },
-    { n: "Phase 4", t: "Anton Simulations", s: "Upcoming", sc: C.grey, d: "Applied AI problem-solving under realistic conditions." },
+    { n: "Phase 4", t: "Hands On Simulation", s: "Upcoming", sc: C.grey, d: "Applied AI problem-solving under realistic conditions." },
   ];
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 clamp(40px,6vw,100px)", position: "relative" }}>
@@ -465,7 +464,7 @@ const S17 = () => (
       {[
         ["More MV from Caribbean", "Caribbean candidates enter top 20"],
         ["Technical Assessment", "Objective capability, may reorder rankings"],
-        ["Anton Simulations", "Applied problem-solving, may surface hidden talent"],
+        ["Hands On Simulation", "Applied problem-solving, may surface hidden talent"],
       ].map(([phase, impact], i) => (
         <div key={i} style={{ display: "flex", gap: 12, padding: "8px 0", borderBottom: `1px solid ${C.border}` }}>
           <span style={{ fontSize: 13, color: C.white, fontWeight: 500, width: 160 }}>{phase}</span>
@@ -1198,11 +1197,7 @@ const S44 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", position: "relative" }}>
     <Header />
     <p className="af" style={{ ...dl(500), fontSize: 16, color: C.sec, letterSpacing: "0.06em" }}>THCO | Powered by the Realloc Platform</p>
-    <p className="af" style={{ ...dl(800), fontSize: 14, color: C.muted, marginTop: 8 }}>realloc.ai</p>
-    <div className="au" style={{ ...dl(1200), marginTop: 40, textAlign: "center" }}>
-      <p style={{ fontSize: 16, fontWeight: 600, color: C.white }}>Ayo Omomia</p>
-      <p style={{ fontSize: 14, color: C.sec, marginTop: 4 }}>ayo@realloc.ai</p>
-    </div>
+    <p className="af" style={{ ...dl(800), fontSize: 14, color: C.muted, marginTop: 8 }}>reallocai.com</p>
   </div>
 );
 
