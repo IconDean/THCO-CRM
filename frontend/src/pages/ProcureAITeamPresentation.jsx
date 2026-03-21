@@ -36,13 +36,13 @@ const dl = (ms) => ({ animationDelay: `${ms}ms` });
 /* ═══ SHARED COMPONENTS ═══ */
 const Footer = () => (
   <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px 40px", display: "flex", justifyContent: "center", zIndex: 5 }}>
-    <span style={{ fontSize: 11, color: `${C.white}60`, letterSpacing: "0.04em" }}>TN Macaulay&ensp;|&ensp;IHS Towers Nigeria&ensp;|&ensp;Procure AI Engagement&ensp;|&ensp;Confidential</span>
+    <span style={{ fontSize: 14, color: `${C.white}60`, letterSpacing: "0.04em" }}>TN Macaulay&ensp;|&ensp;IHS Towers Nigeria&ensp;|&ensp;Procure AI Engagement&ensp;|&ensp;Confidential</span>
   </div>
 );
 
 const FooterLight = () => (
   <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px 40px", display: "flex", justifyContent: "center", zIndex: 5 }}>
-    <span style={{ fontSize: 11, color: `${C.charcoal}50`, letterSpacing: "0.04em" }}>TN Macaulay&ensp;|&ensp;IHS Towers Nigeria&ensp;|&ensp;Procure AI Engagement&ensp;|&ensp;Confidential</span>
+    <span style={{ fontSize: 14, color: `${C.charcoal}50`, letterSpacing: "0.04em" }}>TN Macaulay&ensp;|&ensp;IHS Towers Nigeria&ensp;|&ensp;Procure AI Engagement&ensp;|&ensp;Confidential</span>
   </div>
 );
 
@@ -59,7 +59,7 @@ const Timeline = ({ companies, delay = 0 }) => (
 
 const HighlightCard = ({ text, delay = 0 }) => (
   <div className="pu pai-hl" style={{ ...dl(delay), background: C.white, border: `1px solid ${C.darkBorder}`, borderRadius: 4, padding: "10px 14px", marginBottom: 8, transition: "border-color 200ms, box-shadow 200ms", cursor: "default" }}>
-    <p style={{ fontSize: 13, color: C.charcoal, lineHeight: 1.6 }}>{text}</p>
+    <p style={{ fontSize: 17, color: C.charcoal, lineHeight: 1.6 }}>{text}</p>
   </div>
 );
 
@@ -84,20 +84,20 @@ const S1 = ({ active }) => {
       <div style={{ position: "absolute", top: 20, left: 20, width: 60, height: 60, borderTop: `2px solid ${C.teal}`, borderLeft: `2px solid ${C.teal}`, opacity: 0.5 }} />
       <div style={{ position: "absolute", bottom: 40, right: 20, width: 60, height: 60, borderBottom: `2px solid ${C.teal}`, borderRight: `2px solid ${C.teal}`, opacity: 0.5 }} />
 
-      <h1 className="ps" style={{ ...dl(300), fontSize: 52, fontWeight: 900, color: C.white, letterSpacing: "0.1em" }}>PROCURE AI</h1>
-      <p className="pf" style={{ ...dl(700), fontSize: 22, color: `${C.white}cc`, marginTop: 8, fontWeight: 300 }}>Delivery Team</p>
+      <h1 className="ps" style={{ ...dl(300), fontSize: 60, fontWeight: 900, color: C.white, letterSpacing: "0.1em" }}>PROCURE AI</h1>
+      <p className="pf" style={{ ...dl(700), fontSize: 28, color: `${C.white}cc`, marginTop: 8, fontWeight: 300 }}>Delivery Team</p>
       <div className="pf" style={{ ...dl(1000), width: 60, height: 2, background: C.teal, margin: "20px auto" }} />
-      <p className="pu" style={{ ...dl(1200), fontSize: 16, color: `${C.white}90`, marginBottom: 32 }}>TN Macaulay | IHS Towers Nigeria</p>
+      <p className="pu" style={{ ...dl(1200), fontSize: 20, color: `${C.white}90`, marginBottom: 32 }}>TN Macaulay | IHS Towers Nigeria</p>
 
       <div style={{ maxWidth: 700, padding: "0 40px" }}>
         {introLines.map((line, i) => phase > i && (
-          <p key={i} className="pu" style={{ fontSize: 15, color: `${C.white}b0`, lineHeight: 1.8, marginBottom: 8 }}>{line}</p>
+          <p key={i} className="pu" style={{ fontSize: 19, color: `${C.white}b0`, lineHeight: 1.8, marginBottom: 8 }}>{line}</p>
         ))}
       </div>
 
       {/* TN Macaulay wordmark bottom right */}
       <div style={{ position: "absolute", bottom: 36, right: 40 }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: C.teal, letterSpacing: "0.04em" }}>TN Macaulay</span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: C.teal, letterSpacing: "0.04em" }}>TN Macaulay</span>
       </div>
       <Footer />
     </div>
@@ -111,10 +111,10 @@ const ProfileSlide = ({ name, designation, role, companies, bio, highlights, del
     <div style={{ background: C.navy, padding: "20px 40px", flexShrink: 0 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
-          <h2 className="ps" style={{ ...dl(200), fontSize: 30, fontWeight: 800, color: C.white }}>{name}</h2>
-          <p className="pf" style={{ ...dl(400), fontSize: 16, color: C.teal, fontWeight: 500, marginTop: 4 }}>{designation}</p>
+          <h2 className="ps" style={{ ...dl(200), fontSize: 36, fontWeight: 800, color: C.white }}>{name}</h2>
+          <p className="pf" style={{ ...dl(400), fontSize: 20, color: C.teal, fontWeight: 500, marginTop: 4 }}>{designation}</p>
         </div>
-        <span className="pf" style={{ ...dl(500), fontSize: 12, color: `${C.white}70`, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", background: `${C.teal}20`, padding: "5px 14px", borderRadius: 3 }}>{role}</span>
+        <span className="pf" style={{ ...dl(500), fontSize: 15, color: `${C.white}70`, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", background: `${C.teal}20`, padding: "5px 14px", borderRadius: 3 }}>{role}</span>
       </div>
     </div>
 
@@ -131,13 +131,13 @@ const ProfileSlide = ({ name, designation, role, companies, bio, highlights, del
       {/* Bio - left */}
       <div className="pl" style={{ ...dl(800), flex: "1 1 55%", overflowY: "auto", paddingRight: 8 }}>
         {bio.map((para, i) => (
-          <p key={i} style={{ fontSize: 13, color: C.charcoal, lineHeight: 1.75, marginBottom: 12 }}>{para}</p>
+          <p key={i} style={{ fontSize: 17, color: C.charcoal, lineHeight: 1.75, marginBottom: 12 }}>{para}</p>
         ))}
       </div>
 
       {/* Highlights - right */}
       <div style={{ flex: "1 1 45%", overflowY: "auto" }}>
-        <p className="pf" style={{ ...dl(900), fontSize: 11, fontWeight: 700, color: C.teal, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>Key Highlights</p>
+        <p className="pf" style={{ ...dl(900), fontSize: 14, fontWeight: 700, color: C.teal, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>Key Highlights</p>
         {highlights.map((h, i) => (
           <HighlightCard key={i} text={h} delay={1000 + i * 100} />
         ))}
@@ -348,25 +348,25 @@ const S10 = () => <ProfileSlide
 const S11Hub = () => (
   <div style={{ height: "100%", background: C.light, display: "flex", flexDirection: "column", position: "relative" }}>
     <div style={{ background: C.navy, padding: "28px 40px", flexShrink: 0 }}>
-      <h2 className="ps" style={{ ...dl(200), fontSize: 30, fontWeight: 800, color: C.white }}>+ Supporting Software Engineers</h2>
-      <p className="pf" style={{ ...dl(400), fontSize: 16, color: C.teal, fontWeight: 500, marginTop: 4 }}>IHS Ilorin Innovation Hub</p>
+      <h2 className="ps" style={{ ...dl(200), fontSize: 36, fontWeight: 800, color: C.white }}>+ Supporting Software Engineers</h2>
+      <p className="pf" style={{ ...dl(400), fontSize: 20, color: C.teal, fontWeight: 500, marginTop: 4 }}>IHS Ilorin Innovation Hub</p>
     </div>
     <div className="pf" style={{ ...dl(500), height: 2, background: `linear-gradient(90deg, ${C.teal}, transparent)`, margin: "0 40px 24px" }} />
     <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 40px 40px" }}>
-      <p className="pu" style={{ ...dl(600), fontSize: 15, color: C.charcoal, lineHeight: 1.8, maxWidth: 700, marginBottom: 24 }}>
+      <p className="pu" style={{ ...dl(600), fontSize: 19, color: C.charcoal, lineHeight: 1.8, maxWidth: 700, marginBottom: 24 }}>
         The Procure AI delivery team is further supported by additional software engineers based at the IHS Ilorin Innovation Hub, providing extended development capacity, local platform knowledge, and dedicated engineering bandwidth to accelerate delivery timelines.
       </p>
       <div className="pu" style={{ ...dl(900), display: "flex", gap: 20 }}>
         <div style={{ background: C.white, border: `1px solid ${C.darkBorder}`, borderRadius: 4, padding: "20px 28px", borderTop: `3px solid ${C.teal}`, flex: 1 }}>
-          <p style={{ fontSize: 13, color: C.teal, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>What This Means</p>
-          <p style={{ fontSize: 14, color: C.charcoal, lineHeight: 1.7 }}>Dedicated engineering resources from IHS Towers' own innovation centre, working alongside the core TN Macaulay team to deliver platform modules with local context and operational familiarity.</p>
+          <p style={{ fontSize: 17, color: C.teal, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>What This Means</p>
+          <p style={{ fontSize: 18, color: C.charcoal, lineHeight: 1.7 }}>Dedicated engineering resources from IHS Towers' own innovation centre, working alongside the core TN Macaulay team to deliver platform modules with local context and operational familiarity.</p>
         </div>
         <div style={{ background: C.white, border: `1px solid ${C.darkBorder}`, borderRadius: 4, padding: "20px 28px", borderTop: `3px solid ${C.navy}`, flex: 1 }}>
-          <p style={{ fontSize: 13, color: C.navy, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Contribution Areas</p>
+          <p style={{ fontSize: 17, color: C.navy, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Contribution Areas</p>
           {["Feature development and module implementation", "Platform testing and quality assurance", "Local infrastructure and integration support", "Extended sprint capacity during peak delivery phases"].map((item, i) => (
             <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
-              <span style={{ color: C.teal, fontSize: 12, flexShrink: 0 }}>-</span>
-              <span style={{ fontSize: 13, color: C.charcoal, lineHeight: 1.6 }}>{item}</span>
+              <span style={{ color: C.teal, fontSize: 15, flexShrink: 0 }}>-</span>
+              <span style={{ fontSize: 17, color: C.charcoal, lineHeight: 1.6 }}>{item}</span>
             </div>
           ))}
         </div>
@@ -395,9 +395,9 @@ const S12 = ({ active }) => {
       <div style={{ position: "absolute", top: 20, left: 20, width: 60, height: 60, borderTop: `2px solid ${C.teal}`, borderLeft: `2px solid ${C.teal}`, opacity: 0.5 }} />
       <div style={{ position: "absolute", bottom: 40, right: 20, width: 60, height: 60, borderBottom: `2px solid ${C.teal}`, borderRight: `2px solid ${C.teal}`, opacity: 0.5 }} />
 
-      <h2 className="ps" style={{ ...dl(300), fontSize: 36, fontWeight: 800, color: C.white }}>Built for Enterprise. Designed for IHS Towers.</h2>
+      <h2 className="ps" style={{ ...dl(300), fontSize: 44, fontWeight: 800, color: C.white }}>Built for Enterprise. Designed for IHS Towers.</h2>
       <div className="pf" style={{ ...dl(600), width: 60, height: 2, background: C.teal, margin: "16px auto 20px" }} />
-      <p className="pu" style={{ ...dl(800), fontSize: 15, color: `${C.white}b0`, lineHeight: 1.8, maxWidth: 700, marginBottom: 28 }}>
+      <p className="pu" style={{ ...dl(800), fontSize: 19, color: `${C.white}b0`, lineHeight: 1.8, maxWidth: 700, marginBottom: 28 }}>
         The Procure AI delivery team represents a deliberate assembly of enterprise technologists, AI specialists, cloud engineers, and delivery professionals, each selected for the specific capabilities IHS Towers requires. Every member brings direct Azure cloud delivery experience, enterprise AI platform credentials, and a proven record of performing in regulated, high-stakes environments. Together, this team is structured to deliver Procure AI on time, to specification, and to the standard IHS Towers expects.
       </p>
 
@@ -405,14 +405,14 @@ const S12 = ({ active }) => {
       <div style={{ width: "100%", maxWidth: 560 }}>
         {team.map(([name, des], i) => (
           <div key={i} className="pu" style={{ ...dl(1000 + i * 100), display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", borderBottom: `1px solid ${C.border}` }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: C.white }}>{name}</span>
-            <span style={{ fontSize: 13, color: C.teal }}>{des}</span>
+            <span style={{ fontSize: 19, fontWeight: 600, color: C.white }}>{name}</span>
+            <span style={{ fontSize: 17, color: C.teal }}>{des}</span>
           </div>
         ))}
       </div>
 
       <div style={{ position: "absolute", bottom: 36, right: 40 }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: C.teal, letterSpacing: "0.04em" }}>TN Macaulay</span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: C.teal, letterSpacing: "0.04em" }}>TN Macaulay</span>
       </div>
       <Footer />
     </div>
@@ -465,7 +465,7 @@ export default function ProcureAITeamPresentation() {
       {/* Nav */}
       <div style={{ position: "fixed", bottom: 16, right: 24, zIndex: 50, display: "flex", alignItems: "center", gap: 10 }}>
         <button onClick={() => go(cur - 1)} disabled={cur === 0} style={{ width: 28, height: 28, background: "transparent", border: `1px solid ${C.border}`, borderRadius: 3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: cur === 0 ? 0.15 : 0.5 }} data-testid="pai-prev"><ChevronLeft size={14} color={C.white} /></button>
-        <span style={{ fontSize: 12, color: `${C.white}60`, minWidth: 50, textAlign: "center", fontFamily: "'Inter',sans-serif" }} data-testid="pai-counter">{cur + 1} / {TOTAL}</span>
+        <span style={{ fontSize: 15, color: `${C.white}60`, minWidth: 50, textAlign: "center", fontFamily: "'Inter',sans-serif" }} data-testid="pai-counter">{cur + 1} / {TOTAL}</span>
         <button onClick={() => go(cur + 1)} disabled={cur === TOTAL - 1} style={{ width: 28, height: 28, background: "transparent", border: `1px solid ${C.border}`, borderRadius: 3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: cur === TOTAL - 1 ? 0.15 : 0.5 }} data-testid="pai-next"><ChevronRight size={14} color={C.white} /></button>
       </div>
     </div>
