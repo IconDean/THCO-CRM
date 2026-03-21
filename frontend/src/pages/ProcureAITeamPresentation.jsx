@@ -327,7 +327,7 @@ const S10 = () => <ProfileSlide
   name="Christianah Olatunji"
   designation="Junior Project Coordinator"
   role="Delivery Coordination & Stakeholder Support"
-  companies={["Kay Computer Institute", "Jossid Global Limited", "NYSC / St. James College", "THCO", "TN Macaulay"]}
+  companies={["Kay Computer Institute", "Jossid Global Limited", "St. James College", "THCO", "TN Macaulay"]}
   bio={[
     "Christianah is the Junior Project Coordinator on the Procure AI engagement, supporting delivery coordination, stakeholder communication, sprint scheduling, and project tracking across the programme. She brings over 3 years of experience in human capital management and client engagement at THCO, an environment demanding rigorous process management, multi-stakeholder coordination, proactive communication, and the ability to manage multiple concurrent workstreams with precision.",
     "At THCO, she managed full-cycle global recruitment processes across engineering, finance, sales, and management functions, coordinating candidates, hiring managers, and clients across Nigeria and international markets including Ghana, Kenya, South Africa, the USA, and Egypt. She successfully placed senior executive and technical roles including CFO, CTO, CIO, and CEO positions across Fintech, Telco, IT Consulting, Healthtech, and Oil & Gas sectors, demonstrating her ability to engage confidently with executive and technical stakeholders at the highest level. She scheduled and coordinated virtual interviews across time zones, maintained proactive communication pipelines with multiple concurrent clients, sourced candidates using multi-channel approaches including LinkedIn, job boards, and targeted networking, and continuously evaluated and optimised processes for greater efficiency. These skills translate directly into sprint coordination, stakeholder update management, delivery tracking, and client communication on the Procure AI programme.",
@@ -344,8 +344,40 @@ const S10 = () => <ProfileSlide
   ]}
 />;
 
-/* ═══ SLIDE 11: CLOSING ═══ */
-const S11 = ({ active }) => {
+/* ═══ SLIDE 11: IHS ILORIN INNOVATION HUB ═══ */
+const S11Hub = () => (
+  <div style={{ height: "100%", background: C.light, display: "flex", flexDirection: "column", position: "relative" }}>
+    <div style={{ background: C.navy, padding: "28px 40px", flexShrink: 0 }}>
+      <h2 className="ps" style={{ ...dl(200), fontSize: 30, fontWeight: 800, color: C.white }}>+ Supporting Software Engineers</h2>
+      <p className="pf" style={{ ...dl(400), fontSize: 16, color: C.teal, fontWeight: 500, marginTop: 4 }}>IHS Ilorin Innovation Hub</p>
+    </div>
+    <div className="pf" style={{ ...dl(500), height: 2, background: `linear-gradient(90deg, ${C.teal}, transparent)`, margin: "0 40px 24px" }} />
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 40px 40px" }}>
+      <p className="pu" style={{ ...dl(600), fontSize: 15, color: C.charcoal, lineHeight: 1.8, maxWidth: 700, marginBottom: 24 }}>
+        The Procure AI delivery team is further supported by additional software engineers based at the IHS Ilorin Innovation Hub, providing extended development capacity, local platform knowledge, and dedicated engineering bandwidth to accelerate delivery timelines.
+      </p>
+      <div className="pu" style={{ ...dl(900), display: "flex", gap: 20 }}>
+        <div style={{ background: C.white, border: `1px solid ${C.darkBorder}`, borderRadius: 4, padding: "20px 28px", borderTop: `3px solid ${C.teal}`, flex: 1 }}>
+          <p style={{ fontSize: 13, color: C.teal, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>What This Means</p>
+          <p style={{ fontSize: 14, color: C.charcoal, lineHeight: 1.7 }}>Dedicated engineering resources from IHS Towers' own innovation centre, working alongside the core TN Macaulay team to deliver platform modules with local context and operational familiarity.</p>
+        </div>
+        <div style={{ background: C.white, border: `1px solid ${C.darkBorder}`, borderRadius: 4, padding: "20px 28px", borderTop: `3px solid ${C.navy}`, flex: 1 }}>
+          <p style={{ fontSize: 13, color: C.navy, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Contribution Areas</p>
+          {["Feature development and module implementation", "Platform testing and quality assurance", "Local infrastructure and integration support", "Extended sprint capacity during peak delivery phases"].map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
+              <span style={{ color: C.teal, fontSize: 12, flexShrink: 0 }}>-</span>
+              <span style={{ fontSize: 13, color: C.charcoal, lineHeight: 1.6 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <FooterLight />
+  </div>
+);
+
+/* ═══ SLIDE 12: CLOSING ═══ */
+const S12 = ({ active }) => {
   const team = [
     ["Motunrayo Ogunneye", "Service Delivery Manager"],
     ["Ayo Omomia", "Technical Project Delivery Lead"],
@@ -356,6 +388,7 @@ const S11 = ({ active }) => {
     ["Davies Okpeta", "Frontend Engineer"],
     ["Mustapha Sanusi", "UI/UX & Product Designer"],
     ["Christianah Olatunji", "Junior Project Coordinator"],
+    ["IHS Ilorin Innovation Hub", "Supporting Software Engineers"],
   ];
   return (
     <div style={{ height: "100%", background: `linear-gradient(135deg, ${C.navy} 0%, #151D4A 50%, ${C.navy} 100%)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", textAlign: "center", padding: "0 clamp(40px,6vw,100px)" }}>
@@ -387,7 +420,7 @@ const S11 = ({ active }) => {
 };
 
 /* ═══ MAIN ENGINE ═══ */
-const SLIDES = [S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11];
+const SLIDES = [S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11Hub, S12];
 const TOTAL = SLIDES.length;
 
 export default function ProcureAITeamPresentation() {
