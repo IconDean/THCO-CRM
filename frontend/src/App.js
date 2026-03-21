@@ -75,6 +75,8 @@ import SagicorSTECPresentation from "./pages/SagicorSTECPresentation";
 import SagicorSTECPresentationPublic from "./pages/SagicorSTECPresentationPublic";
 import ReallocPresentation from "./pages/ReallocPresentation";
 import ReallocPresentationPublic from "./pages/ReallocPresentationPublic";
+import ProcureAITeamPresentation from "./pages/ProcureAITeamPresentation";
+import ProcureAITeamPresentationPublic from "./pages/ProcureAITeamPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -251,6 +253,7 @@ const AppRouter = () => {
       <Route path="/proposals/tide-war" element={<TideWarPresentationPublic />} />
       <Route path="/proposals/sagicor-stec" element={<SagicorSTECPresentationPublic />} />
       <Route path="/proposals/realloc" element={<ReallocPresentationPublic />} />
+      <Route path="/proposals/procureai-team" element={<ProcureAITeamPresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />

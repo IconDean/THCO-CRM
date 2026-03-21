@@ -1948,6 +1948,7 @@ PROPOSAL_NAMES = {
     "tide-war": "TIDE WAR - Current Shift",
     "sagicor-stec": "Sagicor STEC - Technology Capability Assessment",
     "realloc": "Realloc AI Capability Program",
+    "procureai-team": "Procure AI Delivery Team",
 }
 
 @api_router.post("/proposals/viewers/register")
