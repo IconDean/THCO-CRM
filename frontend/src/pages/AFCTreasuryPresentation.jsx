@@ -229,98 +229,189 @@ const S5 = () => {
   );
 };
 
-/* ═══ S6: HERO FLOWCHART ═══ */
+/* S6: HERO FLOWCHART */
 const S6 = ({ active }) => {
-  const p = usePhase(active, 8, [200, 1200, 2200, 3200, 4000, 5200, 6500, 7500]);
-  const cos = [["ARISE IIP", "Gabon, XOF"], ["Infinity Power", "Egypt, EGP"], ["Pecan Energies", "Ghana, GHS"], ["Segilola", "Nigeria, NGN"]];
-  const accts = ["NGN Account", "GHS Account", "XOF Account", "EGP Account"];
-  const acts = [["Match & pay locally", "Zero FX spread", C.teal, C.tealL], ["Update ledger", "Track interco. debts", C.gray, C.gray], ["Convert surplus", "Sell FX for USD", C.purple, C.purpleL]];
+  const p = usePhase(active, 9, [0, 1000, 1500, 2500, 3500, 4500, 5000, 5500, 6000]);
+  const [dims, setDims] = useState({ w: 1840, h: 620 });
+  const containerRef = useCallback(node => {
+    if (node) {
+      const r = node.getBoundingClientRect();
+      setDims({ w: r.width, h: r.height });
+    }
+  }, []);
+
+  const { w, h } = dims;
+
+  /* Y positions as proportions of container height */
+  const pct = (frac) => Math.round(h * frac);
+  const compY = pct(0);       const compH = 50;
+  const contY = pct(0.12);
+  const acctY = pct(0.19);    const acctH = 38;
+  const actY  = pct(0.33);    const actH = 46;
+  const contBY = pct(0.45);
+  const outY  = pct(0.52);    const outH = 46;
+  const usdY  = pct(0.67);
+  const textY = pct(0.80);
+
+  /* X centers from measured width */
+  const compW = 175, compG = 14;
+  const compS = (w - (4*compW + 3*compG)) / 2;
+  const compCx = [0,1,2,3].map(i => compS + compW/2 + i*(compW+compG));
+
+  const acctW = 140, acctG = 12;
+  const acctS = (w - (4*acctW + 3*acctG)) / 2;
+  const acctCx = [0,1,2,3].map(i => acctS + acctW/2 + i*(acctW+acctG));
+
+  const actW = 195, actG = 14;
+  const actS = (w - (3*actW + 2*actG)) / 2;
+  const actCx = [0,1,2].map(i => actS + actW/2 + i*(actW+actG));
+
+  const outCx = [w * 0.28, w * 0.72];
+  const usdCx = w / 2;
+
+  const cos = [["ARISE IIP","Gabon, XOF"],["Infinity Power","Egypt, EGP"],["Pecan Energies","Ghana, GHS"],["Segilola","Nigeria, NGN"]];
+  const accts = ["NGN Account","GHS Account","XOF Account","EGP Account"];
+  const acts = [
+    ["Match & pay locally","Zero FX spread",C.teal,C.tealL],
+    ["Update ledger","Track interco. debts",C.gray,C.gray],
+    ["Convert surplus","Sell FX for USD",C.purple,C.purpleL],
+  ];
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "56px 40px 36px", position: "relative" }}>
+    <div style={{ height:"100%", display:"flex", flexDirection:"column", padding:"48px 40px 0", position:"relative" }}>
       <Header />
-      <p className="af" style={{ ...dl(100), fontSize: 20, fontWeight: 600, marginBottom: 16, letterSpacing: "-0.01em" }}>The complete system</p>
+      <p className="af" style={{ ...dl(100), fontSize:18, fontWeight:600, marginBottom:8 }}>The complete system</p>
 
-      <div style={{ flex: 1, position: "relative" }}>
-        {/* Phase 1: Portfolio companies */}
-        <div style={{ display: "flex", gap: 16, justifyContent: "center", position: "absolute", top: 0, left: 0, right: 0 }}>
-          {cos.map(([n, s], i) => p >= 1 && (
-            <div key={i} className="as" style={{ ...dl(i * 180), width: 185, padding: "14px 16px", background: C.tealD, border: `0.5px solid ${C.teal}`, borderRadius: 8, textAlign: "center" }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: C.tealL }}>{n}</p>
-              <p style={{ fontSize: 12, color: C.teal, marginTop: 2 }}>{s}</p>
+      <div ref={containerRef} style={{ position:"relative", flex:1, marginBottom:66 }}>
+
+        {/* SVG ARROW LAYER */}
+        <svg width={w} height={h} style={{ position:"absolute", top:0, left:0, pointerEvents:"none", zIndex:2, overflow:"visible" }}>
+          <defs>
+            <marker id="at" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke={C.tealFlow} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></marker>
+            <marker id="ac" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke={C.coral} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></marker>
+            <marker id="ap" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke={C.purple} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></marker>
+            <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke={C.gray} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></marker>
+          </defs>
+
+          {/* Phase 2: Input arrows (companies to container) */}
+          {p >= 2 && compCx.map((x, i) => (
+            <g key={`in${i}`}>
+              <line x1={x-10} y1={compY+compH} x2={x-10} y2={contY+6}
+                stroke={C.tealFlow} strokeWidth={1.5} markerEnd="url(#at)"
+                className="svg-draw" style={{ "--len":contY-compY-compH+10, "--dur":"400ms", "--del":`${i*100}ms` }} />
+              <line x1={x+10} y1={compY+compH} x2={x+10} y2={contY+6}
+                stroke={C.coral} strokeWidth={1.5} strokeDasharray="5 4" markerEnd="url(#ac)"
+                className="svg-draw" style={{ "--len":contY-compY-compH+10, "--dur":"400ms", "--del":`${i*100+180}ms` }} />
+            </g>
+          ))}
+
+          {/* Phase 4: Internal arrows (accounts to activities) */}
+          {p >= 4 && acctCx.map((x, i) => (
+            <line key={`ia${i}`} x1={x} y1={acctY+acctH} x2={actCx[Math.min(i,2)]} y2={actY}
+              stroke="rgba(255,255,255,0.06)" strokeWidth={0.5}
+              className="svg-draw" style={{ "--len":80, "--dur":"300ms", "--del":`${i*60}ms` }} />
+          ))}
+
+          {/* Phase 5: EXIT arrows - activities to outputs */}
+          {p >= 5 && <line x1={actCx[0]} y1={actY+actH} x2={outCx[0]} y2={outY}
+            stroke={C.tealFlow} strokeWidth={1.5} markerEnd="url(#at)"
+            className="svg-draw" style={{ "--len":Math.hypot(actCx[0]-outCx[0], outY-actY-actH), "--dur":"500ms", "--del":"0ms" }} />}
+          {p >= 5 && <line x1={actCx[2]} y1={actY+actH} x2={outCx[1]} y2={outY}
+            stroke={C.purple} strokeWidth={1.5} markerEnd="url(#ap)"
+            className="svg-draw" style={{ "--len":Math.hypot(actCx[2]-outCx[1], outY-actY-actH), "--dur":"500ms", "--del":"200ms" }} />}
+
+          {/* Phase 7: Remittance to USD Treasury */}
+          {p >= 7 && <>
+            <line x1={outCx[1]} y1={outY+outH} x2={usdCx} y2={usdY}
+              stroke={C.purple} strokeWidth={1.5} markerEnd="url(#ap)"
+              className="svg-draw" style={{ "--len":Math.hypot(outCx[1]-usdCx, usdY-outY-outH), "--dur":"400ms", "--del":"0ms" }} />
+            <text x={(outCx[1]+usdCx)/2+14} y={(outY+outH+usdY)/2} fill={C.purple} fontSize="10" fontFamily="JetBrains Mono"
+              opacity="0" style={{ animation:"afc-fade 300ms ease-out 400ms both" }}>USD</text>
+          </>}
+
+          {/* Phase 9: Feedback loop */}
+          {p >= 9 && <>
+            <path d={`M${actCx[1]} ${actY+actH} L${actCx[1]} ${actY+actH+14} Q${actCx[1]} ${actY+actH+26} ${actCx[1]+22} ${actY+actH+26} L${w-28} ${actY+actH+26} Q${w-14} ${actY+actH+26} ${w-14} ${actY+actH+12} L${w-14} ${compY+28} Q${w-14} ${compY+14} ${w-28} ${compY+14} L${compCx[3]+90} ${compY+14}`}
+              fill="none" stroke={C.gray} strokeWidth={1} strokeDasharray="4 3" opacity={0.3} markerEnd="url(#ag)"
+              className="svg-draw" style={{ "--len":900, "--dur":"800ms", "--del":"0ms" }} />
+            <text x={w-6} y={(actY+compY+50)/2} fill={C.muted} fontSize="9" fontFamily="Inter" textAnchor="start"
+              opacity="0" style={{ animation:"afc-fade 300ms ease-out 600ms both" }}
+              transform={`rotate(-90, ${w-6}, ${(actY+compY+50)/2})`}>Settled vs next dividend</text>
+          </>}
+        </svg>
+
+        {/* HTML NODES */}
+
+        {/* Row 1: Companies */}
+        <div style={{ position:"absolute", top:compY, left:0, right:0, display:"flex", gap:compG, justifyContent:"center", zIndex:3 }}>
+          {cos.map(([n,s],i) => p >= 1 && (
+            <div key={i} className="as" style={{ ...dl(i*180), width:compW, padding:"11px 14px", background:C.tealD, border:`0.5px solid ${C.teal}`, borderRadius:8, textAlign:"center" }}>
+              <p style={{ fontSize:13, fontWeight:600, color:C.tealL }}>{n}</p>
+              <p style={{ fontSize:11, color:C.teal, marginTop:1 }}>{s}</p>
             </div>
           ))}
         </div>
 
-        {/* Phase 2: SVG Flow arrows */}
-        {p >= 2 && (
-          <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", overflow: "visible" }}>
-            {cos.map((_, i) => {
-              const cx = (i - 1.5) * 201 + (typeof window !== 'undefined' ? window.innerWidth / 2 : 960) - 40;
-              const topY = 60;
-              const botY = 100;
-              return (
-                <g key={i}>
-                  <line x1={cx - 8} y1={topY} x2={cx - 8} y2={botY} stroke={C.tealFlow} strokeWidth={1.5}
-                    className="svg-draw" style={{ "--len": 40, "--dur": "500ms", "--del": `${i * 150}ms` }} />
-                  <line x1={cx + 8} y1={topY} x2={cx + 8} y2={botY} stroke={C.coral} strokeWidth={1.5} strokeDasharray="5 4"
-                    className="svg-draw" style={{ "--len": 40, "--dur": "500ms", "--del": `${i * 150 + 200}ms` }} />
-                </g>
-              );
-            })}
-          </svg>
-        )}
-
         {/* Legend */}
-        {p >= 2 && <div className="af" style={{ ...dl(600), position: "absolute", top: 12, right: 0, fontSize: 11, color: C.muted }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}><div style={{ width: 18, height: 2, background: C.teal }} /><span>AFC returns</span></div>
-          <div style={{ display: "flex", alignItems: "center", gap: 7 }}><div style={{ width: 18, height: 2, background: C.coral, backgroundImage: `repeating-linear-gradient(to right, ${C.coral} 0px, ${C.coral} 4px, transparent 4px, transparent 7px)` }} /><span>Portfolio deposits</span></div>
+        {p >= 2 && <div className="af" style={{ ...dl(500), position:"absolute", top:compY+4, right:0, fontSize:10, color:C.muted, zIndex:4 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}><div style={{ width:16, height:2, background:C.teal }} /><span>AFC returns</span></div>
+          <div style={{ display:"flex", alignItems:"center", gap:6 }}><div style={{ width:16, height:2, background:C.coral, backgroundImage:`repeating-linear-gradient(to right, ${C.coral} 0 4px, transparent 4px 7px)` }} /><span>Portfolio deposits</span></div>
         </div>}
 
-        {/* Phase 3: Treasury container */}
-        {p >= 3 && <div className="af" style={{ position: "absolute", top: 108, left: "4%", right: "4%", bottom: 85, border: `1px dashed ${C.dash}`, borderRadius: 16, padding: "14px 24px" }}>
-          <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.01em" }}>AFC Treasury</p>
-            <p style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Lagos HQ, 3a Osborne Road, Ikoyi</p>
-          </div>
-
-          {/* Phase 4: Accounts */}
-          {p >= 4 && <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 16 }}>
-            {accts.map((a, i) => <div key={i} className="as" style={{ ...dl(i * 130), background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 18px", textAlign: "center", minWidth: 140 }}>
-              <p style={{ fontSize: 13, fontWeight: 600 }}>{a}</p>
-            </div>)}
-          </div>}
-
-          {/* Phase 5: Activities */}
-          {p >= 5 && <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 22 }}>
-            {acts.map(([t, s, c, cl], i) => <div key={i} className="au" style={{ ...dl(i * 200), background: C.card, borderLeft: `2px solid ${c}`, borderRadius: 8, padding: "12px 16px", minWidth: 190 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: cl }}>{t}</p>
-              <p style={{ fontSize: 11, color: c, marginTop: 2 }}>{s}</p>
-            </div>)}
-          </div>}
-        </div>}
-
-        {/* Phase 6: Outputs */}
-        {p >= 6 && <div style={{ position: "absolute", bottom: 12, left: 0, right: 0, display: "flex", justifyContent: "space-between", padding: "0 4%" }}>
-          <div className="au" style={{ ...dl(0), background: C.coralD, border: `0.5px solid ${C.coral}`, borderRadius: 8, padding: "12px 16px" }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: C.coralL }}>Suppliers paid</p>
-            <p style={{ fontSize: 11, color: C.coral }}>In local currency</p>
-          </div>
-          <div className="au" style={{ ...dl(400), background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 16px" }}>
-            <p style={{ fontSize: 13, fontWeight: 600 }}>Remittance providers</p>
-            <p style={{ fontSize: 11, color: C.sec }}>Buy surplus FX</p>
-          </div>
-          <div className={`au ${p >= 8 ? "pulse-node" : ""}`} style={{ ...dl(800), background: C.purpleD, border: `1px solid ${C.purple}`, borderRadius: 8, padding: "12px 22px" }}>
-            <p style={{ fontSize: 15, fontWeight: 600, color: C.purpleL }}>AFC Centralized USD Treasury</p>
-            <p style={{ fontSize: 12, color: C.purple }}>Single consolidated pool</p>
+        {/* AFC Treasury container */}
+        {p >= 3 && <div className="af" style={{ position:"absolute", top:contY, left:"3%", right:"3%", height:contBY-contY, border:`1px dashed ${C.dash}`, borderRadius:16, zIndex:1 }}>
+          <div style={{ textAlign:"center", paddingTop:8 }}>
+            <p style={{ fontSize:16, fontWeight:600 }}>AFC Treasury</p>
+            <p style={{ fontSize:10, color:C.muted, marginTop:1 }}>Lagos HQ, 3a Osborne Road, Ikoyi</p>
           </div>
         </div>}
 
-        {p >= 7 && <p className="af" style={{ ...dl(0), position: "absolute", bottom: -2, left: "50%", transform: "translateX(-50%)", fontSize: 11, color: C.muted }}>Cycle repeats monthly as new returns flow in.</p>}
+        {/* Accounts */}
+        {p >= 3 && <div style={{ position:"absolute", top:acctY, left:0, right:0, display:"flex", gap:acctG, justifyContent:"center", zIndex:3 }}>
+          {accts.map((a,i) => (
+            <div key={i} className="as" style={{ ...dl(i*110), background:C.card, border:`1px solid ${C.border}`, borderRadius:8, padding:"8px 16px", textAlign:"center", width:acctW }}>
+              <p style={{ fontSize:12, fontWeight:600 }}>{a}</p>
+            </div>
+          ))}
+        </div>}
+
+        {/* Activities */}
+        {p >= 4 && <div style={{ position:"absolute", top:actY, left:0, right:0, display:"flex", gap:actG, justifyContent:"center", zIndex:3 }}>
+          {acts.map(([t,s,c,cl],i) => (
+            <div key={i} className="au" style={{ ...dl(i*180), background:C.card, borderLeft:`2px solid ${c}`, borderRadius:8, padding:"10px 14px", width:actW }}>
+              <p style={{ fontSize:12, fontWeight:600, color:cl }}>{t}</p>
+              <p style={{ fontSize:10, color:c, marginTop:1 }}>{s}</p>
+            </div>
+          ))}
+        </div>}
+
+        {/* Output nodes positioned to match SVG arrow endpoints */}
+        {p >= 6 && <>
+          <div className="au" style={{ position:"absolute", top:outY, left:outCx[0]-70, zIndex:3, background:C.coralD, border:`0.5px solid ${C.coral}`, borderRadius:8, padding:"10px 14px", width:140 }}>
+            <p style={{ fontSize:12, fontWeight:600, color:C.coralL }}>Suppliers paid</p>
+            <p style={{ fontSize:10, color:C.coral }}>In local currency</p>
+          </div>
+          <div className="au" style={{ ...dl(250), position:"absolute", top:outY, left:outCx[1]-80, zIndex:3, background:C.card, border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", width:160 }}>
+            <p style={{ fontSize:12, fontWeight:600 }}>Remittance providers</p>
+            <p style={{ fontSize:10, color:C.sec }}>Buy surplus FX</p>
+          </div>
+        </>}
+
+        {/* USD Treasury */}
+        {p >= 8 && <div style={{ position:"absolute", top:usdY, left:0, right:0, display:"flex", justifyContent:"center", zIndex:3 }}>
+          <div className="au pulse-node" style={{ background:C.purpleD, border:`1px solid ${C.purple}`, borderRadius:8, padding:"10px 22px", textAlign:"center" }}>
+            <p style={{ fontSize:14, fontWeight:600, color:C.purpleL }}>AFC Centralized USD Treasury</p>
+            <p style={{ fontSize:11, color:C.purple }}>Single consolidated pool</p>
+          </div>
+        </div>}
+
+        {/* Bottom text */}
+        {p >= 9 && <p className="af" style={{ ...dl(400), position:"absolute", top:textY, left:0, right:0, textAlign:"center", fontSize:10, color:C.muted, zIndex:3 }}>Cycle repeats monthly as new returns flow in.</p>}
       </div>
     </div>
   );
 };
+
 
 /* ═══ S7: DEEP DIVE STREAM 1 ═══ */
 const S7 = ({ active }) => {
