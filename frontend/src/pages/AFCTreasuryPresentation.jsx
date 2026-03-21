@@ -130,7 +130,7 @@ const S1 = ({ active }) => {
       {p >= 2 && <p className="au" style={{ ...dl(0), fontSize: "clamp(15px, 1.5vw, 18px)", color: C.sec, marginTop: 16, maxWidth: 640, lineHeight: 1.6 }}>A Centralized Framework for Multi-Currency Collection, Internal Settlement, and USD Consolidation</p>}
       {p >= 3 && <div className="af" style={{ width: 60, height: 1, background: C.teal, margin: "24px auto", transition: "width 300ms ease" }} />}
       {p >= 4 && <p className="af" style={{ fontSize: 14, fontWeight: 500 }}>Africa Finance Corporation</p>}
-      {p >= 5 && <p className="af" style={{ fontSize: 12, color: C.muted, marginTop: 10 }}>Prepared by THCO | March 2026</p>}
+      {p >= 5 && <p className="af" style={{ fontSize: 12, color: C.muted, marginTop: 10 }}>Prepared by Future Africa | March 2026</p>}
       {p >= 6 && <p className="af" style={{ fontSize: 12, color: C.muted, marginTop: 8, position: "absolute", bottom: 44 }}>$12.34 billion disbursed across 36 African countries. 44 member states.</p>}
     </div>
   );
@@ -850,7 +850,7 @@ const S18 = () => {
     "Identify 4-5 portfolio companies for the pilot (recommend ARISE, Infinity Power, Pecan, Segilola)",
     "Map current bank relationships and FX conversion costs in pilot countries",
     "Identify licensed remittance provider partners in Nigeria, Ghana, Gabon, Egypt",
-    "THCO scopes the technology build for the visibility dashboard and matching engine",
+    "Future Africa scopes the technology build for the visibility dashboard and matching engine",
     "Regulatory review: confirm intercompany settlement structure in each jurisdiction",
     "Define benchmark rate methodology and transfer pricing documentation requirements",
     "Pilot kickoff targeting Q2 2026",
@@ -886,13 +886,13 @@ const S19 = ({ active }) => {
 const S20 = () => (
   <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", position: "relative" }}>
     <Header />
-    <p className="af" style={{ ...dl(400), fontSize: 16, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>THCO</p>
+    <p className="af" style={{ ...dl(400), fontSize: 16, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>Future Africa</p>
     <div className="af" style={{ ...dl(700), width: 40, height: 1, background: C.teal, margin: "18px auto" }} />
     <p className="af" style={{ ...dl(900), fontSize: 14, color: C.muted }}>Cross-Border Treasury and Settlement System</p>
     <p className="af" style={{ ...dl(1100), fontSize: 13, color: C.muted, marginTop: 5 }}>Prepared for Africa Finance Corporation</p>
     <div className="au" style={{ ...dl(1400), marginTop: 40 }}>
       <p style={{ fontSize: 14, fontWeight: 500 }}>Ayo Omomia</p>
-      <p style={{ fontSize: 12, color: C.muted, marginTop: 5 }}>Senior Partner and Co-Founder, THCO</p>
+      <p style={{ fontSize: 12, color: C.muted, marginTop: 5 }}>Senior Partner and Co-Founder, Future Africa</p>
     </div>
   </div>
 );
