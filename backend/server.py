@@ -1949,6 +1949,7 @@ PROPOSAL_NAMES = {
     "sagicor-stec": "Sagicor STEC - Technology Capability Assessment",
     "realloc": "Realloc AI Capability Program",
     "procureai-team": "Procure AI Delivery Team",
+    "afc-treasury": "AFC Cross-Border Treasury System",
 }
 
 @api_router.post("/proposals/viewers/register")

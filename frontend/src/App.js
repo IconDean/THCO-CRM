@@ -77,6 +77,8 @@ import ReallocPresentation from "./pages/ReallocPresentation";
 import ReallocPresentationPublic from "./pages/ReallocPresentationPublic";
 import ProcureAITeamPresentation from "./pages/ProcureAITeamPresentation";
 import ProcureAITeamPresentationPublic from "./pages/ProcureAITeamPresentationPublic";
+import AFCTreasuryPresentation from "./pages/AFCTreasuryPresentation";
+import AFCTreasuryPresentationPublic from "./pages/AFCTreasuryPresentationPublic";
 
 // Layout
 import DashboardLayout from "./components/DashboardLayout";
@@ -254,6 +256,7 @@ const AppRouter = () => {
       <Route path="/proposals/sagicor-stec" element={<SagicorSTECPresentationPublic />} />
       <Route path="/proposals/realloc" element={<ReallocPresentationPublic />} />
       <Route path="/proposals/procureai-team" element={<ProcureAITeamPresentationPublic />} />
+      <Route path="/proposals/afc-treasury" element={<AFCTreasuryPresentationPublic />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
@@ -276,6 +279,9 @@ const AppRouter = () => {
       <Route path="/proposals/preview/the-forge-v2" element={<TheForgeV2Presentation />} />
       <Route path="/proposals/preview/tide-war" element={<TideWarPresentation />} />
       <Route path="/proposals/preview/sagicor-stec" element={<SagicorSTECPresentation />} />
+      <Route path="/proposals/preview/realloc" element={<ReallocPresentation />} />
+      <Route path="/proposals/preview/procureai-team" element={<ProcureAITeamPresentation />} />
+      <Route path="/proposals/preview/afc-treasury" element={<AFCTreasuryPresentation />} />
       
       {/* Old Executive Pack version (legacy) */}
       <Route path="/proposals/procure-ai-executive-v1" element={<ProcureAIExecutivePack />} />

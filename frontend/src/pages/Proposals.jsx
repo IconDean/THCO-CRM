@@ -831,6 +831,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* AFC Cross-Border Treasury System */}
+            <Link
+              to="/proposals/afc-treasury"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#1D9E75] hover:shadow-lg transition-all"
+              data-testid="afc-treasury-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#0B1120] to-[#0F3D2E] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#1D9E75]/15 flex items-center justify-center">
+                    <span className="text-[#1D9E75] font-bold text-sm" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '0.06em' }}>AFC</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#1D9E75] bg-[#1D9E75]/10 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">AFC Treasury System</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Cross-Border Treasury and Settlement System
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>20 Slides</span>
+                  <span>•</span>
+                  <span>Institutional Animated</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#1D9E75]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* THCO Town Hall 2026 - Internal Presentation */}
             <Link
               to="/proposals/town-hall-2026"
