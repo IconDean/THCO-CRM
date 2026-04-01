@@ -1,12 +1,13 @@
 # FlowForge / Executive Decks Portal - PRD
 
 ## Original Problem Statement
-Build "FlowForge," an AI-powered workflow automation tool within a company portal. The portal has expanded to include a library of high-fidelity, cinematic animated web presentations.
+Build "FlowForge," an AI-powered workflow automation tool within a company portal. The portal has expanded to include a library of high-fidelity, cinematic animated web presentations and a candidate assessment system.
 
 ## Core Architecture
-- **Frontend**: React (CRA) with custom CSS animations
-- **Backend**: FastAPI + MongoDB (via Supabase PostgreSQL for some features)
+- **Frontend**: React (CRA) with Tailwind CSS, Shadcn/UI components
+- **Backend**: FastAPI + MongoDB
 - **Presentations**: Self-contained JSX components with keyboard/touch navigation
+- **Assessment System**: Public 3-page candidate flow + admin dashboard
 
 ## Completed Presentations
 1. Sagicor Executive Dashboard (8 sections)
@@ -22,11 +23,13 @@ Build "FlowForge," an AI-powered workflow automation tool within a company porta
 11. Procure AI Team Presentation (12 slides)
 12. AFC Cross-Border Treasury System (20 slides)
 
-## Latest Changes (2026-03-21)
-- Built AFC Cross-Border Treasury presentation (20 slides, institutional-grade)
-- Features: SVG flowchart arrows with stroke-dasharray draw animations, progressive phase reveals, matching engine simulation, balance decrements, ledger transitions
-- **Fixed Slide 6 (Hero Flowchart)**: Rebuilt with dynamic measurement-based layout using useCallback ref + proportional Y positions. SVG arrow coordinates computed from measured container width to guarantee pixel-perfect alignment with HTML flex nodes. Exit arrows (activities to outputs), feedback loop arrow, and USD Treasury arrow all rendering correctly. No dead space.
-- Integration: public route /proposals/afc-treasury, preview route, backend slug, Proposals.jsx card
+## Candidate Assessment System (2026-04-01)
+- **Public URL**: `/assessment` — 3-page flow (Info, 32 Questions, Final Details) + Confirmation
+- **Admin URL**: `/admin/assessments` — List view with sorting/filtering/export + Detail view
+- **Features**: 90-min countdown timer, auto-save (500ms debounce), resume by email, Export JSON/CSV
+- **Backend**: `/app/backend/routers/assessments.py` — Full CRUD with admin endpoints
+- **Frontend**: `CandidateAssessment.jsx` (public), `AdminAssessments.jsx` (admin)
+- **MongoDB collection**: `assessments`
 
 ## Backlog
 ### P1
@@ -38,6 +41,7 @@ Build "FlowForge," an AI-powered workflow automation tool within a company porta
 - FlowForge Phase 5 & 6
 - Permanent Babel plugin fix (patch-package)
 - Database form_url column migration
+- AFC Treasury V2 presentation (22 slides, USD at top)
 
 ### P3
 - Refactor monolithic server.py
