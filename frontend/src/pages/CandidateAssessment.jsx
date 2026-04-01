@@ -133,7 +133,7 @@ const PageOne = ({ onStart }) => {
       const data = await assessmentAPI.start({ name: name.trim(), email: email.trim().toLowerCase() });
       onStart(data);
     } catch (err) {
-      setError(err?.response?.data?.detail || "Something went wrong. Please try again.");
+      setError(err?.response?.data?.detail || err?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
