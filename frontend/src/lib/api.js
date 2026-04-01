@@ -6,22 +6,37 @@ const API = `${BACKEND_URL}/api`;
 // Configure axios defaults
 const apiClient = axios.create({
   baseURL: API,
-  withCredentials: true,
+  withCredentials: false,
   timeout: 180000, // 3 minute default timeout
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
+// Attach Bearer token from localStorage on every request
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('session_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Auth API
 export const authAPI = {
   register: async (data) => {
     const response = await apiClient.post('/auth/register', data);
+    if (response.data?.session_token) {
+      localStorage.setItem('session_token', response.data.session_token);
+    }
     return response.data;
   },
   
   login: async (data) => {
     const response = await apiClient.post('/auth/login', data);
+    if (response.data?.session_token) {
+      localStorage.setItem('session_token', response.data.session_token);
+    }
     return response.data;
   },
   
@@ -29,6 +44,9 @@ export const authAPI = {
     const response = await apiClient.post('/auth/session', {}, {
       headers: { 'X-Session-ID': sessionId }
     });
+    if (response.data?.session_token) {
+      localStorage.setItem('session_token', response.data.session_token);
+    }
     return response.data;
   },
   
@@ -39,6 +57,7 @@ export const authAPI = {
   
   logout: async () => {
     const response = await apiClient.post('/auth/logout');
+    localStorage.removeItem('session_token');
     return response.data;
   },
   
@@ -526,38 +545,30 @@ export const flowforgeAPI = {
   },
 };
 
-// Public axios client (no credentials/cookies - avoids CORS wildcard conflict)
-const publicClient = axios.create({
-  baseURL: API,
-  withCredentials: false,
-  timeout: 180000,
-  headers: { 'Content-Type': 'application/json' },
-});
-
 // Assessment API (public endpoints - no auth needed)
 export const assessmentAPI = {
   start: async (data) => {
-    const response = await publicClient.post('/assessments/start', data);
+    const response = await apiClient.post('/assessments/start', data);
     return response.data;
   },
   lookup: async (email) => {
-    const response = await publicClient.get(`/assessments/lookup?email=${encodeURIComponent(email)}`);
+    const response = await apiClient.get(`/assessments/lookup?email=${encodeURIComponent(email)}`);
     return response.data;
   },
   getById: async (id) => {
-    const response = await publicClient.get(`/assessments/by-id/${id}`);
+    const response = await apiClient.get(`/assessments/by-id/${id}`);
     return response.data;
   },
   saveAnswers: async (id, answers) => {
-    const response = await publicClient.put(`/assessments/${id}/answers`, { answers });
+    const response = await apiClient.put(`/assessments/${id}/answers`, { answers });
     return response.data;
   },
   saveTimer: async (id, timerData) => {
-    const response = await publicClient.put(`/assessments/${id}/timer`, timerData);
+    const response = await apiClient.put(`/assessments/${id}/timer`, timerData);
     return response.data;
   },
   saveFinal: async (id, data) => {
-    const response = await publicClient.put(`/assessments/${id}/final`, data);
+    const response = await apiClient.put(`/assessments/${id}/final`, data);
     return response.data;
   },
   // Admin endpoints (use apiClient with credentials)

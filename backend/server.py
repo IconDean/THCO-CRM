@@ -2548,10 +2548,24 @@ api_router.include_router(assessments_router)
 app.include_router(api_router)
 
 # CORS Middleware
+CORS_ORIGINS = [
+    "https://thcoteam.com",
+    "https://www.thcoteam.com",
+    "https://thcotools.emergent.host",
+    "https://executive-decks.preview.emergentagent.com",
+]
+# Also include any env overrides
+env_origins = os.environ.get('CORS_ORIGINS', '')
+if env_origins and env_origins != '*':
+    for o in env_origins.split(','):
+        o = o.strip().strip('"').strip("'")
+        if o and o not in CORS_ORIGINS:
+            CORS_ORIGINS.append(o)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=CORS_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
