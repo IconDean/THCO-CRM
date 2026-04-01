@@ -526,33 +526,41 @@ export const flowforgeAPI = {
   },
 };
 
+// Public axios client (no credentials/cookies - avoids CORS wildcard conflict)
+const publicClient = axios.create({
+  baseURL: API,
+  withCredentials: false,
+  timeout: 180000,
+  headers: { 'Content-Type': 'application/json' },
+});
+
 // Assessment API (public endpoints - no auth needed)
 export const assessmentAPI = {
   start: async (data) => {
-    const response = await apiClient.post('/assessments/start', data);
+    const response = await publicClient.post('/assessments/start', data);
     return response.data;
   },
   lookup: async (email) => {
-    const response = await apiClient.get(`/assessments/lookup?email=${encodeURIComponent(email)}`);
+    const response = await publicClient.get(`/assessments/lookup?email=${encodeURIComponent(email)}`);
     return response.data;
   },
   getById: async (id) => {
-    const response = await apiClient.get(`/assessments/by-id/${id}`);
+    const response = await publicClient.get(`/assessments/by-id/${id}`);
     return response.data;
   },
   saveAnswers: async (id, answers) => {
-    const response = await apiClient.put(`/assessments/${id}/answers`, { answers });
+    const response = await publicClient.put(`/assessments/${id}/answers`, { answers });
     return response.data;
   },
   saveTimer: async (id, timerData) => {
-    const response = await apiClient.put(`/assessments/${id}/timer`, timerData);
+    const response = await publicClient.put(`/assessments/${id}/timer`, timerData);
     return response.data;
   },
   saveFinal: async (id, data) => {
-    const response = await apiClient.put(`/assessments/${id}/final`, data);
+    const response = await publicClient.put(`/assessments/${id}/final`, data);
     return response.data;
   },
-  // Admin endpoints
+  // Admin endpoints (use apiClient with credentials)
   adminList: async (statusFilter = 'all') => {
     const response = await apiClient.get(`/assessments/admin/list?status_filter=${statusFilter}`);
     return response.data;
