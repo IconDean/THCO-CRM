@@ -242,6 +242,9 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
     onContinue(answers, secondsLeft);
   };
 
+  const answeredCount = QUESTIONS.filter(q => answers[q.id] && String(answers[q.id]).trim()).length;
+  const allAnswered = answeredCount === QUESTIONS.length;
+
   return (
     <div className="min-h-screen bg-[#f5f6f8]">
       <Timer secondsLeft={secondsLeft} total={TOTAL_TIME} />
@@ -297,11 +300,14 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
         </div>
 
         <div className="mt-8 flex items-center justify-between">
-          <span className="text-xs text-gray-400">{saving ? "Saving..." : "All answers auto-saved"}</span>
+          <span className="text-xs text-gray-400">
+            {saving ? "Saving..." : allAnswered ? "All answers auto-saved" : `${answeredCount}/32 answered`}
+          </span>
           <button
             data-testid="assessment-continue-btn"
             onClick={handleContinue}
-            className="px-8 py-3 rounded-lg font-medium text-sm bg-[#5a54d4] hover:bg-[#4e48c4] text-white transition-colors"
+            disabled={!allAnswered}
+            className="px-8 py-3 rounded-lg font-medium text-sm bg-[#5a54d4] hover:bg-[#4e48c4] text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Continue to final details
           </button>
