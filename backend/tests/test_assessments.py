@@ -138,9 +138,10 @@ class TestAssessmentPublicEndpoints:
         )
         assessment_id = create_resp.json()["id"]
         
-        # Save final details
+        # Save final details with work_preference
         final_data = {
             "onsite_hybrid": "Yes",
+            "work_preference": "Fully Onsite",
             "salary_expectation": "$5000/month",
             "location_city": "Lagos",
             "location_state": "Lagos State",
@@ -158,6 +159,39 @@ class TestAssessmentPublicEndpoints:
         assert data["status"] == "completed"
         assert "completed_at" in data
         print(f"✓ Final details saved, assessment completed: {assessment_id}")
+    
+    def test_save_final_details_with_hybrid_preference(self):
+        """PUT /api/assessments/{id}/final - saves work_preference as Hybrid"""
+        # Create assessment first
+        create_resp = requests.post(
+            f"{BASE_URL}/api/assessments/start",
+            json={"name": self.test_name, "email": f"hybrid_{self.test_email}"}
+        )
+        assessment_id = create_resp.json()["id"]
+        
+        # Save final details with Hybrid preference
+        final_data = {
+            "onsite_hybrid": "Yes",
+            "work_preference": "Hybrid",
+            "salary_expectation": "$6000/month",
+            "location_city": "Nairobi",
+            "location_state": "",
+            "location_country": "Kenya",
+            "time_remaining_seconds": 4000,
+            "total_time_taken_seconds": 1400
+        }
+        response = requests.put(
+            f"{BASE_URL}/api/assessments/{assessment_id}/final",
+            json=final_data
+        )
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
+        
+        # Verify work_preference is saved by fetching the assessment
+        get_resp = requests.get(f"{BASE_URL}/api/assessments/by-id/{assessment_id}")
+        assert get_resp.status_code == 200
+        data = get_resp.json()
+        assert data["work_preference"] == "Hybrid", f"Expected 'Hybrid', got '{data.get('work_preference')}'"
+        print(f"✓ Work preference 'Hybrid' saved correctly: {assessment_id}")
     
     def test_lookup_assessment(self):
         """GET /api/assessments/lookup - finds assessment by email"""
@@ -297,7 +331,10 @@ class TestAssessmentAdminEndpoints:
         response = self.session.get(f"{BASE_URL}/api/assessments/admin/export/csv")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         assert "text/csv" in response.headers.get("content-type", "")
-        print("✓ CSV export works")
+        # Verify work_preference column is in CSV header
+        csv_content = response.text
+        assert "work_preference" in csv_content, "CSV should include work_preference column"
+        print("✓ CSV export works with work_preference column")
     
     def test_admin_export_single(self):
         """GET /api/assessments/admin/{id}/export - exports single assessment as JSON"""
@@ -376,9 +413,10 @@ class TestAssessmentFullFlow:
         assert answer_resp.status_code == 200
         print("Step 2: Saved answers")
         
-        # Step 3: Save final details
+        # Step 3: Save final details with work_preference
         final_data = {
             "onsite_hybrid": "Yes",
+            "work_preference": "Fully Onsite",
             "salary_expectation": "$8000/month",
             "location_city": "Nairobi",
             "location_state": "",
@@ -392,7 +430,7 @@ class TestAssessmentFullFlow:
         )
         assert final_resp.status_code == 200
         assert final_resp.json()["status"] == "completed"
-        print("Step 3: Submitted final details")
+        print("Step 3: Submitted final details with work_preference")
         
         # Step 4: Login as admin and verify
         login_resp = session.post(
@@ -410,15 +448,16 @@ class TestAssessmentFullFlow:
         assert found, f"Assessment {assessment_id} not found in admin list"
         print("Step 4: Assessment found in admin list")
         
-        # Step 6: Check admin detail
+        # Step 6: Check admin detail - verify work_preference is included
         detail_resp = session.get(f"{BASE_URL}/api/assessments/admin/{assessment_id}")
         assert detail_resp.status_code == 200
         detail = detail_resp.json()
         assert detail["status"] == "completed"
         assert detail["onsite_hybrid"] == "Yes"
+        assert detail["work_preference"] == "Fully Onsite", f"Expected 'Fully Onsite', got '{detail.get('work_preference')}'"
         assert detail["location_city"] == "Nairobi"
         assert detail["questions_answered"] == 5
-        print("Step 5: Admin detail view correct")
+        print("Step 5: Admin detail view correct with work_preference")
         
         print(f"✓ Full E2E flow completed successfully for {test_email}")
 

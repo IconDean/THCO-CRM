@@ -105,6 +105,10 @@ const DetailView = ({ assessmentId, onBack }) => {
             </span>
           </div>
           <div>
+            <span className="text-gray-400 block text-xs mb-0.5">Preference</span>
+            <span className="text-gray-800">{data.work_preference || "—"}</span>
+          </div>
+          <div>
             <span className="text-gray-400 block text-xs mb-0.5">Time Taken</span>
             <span className="text-gray-800">{formatMinutes(data.total_time_taken_seconds)}</span>
           </div>

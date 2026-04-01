@@ -87,38 +87,38 @@ const PageOne = ({ onStart }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0b14] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#f5f6f8] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-10 text-center">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Candidate Assessment</h1>
-          <p className="text-[#8b8aa0] mt-2 text-sm">THCO Engineering</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight">Candidate Assessment</h1>
+          <p className="text-gray-500 mt-2 text-sm">THCO Engineering</p>
         </div>
 
-        <div className="space-y-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-[#c4c3d4] mb-1.5">Full name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Full name</label>
             <input
               data-testid="assessment-name-input"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-[#13141f] border border-[#2a2b3d] rounded-lg px-4 py-3 text-white placeholder-[#555] focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
               placeholder="Your full name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#c4c3d4] mb-1.5">Email address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
             <input
               data-testid="assessment-email-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#13141f] border border-[#2a2b3d] rounded-lg px-4 py-3 text-white placeholder-[#555] focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
               placeholder="your.email@example.com"
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <button
             data-testid="assessment-begin-btn"
@@ -129,7 +129,7 @@ const PageOne = ({ onStart }) => {
             {loading ? "Starting..." : "Begin assessment"}
           </button>
 
-          <p className="text-center text-xs text-[#666]">
+          <p className="text-center text-xs text-gray-400">
             You have 90 minutes to complete this assessment once you begin.
           </p>
         </div>
@@ -146,22 +146,23 @@ const Timer = ({ secondsLeft, total }) => {
   const pct = (secondsLeft / total) * 100;
 
   let color = "#22c55e"; // green
-  if (secondsLeft < 180) color = "#ef4444"; // red
-  else if (secondsLeft < 600) color = "#eab308"; // amber
+  let bgBar = "#dcfce7";
+  if (secondsLeft < 180) { color = "#ef4444"; bgBar = "#fee2e2"; }
+  else if (secondsLeft < 600) { color = "#eab308"; bgBar = "#fef9c3"; }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-[#0d0e18]/95 backdrop-blur-sm border-b border-[#1f2033]" data-testid="assessment-timer">
+    <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm" data-testid="assessment-timer">
       <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center gap-4">
         <span className="text-sm font-mono font-semibold tabular-nums" style={{ color, minWidth: 52 }}>
           {String(minutes).padStart(2, "0")}:{String(secs).padStart(2, "0")}
         </span>
-        <div className="flex-1 h-1.5 bg-[#1a1b2e] rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: bgBar }}>
           <div
             className="h-full rounded-full transition-all duration-1000 ease-linear"
             style={{ width: `${pct}%`, backgroundColor: color }}
           />
         </div>
-        <span className="text-xs text-[#666]">{Math.round(pct)}%</span>
+        <span className="text-xs text-gray-400">{Math.round(pct)}%</span>
       </div>
     </div>
   );
@@ -172,12 +173,10 @@ const Timer = ({ secondsLeft, total }) => {
 const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
   const [answers, setAnswers] = useState(assessment.answers || {});
   const [secondsLeft, setSecondsLeft] = useState(() => {
-    // Calculate remaining time based on stored timer data
     if (assessment.timer_started_at) {
       const started = new Date(assessment.timer_started_at).getTime();
       const elapsed = Math.floor((Date.now() - started) / 1000);
-      const remaining = Math.max(0, TOTAL_TIME - elapsed);
-      return remaining;
+      return Math.max(0, TOTAL_TIME - elapsed);
     }
     return TOTAL_TIME;
   });
@@ -221,9 +220,7 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
   }, [assessment.id, secondsLeft]);
 
   const saveAnswer = useCallback((questionId, value) => {
-    // Clear any existing debounce for this question
     if (debounceRef.current[questionId]) clearTimeout(debounceRef.current[questionId]);
-
     debounceRef.current[questionId] = setTimeout(async () => {
       setSaving(true);
       try {
@@ -246,16 +243,16 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0b14]">
+    <div className="min-h-screen bg-[#f5f6f8]">
       <Timer secondsLeft={secondsLeft} total={TOTAL_TIME} />
 
       <div className="max-w-2xl mx-auto px-4 pt-16 pb-24">
-        <div className="space-y-8">
+        <div className="space-y-6">
           {QUESTIONS.map((q, idx) => (
-            <div key={q.id} className="group" data-testid={`question-${q.id}`}>
+            <div key={q.id} className="bg-white rounded-xl border border-gray-200 p-5" data-testid={`question-${q.id}`}>
               <div className="flex gap-3 mb-3">
                 <span className="text-[#5a54d4] font-semibold text-sm mt-0.5 shrink-0">Q{idx + 1}.</span>
-                <p className="text-[#e0dff0] text-sm leading-relaxed">{q.text}</p>
+                <p className="text-gray-800 text-sm leading-relaxed">{q.text}</p>
               </div>
 
               <div className="pl-8">
@@ -265,28 +262,32 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
                     value={answers[q.id] || ""}
                     onChange={(e) => handleChange(q.id, e.target.value)}
                     rows={3}
-                    className="w-full bg-[#13141f] border border-[#2a2b3d] rounded-lg px-4 py-3 text-white text-sm leading-relaxed placeholder-[#444] focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors resize-y min-h-[80px]"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm leading-relaxed placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors resize-y min-h-[80px]"
                     placeholder="Type your answer..."
                   />
                 ) : (
                   <div className="space-y-2">
                     {q.options.map((opt) => (
-                      <label
+                      <div
                         key={opt}
+                        role="button"
+                        tabIndex={0}
                         data-testid={`option-${q.id}-${opt.slice(0,20).replace(/\s/g,'-').toLowerCase()}`}
-                        className={`flex items-start gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all border text-sm ${
+                        onClick={() => handleChange(q.id, opt)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChange(q.id, opt); }}}
+                        className={`flex items-start gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all border text-sm select-none ${
                           answers[q.id] === opt
-                            ? "bg-[#5a54d4]/10 border-[#5a54d4] text-white"
-                            : "bg-[#13141f] border-[#2a2b3d] text-[#999] hover:border-[#3a3b5d] hover:text-[#ccc]"
+                            ? "bg-[#5a54d4]/5 border-[#5a54d4] text-gray-900"
+                            : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-800"
                         }`}
                       >
                         <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-colors ${
-                          answers[q.id] === opt ? "border-[#5a54d4] bg-[#5a54d4]" : "border-[#555]"
+                          answers[q.id] === opt ? "border-[#5a54d4] bg-[#5a54d4]" : "border-gray-400"
                         }`}>
                           {answers[q.id] === opt && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                         <span className="leading-relaxed">{opt}</span>
-                      </label>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -295,8 +296,8 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
           ))}
         </div>
 
-        <div className="mt-12 flex items-center justify-between">
-          <span className="text-xs text-[#555]">{saving ? "Saving..." : "All answers auto-saved"}</span>
+        <div className="mt-8 flex items-center justify-between">
+          <span className="text-xs text-gray-400">{saving ? "Saving..." : "All answers auto-saved"}</span>
           <button
             data-testid="assessment-continue-btn"
             onClick={handleContinue}
@@ -314,6 +315,7 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
 // --- Page 3: Final Details ---
 const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
   const [onsiteHybrid, setOnsiteHybrid] = useState(assessment.onsite_hybrid || "");
+  const [workPreference, setWorkPreference] = useState(assessment.work_preference || "");
   const [salary, setSalary] = useState(assessment.salary_expectation || "");
   const [city, setCity] = useState(assessment.location_city || "");
   const [state, setState] = useState(assessment.location_state || "");
@@ -321,7 +323,7 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const canSubmit = onsiteHybrid && salary.trim() && city.trim() && country.trim();
+  const canSubmit = onsiteHybrid && workPreference && salary.trim() && city.trim() && country.trim();
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -330,6 +332,7 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
       const timeTaken = TOTAL_TIME - secondsLeft;
       await assessmentAPI.saveFinal(assessment.id, {
         onsite_hybrid: onsiteHybrid,
+        work_preference: workPreference,
         salary_expectation: salary.trim(),
         location_city: city.trim(),
         location_state: state.trim(),
@@ -346,14 +349,14 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0b14] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#f5f6f8] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
-        <h2 className="text-xl font-semibold text-white mb-8">Final details</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-8">Final details</h2>
 
-        <div className="space-y-8">
-          {/* Work arrangement */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 space-y-8">
+          {/* Work arrangement - Yes/No */}
           <div>
-            <p className="text-sm text-[#c4c3d4] mb-3">This role is onsite/hybrid — does this work for you?</p>
+            <p className="text-sm text-gray-700 mb-3">This role is onsite/hybrid — does this work for you?</p>
             <div className="flex gap-3">
               {["Yes", "No"].map((val) => (
                 <button
@@ -363,7 +366,28 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
                   className={`flex-1 py-3 rounded-lg font-medium text-sm transition-all border ${
                     onsiteHybrid === val
                       ? "bg-[#5a54d4] border-[#5a54d4] text-white"
-                      : "bg-[#13141f] border-[#2a2b3d] text-[#999] hover:border-[#3a3b5d]"
+                      : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
+                  }`}
+                >
+                  {val}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Work preference - Fully Onsite / Hybrid */}
+          <div>
+            <p className="text-sm text-gray-700 mb-3">Which option do you prefer?</p>
+            <div className="flex gap-3">
+              {["Fully Onsite", "Hybrid"].map((val) => (
+                <button
+                  key={val}
+                  data-testid={`work-pref-${val.toLowerCase().replace(/\s/g, '-')}`}
+                  onClick={() => setWorkPreference(val)}
+                  className={`flex-1 py-3 rounded-lg font-medium text-sm transition-all border ${
+                    workPreference === val
+                      ? "bg-[#5a54d4] border-[#5a54d4] text-white"
+                      : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
                   }`}
                 >
                   {val}
@@ -374,27 +398,27 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
 
           {/* Salary */}
           <div>
-            <p className="text-sm text-[#c4c3d4] mb-3">What is your monthly salary expectation?</p>
+            <p className="text-sm text-gray-700 mb-3">What is your monthly salary expectation?</p>
             <input
               data-testid="salary-input"
               type="text"
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
-              className="w-full bg-[#13141f] border border-[#2a2b3d] rounded-lg px-4 py-3 text-white text-sm placeholder-[#555] focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
               placeholder="Enter amount in your local currency"
             />
           </div>
 
           {/* Location */}
           <div>
-            <p className="text-sm text-[#c4c3d4] mb-3">Where do you currently live?</p>
+            <p className="text-sm text-gray-700 mb-3">Where do you currently live?</p>
             <div className="grid grid-cols-3 gap-3">
               <input
                 data-testid="location-city"
                 type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="bg-[#13141f] border border-[#2a2b3d] rounded-lg px-4 py-3 text-white text-sm placeholder-[#555] focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
+                className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
                 placeholder="City *"
               />
               <input
@@ -402,7 +426,7 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
                 type="text"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                className="bg-[#13141f] border border-[#2a2b3d] rounded-lg px-4 py-3 text-white text-sm placeholder-[#555] focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
+                className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
                 placeholder="State/Province"
               />
               <input
@@ -410,13 +434,13 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
                 type="text"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="bg-[#13141f] border border-[#2a2b3d] rounded-lg px-4 py-3 text-white text-sm placeholder-[#555] focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
+                className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors"
                 placeholder="Country *"
               />
             </div>
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <button
             data-testid="assessment-submit-btn"
@@ -435,13 +459,13 @@ const PageThree = ({ assessment, answers, secondsLeft, onSubmit }) => {
 
 // --- Confirmation Screen ---
 const Confirmation = ({ name }) => (
-  <div className="min-h-screen bg-[#0a0b14] flex items-center justify-center p-4">
+  <div className="min-h-screen bg-[#f5f6f8] flex items-center justify-center p-4">
     <div className="text-center max-w-sm" data-testid="assessment-confirmation">
-      <div className="w-16 h-16 rounded-full bg-[#22c55e]/10 border-2 border-[#22c55e] flex items-center justify-center mx-auto mb-6">
-        <Check size={32} className="text-[#22c55e]" />
+      <div className="w-16 h-16 rounded-full bg-green-50 border-2 border-green-500 flex items-center justify-center mx-auto mb-6">
+        <Check size={32} className="text-green-500" />
       </div>
-      <h2 className="text-xl font-semibold text-white mb-2">Assessment submitted</h2>
-      <p className="text-[#8b8aa0] text-sm leading-relaxed">
+      <h2 className="text-xl font-semibold text-gray-900 mb-2">Assessment submitted</h2>
+      <p className="text-gray-500 text-sm leading-relaxed">
         Thank you, {name}. Your responses have been recorded. We'll be in touch.
       </p>
     </div>
@@ -458,12 +482,10 @@ export default function CandidateAssessment() {
 
   const handleStart = (data) => {
     setAssessment(data);
-    // If assessment already has answers (resuming), go to page 2
     if (data.status === "completed") {
-      setPage(4); // show confirmation
+      setPage(4);
     } else {
-      const hasAnswers = Object.values(data.answers || {}).some(v => v && String(v).trim());
-      setPage(hasAnswers ? 2 : 2);
+      setPage(2);
     }
   };
 

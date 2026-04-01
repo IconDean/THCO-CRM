@@ -27,6 +27,7 @@ class AnswerUpdate(BaseModel):
 
 class FinalDetails(BaseModel):
     onsite_hybrid: str
+    work_preference: Optional[str] = ""
     salary_expectation: str
     location_city: str
     location_state: Optional[str] = ""
@@ -50,6 +51,7 @@ async def start_assessment(data: AssessmentStart):
         "email": data.email.lower(),
         "answers": {f"q{i}": "" for i in range(1, 33)},
         "onsite_hybrid": "",
+        "work_preference": "",
         "salary_expectation": "",
         "location_city": "",
         "location_state": "",
@@ -125,6 +127,7 @@ async def save_final_details(assessment_id: str, data: FinalDetails):
         {"id": assessment_id},
         {"$set": {
             "onsite_hybrid": data.onsite_hybrid,
+            "work_preference": data.work_preference or "",
             "salary_expectation": data.salary_expectation,
             "location_city": data.location_city,
             "location_state": data.location_state or "",
@@ -206,7 +209,7 @@ async def admin_export_csv(request: Request):
         )
 
     # Build CSV header
-    base_fields = ["id", "name", "email", "status", "onsite_hybrid", "salary_expectation",
+    base_fields = ["id", "name", "email", "status", "onsite_hybrid", "work_preference", "salary_expectation",
                    "location_city", "location_state", "location_country",
                    "time_remaining_seconds", "total_time_taken_seconds",
                    "started_at", "completed_at", "last_saved_at"]
