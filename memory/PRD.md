@@ -27,9 +27,12 @@ Build "FlowForge," an AI-powered workflow automation tool within a company porta
 - **Public URL**: `/assessment` — 3-page flow (Info, 32 Questions, Final Details) + Confirmation
 - **Admin URL**: `/admin/assessments` — List view with sorting/filtering/export + Detail view
 - **Features**: 90-min countdown timer, auto-save (500ms debounce), resume by email, Export JSON/CSV
+- **Page 3 fields**: Onsite/Hybrid (Yes/No), Work Preference (Fully Onsite/Hybrid), Salary, Location
+- **Theme**: Light/white background (#f5f6f8) with white cards
 - **Backend**: `/app/backend/routers/assessments.py` — Full CRUD with admin endpoints
 - **Frontend**: `CandidateAssessment.jsx` (public), `AdminAssessments.jsx` (admin)
 - **MongoDB collection**: `assessments`
+- **Bug fixes applied**: Radio buttons changed from label to div[role=button] with onClick for reliable click handling
 
 ## Backlog
 ### P1
