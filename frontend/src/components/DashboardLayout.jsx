@@ -22,7 +22,8 @@ import {
   UserCog,
   FolderKanban,
   Wrench,
-  ClipboardCheck
+  ClipboardCheck,
+  ClipboardList
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -97,6 +98,7 @@ const DashboardLayoutInner = ({ children, user }) => {
     if (path === "/settings") return "Settings";
     if (path === "/proposals") return "Proposals";
     if (path === "/admin/approvals") return "Approval Queue";
+    if (path.startsWith("/admin/assessments")) return "Candidate Assessments";
     if (path.startsWith("/talent")) {
       if (path === "/talent") return "Talent & Human Capital";
       if (path === "/talent/sourcing") return "AI Candidate Sourcing";
@@ -267,6 +269,17 @@ const DashboardLayoutInner = ({ children, user }) => {
               >
                 <Settings size={20} />
                 {sidebarOpen && <span className="text-sm">Settings</span>}
+              </Link>
+              <Link
+                to="/admin/assessments"
+                data-testid="nav-assessments"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
+                  ${isActive("/admin/assessments") 
+                    ? "bg-gray-200/70 text-gray-900 font-medium" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"}`}
+              >
+                <ClipboardList size={20} />
+                {sidebarOpen && <span className="text-sm">Assessments</span>}
               </Link>
             </>
           )}

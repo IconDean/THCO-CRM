@@ -526,4 +526,44 @@ export const flowforgeAPI = {
   },
 };
 
+// Assessment API (public endpoints - no auth needed)
+export const assessmentAPI = {
+  start: async (data) => {
+    const response = await apiClient.post('/assessments/start', data);
+    return response.data;
+  },
+  lookup: async (email) => {
+    const response = await apiClient.get(`/assessments/lookup?email=${encodeURIComponent(email)}`);
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await apiClient.get(`/assessments/by-id/${id}`);
+    return response.data;
+  },
+  saveAnswers: async (id, answers) => {
+    const response = await apiClient.put(`/assessments/${id}/answers`, { answers });
+    return response.data;
+  },
+  saveTimer: async (id, timerData) => {
+    const response = await apiClient.put(`/assessments/${id}/timer`, timerData);
+    return response.data;
+  },
+  saveFinal: async (id, data) => {
+    const response = await apiClient.put(`/assessments/${id}/final`, data);
+    return response.data;
+  },
+  // Admin endpoints
+  adminList: async (statusFilter = 'all') => {
+    const response = await apiClient.get(`/assessments/admin/list?status_filter=${statusFilter}`);
+    return response.data;
+  },
+  adminGet: async (id) => {
+    const response = await apiClient.get(`/assessments/admin/${id}`);
+    return response.data;
+  },
+  adminExportJson: () => `${process.env.REACT_APP_BACKEND_URL}/api/assessments/admin/export/json`,
+  adminExportCsv: () => `${process.env.REACT_APP_BACKEND_URL}/api/assessments/admin/export/csv`,
+  adminExportSingle: (id) => `${process.env.REACT_APP_BACKEND_URL}/api/assessments/admin/${id}/export`,
+};
+
 export default apiClient;

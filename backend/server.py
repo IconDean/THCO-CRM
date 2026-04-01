@@ -2539,6 +2539,11 @@ async def health_check():
 from routers.flowforge import router as flowforge_router
 api_router.include_router(flowforge_router)
 
+# Include Assessments router
+from routers.assessments import router as assessments_router, set_db as set_assessments_db
+set_assessments_db(db)
+api_router.include_router(assessments_router)
+
 # Include the main router
 app.include_router(api_router)
 

@@ -37,6 +37,10 @@ import ITAndTools from "./pages/ITAndTools";
 import FlowForgeChat from "./pages/FlowForgeChat";
 import ApprovalQueue from "./pages/ApprovalQueue";
 
+// Assessment Pages
+import CandidateAssessment from "./pages/CandidateAssessment";
+import AdminAssessments from "./pages/AdminAssessments";
+
 // Public Email-Gated Presentations
 import ProcureAIExecutivePackPublic from "./pages/ProcureAIExecutivePackPublic";
 import ProcureAIExecutivePackV3Public from "./pages/ProcureAIExecutivePackV3Public";
@@ -193,6 +197,9 @@ const AppRouter = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* Public Assessment */}
+      <Route path="/assessment" element={<CandidateAssessment />} />
       
       <Route path="/dashboard" element={
         <ProtectedRoute>
@@ -354,6 +361,11 @@ const AppRouter = () => {
       <Route path="/admin/approvals" element={
         <ProtectedRoute>
           <ApprovalQueue />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/assessments" element={
+        <ProtectedRoute>
+          <AdminAssessments />
         </ProtectedRoute>
       } />
       
