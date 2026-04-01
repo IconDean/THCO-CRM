@@ -115,7 +115,7 @@ const QUESTIONS = [
 ];
 
 const TOTAL_QUESTIONS = QUESTIONS.length; // 37
-const TOTAL_TIME = 5400; // 90 minutes in seconds
+const TOTAL_TIME = 6000; // 100 minutes in seconds
 
 // --- Page 1: Candidate Info ---
 const PageOne = ({ onStart }) => {
@@ -183,7 +183,7 @@ const PageOne = ({ onStart }) => {
           </button>
 
           <p className="text-center text-xs text-gray-400">
-            You have 90 minutes to complete this assessment once you begin.
+            You have 100 minutes to complete this assessment once you begin.
           </p>
         </div>
       </div>

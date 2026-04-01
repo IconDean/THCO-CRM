@@ -57,7 +57,7 @@ async def start_assessment(data: AssessmentStart):
         "location_state": "",
         "location_country": "",
         "timer_started_at": "",
-        "time_remaining_seconds": 5400,
+        "time_remaining_seconds": 6000,
         "total_time_taken_seconds": 0,
         "status": "in_progress",
         "started_at": now,
