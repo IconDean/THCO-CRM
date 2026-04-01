@@ -36,6 +36,11 @@ const QUESTIONS = [
   { id: "q30", text: "Describe the best place to work for you." },
   { id: "q31", text: "If THCO became Africa's most important tech firm, what role do you play?" },
   { id: "q32", text: "Is there anything about you that we should know but didn't ask?" },
+  { id: "q33", text: "When you are old and retired, what do you want to look back and say you did with your life?" },
+  { id: "q34", text: "Why that one? What would it feel like to actually achieve it?" },
+  { id: "q35", text: "Your team lead makes a decision you think is wrong. You've raised your concern once. What do you do?" },
+  { id: "q36", text: "You've been at a company for 2 years. An opportunity comes along. How do you handle the transition?" },
+  { id: "q37", text: "Building your own name and reputation, or building something incredible as part of a team?" },
 ];
 
 const formatMinutes = (seconds) => {
@@ -120,7 +125,7 @@ const DetailView = ({ assessmentId, onBack }) => {
           </div>
           <div>
             <span className="text-gray-400 block text-xs mb-0.5">Completion</span>
-            <span className="text-gray-800">{data.questions_answered}/32 ({data.completion_pct}%)</span>
+            <span className="text-gray-800">{data.questions_answered}/37 ({data.completion_pct}%)</span>
           </div>
           <div>
             <span className="text-gray-400 block text-xs mb-0.5">Submitted</span>
@@ -294,7 +299,7 @@ export default function AdminAssessments() {
                         {a.status === "completed" ? "Completed" : "In Progress"}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-500">{a.questions_answered}/32 ({a.completion_pct}%)</td>
+                    <td className="py-3 px-4 text-sm text-gray-500">{a.questions_answered}/37 ({a.completion_pct}%)</td>
                     <td className="py-3 px-4 text-sm text-gray-500">{formatMinutes(a.total_time_taken_seconds)}</td>
                     <td className="py-3 px-4 text-sm text-gray-500">{formatDate(a.started_at)}</td>
                     <td className="py-3 px-4">

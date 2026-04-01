@@ -39,7 +39,7 @@ class TestAssessmentPublicEndpoints:
         assert data["name"] == self.test_name
         assert data["status"] == "in_progress"
         assert "answers" in data
-        assert len(data["answers"]) == 32, "Should have 32 question slots"
+        assert len(data["answers"]) == 37, "Should have 37 question slots (Q1-Q37)"
         assert data["time_remaining_seconds"] == 5400, "Timer should start at 90 minutes (5400s)"
         
         # Store for cleanup

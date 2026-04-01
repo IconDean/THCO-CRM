@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { assessmentAPI } from "../lib/api";
-import { Check } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 
 const QUESTIONS = [
   { id: "q1", type: "textarea", text: "Tell us about yourself — but don't tell us what you've built. Tell us who you are." },
@@ -60,8 +60,45 @@ const QUESTIONS = [
   { id: "q30", type: "textarea", text: "Describe the best place to work for you. Not a company name — describe the environment, the people, the energy." },
   { id: "q31", type: "textarea", text: "If THCO became the most important technology and professional services firm in Africa in 5 years, what role do you see yourself playing in that story?" },
   { id: "q32", type: "textarea", text: "Is there anything about you — your background, your values, the way you think — that you think we should know, but that we didn't ask about?" },
+  { id: "q33", type: "radio", text: "When you are old and retired, what do you want to look back and say you did with your life? Pick one.", options: [
+    "Built a billion-dollar empire and made the Forbes list",
+    "Made a real dent in stopping racism and empowering Black people globally",
+    "Made an impact beyond my wildest dreams — even if nobody knows my name",
+    "Started the next Google, Facebook, or Microsoft",
+    "Was part of building the first trillion-dollar African company",
+    "Raised a family that loves and respects me",
+    "Just lived a peaceful, happy life doing what I love",
+    "Became the absolute best in the world at my craft",
+    "Helped millions of people I'll never meet live better lives",
+    "Built something that still exists and works long after I'm gone",
+  ]},
+  { id: "q34", type: "textarea", text: "Why that one? What would it feel like to actually achieve it?" },
+  { id: "q35", type: "radio", text: "You're working on a project and your team lead makes a decision you think is wrong. You've already raised your concern once and they've heard you but still want to go their way. What do you do?", options: [
+    "I commit to their decision fully and execute it with everything I've got — they have context I might not have",
+    "I do it their way but keep notes so I can say \"I told you so\" if it fails",
+    "I go along with it publicly but quietly do it my way where I can",
+    "I raise it one more time with stronger evidence — if they still say no, I commit",
+    "I escalate to someone above them because the project is at risk",
+    "I lose motivation because I know we're heading in the wrong direction",
+  ]},
+  { id: "q36", type: "radio", text: "You've been at a company for 2 years. You've built strong relationships with clients, you understand the systems deeply, and you're genuinely good at what you do. One day, an opportunity comes along — better pay, bigger title, exciting new challenge. How do you handle the transition?", options: [
+    "I'd have an honest conversation with my leadership first — I believe in leaving the right way, not just leaving",
+    "I'd make the move and bring my full energy to the new role — the people who know my work will always know where to find me",
+    "I'd transition cleanly and make sure whoever comes after me has everything they need to succeed with the existing clients",
+    "I'd be open about it — if where I am can grow with me, I'd rather stay and build than start over somewhere new",
+    "I'd make the move — I don't chase anyone, but I also don't shut doors on people who valued working with me personally",
+    "I'd go where I'm valued. Loyalty is a two-way street — if a company wants to keep its best people and the relationships they've built, it should act like it",
+  ]},
+  { id: "q37", type: "radio", text: "What's more important to you right now — building your own name and reputation, or building something incredible as part of a team even if your individual name is never known?", options: [
+    "Building something incredible as part of a team — the work matters more than who gets credit",
+    "Honestly, I want both — I want to be part of something great AND be recognised for my contribution",
+    "Building my own name — I've worked hard and I want the world to know what I can do",
+    "I don't care about recognition at all — I just want to solve hard problems",
+    "I want to build my reputation so I can eventually lead my own thing",
+  ]},
 ];
 
+const TOTAL_QUESTIONS = QUESTIONS.length; // 37
 const TOTAL_TIME = 5400; // 90 minutes in seconds
 
 // --- Page 1: Candidate Info ---
@@ -145,7 +182,7 @@ const Timer = ({ secondsLeft, total }) => {
   const secs = secondsLeft % 60;
   const pct = (secondsLeft / total) * 100;
 
-  let color = "#22c55e"; // green
+  let color = "#22c55e";
   let bgBar = "#dcfce7";
   if (secondsLeft < 180) { color = "#ef4444"; bgBar = "#fee2e2"; }
   else if (secondsLeft < 600) { color = "#eab308"; bgBar = "#fef9c3"; }
@@ -172,6 +209,17 @@ const Timer = ({ secondsLeft, total }) => {
 // --- Page 2: Questions ---
 const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
   const [answers, setAnswers] = useState(assessment.answers || {});
+  const [locked, setLocked] = useState(() => {
+    // On resume, lock any question that already has an answer
+    const initial = new Set();
+    const existing = assessment.answers || {};
+    QUESTIONS.forEach(q => {
+      if (existing[q.id] && String(existing[q.id]).trim()) {
+        initial.add(q.id);
+      }
+    });
+    return initial;
+  });
   const [secondsLeft, setSecondsLeft] = useState(() => {
     if (assessment.timer_started_at) {
       const started = new Date(assessment.timer_started_at).getTime();
@@ -185,7 +233,6 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
   const timerSaveRef = useRef(null);
   const expiredRef = useRef(false);
 
-  // Initialize timer_started_at on first load
   useEffect(() => {
     if (!assessment.timer_started_at) {
       const now = new Date().toISOString();
@@ -193,7 +240,6 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
     }
   }, [assessment.id, assessment.timer_started_at]);
 
-  // Countdown
   useEffect(() => {
     const interval = setInterval(() => {
       setSecondsLeft(prev => {
@@ -211,7 +257,6 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
     return () => clearInterval(interval);
   }, [onTimerExpire]);
 
-  // Save timer state periodically (every 30s)
   useEffect(() => {
     timerSaveRef.current = setInterval(() => {
       assessmentAPI.saveTimer(assessment.id, { time_remaining_seconds: secondsLeft }).catch(() => {});
@@ -234,8 +279,25 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
   }, [assessment.id]);
 
   const handleChange = (questionId, value) => {
+    if (locked.has(questionId)) return; // Already locked
     setAnswers(prev => ({ ...prev, [questionId]: value }));
     saveAnswer(questionId, value);
+  };
+
+  // Lock radio immediately on selection
+  const handleRadioSelect = (questionId, value) => {
+    if (locked.has(questionId)) return;
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+    saveAnswer(questionId, value);
+    setLocked(prev => new Set(prev).add(questionId));
+  };
+
+  // Lock textarea on blur if it has content
+  const handleTextareaBlur = (questionId) => {
+    const val = answers[questionId];
+    if (val && String(val).trim()) {
+      setLocked(prev => new Set(prev).add(questionId));
+    }
   };
 
   const handleContinue = () => {
@@ -243,7 +305,7 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
   };
 
   const answeredCount = QUESTIONS.filter(q => answers[q.id] && String(answers[q.id]).trim()).length;
-  const allAnswered = answeredCount === QUESTIONS.length;
+  const allAnswered = answeredCount === TOTAL_QUESTIONS;
 
   return (
     <div className="min-h-screen bg-[#f5f6f8]">
@@ -251,57 +313,71 @@ const PageTwo = ({ assessment, onContinue, onTimerExpire }) => {
 
       <div className="max-w-2xl mx-auto px-4 pt-16 pb-24">
         <div className="space-y-6">
-          {QUESTIONS.map((q, idx) => (
-            <div key={q.id} className="bg-white rounded-xl border border-gray-200 p-5" data-testid={`question-${q.id}`}>
-              <div className="flex gap-3 mb-3">
-                <span className="text-[#5a54d4] font-semibold text-sm mt-0.5 shrink-0">Q{idx + 1}.</span>
-                <p className="text-gray-800 text-sm leading-relaxed">{q.text}</p>
-              </div>
+          {QUESTIONS.map((q, idx) => {
+            const isLocked = locked.has(q.id);
+            return (
+              <div key={q.id} className={`bg-white rounded-xl border p-5 transition-colors ${isLocked ? "border-green-200 bg-green-50/30" : "border-gray-200"}`} data-testid={`question-${q.id}`}>
+                <div className="flex gap-3 mb-3">
+                  <span className="text-[#5a54d4] font-semibold text-sm mt-0.5 shrink-0">Q{idx + 1}.</span>
+                  <p className="text-gray-800 text-sm leading-relaxed flex-1">{q.text}</p>
+                  {isLocked && <Lock size={14} className="text-green-500 shrink-0 mt-0.5" />}
+                </div>
 
-              <div className="pl-8">
-                {q.type === "textarea" ? (
-                  <textarea
-                    data-testid={`answer-${q.id}`}
-                    value={answers[q.id] || ""}
-                    onChange={(e) => handleChange(q.id, e.target.value)}
-                    rows={3}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm leading-relaxed placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4] transition-colors resize-y min-h-[80px]"
-                    placeholder="Type your answer..."
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    {q.options.map((opt) => (
-                      <div
-                        key={opt}
-                        role="button"
-                        tabIndex={0}
-                        data-testid={`option-${q.id}-${opt.slice(0,20).replace(/\s/g,'-').toLowerCase()}`}
-                        onClick={() => handleChange(q.id, opt)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChange(q.id, opt); }}}
-                        className={`flex items-start gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all border text-sm select-none ${
-                          answers[q.id] === opt
-                            ? "bg-[#5a54d4]/5 border-[#5a54d4] text-gray-900"
-                            : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-800"
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-colors ${
-                          answers[q.id] === opt ? "border-[#5a54d4] bg-[#5a54d4]" : "border-gray-400"
-                        }`}>
-                          {answers[q.id] === opt && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                <div className="pl-8">
+                  {q.type === "textarea" ? (
+                    <textarea
+                      data-testid={`answer-${q.id}`}
+                      value={answers[q.id] || ""}
+                      onChange={(e) => handleChange(q.id, e.target.value)}
+                      onBlur={() => handleTextareaBlur(q.id)}
+                      readOnly={isLocked}
+                      rows={3}
+                      className={`w-full border rounded-lg px-4 py-3 text-sm leading-relaxed transition-colors resize-y min-h-[80px] ${
+                        isLocked
+                          ? "bg-gray-100 border-gray-200 text-gray-700 cursor-not-allowed"
+                          : "bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#5a54d4] focus:ring-1 focus:ring-[#5a54d4]"
+                      }`}
+                      placeholder={isLocked ? "" : "Type your answer..."}
+                    />
+                  ) : (
+                    <div className="space-y-2">
+                      {q.options.map((opt) => (
+                        <div
+                          key={opt}
+                          role="button"
+                          tabIndex={isLocked ? -1 : 0}
+                          data-testid={`option-${q.id}-${opt.slice(0,20).replace(/\s/g,'-').toLowerCase()}`}
+                          onClick={() => handleRadioSelect(q.id, opt)}
+                          onKeyDown={(e) => { if (!isLocked && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); handleRadioSelect(q.id, opt); }}}
+                          className={`flex items-start gap-3 px-4 py-3 rounded-lg transition-all border text-sm select-none ${
+                            isLocked
+                              ? answers[q.id] === opt
+                                ? "bg-[#5a54d4]/5 border-[#5a54d4] text-gray-900 cursor-not-allowed"
+                                : "bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed"
+                              : answers[q.id] === opt
+                                ? "bg-[#5a54d4]/5 border-[#5a54d4] text-gray-900 cursor-pointer"
+                                : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-800 cursor-pointer"
+                          }`}
+                        >
+                          <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-colors ${
+                            answers[q.id] === opt ? "border-[#5a54d4] bg-[#5a54d4]" : isLocked ? "border-gray-300" : "border-gray-400"
+                          }`}>
+                            {answers[q.id] === opt && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                          <span className="leading-relaxed">{opt}</span>
                         </div>
-                        <span className="leading-relaxed">{opt}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-8 flex items-center justify-between">
           <span className="text-xs text-gray-400">
-            {saving ? "Saving..." : allAnswered ? "All answers auto-saved" : `${answeredCount}/32 answered`}
+            {saving ? "Saving..." : allAnswered ? "All answers auto-saved" : `${answeredCount}/${TOTAL_QUESTIONS} answered`}
           </span>
           <button
             data-testid="assessment-continue-btn"
