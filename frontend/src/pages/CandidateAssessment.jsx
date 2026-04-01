@@ -96,6 +96,22 @@ const QUESTIONS = [
     "I don't care about recognition at all — I just want to solve hard problems",
     "I want to build my reputation so I can eventually lead my own thing",
   ]},
+  { id: "q38", type: "radio", text: "A close friend calls you. They've just launched a health startup and they're building a system that will deliver medication to rural communities with no pharmacy access. They need it urgently — people are literally dying waiting. They say \"you built something almost identical at your last company, you could save us months. Please help us rebuild it.\" What do you do?", options: [
+    "I'd do it — lives are at stake, and the knowledge is in my head. Using my experience to save people isn't stealing, it's the right thing to do",
+    "I'd be honest — \"I know exactly how to build this, but that knowledge came from a company that trusted me with it. Let me connect you with someone I've mentored who can build it fresh without carrying any of that baggage\"",
+    "I'd help — but I'd bring my old company into the conversation too, because maybe we can all work on this together and nobody's trust gets broken",
+    "I'd rebuild it better than the original — my old company has actually pivoted away from this space entirely and isn't even using the system anymore, so the knowledge would go to waste if I don't put it to use saving lives",
+    "I'd share the architecture and core design so they can move fast, but I'd tell my old company what I did afterwards — transparency makes it okay",
+    "I'd advise them on the general approach and point them in the right direction, but I'd decline to build it myself — I already built this once for someone who trusted me, and I don't think it's mine to rebuild for someone else, even with lives at stake",
+  ]},
+  { id: "q39", type: "radio", text: "You've just joined a new team. The person leading the project has less technical experience than you — you can tell within the first week that you know more. How does this affect how you work with them?", options: [
+    "It doesn't change anything — they're leading for a reason, and leadership isn't just about technical skill",
+    "I'd quietly prove my value through my work and hope they start leaning on me for technical decisions",
+    "I'd respect their role but make sure the team knows I'm the stronger technical voice when it matters",
+    "I'd support them publicly and offer my technical input privately — their authority matters even if my knowledge is deeper",
+    "I'd find it frustrating honestly — if I'm the most technically capable person, I should be leading",
+    "I'd wait for them to realise they need me and come to me naturally",
+  ]},
 ];
 
 const TOTAL_QUESTIONS = QUESTIONS.length; // 37

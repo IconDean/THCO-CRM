@@ -41,6 +41,8 @@ const QUESTIONS = [
   { id: "q35", text: "Your team lead makes a decision you think is wrong. You've raised your concern once. What do you do?" },
   { id: "q36", text: "You've been at a company for 2 years. An opportunity comes along. How do you handle the transition?" },
   { id: "q37", text: "Building your own name and reputation, or building something incredible as part of a team?" },
+  { id: "q38", text: "A close friend needs you to rebuild a system you built at your last company to save lives. What do you do?" },
+  { id: "q39", text: "The person leading your project has less technical experience than you. How does this affect how you work with them?" },
 ];
 
 const formatMinutes = (seconds) => {
@@ -125,7 +127,7 @@ const DetailView = ({ assessmentId, onBack }) => {
           </div>
           <div>
             <span className="text-gray-400 block text-xs mb-0.5">Completion</span>
-            <span className="text-gray-800">{data.questions_answered}/37 ({data.completion_pct}%)</span>
+            <span className="text-gray-800">{data.questions_answered}/39 ({data.completion_pct}%)</span>
           </div>
           <div>
             <span className="text-gray-400 block text-xs mb-0.5">Submitted</span>
@@ -299,7 +301,7 @@ export default function AdminAssessments() {
                         {a.status === "completed" ? "Completed" : "In Progress"}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-500">{a.questions_answered}/37 ({a.completion_pct}%)</td>
+                    <td className="py-3 px-4 text-sm text-gray-500">{a.questions_answered}/39 ({a.completion_pct}%)</td>
                     <td className="py-3 px-4 text-sm text-gray-500">{formatMinutes(a.total_time_taken_seconds)}</td>
                     <td className="py-3 px-4 text-sm text-gray-500">{formatDate(a.started_at)}</td>
                     <td className="py-3 px-4">

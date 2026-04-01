@@ -49,7 +49,7 @@ async def start_assessment(data: AssessmentStart):
         "id": str(uuid.uuid4()),
         "name": data.name,
         "email": data.email.lower(),
-        "answers": {f"q{i}": "" for i in range(1, 38)},
+        "answers": {f"q{i}": "" for i in range(1, 40)},
         "onsite_hybrid": "",
         "work_preference": "",
         "salary_expectation": "",
@@ -170,7 +170,7 @@ async def admin_list_assessments(request: Request, status_filter: str = "all"):
     for a in assessments:
         answers = a.get("answers", {})
         answered = sum(1 for v in answers.values() if v and str(v).strip())
-        a["completion_pct"] = round((answered / 37) * 100)
+        a["completion_pct"] = round((answered / 39) * 100)
         a["questions_answered"] = answered
 
     return assessments
@@ -213,7 +213,7 @@ async def admin_export_csv(request: Request):
                    "location_city", "location_state", "location_country",
                    "time_remaining_seconds", "total_time_taken_seconds",
                    "started_at", "completed_at", "last_saved_at"]
-    q_fields = [f"q{i}" for i in range(1, 38)]
+    q_fields = [f"q{i}" for i in range(1, 40)]
     fieldnames = base_fields + q_fields
 
     writer = csv.DictWriter(output, fieldnames=fieldnames)
@@ -242,7 +242,7 @@ async def admin_get_assessment(assessment_id: str, request: Request):
         raise HTTPException(status_code=404, detail="Assessment not found")
     answers = doc.get("answers", {})
     answered = sum(1 for v in answers.values() if v and str(v).strip())
-    doc["completion_pct"] = round((answered / 37) * 100)
+    doc["completion_pct"] = round((answered / 39) * 100)
     doc["questions_answered"] = answered
     return doc
 
