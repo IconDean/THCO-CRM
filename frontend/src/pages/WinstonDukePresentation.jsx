@@ -129,8 +129,8 @@ const Slide3 = () => {
     { num: "1", name: "The Crown", desc: "how the world sees you (authority)" },
     { num: "2", name: "The Hawk", desc: "how you move through the world (stillness)" },
     { num: "3", name: "The Wave", desc: "where you came from (journey)" },
-    { num: "4", name: "The Interlock", desc: "what you contain (duality)" },
-    { num: "5", name: "The Bridge", desc: "what you do with all of it (purpose)" },
+    { num: "4", name: "The Bridge", desc: "what you do with all of it (purpose)" },
+    { num: "5", name: "The Interlock", desc: "what you contain (duality)" },
   ];
   return (
     <div className="flex flex-col justify-center h-full bg-black px-8 md:px-16">
@@ -181,7 +181,7 @@ const Slide7 = () => (
       {[
         { src: `${I}/kling_20260411_IMAGE_I_am_attac_3206_1.png`, label: "The real-world inspiration" },
         { src: `${I}/crown_comparison.png`, label: "In black and white" },
-        { src: `${I}/Untitled design (3).png`, label: "Masked inside the logo shape" },
+        { src: `${I}/crown_overlay.png`, label: "Masked inside the logo shape" },
         { src: `${I}/Crown.png`, label: "The silhouette alone" },
       ].map((item, i) => (
         <FadeIn key={i} delay={0.3 + i * 0.35} className="flex flex-col items-center">
@@ -223,9 +223,11 @@ const Slide11 = () => <ConnectionSlide title="THE HAWK" subtitle="How you move t
 const Slide12 = () => (
   <div className="flex flex-col items-center justify-center h-full bg-black px-8 py-8">
     <SectionHeader title="THE HAWK" subtitle="How you move through the world (stillness)" />
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl w-full">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl w-full">
       {[
+        { src: `${I}/hawk_full_bird.png`, label: "The full hawk" },
         { src: `${I}/kling_20260411_IMAGE_Let_the_be_3266_1.png`, label: "The real-world inspiration" },
+        { src: `${I}/hawk_comparison.png`, label: "In black and white" },
         { src: `${I}/kling_20260411_IMAGE_Let_the_be_3266_1 (1).png`, label: "The hawk head alone" },
         { src: `${I}/kling_20260411_IMAGE_Teh_beak_o_3849_0.png`, label: "Positioned to match the logo" },
         { src: `${I}/2_hawk beak.png`, label: "The silhouette shape" },
@@ -321,9 +323,10 @@ const Slide19 = () => (
 const Slide20 = () => (
   <div className="flex flex-col items-center justify-center h-full bg-black px-8 py-8">
     <SectionHeader title="THE INTERLOCK" subtitle="What you contain (duality)" />
-    <div className="grid grid-cols-3 gap-4 md:gap-6 max-w-4xl w-full">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl w-full">
       {[
         { src: `${I}/kling_20260411_IMAGE_Show_me_se_3252_1.png`, label: "The real-world inspiration" },
+        { src: `${I}/interlock_trees_comparison.png`, label: "In black and white" },
         { src: `${I}/kling_20260411_IMAGE_Using_the__3845_0.png`, label: "Masked inside the logo shape" },
         { src: `${I}/Interlock b.png`, label: "The silhouette alone" },
       ].map((item, i) => (
@@ -357,9 +360,10 @@ const Slide23 = () => <ConnectionSlide title="THE BRIDGE" subtitle="What you do 
 const Slide24 = () => (
   <div className="flex flex-col items-center justify-center h-full bg-black px-8 py-8">
     <SectionHeader title="THE BRIDGE" subtitle="What you do with all of it (purpose)" />
-    <div className="grid grid-cols-3 gap-4 md:gap-6 max-w-4xl w-full">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl w-full">
       {[
         { src: `${I}/kling_20260411_IMAGE_Let_the_br_3267_1.png`, label: "The real-world inspiration" },
+        { src: `${I}/bridge_comparison.png`, label: "In black and white" },
         { src: `${I}/kling_20260411_IMAGE_Using_the__3817_1.png`, label: "Masked inside the logo shape" },
         { src: `${I}/Bridge.png`, label: "The silhouette alone" },
       ].map((item, i) => (
@@ -444,10 +448,10 @@ const Slide28 = () => (
     <div className="max-w-3xl mx-auto space-y-6">
       {[
         `We started by listening to everything you've told the world about who you are.`,
-        `We found five pillars: a standard you set, a stillness you carry, a crossing you made, a duality you contain, and a purpose you serve.`,
+        `We found five pillars: a standard you set, a stillness you carry, a crossing you made, a purpose you serve, and a duality you contain.`,
         `We found five symbols in nature and in the world: a crown, a hawk, a wave, two trees growing into one, and a bridge spanning open water.`,
         `We found that each of these symbols, when shaped to match its meaning, aligns precisely to a specific zone inside the logo, inside the letters of your own name.`,
-        `The crown rises from within. The hawk hides in the negative space between the letters. The wave curves through. The trees interlock at the shared spine. The bridge spans the center.`,
+        `The crown rises from within. The hawk hides in the negative space between the letters. The wave curves through. The bridge spans the center. The trees interlock at the shared spine.`,
       ].map((t, i) => (
         <FadeIn key={i} delay={i * 0.35}>
           <p className="text-sm md:text-base text-white/80 leading-relaxed font-light">{t}</p>
@@ -491,7 +495,7 @@ const Slide30 = () => (
   </div>
 );
 
-const SLIDES = [Slide1,Slide2,Slide3,Slide4,Slide5,Slide6,Slide7,Slide8,Slide9,Slide10,Slide11,Slide12,Slide13,Slide14,Slide15,Slide16,Slide17,Slide18,Slide19,Slide20,Slide21,Slide22,Slide23,Slide24,Slide25,Slide26,Slide27,Slide28,Slide29,Slide30];
+const SLIDES = [Slide1,Slide2,Slide3,Slide4,Slide5,Slide6,Slide7,Slide8,Slide9,Slide10,Slide11,Slide12,Slide13,Slide14,Slide15,Slide16,Slide21,Slide22,Slide23,Slide24,Slide17,Slide18,Slide19,Slide20,Slide25,Slide26,Slide27,Slide28,Slide29,Slide30];
 
 export default function WinstonDukePresentation() {
   const [slide, setSlide] = useState(0);
