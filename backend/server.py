@@ -1950,6 +1950,7 @@ PROPOSAL_NAMES = {
     "realloc": "Realloc AI Capability Program",
     "procureai-team": "Procure AI Delivery Team",
     "afc-treasury": "AFC Cross-Border Treasury System",
+    "winston-duke": "Winston Duke Brand Identity",
 }
 
 @api_router.post("/proposals/viewers/register")

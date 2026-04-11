@@ -863,6 +863,42 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* Winston Duke Brand Identity */}
+            <Link
+              to="/proposals/winston-duke"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#C9A84C] hover:shadow-lg transition-all"
+              data-testid="winston-duke-link"
+            >
+              <div className="absolute inset-0 bg-black" />
+              <div className="absolute inset-0 opacity-30">
+                <img src="/winston-duke/Winston_Duke.webp.jpg" alt="" className="w-full h-full object-cover object-top" />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/40" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#C9A84C]/15 flex items-center justify-center">
+                    <span className="text-[#C9A84C] font-bold text-sm" style={{ fontFamily: "'Georgia', serif", letterSpacing: '0.06em' }}>WD</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#C9A84C] bg-[#C9A84C]/10 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Winston Duke</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  The Mark of Winston Duke — Brand Identity Reveal
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>29 Slides</span>
+                  <span>•</span>
+                  <span>Cinematic Brand Identity</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#C9A84C]/30 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* THCO Town Hall 2026 - Internal Presentation */}
             <Link
               to="/proposals/town-hall-2026"

@@ -41,6 +41,9 @@ import ApprovalQueue from "./pages/ApprovalQueue";
 import CandidateAssessment from "./pages/CandidateAssessment";
 import AdminAssessments from "./pages/AdminAssessments";
 
+// Presentations
+import WinstonDukePresentation from "./pages/WinstonDukePresentation";
+
 // Public Email-Gated Presentations
 import ProcureAIExecutivePackPublic from "./pages/ProcureAIExecutivePackPublic";
 import ProcureAIExecutivePackV3Public from "./pages/ProcureAIExecutivePackV3Public";
@@ -264,6 +267,7 @@ const AppRouter = () => {
       <Route path="/proposals/realloc" element={<ReallocPresentationPublic />} />
       <Route path="/proposals/procureai-team" element={<ProcureAITeamPresentationPublic />} />
       <Route path="/proposals/afc-treasury" element={<AFCTreasuryPresentationPublic />} />
+      <Route path="/proposals/winston-duke" element={<WinstonDukePresentation />} />
       
       {/* Internal Preview Routes (no email gate - for admins) */}
       <Route path="/proposals/preview/procure-ai" element={<ProcureAIProposalV2 />} />
