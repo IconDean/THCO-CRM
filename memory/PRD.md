@@ -1,52 +1,67 @@
-# FlowForge / Executive Decks Portal - PRD
+# FlowForge / THCO Executive Portal - PRD
 
 ## Original Problem Statement
-Build "FlowForge," an AI-powered workflow automation tool within a company portal. The portal has expanded to include a library of high-fidelity, cinematic animated web presentations and a candidate assessment system.
+Build "FlowForge," an internal AI-powered workflow automation tool within an executive portal. The portal also serves as a library for complex, animated, single-page-application-style presentations for various business purposes.
 
-## Core Architecture
-- **Frontend**: React (CRA) with Tailwind CSS, Shadcn/UI components, Framer Motion
-- **Backend**: FastAPI + MongoDB
-- **Presentations**: Self-contained JSX components with keyboard/touch navigation
-- **Assessment System**: Public 3-page candidate flow + admin dashboard
+## Core Features
 
-## Candidate Assessment System (2026-04-01)
-- **Public URL**: `/assessment` — 3-page flow (Info, 39 Questions, Final Details) + Confirmation
-- **Admin URL**: `/admin/assessments` — List/detail/export (JSON/CSV)
-- **Features**: 100-min timer, auto-save, answer locking, resume by email
-- **Auth**: Switched to Bearer token auth (localStorage) to fix CORS with production domain
+### 1. FlowForge Automation Tool
+- AI-powered workflow automation
+- Business unit pages with "My Tools" tab
+- Problem brief form with progressive enhancements
+
+### 2. Proposals & Presentations Library
+- Multiple cinematic animated presentations
+- Public-facing versions with email gate
+- PDF download capability (unstable)
+
+### 3. Candidate Assessment Portal
+- 3-page flow: Info, 39 Questions (100-min timer, answer locking), Final Details
+- Admin Dashboard with JSON/CSV export
+- Auto-saving with debounced API calls
+
+### 4. Authentication
+- Bearer Token auth via localStorage (migrated from cookies due to CORS)
+- Login/Logout flow
+- Super Admin: joshua@thcohq.com / THCOAdmin2024!
 
 ## Completed Presentations
-1. Sagicor Executive Dashboard (8 sections)
-2. AI for Banking (32 slides)
-3. Pebbles Brand Overview (8 slides)
-4. Procure AI Alignment Session (15 slides)
-5. CeneTeam Security Audit (15 slides)
-6. INGABO Presentation
-7. THE FORGE V2 (24 pages)
-8. TIDE WAR (26 pages)
-9. Sagicor STEC Executive Briefing (20 slides)
-10. Realloc AI Capability Program (44 slides)
-11. Procure AI Team Presentation (12 slides)
-12. AFC Cross-Border Treasury System (20 slides)
-13. **Winston Duke Brand Identity (29 slides)** — NEW (2026-04-01)
+- SagicorProgressDashboard.jsx
+- AIFforBankingPresentation.jsx (THCO branding)
+- PebblesBrandOverview.jsx
+- ProcureAIAlignmentSession.jsx
+- CeneTeamAuditPresentation.jsx
+- WinstonDukePresentation.jsx (30 slides, 9-point revision VERIFIED Feb 2026)
 
-## Winston Duke Presentation (2026-04-01)
-- **Route**: `/proposals/winston-duke`
-- **29 slides**: Cinematic brand identity reveal with 5 symbol sections (Crown, Hawk, Wave, Interlock, Bridge)
-- **Assets**: 147 photos, inspiration images, icon zones, logo crops in `/public/winston-duke/`
-- **Design**: Glossy black backgrounds, Cormorant Garamond serif, gold (#C9A84C) + forest green (#1B4332) accents, photo collage backgrounds with 87% dark overlay
+## Architecture
+- Frontend: React (CRA) + Framer Motion + Tailwind + Shadcn
+- Backend: FastAPI + MongoDB
+- Auth: Bearer Token via localStorage, Axios interceptors
+- Font: Cormorant Garamond (presentations), Inter (UI)
 
-## Backlog
-### P1
-- PDF download stabilization
-- FlowForge tool execution results UI
-- "My Tools" tab rollout
+## What's Been Implemented
+- All 6 presentations created and integrated
+- Candidate Assessment system (full CRUD + admin)
+- Auth refactor (cookies -> Bearer token)
+- Winston Duke 9-point revision (VERIFIED Feb 2026)
 
-### P2
-- AFC Treasury V2 presentation (22 slides)
-- FlowForge Phase 5 & 6
-- Babel plugin fix (patch-package)
+## Known Issues
+- P2: PDF download unstable (client-side generation failing)
+- P3: Babel plugin patch in node_modules (fragile, needs patch-package)
+- P3: form_url column migration pending
 
-### P3
-- Refactor monolithic server.py
-- "Forgot Password" flow
+## Upcoming Tasks (Priority Order)
+- P1: Implement FlowForge tool execution results UI
+- P1: Roll out "My Tools" tab to all 11 business unit pages
+- P2: Stable PDF download for proposals
+
+## Future/Backlog
+- P2: FlowForge Phase 5 (Polish & White-Label) and Phase 6 (Rollout & Monitoring)
+- P3: Refactor monolithic server.py into modular routes
+- P3: "Forgot Password" flow
+
+## 3rd Party Integrations
+- Supabase (PostgreSQL)
+- n8n (THCO Automation Engine)
+- Anthropic Claude (via Emergent LLM Key)
+- OpenAI Whisper (via Emergent LLM Key)
