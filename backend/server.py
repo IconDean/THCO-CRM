@@ -651,7 +651,7 @@ async def register(user_data: UserCreate, response: Response):
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin, request: Request, response: Response):
-    user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
+    user = await db.users.find_one({"email": credentials.email.lower()}, {"_id": 0})
     if not user:
         # Record failed login attempt
         await record_login_attempt(
