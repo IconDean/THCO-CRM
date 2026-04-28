@@ -41,6 +41,15 @@ import ApprovalQueue from "./pages/ApprovalQueue";
 import CandidateAssessment from "./pages/CandidateAssessment";
 import AdminAssessments from "./pages/AdminAssessments";
 
+// Project Delivery Workflow Pages
+import ProjectFulfillment from "./pages/ProjectFulfillment";
+import NewProjectForm from "./pages/NewProjectForm";
+import DelegationBoard from "./pages/DelegationBoard";
+import MyProjects from "./pages/MyProjects";
+import ProjectReview from "./pages/ProjectReview";
+import ProjectTracker from "./pages/ProjectTracker";
+import UserManagement from "./pages/UserManagement";
+
 // Presentations
 import WinstonDukePresentation from "./pages/WinstonDukePresentation";
 
@@ -225,6 +234,45 @@ const AppRouter = () => {
       <Route path="/talent/database-search" element={
         <ProtectedRoute>
           <DatabaseSearchTool />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/talent/projects" element={
+        <ProtectedRoute>
+          <ProjectFulfillment />
+        </ProtectedRoute>
+      } />
+      <Route path="/talent/projects/new" element={
+        <ProtectedRoute>
+          <NewProjectForm />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/thco-hr/delegation" element={
+        <ProtectedRoute>
+          <DelegationBoard />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/technology/my-projects" element={
+        <ProtectedRoute>
+          <MyProjects />
+        </ProtectedRoute>
+      } />
+      <Route path="/technology/my-projects/:id/review" element={
+        <ProtectedRoute>
+          <ProjectReview />
+        </ProtectedRoute>
+      } />
+      <Route path="/technology/my-projects/:id/tracker" element={
+        <ProtectedRoute>
+          <ProjectTracker />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/users" element={
+        <ProtectedRoute>
+          <UserManagement />
         </ProtectedRoute>
       } />
       

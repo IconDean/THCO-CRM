@@ -22,7 +22,8 @@ import {
   Scale,
   TestTube,
   Zap,
-  History
+  History,
+  Hammer
 } from "lucide-react";
 import BuildHistory from "../components/BuildHistory";
 import { Button } from "../components/ui/button";
@@ -302,6 +303,14 @@ const TechnologyAndBuild = () => {
           <History className="w-4 h-4" />
           Build History
         </button>
+        <Link
+          to="/technology/my-projects"
+          className="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-gray-500 hover:text-gray-700"
+          data-testid="tab-my-projects"
+        >
+          <Hammer className="w-4 h-4" />
+          My Projects
+        </Link>
       </div>
 
       {activeTab === "build-history" ? (

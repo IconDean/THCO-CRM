@@ -89,6 +89,10 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     accessible_units: Optional[List[str]] = None
     status: Optional[str] = None
+    is_engineer: Optional[bool] = None
+    is_fulfillment: Optional[bool] = None
+    is_hr: Optional[bool] = None
+    engineer_capacity_override: Optional[int] = None
     device_lock_enabled: Optional[bool] = None
     allowed_device_fingerprint: Optional[str] = None
 
@@ -893,7 +897,10 @@ async def get_me(request: Request):
         "role": user["role"],
         "accessible_units": user.get("accessible_units", []),
         "status": user["status"],
-        "picture": user.get("picture")
+        "picture": user.get("picture"),
+        "is_engineer": user.get("is_engineer", False),
+        "is_fulfillment": user.get("is_fulfillment", False),
+        "is_hr": user.get("is_hr", False),
     }
 
 @api_router.post("/auth/logout")
@@ -2536,6 +2543,35 @@ async def get_single_user_analytics(user_id: str, request: Request, days: int = 
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
+@api_router.get("/notifications/badge")
+async def get_notification_badge(request: Request):
+    """Get notification badge counts for the logged-in user's role."""
+    user = await get_current_user(request)
+    badges = {}
+    if user.get("is_fulfillment") or user.get("role") == "super_admin":
+        badges["revision_requested"] = await db.projects.count_documents({"status": "revision_requested"})
+    if user.get("is_hr") or user.get("role") == "super_admin":
+        badges["awaiting_delegation"] = await db.projects.count_documents({"status": "awaiting_delegation"})
+    if user.get("is_engineer"):
+        badges["pending_reviews"] = await db.projects.count_documents({
+            "assigned_engineer_id": user["user_id"],
+            "status": {"$in": ["delegated", "under_review"]}
+        })
+        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        active = await db.projects.find(
+            {"assigned_engineer_id": user["user_id"], "status": {"$in": ["approved_for_build", "in_build"]}},
+            {"_id": 0, "id": 1}
+        ).to_list(100)
+        missing = 0
+        for p in active:
+            exists = await db.project_tracker_updates.find_one(
+                {"project_id": p["id"], "engineer_id": user["user_id"], "update_date": today_str})
+            if not exists:
+                missing += 1
+        badges["missing_standups"] = missing
+    badges["total"] = sum(badges.values())
+    return badges
+
 # Include FlowForge router
 from routers.flowforge import router as flowforge_router
 api_router.include_router(flowforge_router)
@@ -2545,8 +2581,25 @@ from routers.assessments import router as assessments_router, set_db as set_asse
 set_assessments_db(db)
 api_router.include_router(assessments_router)
 
+# Include Projects router
+from routers.projects import router as projects_router, set_db as set_projects_db
+set_projects_db(db)
+api_router.include_router(projects_router)
+
+# Email service DB
+from services import set_db as set_email_db
+set_email_db(db)
+
 # Include the main router
 app.include_router(api_router)
+
+# Start SLA scheduler
+from services.sla_scheduler import set_db as set_sla_db, start_scheduler as start_sla_scheduler
+set_sla_db(db)
+
+@app.on_event("startup")
+async def startup_scheduler():
+    start_sla_scheduler()
 
 # CORS Middleware
 CORS_ORIGINS = [

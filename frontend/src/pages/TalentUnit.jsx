@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft, Bot, UserCheck, Send, FileText, Zap, History, Rocket } from "lucide-react";
+import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft, Bot, UserCheck, Send, FileText, Zap, History, Rocket, FolderOpen } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 import { Button } from "../components/ui/button";
 import BuildHistory from "../components/BuildHistory";
@@ -184,6 +184,14 @@ const TalentUnit = () => {
           <History className="w-4 h-4" />
           Build History
         </button>
+        <Link
+          to="/talent/projects"
+          className="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-gray-500 hover:text-gray-700"
+          data-testid="tab-project-fulfillment"
+        >
+          <FolderOpen className="w-4 h-4" />
+          Project Fulfillment
+        </Link>
       </div>
 
       {/* Tab Content */}
