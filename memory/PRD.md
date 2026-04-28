@@ -47,7 +47,7 @@ awaiting_delegation → delegated → under_review → revision_requested → ap
 - 13 branded HTML email templates (Resend integration, placeholder key)
 - User role flags: is_engineer, is_fulfillment, is_hr
 - Engineer workload calculation (available/at_capacity/busy)
-- Document upload/download with file validation (PDF/DOCX, 25MB limit)
+- Document upload/download with file validation (PDF/DOCX brief & roadmap, any-format multi-file client docs, 100MB per file)
 - Daily standup form with progress tracking
 - User Management page (`/admin/users`) for role toggles
 - Notification badge system
@@ -73,6 +73,8 @@ awaiting_delegation → delegated → under_review → revision_requested → ap
   - Backend: routers/projects.py, services/email_service.py, services/email_templates.py, services/sla_scheduler.py
   - Frontend: ProjectFulfillment, NewProjectForm, DelegationBoard, MyProjects, ProjectReview, ProjectTracker, UserManagement
   - Routes added in App.js, tabs added to TalentUnit, THCOHRPage, TechnologyAndBuild
+- **NewProjectForm refinements (Feb 2026):** Free-text Client combobox, optional Company Website, multi-file "Documents from Client" upload (any format), 100MB per-file cap. Verified end-to-end.
+- **My Tools tab rolled out (Feb 2026):** Now on all 10 business unit pages — TalentUnit (existing), plus THCOHRPage, TechnologyAndBuild, ClientDelivery, SalesAndBD, MarketingAndBrand, AdvisoryAndConsulting, OperationsAndFinance, AcademyAndLearning, ITAndTools. Each page renders DeployedTools component with Use Tool modal showing execution results.
 
 ## Known Issues
 - P2: PDF download unstable
@@ -89,9 +91,11 @@ awaiting_delegation → delegated → under_review → revision_requested → ap
 6. Test end-to-end flow with sample project
 
 ## Upcoming Tasks (Priority Order)
-- P1: Implement FlowForge tool execution results UI
-- P1: Roll out "My Tools" tab to all 11 business unit pages
 - P2: Stable PDF download for proposals
+- P2: User-facing PDF download button on Realloc & Procure AI presentations
+- P2: FlowForge Phase 5 (Polish/White-Label) and Phase 6 (Rollout/Monitoring)
+- P2 (UX nit): Dedupe `clientDocs` by name in NewProjectForm so re-selecting same file doesn't append duplicates
+- P2 (copy nit): Either change "100MB" copy to clarify per-file vs. total, or sum sizes server-side
 
 ## Future/Backlog
 - P2: FlowForge Phase 5 & 6
