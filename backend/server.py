@@ -83,6 +83,10 @@ class UserResponse(BaseModel):
     status: str
     picture: Optional[str] = None
     created_at: datetime
+    is_engineer: Optional[bool] = False
+    is_fulfillment: Optional[bool] = False
+    is_hr: Optional[bool] = False
+    engineer_capacity_override: Optional[int] = None
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
