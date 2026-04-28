@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Upload, FileText, Building } from "lucide-react";
+import { ArrowLeft, Upload, FileText, Building, Globe, ChevronDown } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
 import api from "../lib/api";
@@ -8,21 +8,49 @@ import api from "../lib/api";
 export default function NewProjectForm() {
   const [clients, setClients] = useState([]);
   const [name, setName] = useState("");
+  const [clientText, setClientText] = useState("");
   const [clientId, setClientId] = useState("");
+  const [website, setWebsite] = useState("");
   const [description, setDescription] = useState("");
   const [brief, setBrief] = useState(null);
   const [roadmap, setRoadmap] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     api.get("/clients").then(r => setClients(r.data || [])).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setShowDropdown(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const filteredClients = clients.filter(c =>
+    !clientText || c.name.toLowerCase().includes(clientText.toLowerCase())
+  );
+
+  const selectClient = (c) => {
+    setClientId(c.client_id || c.id);
+    setClientText(c.name);
+    setShowDropdown(false);
+  };
+
+  const handleClientInput = (val) => {
+    setClientText(val);
+    setClientId("");
+    setShowDropdown(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) { toast.error("Project name is required"); return; }
-    if (!clientId) { toast.error("Please select a client"); return; }
+    if (!clientText.trim()) { toast.error("Client name is required"); return; }
     if (!brief) { toast.error("Brief document is required"); return; }
     if (!roadmap) { toast.error("Roadmap document is required"); return; }
 
@@ -30,7 +58,9 @@ export default function NewProjectForm() {
     try {
       const fd = new FormData();
       fd.append("name", name.trim());
-      fd.append("client_id", clientId);
+      fd.append("client_id", clientId || "custom");
+      fd.append("client_name", clientText.trim());
+      fd.append("website", website.trim());
       fd.append("description", description.trim());
       fd.append("brief", brief);
       fd.append("roadmap", roadmap);
@@ -77,15 +107,42 @@ export default function NewProjectForm() {
             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] outline-none text-sm" data-testid="project-name-input" />
         </div>
 
-        <div>
+        <div ref={dropdownRef} className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Client <span className="text-red-500">*</span></label>
           <div className="relative">
-            <Building className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select value={clientId} onChange={e => setClientId(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] outline-none text-sm bg-white appearance-none" data-testid="client-select">
-              <option value="">Select a client...</option>
-              {clients.map(c => <option key={c.client_id || c.id} value={c.client_id || c.id}>{c.name}</option>)}
-            </select>
+            <Building className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
+            <input
+              type="text"
+              value={clientText}
+              onChange={e => handleClientInput(e.target.value)}
+              onFocus={() => setShowDropdown(true)}
+              placeholder="Type a client name or select from list..."
+              className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] outline-none text-sm"
+              data-testid="client-input"
+            />
+            <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer" onClick={() => setShowDropdown(!showDropdown)} />
+          </div>
+          {showDropdown && filteredClients.length > 0 && (
+            <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto" data-testid="client-dropdown">
+              {filteredClients.map(c => (
+                <button key={c.client_id || c.id} type="button" onClick={() => selectClient(c)}
+                  className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition flex items-center gap-2"
+                  data-testid={`client-option-${c.client_id || c.id}`}>
+                  <Building className="w-3.5 h-3.5 text-gray-400" />
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          )}
+          {clientId && <p className="text-xs text-green-600 mt-1">Linked to existing client record</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Company Website <span className="text-gray-400 text-xs">(optional)</span></label>
+          <div className="relative">
+            <Globe className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input type="url" value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://example.com"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] outline-none text-sm" data-testid="website-input" />
           </div>
         </div>
 

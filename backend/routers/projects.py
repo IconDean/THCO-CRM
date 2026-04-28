@@ -56,6 +56,8 @@ async def create_project(
     request: Request,
     name: str = Form(...),
     client_id: str = Form(...),
+    client_name: str = Form(""),
+    website: str = Form(""),
     description: str = Form(""),
     brief: UploadFile = File(...),
     roadmap: UploadFile = File(...),
@@ -72,16 +74,21 @@ async def create_project(
     brief_url, brief_name = await _save_file(brief, project_id, "brief")
     roadmap_url, roadmap_name = await _save_file(roadmap, project_id, "roadmap")
 
-    # Lookup client name
-    client = await db.clients.find_one({"client_id": client_id}, {"_id": 0, "name": 1})
-    client_name = client["name"] if client else client_id
+    # Resolve client name: use provided name, or lookup from existing client
+    resolved_client_name = client_name.strip() if client_name.strip() else None
+    if not resolved_client_name and client_id and client_id != "custom":
+        client = await db.clients.find_one({"client_id": client_id}, {"_id": 0, "name": 1})
+        resolved_client_name = client["name"] if client else client_id
+    if not resolved_client_name:
+        resolved_client_name = "Unknown Client"
 
     now = datetime.now(timezone.utc).isoformat()
     project = {
         "id": project_id,
         "name": name,
-        "client_id": client_id,
-        "client_name_snapshot": client_name,
+        "client_id": client_id if client_id != "custom" else None,
+        "client_name_snapshot": resolved_client_name,
+        "website": website.strip() if website else "",
         "description": description[:500] if description else "",
         "brief_document_url": brief_url,
         "brief_document_name": brief_name,
@@ -110,7 +117,7 @@ async def create_project(
     hr_users = await db.users.find({"is_hr": True}, {"_id": 0, "email": 1}).to_list(100)
     hr_emails = [u["email"] for u in hr_users]
     if hr_emails:
-        ctx = {"project_name": name, "client_name": client_name, "creator_name": user["name"], "description": description}
+        ctx = {"project_name": name, "client_name": resolved_client_name, "creator_name": user["name"], "description": description}
         subject, html = project_uploaded_to_hr(ctx)
         await send_email(to=hr_emails, subject=subject, html=html, template_name="project_uploaded_to_hr", context=ctx)
 
