@@ -5,11 +5,24 @@
 ### Super Admin (use for all admin/role-based testing)
 - Email: `joshua@thcohq.com`
 - Password: `THCOAdmin2024!`
-- Role: `super_admin` (also has is_hr, is_fulfillment, is_engineer flags)
+- Role: `super_admin` (also has is_hr, is_fulfillment flags)
 
 ### Secondary Admin
 - Email: `adoption@thcohqs.com`
 - Password: `THCOAdmin2024!`
+
+### Fulfillment Team (created Feb 2026)
+All passwords: `THCOAdmin2024!` — `is_fulfillment=true`, can create projects.
+- `adeyosola@thcohqs.com` — Adeyosola Ademola
+- `christiana@thcohqs.com` — Christiana Olatunji
+- `florence@thcohqs.com` — Florence Adebimpe Ojo
+- `kehinde@thcohqs.com` — Kehinde Alawode
+
+### Engineer
+- `kehinde.adeleke@thcohqs.com` — Kehinde Adeleke (`is_engineer=true`)
+
+### HR
+- `hr@thcohqs.com` — HR Thco (`is_hr=true`)
 
 ## Login API
 ```
