@@ -21,9 +21,11 @@ import {
   Clock,
   Zap,
   Plus,
-  History
-} from "lucide-react";
+  History,
+  Rocket
+} from 'lucide-react';
 import BuildHistory from "../components/BuildHistory";
+import DeployedTools from "../components/flowforge/DeployedTools";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 
@@ -193,11 +195,18 @@ const ITAndTools = () => {
       {/* Tabs */}
       <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
         <button onClick={() => setActiveTab("main")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "main" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`} data-testid="tab-main">Overview</button>
+        <button onClick={() => setActiveTab("deployed")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${activeTab === "deployed" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`} data-testid="tab-deployed"><Rocket className="w-4 h-4" />My Tools</button>
         <button onClick={() => setActiveTab("build-history")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${activeTab === "build-history" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`} data-testid="tab-build-history"><History className="w-4 h-4" />Build History</button>
       </div>
 
       {activeTab === "build-history" ? (
         <BuildHistory unit="it-tools" />
+      ) : activeTab === "deployed" ? (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Deployed Tools</h2>
+          <p className="text-sm text-gray-500 mb-6">Tools you've built and approved that are now live in the automation engine.</p>
+          <DeployedTools unit="it-tools" />
+        </div>
       ) : (
       <>
       {/* Quick Stats */}

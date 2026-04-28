@@ -15,7 +15,7 @@ db = None
 UPLOADS_DIR = Path(__file__).parent.parent / "uploads" / "projects"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {".pdf", ".docx"}
-MAX_FILE_SIZE = 25 * 1024 * 1024  # 25MB
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
 
 
 def set_db(database):
@@ -43,7 +43,7 @@ async def _save_file(file: UploadFile, project_id: str, prefix: str) -> tuple:
     file_path = project_dir / saved_name
     content = await file.read()
     if len(content) > MAX_FILE_SIZE:
-        raise HTTPException(status_code=400, detail="File exceeds 25MB limit.")
+        raise HTTPException(status_code=400, detail="File exceeds 100MB limit.")
     with open(file_path, "wb") as f:
         f.write(content)
     return f"/api/projects/files/{project_id}/{saved_name}", file.filename
@@ -61,6 +61,7 @@ async def create_project(
     description: str = Form(""),
     brief: UploadFile = File(...),
     roadmap: UploadFile = File(...),
+    client_documents: list[UploadFile] = File(None),
 ):
     """Fulfillment creates a new project with Brief + Roadmap uploads."""
     user = await _get_user(request)
@@ -73,6 +74,14 @@ async def create_project(
     project_id = str(uuid.uuid4())
     brief_url, brief_name = await _save_file(brief, project_id, "brief")
     roadmap_url, roadmap_name = await _save_file(roadmap, project_id, "roadmap")
+
+    # Save client documents (multiple, optional)
+    client_docs_list = []
+    if client_documents:
+        for doc in client_documents:
+            if doc.filename:
+                doc_url, doc_name = await _save_file(doc, project_id, "client_doc")
+                client_docs_list.append({"url": doc_url, "name": doc_name})
 
     # Resolve client name: use provided name, or lookup from existing client
     resolved_client_name = client_name.strip() if client_name.strip() else None
@@ -94,6 +103,7 @@ async def create_project(
         "brief_document_name": brief_name,
         "roadmap_document_url": roadmap_url,
         "roadmap_document_name": roadmap_name,
+        "client_documents": client_docs_list,
         "status": "awaiting_delegation",
         "created_by": user["user_id"],
         "created_by_name": user["name"],

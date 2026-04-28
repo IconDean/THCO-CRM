@@ -14,6 +14,7 @@ export default function NewProjectForm() {
   const [description, setDescription] = useState("");
   const [brief, setBrief] = useState(null);
   const [roadmap, setRoadmap] = useState(null);
+  const [clientDocs, setClientDocs] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -64,6 +65,7 @@ export default function NewProjectForm() {
       fd.append("description", description.trim());
       fd.append("brief", brief);
       fd.append("roadmap", roadmap);
+      clientDocs.forEach(f => fd.append("client_documents", f));
       await api.post("/projects", fd, { headers: { "Content-Type": "multipart/form-data" } });
       toast.success("Project created successfully! HR has been notified.");
       navigate("/talent/projects");
@@ -86,7 +88,7 @@ export default function NewProjectForm() {
         ) : (
           <div className="text-center">
             <Upload className="w-6 h-6 text-gray-400 mx-auto mb-1" />
-            <p className="text-sm text-gray-500">Click to upload PDF or DOCX (max 25MB)</p>
+            <p className="text-sm text-gray-500">Click to upload PDF or DOCX</p>
           </div>
         )}
       </label>
@@ -156,6 +158,30 @@ export default function NewProjectForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FileDropZone label="Full Brief" file={brief} onFile={setBrief} testId="brief-upload" />
           <FileDropZone label="Roadmap Design" file={roadmap} onFile={setRoadmap} testId="roadmap-upload" />
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Documents from Client <span className="text-gray-400 text-xs">(optional, multiple files)</span></label>
+          <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition"
+            style={{ borderColor: clientDocs.length > 0 ? "#1B4332" : "#e5e7eb" }} data-testid="client-docs-upload">
+            <input type="file" className="hidden" accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.csv,.txt,.png,.jpg,.jpeg,.zip" multiple
+              onChange={e => setClientDocs(prev => [...prev, ...Array.from(e.target.files)])} />
+            <Upload className="w-6 h-6 text-gray-400 mb-1" />
+            <p className="text-sm text-gray-500">Click to upload client documents (any format, multiple files)</p>
+          </label>
+          {clientDocs.length > 0 && (
+            <div className="space-y-1.5 mt-2">
+              {clientDocs.map((f, i) => (
+                <div key={i} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg" data-testid={`client-doc-${i}`}>
+                  <FileText className="w-4 h-4 text-[#1B4332]" />
+                  <span className="text-sm text-gray-700 flex-1 truncate">{f.name}</span>
+                  <span className="text-xs text-gray-400">{(f.size / 1024 / 1024).toFixed(1)} MB</span>
+                  <button type="button" onClick={() => setClientDocs(prev => prev.filter((_, j) => j !== i))}
+                    className="text-red-400 hover:text-red-600 text-xs font-medium" data-testid={`remove-doc-${i}`}>Remove</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <Button type="submit" disabled={submitting} className="w-full bg-[#1B4332] hover:bg-[#1B4332]/90 text-white py-6 text-base font-semibold" data-testid="submit-project-btn">

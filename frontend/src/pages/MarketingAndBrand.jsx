@@ -19,11 +19,13 @@ import {
   Filter,
   PenTool,
   Zap,
-  History
-} from "lucide-react";
+  History,
+  Rocket
+} from 'lucide-react';
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 import BuildHistory from "../components/BuildHistory";
+import DeployedTools from "../components/flowforge/DeployedTools";
 
 // AI Agents for Marketing & Brand (from Agent Registry)
 const AI_AGENTS = [
@@ -252,6 +254,12 @@ const MarketingAndBrand = () => {
 
       {activeTab === "build-history" ? (
         <BuildHistory unit="marketing" />
+      ) : activeTab === "deployed" ? (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Deployed Tools</h2>
+          <p className="text-sm text-gray-500 mb-6">Tools you've built and approved that are now live in the automation engine.</p>
+          <DeployedTools unit="marketing" />
+        </div>
       ) : (
       <>
       {/* Content Targets */}

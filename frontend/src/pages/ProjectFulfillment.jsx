@@ -48,6 +48,16 @@ function ProjectDetailDrawer({ project, onClose, onReupload }) {
             <a href={project.roadmap_document_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition" data-testid="roadmap-download">
               <FileText className="w-4 h-4 text-emerald-600" /><span className="text-sm font-medium">{project.roadmap_document_name}</span><Download className="w-3 h-3 ml-auto text-gray-400" />
             </a>
+            {project.client_documents?.length > 0 && (
+              <div className="mt-3">
+                <p className="text-xs text-gray-500 font-medium mb-1.5">Documents from Client</p>
+                {project.client_documents.map((doc, i) => (
+                  <a key={i} href={doc.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-3 rounded-lg border hover:bg-gray-50 transition mb-1.5" data-testid={`client-doc-download-${i}`}>
+                    <FileText className="w-4 h-4 text-orange-500" /><span className="text-sm font-medium">{doc.name}</span><Download className="w-3 h-3 ml-auto text-gray-400" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
           {review && (
             <div className="bg-gray-50 rounded-lg p-4">

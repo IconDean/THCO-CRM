@@ -22,12 +22,14 @@ import {
   ClipboardList,
   Timer,
   Zap,
-  History
-} from "lucide-react";
+  History,
+  Rocket
+} from 'lucide-react';
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 import BuildHistory from "../components/BuildHistory";
+import DeployedTools from "../components/flowforge/DeployedTools";
 
 // AI Agents for Operations & Finance (from Agent Registry)
 const AI_AGENTS = [
@@ -286,6 +288,12 @@ const OperationsAndFinance = () => {
 
       {activeTab === "build-history" ? (
         <BuildHistory unit="operations" />
+      ) : activeTab === "deployed" ? (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Deployed Tools</h2>
+          <p className="text-sm text-gray-500 mb-6">Tools you've built and approved that are now live in the automation engine.</p>
+          <DeployedTools unit="operations" />
+        </div>
       ) : (
       <>
       {/* Financial Stats */}

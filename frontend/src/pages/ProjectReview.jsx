@@ -145,6 +145,26 @@ export default function ProjectReview() {
         </div>
       </div>
 
+      {/* Client Documents */}
+      {project.client_documents?.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <FileText className="w-5 h-5 text-orange-500" />
+            <h3 className="font-semibold text-gray-900">Documents from Client ({project.client_documents.length})</h3>
+          </div>
+          <div className="space-y-2">
+            {project.client_documents.map((doc, i) => (
+              <a key={i} href={doc.url} target="_blank" rel="noreferrer"
+                className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 transition" data-testid={`client-doc-${i}`}>
+                <FileText className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-medium flex-1">{doc.name}</span>
+                <Download className="w-4 h-4 text-gray-400" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Decision form */}
       {!alreadyDecided && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm space-y-5">

@@ -26,6 +26,7 @@ import {
   Hammer
 } from "lucide-react";
 import BuildHistory from "../components/BuildHistory";
+import DeployedTools from "../components/flowforge/DeployedTools";
 import { Button } from "../components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 
@@ -315,6 +316,12 @@ const TechnologyAndBuild = () => {
 
       {activeTab === "build-history" ? (
         <BuildHistory unit="technology" />
+      ) : activeTab === "deployed" ? (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Deployed Tools</h2>
+          <p className="text-sm text-gray-500 mb-6">Tools you've built and approved that are now live in the automation engine.</p>
+          <DeployedTools unit="technology" />
+        </div>
       ) : (
       <>
       {/* Quick Stats */}
