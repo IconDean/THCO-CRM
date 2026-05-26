@@ -482,11 +482,6 @@ const ClientProfileSection = ({ projectId, clientName }) => {
           <X className="w-3 h-3 mr-1 rotate-45" /> Add Contact
         </Button>
       </div>
-      {data && data.pii_visible === false && (
-        <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-3 inline-flex items-center gap-1">
-          🔒 Client email & phone are hidden — only visible to Super Admin, Delivery Coordinator and Delivery Owner.
-        </p>
-      )}
 
       {loading ? (
         <div className="py-4 text-sm text-gray-400">Loading…</div>

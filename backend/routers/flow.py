@@ -101,7 +101,6 @@ async def _users_with_flag(flag: str) -> List[dict]:
 # Everyone else sees REDACTED placeholder.
 # ---------------------------------------------------------------------------
 PII_FIELDS = ("email", "phone", "whatsapp", "spouse_birthday", "spouse_name")
-PII_REDACT = "•••• restricted ••••"
 
 
 def _can_view_contact_pii(user: dict) -> bool:
@@ -118,9 +117,10 @@ def _redact_contact(contact: dict, user: dict) -> dict:
         contact["_pii_visible"] = True
         return contact
     redacted = dict(contact)
+    # Drop PII fields entirely — frontend will simply not render those rows,
+    # so the contact card looks natural (as if those fields were never filled).
     for f in PII_FIELDS:
-        if redacted.get(f):
-            redacted[f] = PII_REDACT
+        redacted[f] = ""
     redacted["_pii_visible"] = False
     return redacted
 
