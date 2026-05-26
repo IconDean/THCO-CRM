@@ -34,14 +34,14 @@ async def _get_user(request: Request) -> dict:
 # THE 12 STAGES + ROLE MAP
 # ===========================================================================
 STAGES = {
-    1:  {"key": "new_client",          "label": "New Client",              "role_next": "is_qualifier",         "track": "main"},
+    1:  {"key": "new_client",          "label": "New Client",              "role_next": "is_delivery_coordinator", "track": "main"},
     2:  {"key": "coordinator_picked",  "label": "Coordinator Picked",      "role_next": "is_delivery_owner",    "track": "main"},
     3:  {"key": "meeting_scheduled",   "label": "Meeting Scheduled",       "role_next": "is_delivery_owner",    "track": "main"},
     4:  {"key": "package_building",    "label": "Package Building",        "role_next": "is_delivery_owner",    "track": "main"},
-    5:  {"key": "send_package",        "label": "Send Package",            "role_next": "is_pricing_owner",     "track": "main"},
+    5:  {"key": "send_package",        "label": "Send Package",            "role_next": "is_operations_owner",  "track": "main"},
     # SPLIT at 5 → two sibling records: proposal track (6-8) + build track (9-10)
     6:  {"key": "proposal",            "label": "Proposal",                "role_next": "is_executive_approver","track": "proposal"},
-    7:  {"key": "exec_approval",       "label": "Executive Approval",      "role_next": "is_pricing_owner",     "track": "proposal"},
+    7:  {"key": "exec_approval",       "label": "Executive Approval",      "role_next": "is_operations_owner",  "track": "proposal"},
     8:  {"key": "proposal_sent",       "label": "Proposal Sent to Client", "role_next": None,                   "track": "proposal"},
     9:  {"key": "in_build",            "label": "In Build (Engineering)",  "role_next": "is_delivery_owner",    "track": "build"},
     10: {"key": "completed",           "label": "Completed",               "role_next": None,                   "track": "build"},
@@ -51,12 +51,11 @@ LOST_STAGE_KEY = "lost"
 BUILD_STATUS_OPTIONS = ["planning", "building", "blocked", "ready_for_qa"]
 
 FLOW_ROLE_FLAGS = [
-    ("is_qualifier",              "Qualifier (intake & triage)"),
+    ("is_delivery_coordinator",   "Delivery Coordinator"),
     ("is_delivery_owner",         "Delivery Owner (project lead)"),
-    ("is_pricing_owner",          "Pricing & Proposal Owner"),
+    ("is_operations_owner",       "Operations Owner (Proposals)"),
     ("is_executive_approver",     "Executive Approver"),
-    ("is_legal",                  "Legal / Contract Review"),
-    ("is_engineering_coordinator","Engineering Coordinator"),
+    ("is_engineer",               "Engineer"),
     ("is_relationship_owner",     "Relationship Owner (touch plan)"),
     ("is_invoicing_owner",        "Invoicing Owner"),
     ("is_prospect_owner",         "Prospect / Outbound Owner"),
@@ -368,9 +367,9 @@ async def transition_stage(project_id: str, data: StageTransition, request: Requ
     }
 
     # ------- STRUCTURED VALIDATORS at gate stages -------
-    # Gate 1→2: only Delivery Coordinator (is_qualifier) can pick a client, and must assign Delivery Owner
+    # Gate 1→2: only Delivery Coordinator (is_delivery_coordinator) can pick a client, and must assign Delivery Owner
     if target == 2:
-        if not (user.get("is_qualifier") or user.get("role") == "super_admin"):
+        if not (user.get("is_delivery_coordinator") or user.get("role") == "super_admin"):
             raise HTTPException(status_code=403, detail="Only the Delivery Coordinator can pick a new client")
         owner_id = payload.get("delivery_owner_id")
         if not owner_id:
@@ -381,31 +380,36 @@ async def transition_stage(project_id: str, data: StageTransition, request: Requ
         updates["delivery_owner_id"] = owner_id
         updates["delivery_owner_name"] = owner["name"]
 
-    # Gate 4→5: Delivery Owner sets pricing_owner; Delivery Coordinator sets engineer.
-    # Project must end Stage 5 with BOTH pricing_owner_id and assigned_engineer_id set.
+    # Gate 4→5: Delivery Owner sets operations_owner; Delivery Coordinator sets engineer.
+    # Project must end Stage 5 with BOTH operations_owner_id and assigned_engineer_id set.
     if target == 5:
-        pricing_owner_id = payload.get("pricing_owner_id") or project.get("pricing_owner_id")
+        operations_owner_id = payload.get("operations_owner_id") or payload.get("pricing_owner_id") or project.get("pricing_owner_id")
         engineer_id     = payload.get("engineer_id")      or project.get("assigned_engineer_id")
         # who is allowed to set what
-        if "pricing_owner_id" in payload and payload["pricing_owner_id"]:
-            if not (user.get("is_delivery_owner") or user.get("is_qualifier") or user.get("role") == "super_admin"):
+        ops_in = payload.get("operations_owner_id") or payload.get("pricing_owner_id")
+        if ops_in:
+            if not (user.get("is_delivery_owner") or user.get("is_delivery_coordinator") or user.get("role") == "super_admin"):
                 raise HTTPException(status_code=403, detail="Only Delivery Owner or Coordinator can set the Operations Owner")
-            ops = await db.users.find_one({"user_id": payload["pricing_owner_id"]}, {"_id": 0, "name": 1})
+            ops = await db.users.find_one({"user_id": ops_in}, {"_id": 0, "name": 1, "is_operations_owner": 1})
             if not ops:
                 raise HTTPException(status_code=404, detail="Operations Owner user not found")
-            updates["pricing_owner_id"] = payload["pricing_owner_id"]
+            if not ops.get("is_operations_owner"):
+                raise HTTPException(status_code=400, detail="Selected user does not hold the is_operations_owner role")
+            updates["pricing_owner_id"] = ops_in  # column kept for back-compat
             updates["pricing_owner_name"] = ops["name"]
-            pricing_owner_id = payload["pricing_owner_id"]
+            operations_owner_id = ops_in
         if "engineer_id" in payload and payload["engineer_id"]:
-            if not (user.get("is_qualifier") or user.get("role") == "super_admin"):
+            if not (user.get("is_delivery_coordinator") or user.get("role") == "super_admin"):
                 raise HTTPException(status_code=403, detail="Only the Delivery Coordinator can assign the Engineer")
-            eng = await db.users.find_one({"user_id": payload["engineer_id"]}, {"_id": 0, "name": 1})
+            eng = await db.users.find_one({"user_id": payload["engineer_id"]}, {"_id": 0, "name": 1, "is_engineer": 1})
             if not eng:
                 raise HTTPException(status_code=404, detail="Engineer user not found")
+            if not eng.get("is_engineer"):
+                raise HTTPException(status_code=400, detail="Selected user does not hold the is_engineer role")
             updates["assigned_engineer_id"] = payload["engineer_id"]
             updates["assigned_engineer_name"] = eng["name"]
             engineer_id = payload["engineer_id"]
-        if not pricing_owner_id:
+        if not operations_owner_id:
             raise HTTPException(status_code=400, detail="Operations Owner must be set (Delivery Owner)")
         if not engineer_id:
             raise HTTPException(status_code=400, detail="Engineer must be set (Delivery Coordinator)")
@@ -423,9 +427,9 @@ async def transition_stage(project_id: str, data: StageTransition, request: Requ
     # Apply remaining payload keys (whitelist write-once doc fields)
     ALLOWED_PAYLOAD = {"package_url", "pricing_data", "proposal_url", "total_value",
                        "currency", "brief_document_url", "roadmap_document_url",
-                       "delivery_owner_id", "pricing_owner_id", "engineer_id"}
+                       "delivery_owner_id", "operations_owner_id", "pricing_owner_id", "engineer_id"}
     for k, v in payload.items():
-        if k in ALLOWED_PAYLOAD and k not in ("delivery_owner_id", "pricing_owner_id", "engineer_id"):
+        if k in ALLOWED_PAYLOAD and k not in ("delivery_owner_id", "operations_owner_id", "pricing_owner_id", "engineer_id"):
             updates[k] = v
 
     await db.projects.update_one({"id": project_id}, {"$set": updates})
@@ -526,6 +530,45 @@ async def assign_owner(project_id: str, data: AssignOwner, request: Request):
     }})
     await _audit("project", project_id, "owner_assigned", user, {"owner": owner["name"]})
     return {"message": "Delivery owner assigned", "owner_name": owner["name"]}
+
+
+# ===========================================================================
+# PROJECT-SCOPED CONTACTS (Client Profile sub-page)
+# ===========================================================================
+@router.get("/projects/{project_id}/contacts")
+async def project_contacts(project_id: str, request: Request):
+    """Return all contacts attached to the project's client, plus events."""
+    await _get_user(request)
+    project = await db.projects.find_one({"id": project_id}, {"_id": 0, "client_id": 1, "client_name_snapshot": 1})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    client_name = project.get("client_name_snapshot") or ""
+    client_id = project.get("client_id")
+
+    or_conditions = []
+    if client_id:
+        or_conditions.append({"client_id": client_id})
+    if client_name:
+        or_conditions.append({"client_name": {"$regex": f"^{client_name}$", "$options": "i"}})
+
+    contacts = []
+    if or_conditions:
+        cursor = db.contacts.find({"$or": or_conditions}, {"_id": 0}).sort("full_name", 1)
+        contacts = await cursor.to_list(200)
+
+    # Pull upcoming events for these contacts
+    contact_ids = [c["contact_id"] for c in contacts]
+    events = []
+    if contact_ids:
+        events_cursor = db.events.find({"contact_id": {"$in": contact_ids}}, {"_id": 0})
+        events = await events_cursor.to_list(200)
+
+    return {
+        "client_name": client_name,
+        "contacts": contacts,
+        "events": events,
+    }
 
 
 # ===========================================================================
@@ -630,6 +673,7 @@ async def deliver_milestone(milestone_id: str, request: Request):
 # ===========================================================================
 class ContactCreate(BaseModel):
     client_id: Optional[str] = None
+    client_name: Optional[str] = ""    # free-text client name (when client_id not set)
     full_name: str
     preferred_name: Optional[str] = ""
     title: Optional[str] = ""

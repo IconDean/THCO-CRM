@@ -167,6 +167,9 @@ export default function FlowProjectDetail() {
       {/* PROPOSAL-TRACK PANEL */}
       {isProposal && <ProposalPanel project={project} stage={stage} />}
 
+      {/* CLIENT PROFILE — contacts + birthdays scoped to this project's client */}
+      <ClientProfileSection projectId={project.id} clientName={project.client_name_snapshot} />
+
       {/* STAGE HISTORY */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 mt-4">
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><History className="w-4 h-4" />Stage history</h3>
@@ -230,12 +233,12 @@ const StructuredStageModal = ({ targetStage, project, me, onClose, onSubmit, tra
           setDeliveryOwners(list);
         }
         if (targetStage === 5) {
-          const [ops, engs] = await Promise.all([
-            flowAPI.usersByRole("is_pricing_owner"),
+          const [opsRes, engRes] = await Promise.allSettled([
+            flowAPI.usersByRole("is_operations_owner"),
             flowAPI.usersByRole("is_engineer"),
           ]);
-          setPricingOwners(ops);
-          setEngineers(engs);
+          setPricingOwners(opsRes.status === "fulfilled" ? opsRes.value : []);
+          setEngineers(engRes.status === "fulfilled" ? engRes.value : []);
         }
       } catch { toast.error("Failed to load role members"); }
       finally { setLoading(false); }
@@ -244,20 +247,20 @@ const StructuredStageModal = ({ targetStage, project, me, onClose, onSubmit, tra
   }, [targetStage]);
 
   // Permission helpers
-  const isCoordinator = me?.is_qualifier || me?.role === "super_admin";
+  const isCoordinator = me?.is_delivery_coordinator || me?.role === "super_admin";
   const isDeliveryOwner = me?.is_delivery_owner || me?.role === "super_admin";
 
   const submit = (e) => {
     e.preventDefault();
     if (targetStage === 2) {
       if (!deliveryOwnerId) { toast.error("Select a Delivery Owner"); return; }
-      if (!isCoordinator) { toast.error("Only the Delivery Coordinator (is_qualifier role) can pick the client"); return; }
+      if (!isCoordinator) { toast.error("Only the Delivery Coordinator can pick the client"); return; }
       onSubmit(2, note, { delivery_owner_id: deliveryOwnerId });
     }
     if (targetStage === 5) {
       if (!pricingOwnerId) { toast.error("Select an Operations Owner"); return; }
       if (!engineerId) { toast.error("Select an Engineer (Coordinator only)"); return; }
-      onSubmit(5, note, { pricing_owner_id: pricingOwnerId, engineer_id: engineerId });
+      onSubmit(5, note, { operations_owner_id: pricingOwnerId, engineer_id: engineerId });
     }
   };
 
@@ -299,7 +302,7 @@ const StructuredStageModal = ({ targetStage, project, me, onClose, onSubmit, tra
                     <option value="">— select Operations Owner —</option>
                     {pricingOwners.map(u => <option key={u.user_id} value={u.user_id}>{u.name} ({u.email})</option>)}
                   </select>
-                  {pricingOwners.length === 0 && <p className="text-xs text-red-600 mt-1">No users hold the <code>is_pricing_owner</code> role.</p>}
+                  {pricingOwners.length === 0 && <p className="text-xs text-red-600 mt-1">No users hold the <code>is_operations_owner</code> role.</p>}
                 </Field>
                 <Field label="Engineer * (only the Delivery Coordinator can assign)">
                   <select value={engineerId} onChange={(e) => setEngineerId(e.target.value)} className={inputCls} data-testid="modal-engineer-select" disabled={!isCoordinator}>
@@ -307,7 +310,7 @@ const StructuredStageModal = ({ targetStage, project, me, onClose, onSubmit, tra
                     {engineers.map(u => <option key={u.user_id} value={u.user_id}>{u.name} ({u.email})</option>)}
                   </select>
                   {engineers.length === 0 && <p className="text-xs text-red-600 mt-1">No users hold the <code>is_engineer</code> role.</p>}
-                  {!isCoordinator && <p className="text-xs text-amber-600 mt-1">This field is locked — only a Delivery Coordinator (<code>is_qualifier</code>) can edit it.</p>}
+                  {!isCoordinator && <p className="text-xs text-amber-600 mt-1">This field is locked — only a Delivery Coordinator can edit it.</p>}
                 </Field>
               </>
             )}
@@ -446,5 +449,137 @@ const Field = ({ label, children }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
     {children}
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// CLIENT PROFILE — contacts + birthdays scoped to this project's client
+// ---------------------------------------------------------------------------
+const ClientProfileSection = ({ projectId, clientName }) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const d = await flowAPI.projectContacts(projectId);
+      setData(d);
+    } catch { /* ignore */ }
+    finally { setLoading(false); }
+  };
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [projectId]);
+
+  const contacts = data?.contacts || [];
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 p-6 mt-4" data-testid="client-profile">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <User className="w-4 h-4" />Client profile <span className="text-xs text-gray-400 font-normal">— {clientName}</span>
+        </h3>
+        <Button size="sm" onClick={() => setShowAdd(true)} className="bg-[#1B4332] hover:bg-[#1B4332]/90 text-white" data-testid="add-contact-btn">
+          <X className="w-3 h-3 mr-1 rotate-45" /> Add Contact
+        </Button>
+      </div>
+
+      {loading ? (
+        <div className="py-4 text-sm text-gray-400">Loading…</div>
+      ) : contacts.length === 0 ? (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm">
+          <p className="text-amber-900 mb-2">No contacts on file for <strong>{clientName}</strong> yet.</p>
+          <p className="text-amber-700 text-xs">Add the primary contact + their birthday so the Relationship Owner can plan touches. Saved birthdays automatically show up on the Calendar.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3" data-testid="contact-list">
+          {contacts.map((c) => (
+            <div key={c.contact_id} className="border border-gray-100 rounded-lg p-3" data-testid={`contact-${c.contact_id}`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">{c.full_name}</p>
+                  <p className="text-xs text-gray-500">{c.title || "—"}</p>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{(c.strength || "warm").toUpperCase()}</span>
+              </div>
+              <div className="mt-2 space-y-0.5 text-xs text-gray-500">
+                {c.email && <p>📧 {c.email}</p>}
+                {c.phone && <p>📞 {c.phone}</p>}
+                {c.birthday && <p className="text-pink-700 font-medium">🎂 Birthday {c.birthday}</p>}
+                {c.work_anniversary && <p>🎉 Work anniversary {c.work_anniversary}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showAdd && <QuickContactModal clientName={clientName} onClose={() => setShowAdd(false)} onSaved={() => { setShowAdd(false); load(); }} />}
+    </div>
+  );
+};
+
+const QuickContactModal = ({ clientName, onClose, onSaved }) => {
+  const [f, setF] = useState({
+    client_name: clientName || "",
+    full_name: "", title: "", email: "", phone: "", whatsapp: "",
+    birthday: "", work_anniversary: "", spouse_name: "", spouse_birthday: "",
+    strength: "warm", notes: "",
+  });
+  const set = (k, v) => setF({ ...f, [k]: v });
+  const [saving, setSaving] = useState(false);
+
+  const save = async (e) => {
+    e.preventDefault();
+    if (!f.full_name.trim()) { toast.error("Name required"); return; }
+    setSaving(true);
+    try {
+      await flowAPI.createContact(f);
+      toast.success("Contact added");
+      onSaved();
+    } catch { toast.error("Failed to save"); }
+    finally { setSaving(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <form onSubmit={save} className="bg-white rounded-2xl max-w-xl w-full p-6 max-h-[90vh] overflow-y-auto" data-testid="quick-contact-modal">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900">Add contact for <span className="text-[#1B4332]">{clientName}</span></h3>
+          <button type="button" onClick={onClose}><X className="w-4 h-4 text-gray-400" /></button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Inp label="Full Name *" v={f.full_name} on={(v) => set("full_name", v)} testid="qc-name" />
+          <Inp label="Title" v={f.title} on={(v) => set("title", v)} />
+          <Inp label="Email" v={f.email} on={(v) => set("email", v)} />
+          <Inp label="Phone" v={f.phone} on={(v) => set("phone", v)} />
+          <Inp label="WhatsApp" v={f.whatsapp} on={(v) => set("whatsapp", v)} />
+          <Inp label="Birthday (DD-MM)" v={f.birthday} on={(v) => set("birthday", v)} placeholder="e.g. 15-04" testid="qc-birthday" />
+          <Inp label="Work Anniversary (DD-MM)" v={f.work_anniversary} on={(v) => set("work_anniversary", v)} />
+          <Inp label="Spouse Name" v={f.spouse_name} on={(v) => set("spouse_name", v)} />
+          <Inp label="Spouse Birthday (DD-MM)" v={f.spouse_birthday} on={(v) => set("spouse_birthday", v)} />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Relationship strength</label>
+            <select value={f.strength} onChange={(e) => set("strength", e.target.value)} className={inputCls}>
+              <option value="cold">Cold</option>
+              <option value="warm">Warm</option>
+              <option value="strong">Strong</option>
+              <option value="champion">Champion</option>
+            </select>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 mt-5">
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="submit" disabled={saving} className="bg-[#1B4332] hover:bg-[#1B4332]/90 text-white" data-testid="qc-save">
+            {saving ? "Saving..." : "Save Contact"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+const Inp = ({ label, v, on, placeholder, testid }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+    <input value={v} onChange={(e) => on(e.target.value)} placeholder={placeholder} className={inputCls} data-testid={testid} />
   </div>
 );

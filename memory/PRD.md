@@ -90,14 +90,39 @@ awaiting_delegation → delegated → under_review → revision_requested → ap
 5. At /admin/users, flag users: is_engineer, is_fulfillment, is_hr
 6. Test end-to-end flow with sample project
 
-## THCO Flow — Project Management System (NEW — May 2026)
+## THCO Flow — Project Management System (NEW — May 2026, restructured v2)
 
-End-to-end 12-stage pipeline from Prospect → Completed, replacing the "Project Management" sidebar entry. Coexists with the older Project Delivery Workflow; legacy projects auto-backfill into the new stage system.
+End-to-end **10-stage** project pipeline with **track split at Stage 5**, replacing the "Project Management" sidebar entry. Coexists with the older Project Delivery Workflow; legacy projects auto-backfill into the new stage system on Kanban load.
 
-**12 Stages:**
-1. Prospect → 2. Qualified & Assigned → 3. Discovery Scheduled → 4. Package Building → 5. Package Sent → 6. Pricing & Proposal → 7. Approved by Exec → 8. Sent to Client → 9. Contract Drafting → 10. Contract Signed → 11. In Delivery → 12. Completed (with `lost` sub-state).
+**10 Stages (split tracks):**
+- **Main track (1–5):** 1 New Client → 2 Coordinator Picked → 3 Meeting Scheduled → 4 Package Building → 5 Send Package
+- **Proposal track (6–8, auto-spawned at Stage 5 split):** 6 Proposal → 7 Executive Approval → 8 Proposal Sent to Client
+- **Build track (9–10, auto-spawned at Stage 5 split):** 9 In Build (Engineering) → 10 Completed
 
-**Role-based routing** (9 new user flags): `is_qualifier`, `is_delivery_owner`, `is_pricing_owner`, `is_executive_approver`, `is_legal`, `is_engineering_coordinator`, `is_relationship_owner`, `is_invoicing_owner`, `is_prospect_owner`. Each stage transition emails the users holding the next-stage role.
+**Structured stage gates (required input):**
+- **1→2**: must select Delivery Owner; only `is_qualifier` users (Delivery Coordinator) can perform
+- **4→5**: must select both Operations Owner (set by Delivery Owner/Coordinator) and Engineer (set ONLY by Coordinator). On submit, system SPLITS the project into two sibling records — proposal (stage 6) + build (stage 9) — linked by `parent_project_id` + `sibling_project_id`. Both tracks email their next-role holders.
+
+**Build track features:** `build_status` (planning/building/blocked/ready_for_qa), `build_comments[]` thread, EOD reminder cron (APScheduler, fires 17:00–22:00 UTC hourly) that emails the assigned engineer if no comment was logged that day.
+
+**Role-based routing** (10 user flags now): `is_qualifier`, `is_delivery_owner`, `is_pricing_owner`, `is_executive_approver`, `is_legal`, `is_engineering_coordinator`, `is_engineer`, `is_relationship_owner`, `is_invoicing_owner`, `is_prospect_owner`. Assignable via admin UI at `/flow/admin/roles`.
+
+**Kanban (`/flow/board`):** 10 columns with track-aware drag-and-drop (cards cannot cross tracks). Stages 2 and 5 require structured input — dragging onto them redirects to project detail instead of silently transitioning.
+
+**Resend integration:** ✅ Working. API key configured, 9+ emails sent successfully. Caveat: sender is `onboarding@resend.dev` (sandbox); verify `thcohq.com` domain in Resend dashboard to deliver to anyone other than account owner.
+
+**Testing:** Iteration 30 — 11/11 backend tests + frontend verified. One CRITICAL bug found (`is_engineer` missing from `FLOW_ROLE_FLAGS`) → fixed; Promise.all → Promise.allSettled hardening applied; backend now enforces selected engineer actually has `is_engineer=true`.
+
+**Phase B (deferred):** LLM proposal generation, e-signature, WhatsApp/Email actual send, Stripe invoicing.
+
+## Upcoming Tasks (Priority Order)
+- **THCO Flow Phase B**: LLM proposal generation, WhatsApp+Email send, Stripe invoicing, e-signature
+- **Setup (your action)**: Visit `/flow/admin/roles` and assign multiple users per role so the workflow has redundancy
+- **Setup (your action)**: Verify `thcohq.com` domain in Resend dashboard, then change `SENDER_EMAIL` in `/app/backend/.env`
+- P2: Stable PDF download for proposals
+- P2: User-facing PDF download button on Realloc & Procure AI presentations
+- P2: FlowForge Phase 5 (Polish/White-Label) and Phase 6 (Rollout/Monitoring)
+- P2 (Flow polish): Move stage emails to BackgroundTask; pagination on list endpoints; split `flow.py` into per-domain modules
 
 **New collections:** projects (extended), milestones, contacts, events, prospects, tickets, messages, audit_log, question_library.
 

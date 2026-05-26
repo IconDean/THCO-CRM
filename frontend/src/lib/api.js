@@ -569,6 +569,9 @@ export const flowAPI = {
   usersByRole: async (flag) =>
     (await apiClient.get(`/flow/users-by-role/${flag}`)).data,
 
+  // Project-scoped contacts (Client Profile)
+  projectContacts: async (id) => (await apiClient.get(`/flow/projects/${id}/contacts`)).data,
+
   // Milestones
   createMilestone: async (data) => (await apiClient.post('/flow/milestones', data)).data,
   deliverMilestone: async (id) => (await apiClient.post(`/flow/milestones/${id}/deliver`)).data,

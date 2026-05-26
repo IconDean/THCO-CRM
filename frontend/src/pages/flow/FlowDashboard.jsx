@@ -43,6 +43,19 @@ export default function FlowDashboard() {
 
   return (
     <FlowShell title="Dashboard">
+      {/* Quick orientation banner */}
+      <div className="bg-gradient-to-r from-[#1B4332]/5 to-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex items-start gap-3" data-testid="dashboard-guide">
+        <Calendar className="w-5 h-5 text-amber-600 mt-0.5" />
+        <div className="flex-1 text-sm">
+          <p className="font-semibold text-gray-900">Adding contacts + birthdays?</p>
+          <p className="text-gray-600 mt-1">
+            Open any project's <strong>Client profile</strong> section to add the client's people — name, birthday, work anniversary, spouse, etc.
+            Saved birthdays automatically appear on the <Link to="/flow/calendar" className="text-[#1B4332] underline">Calendar</Link>.
+            Or browse the full directory at <Link to="/flow/contacts" className="text-[#1B4332] underline">/flow/contacts</Link>.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard testId="stat-active" icon={Briefcase} label="My active projects" value={data.my_active_projects} color="bg-[#1B4332]" link="/flow/projects" />
         <StatCard testId="stat-approval" icon={ClipboardCheck} label="Awaiting executive approval" value={data.approval_queue} color="bg-amber-500" link="/flow/projects?stage=7" />
