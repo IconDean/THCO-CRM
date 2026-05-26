@@ -86,6 +86,15 @@ class UserResponse(BaseModel):
     is_engineer: Optional[bool] = False
     is_fulfillment: Optional[bool] = False
     is_hr: Optional[bool] = False
+    is_qualifier: Optional[bool] = False
+    is_delivery_owner: Optional[bool] = False
+    is_pricing_owner: Optional[bool] = False
+    is_executive_approver: Optional[bool] = False
+    is_legal: Optional[bool] = False
+    is_engineering_coordinator: Optional[bool] = False
+    is_relationship_owner: Optional[bool] = False
+    is_invoicing_owner: Optional[bool] = False
+    is_prospect_owner: Optional[bool] = False
     engineer_capacity_override: Optional[int] = None
 
 class UserUpdate(BaseModel):
@@ -905,6 +914,15 @@ async def get_me(request: Request):
         "is_engineer": user.get("is_engineer", False),
         "is_fulfillment": user.get("is_fulfillment", False),
         "is_hr": user.get("is_hr", False),
+        "is_qualifier": user.get("is_qualifier", False),
+        "is_delivery_owner": user.get("is_delivery_owner", False),
+        "is_pricing_owner": user.get("is_pricing_owner", False),
+        "is_executive_approver": user.get("is_executive_approver", False),
+        "is_legal": user.get("is_legal", False),
+        "is_engineering_coordinator": user.get("is_engineering_coordinator", False),
+        "is_relationship_owner": user.get("is_relationship_owner", False),
+        "is_invoicing_owner": user.get("is_invoicing_owner", False),
+        "is_prospect_owner": user.get("is_prospect_owner", False),
     }
 
 @api_router.post("/auth/logout")
@@ -2589,6 +2607,11 @@ api_router.include_router(assessments_router)
 from routers.projects import router as projects_router, set_db as set_projects_db
 set_projects_db(db)
 api_router.include_router(projects_router)
+
+# Include THCO Flow router (Project Management System — 12-stage pipeline)
+from routers.flow import router as flow_router, set_db as set_flow_db
+set_flow_db(db)
+api_router.include_router(flow_router)
 
 # Email service DB
 from services import set_db as set_email_db

@@ -43,7 +43,7 @@ import FlowForgeFAB from "./FlowForgeFAB";
 const UNITS = [
   { name: "Talent & Human Capital", slug: "talent", icon: Users, path: "/talent", active: true },
   { name: "THCO HR", slug: "thco-hr", icon: UserCog, path: "/thco-hr", active: true },
-  { name: "Project Management", slug: "project-management", icon: FolderKanban, path: "/project-management", active: true },
+  { name: "THCO Flow", slug: "flow", icon: FolderKanban, path: "/flow", active: true },
   { name: "IT & THCO Tools", slug: "it-tools", icon: Wrench, path: "/it-tools", active: true },
   { name: "Sales & Business Dev", slug: "sales", icon: TrendingUp, path: "/sales", active: true },
   { name: "Marketing & Brand", slug: "marketing", icon: Megaphone, path: "/marketing", active: true },
@@ -106,6 +106,7 @@ const DashboardLayoutInner = ({ children, user }) => {
     }
     if (path === "/thco-hr") return "THCO HR";
     if (path === "/project-management") return "Project Management";
+    if (path.startsWith("/flow")) return "THCO Flow";
     if (path === "/it-tools") return "IT & THCO Tools";
     const unit = UNITS.find(u => path.startsWith(u.path));
     return unit?.name || "Dashboard";
@@ -118,6 +119,7 @@ const DashboardLayoutInner = ({ children, user }) => {
 
   const hasUnitAccess = (slug) => {
     if (user?.role === "super_admin") return true;
+    if (slug === "flow") return true; // THCO Flow is org-wide
     return user?.accessible_units?.includes(slug);
   };
 

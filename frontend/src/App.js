@@ -33,6 +33,19 @@ import THCOHRPage from "./pages/THCOHRPage";
 import ProjectManagement from "./pages/ProjectManagement";
 import ITAndTools from "./pages/ITAndTools";
 
+// THCO Flow — Project Management System (12-stage pipeline)
+import FlowDashboard from "./pages/flow/FlowDashboard";
+import FlowBoard from "./pages/flow/FlowBoard";
+import FlowProjects from "./pages/flow/FlowProjects";
+import FlowNewProject from "./pages/flow/FlowNewProject";
+import FlowProjectDetail from "./pages/flow/FlowProjectDetail";
+import FlowContacts from "./pages/flow/FlowContacts";
+import FlowCalendar from "./pages/flow/FlowCalendar";
+import FlowProspects from "./pages/flow/FlowProspects";
+import FlowTickets from "./pages/flow/FlowTickets";
+import FlowMessages from "./pages/flow/FlowMessages";
+import FlowRolesAdmin from "./pages/flow/FlowRolesAdmin";
+
 // FlowForge Pages
 import FlowForgeChat from "./pages/FlowForgeChat";
 import ApprovalQueue from "./pages/ApprovalQueue";
@@ -391,6 +404,19 @@ const AppRouter = () => {
           <ProjectManagement />
         </ProtectedRoute>
       } />
+
+      {/* THCO Flow — Project Management System (12-stage pipeline) */}
+      <Route path="/flow" element={<ProtectedRoute><FlowDashboard /></ProtectedRoute>} />
+      <Route path="/flow/board" element={<ProtectedRoute><FlowBoard /></ProtectedRoute>} />
+      <Route path="/flow/projects" element={<ProtectedRoute><FlowProjects /></ProtectedRoute>} />
+      <Route path="/flow/projects/new" element={<ProtectedRoute><FlowNewProject /></ProtectedRoute>} />
+      <Route path="/flow/projects/:id" element={<ProtectedRoute><FlowProjectDetail /></ProtectedRoute>} />
+      <Route path="/flow/contacts" element={<ProtectedRoute><FlowContacts /></ProtectedRoute>} />
+      <Route path="/flow/calendar" element={<ProtectedRoute><FlowCalendar /></ProtectedRoute>} />
+      <Route path="/flow/prospects" element={<ProtectedRoute><FlowProspects /></ProtectedRoute>} />
+      <Route path="/flow/tickets" element={<ProtectedRoute><FlowTickets /></ProtectedRoute>} />
+      <Route path="/flow/messages" element={<ProtectedRoute><FlowMessages /></ProtectedRoute>} />
+      <Route path="/flow/admin/roles" element={<ProtectedRoute><FlowRolesAdmin /></ProtectedRoute>} />
       <Route path="/it-tools" element={
         <ProtectedRoute>
           <ITAndTools />

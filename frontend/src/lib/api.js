@@ -545,6 +545,68 @@ export const flowforgeAPI = {
   },
 };
 
+// THCO Flow API (12-stage Project Management System)
+export const flowAPI = {
+  // Projects
+  listProjects: async (params = {}) => (await apiClient.get('/flow/projects', { params })).data,
+  getBoard: async () => (await apiClient.get('/flow/projects/board')).data,
+  getProject: async (id) => (await apiClient.get(`/flow/projects/${id}`)).data,
+  createProject: async (data) => (await apiClient.post('/flow/projects', data)).data,
+  transitionStage: async (id, target_stage, note = '', payload = {}) =>
+    (await apiClient.post(`/flow/projects/${id}/transition`, { target_stage, note, payload })).data,
+  loseProject: async (id, reason) =>
+    (await apiClient.post(`/flow/projects/${id}/lose`, null, { params: { reason } })).data,
+  assignOwner: async (id, delivery_owner_id) =>
+    (await apiClient.post(`/flow/projects/${id}/assign-owner`, { delivery_owner_id })).data,
+
+  // Milestones
+  createMilestone: async (data) => (await apiClient.post('/flow/milestones', data)).data,
+  deliverMilestone: async (id) => (await apiClient.post(`/flow/milestones/${id}/deliver`)).data,
+
+  // Contacts
+  listContacts: async (params = {}) => (await apiClient.get('/flow/contacts', { params })).data,
+  createContact: async (data) => (await apiClient.post('/flow/contacts', data)).data,
+  getContact: async (id) => (await apiClient.get(`/flow/contacts/${id}`)).data,
+  updateContact: async (id, data) => (await apiClient.put(`/flow/contacts/${id}`, data)).data,
+
+  // Events
+  listEvents: async (days = 90) => (await apiClient.get('/flow/events', { params: { days } })).data,
+
+  // Prospects
+  listProspects: async (params = {}) => (await apiClient.get('/flow/prospects', { params })).data,
+  createProspect: async (data) => (await apiClient.post('/flow/prospects', data)).data,
+  updateProspectStatus: async (id, status) =>
+    (await apiClient.post(`/flow/prospects/${id}/status`, { status })).data,
+
+  // Tickets
+  listTickets: async (params = {}) => (await apiClient.get('/flow/tickets', { params })).data,
+  createTicket: async (data) => (await apiClient.post('/flow/tickets', data)).data,
+  updateTicketStatus: async (id, status) =>
+    (await apiClient.post(`/flow/tickets/${id}/status`, { status })).data,
+
+  // Messages
+  listMessages: async (params = {}) => (await apiClient.get('/flow/messages', { params })).data,
+  createMessage: async (data) => (await apiClient.post('/flow/messages', data)).data,
+  messageAction: async (id, action, final_content = null) =>
+    (await apiClient.post(`/flow/messages/${id}/action`, { action, final_content })).data,
+
+  // Questions
+  listQuestions: async (industry) => (await apiClient.get('/flow/questions', { params: industry ? { industry } : {} })).data,
+  addQuestion: async (data) => (await apiClient.post('/flow/questions', data)).data,
+  deleteQuestion: async (id) => (await apiClient.delete(`/flow/questions/${id}`)).data,
+
+  // Audit log
+  listAudit: async (params = {}) => (await apiClient.get('/flow/audit-log', { params })).data,
+
+  // Roles
+  listRoles: async () => (await apiClient.get('/flow/roles')).data,
+  assignRole: async (user_id, flag, value) =>
+    (await apiClient.post('/flow/roles/assign', { user_id, flag, value })).data,
+
+  // Dashboard
+  getDashboard: async () => (await apiClient.get('/flow/dashboard')).data,
+};
+
 // Assessment API (public endpoints - no auth needed)
 export const assessmentAPI = {
   start: async (data) => {
