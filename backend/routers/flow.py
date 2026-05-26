@@ -34,21 +34,21 @@ async def _get_user(request: Request) -> dict:
 # THE 12 STAGES + ROLE MAP
 # ===========================================================================
 STAGES = {
-    1:  {"key": "prospect",                "label": "Prospect",                "role_next": "is_qualifier"},
-    2:  {"key": "qualified_assigned",      "label": "Qualified & Assigned",    "role_next": "is_delivery_owner"},
-    3:  {"key": "discovery_scheduled",     "label": "Discovery Scheduled",     "role_next": "is_delivery_owner"},
-    4:  {"key": "package_building",        "label": "Package Building",        "role_next": "is_delivery_owner"},
-    5:  {"key": "package_sent",            "label": "Package Sent",            "role_next": "is_pricing_owner"},
-    6:  {"key": "proposal_drafted",        "label": "Pricing & Proposal",      "role_next": "is_executive_approver"},
-    7:  {"key": "proposal_approved",       "label": "Approved by Exec",        "role_next": "is_pricing_owner"},
-    8:  {"key": "proposal_sent",           "label": "Sent to Client",          "role_next": "is_delivery_owner"},
-    9:  {"key": "contract_drafting",      "label": "Contract Drafting",       "role_next": "is_legal"},
-    10: {"key": "contract_signed",         "label": "Contract Signed",         "role_next": "is_delivery_owner"},
-    11: {"key": "in_delivery",             "label": "In Delivery",             "role_next": "is_delivery_owner"},
-    12: {"key": "completed",               "label": "Completed",               "role_next": None},
+    1:  {"key": "new_client",          "label": "New Client",              "role_next": "is_qualifier",         "track": "main"},
+    2:  {"key": "coordinator_picked",  "label": "Coordinator Picked",      "role_next": "is_delivery_owner",    "track": "main"},
+    3:  {"key": "meeting_scheduled",   "label": "Meeting Scheduled",       "role_next": "is_delivery_owner",    "track": "main"},
+    4:  {"key": "package_building",    "label": "Package Building",        "role_next": "is_delivery_owner",    "track": "main"},
+    5:  {"key": "send_package",        "label": "Send Package",            "role_next": "is_pricing_owner",     "track": "main"},
+    # SPLIT at 5 → two sibling records: proposal track (6-8) + build track (9-10)
+    6:  {"key": "proposal",            "label": "Proposal",                "role_next": "is_executive_approver","track": "proposal"},
+    7:  {"key": "exec_approval",       "label": "Executive Approval",      "role_next": "is_pricing_owner",     "track": "proposal"},
+    8:  {"key": "proposal_sent",       "label": "Proposal Sent to Client", "role_next": None,                   "track": "proposal"},
+    9:  {"key": "in_build",            "label": "In Build (Engineering)",  "role_next": "is_delivery_owner",    "track": "build"},
+    10: {"key": "completed",           "label": "Completed",               "role_next": None,                   "track": "build"},
 }
-# Lost / declined sub-state of 8
+# Lost / declined sub-state
 LOST_STAGE_KEY = "lost"
+BUILD_STATUS_OPTIONS = ["planning", "building", "blocked", "ready_for_qa"]
 
 FLOW_ROLE_FLAGS = [
     ("is_qualifier",              "Qualifier (intake & triage)"),
@@ -134,7 +134,26 @@ def _serialize_project(p: dict) -> dict:
     p["stage"] = stage
     p["stage_label"] = STAGES.get(stage, {}).get("label", "Unknown")
     p["stage_key"] = STAGES.get(stage, {}).get("key", "unknown")
+    p["track"] = p.get("track") or STAGES.get(stage, {}).get("track", "main")
     return p
+
+
+# Legacy stage migration (old 12-stage → new 10-stage)
+LEGACY_STAGE_MAP = {
+    # old stage -> (new stage, track)
+    1: (1, "main"),   # prospect -> new_client
+    2: (2, "main"),   # qualified_assigned -> coordinator_picked
+    3: (3, "main"),   # discovery_scheduled -> meeting_scheduled
+    4: (4, "main"),   # package_building -> package_building
+    5: (5, "main"),   # package_sent -> send_package
+    6: (6, "proposal"),  # proposal_drafted -> Proposal
+    7: (7, "proposal"),  # proposal_approved -> Exec Approval
+    8: (8, "proposal"),  # proposal_sent -> Proposal Sent
+    9: (9, "build"),     # contract_drafting → REMOVED, fold to In Build
+    10: (9, "build"),    # contract_signed → REMOVED, fold to In Build
+    11: (9, "build"),    # in_delivery -> In Build
+    12: (10, "build"),   # completed -> completed
+}
 
 
 # ===========================================================================
@@ -169,15 +188,22 @@ async def create_project(data: ProjectCreate, request: Request):
         "project_type": data.project_type,
         "source": data.source or "",
         "notes": data.notes or "",
-        # 12-stage state machine
+        # 10-stage state machine (split tracks: main 1-5, proposal 6-8, build 9-10)
         "stage": 1,
-        "status": "prospect",
+        "status": "new_client",
+        "track": "main",
+        "parent_project_id": None,
+        "sibling_project_id": None,
         "stage_history": [{"stage": 1, "at": _now(), "by": user.get("user_id"), "by_name": user.get("name")}],
         # ownership
         "created_by": user.get("user_id"),
         "created_by_name": user.get("name"),
         "delivery_owner_id": None,
         "delivery_owner_name": None,
+        "pricing_owner_id": None,
+        "pricing_owner_name": None,
+        "assigned_engineer_id": None,
+        "assigned_engineer_name": None,
         # docs / data
         "brief_document_url": None,
         "brief_document_name": None,
@@ -200,9 +226,10 @@ async def create_project(data: ProjectCreate, request: Request):
         "completed_at": None,
         "lost_at": None,
         "lost_reason": None,
+        # build-track specifics
+        "build_status": None,   # planning | building | blocked | ready_for_qa
+        "build_comments": [],   # list of {by, by_name, at, text}
         # legacy compat
-        "assigned_engineer_id": None,
-        "assigned_engineer_name": None,
         "current_review_id": None,
     }
     await db.projects.insert_one(project)
@@ -244,28 +271,46 @@ async def list_projects(
 
 @router.get("/projects/board")
 async def board(request: Request):
-    """Kanban board — projects grouped by stage."""
+    """Kanban board — projects grouped by 10 new stages with track migration of legacy data."""
     await _get_user(request)
     cursor = db.projects.find({}, {"_id": 0}).sort("created_at", -1)
     projects = await cursor.to_list(1000)
-    board: Dict[int, List[dict]] = {i: [] for i in range(1, 13)}
+    board: Dict[int, List[dict]] = {i: [] for i in range(1, 11)}
     for p in projects:
         stage = p.get("stage")
+        track = p.get("track")
+        needs_save = False
         if not stage:
-            # Backfill from legacy status if missing
+            # Backfill from old internal status string
             legacy_status_map = {
-                "awaiting_delegation": 4,
-                "delegated": 9,
-                "under_review": 9,
-                "revision_requested": 6,
-                "approved_for_build": 10,
-                "in_build": 11,
-                "completed": 12,
+                "awaiting_delegation": 4, "delegated": 9, "under_review": 9,
+                "revision_requested": 6, "approved_for_build": 9, "in_build": 9, "completed": 10,
+                "prospect": 1, "new_client": 1,
             }
             stage = legacy_status_map.get(p.get("status"), 1)
-            await db.projects.update_one({"id": p["id"]}, {"$set": {"stage": stage}})
-            p["stage"] = stage
-        board[stage].append(_serialize_project(p))
+            needs_save = True
+
+        # If stage is still in the old 12-stage range, remap to new 10-stage
+        if stage in LEGACY_STAGE_MAP and stage > 10:
+            new_stage, new_track = LEGACY_STAGE_MAP[stage]
+            stage = new_stage
+            track = new_track
+            needs_save = True
+        elif stage in LEGACY_STAGE_MAP and not track:
+            track = LEGACY_STAGE_MAP[stage][1]
+            needs_save = True
+
+        if not track:
+            track = STAGES.get(stage, {}).get("track", "main")
+            needs_save = True
+
+        if needs_save:
+            await db.projects.update_one({"id": p["id"]}, {"$set": {"stage": stage, "track": track}})
+        p["stage"] = stage
+        p["track"] = track
+        if 1 <= stage <= 10:
+            board[stage].append(_serialize_project(p))
+
     return {
         "stages": [{"stage": k, **v} for k, v in STAGES.items()],
         "board": board,
@@ -287,7 +332,7 @@ async def get_project(project_id: str, request: Request):
 
 
 class StageTransition(BaseModel):
-    target_stage: int = Field(..., ge=1, le=12)
+    target_stage: int = Field(..., ge=1, le=10)
     note: Optional[str] = None
     payload: Optional[Dict[str, Any]] = None  # arbitrary stage data (pricing, package_url, etc.)
 
@@ -313,31 +358,137 @@ async def transition_stage(project_id: str, data: StageTransition, request: Requ
         "note": data.note or "",
     })
 
+    target = data.target_stage
+    payload = data.payload or {}
     updates: Dict[str, Any] = {
-        "stage": data.target_stage,
-        "status": STAGES[data.target_stage]["key"],
+        "stage": target,
+        "status": STAGES[target]["key"],
+        "track": STAGES[target]["track"],
         "stage_history": history,
     }
-    # Auto-set milestone timestamps
-    if data.target_stage == 10:
-        updates["signed_at"] = now
-    if data.target_stage == 11 and not project.get("start_date"):
-        updates["start_date"] = now
-    if data.target_stage == 12:
-        updates["completed_at"] = now
 
-    # Apply any payload (pricing_data, package_url, proposal_url, contract_url, etc.)
-    if data.payload:
-        for k, v in data.payload.items():
+    # ------- STRUCTURED VALIDATORS at gate stages -------
+    # Gate 1→2: only Delivery Coordinator (is_qualifier) can pick a client, and must assign Delivery Owner
+    if target == 2:
+        if not (user.get("is_qualifier") or user.get("role") == "super_admin"):
+            raise HTTPException(status_code=403, detail="Only the Delivery Coordinator can pick a new client")
+        owner_id = payload.get("delivery_owner_id")
+        if not owner_id:
+            raise HTTPException(status_code=400, detail="delivery_owner_id is required to advance to Stage 2")
+        owner = await db.users.find_one({"user_id": owner_id}, {"_id": 0, "name": 1})
+        if not owner:
+            raise HTTPException(status_code=404, detail="Delivery Owner user not found")
+        updates["delivery_owner_id"] = owner_id
+        updates["delivery_owner_name"] = owner["name"]
+
+    # Gate 4→5: Delivery Owner sets pricing_owner; Delivery Coordinator sets engineer.
+    # Project must end Stage 5 with BOTH pricing_owner_id and assigned_engineer_id set.
+    if target == 5:
+        pricing_owner_id = payload.get("pricing_owner_id") or project.get("pricing_owner_id")
+        engineer_id     = payload.get("engineer_id")      or project.get("assigned_engineer_id")
+        # who is allowed to set what
+        if "pricing_owner_id" in payload and payload["pricing_owner_id"]:
+            if not (user.get("is_delivery_owner") or user.get("is_qualifier") or user.get("role") == "super_admin"):
+                raise HTTPException(status_code=403, detail="Only Delivery Owner or Coordinator can set the Operations Owner")
+            ops = await db.users.find_one({"user_id": payload["pricing_owner_id"]}, {"_id": 0, "name": 1})
+            if not ops:
+                raise HTTPException(status_code=404, detail="Operations Owner user not found")
+            updates["pricing_owner_id"] = payload["pricing_owner_id"]
+            updates["pricing_owner_name"] = ops["name"]
+            pricing_owner_id = payload["pricing_owner_id"]
+        if "engineer_id" in payload and payload["engineer_id"]:
+            if not (user.get("is_qualifier") or user.get("role") == "super_admin"):
+                raise HTTPException(status_code=403, detail="Only the Delivery Coordinator can assign the Engineer")
+            eng = await db.users.find_one({"user_id": payload["engineer_id"]}, {"_id": 0, "name": 1})
+            if not eng:
+                raise HTTPException(status_code=404, detail="Engineer user not found")
+            updates["assigned_engineer_id"] = payload["engineer_id"]
+            updates["assigned_engineer_name"] = eng["name"]
+            engineer_id = payload["engineer_id"]
+        if not pricing_owner_id:
+            raise HTTPException(status_code=400, detail="Operations Owner must be set (Delivery Owner)")
+        if not engineer_id:
+            raise HTTPException(status_code=400, detail="Engineer must be set (Delivery Coordinator)")
+
+    # Auto-set milestone timestamps on the new stage numbers
+    if target == 9 and not project.get("start_date"):
+        updates["start_date"] = now
+        updates["build_status"] = updates.get("build_status") or "planning"
+    if target == 10:
+        updates["completed_at"] = now
+    if target == 8:
+        # Proposal marked as sent
+        updates["proposal_sent_at"] = now
+
+    # Apply remaining payload keys (whitelist write-once doc fields)
+    ALLOWED_PAYLOAD = {"package_url", "pricing_data", "proposal_url", "total_value",
+                       "currency", "brief_document_url", "roadmap_document_url",
+                       "delivery_owner_id", "pricing_owner_id", "engineer_id"}
+    for k, v in payload.items():
+        if k in ALLOWED_PAYLOAD and k not in ("delivery_owner_id", "pricing_owner_id", "engineer_id"):
             updates[k] = v
 
     await db.projects.update_one({"id": project_id}, {"$set": updates})
-    await _audit("project", project_id, f"stage_{data.target_stage}", user, {"note": data.note})
+    await _audit("project", project_id, f"stage_{target}", user, {"note": data.note})
 
     project.update(updates)
-    await _send_stage_email(data.target_stage, project, user)
 
-    return _serialize_project(project)
+    # ------- SPLIT logic at Stage 5 → spawn sibling Proposal + Build records -------
+    siblings = []
+    if target == 5 and not project.get("split_done"):
+        # 1) Proposal sibling at Stage 6 (owner = pricing_owner)
+        proposal_id = str(uuid.uuid4())
+        proposal_doc = {
+            **{k: v for k, v in project.items() if k not in ("id", "_id", "stage_history", "split_done")},
+            "id": proposal_id,
+            "project_id_display": project["project_id_display"] + "-P",
+            "stage": 6,
+            "status": STAGES[6]["key"],
+            "track": "proposal",
+            "parent_project_id": project_id,
+            "sibling_project_id": None,  # set after build created
+            "stage_history": [{"stage": 6, "at": now, "by": user.get("user_id"),
+                               "by_name": user.get("name"), "note": "Auto-spawned from Stage 5 split"}],
+            "created_at": now,
+        }
+        # 2) Build sibling at Stage 9 (owner = delivery_owner, engineer assigned)
+        build_id = str(uuid.uuid4())
+        build_doc = {
+            **{k: v for k, v in project.items() if k not in ("id", "_id", "stage_history", "split_done")},
+            "id": build_id,
+            "project_id_display": project["project_id_display"] + "-B",
+            "stage": 9,
+            "status": STAGES[9]["key"],
+            "track": "build",
+            "parent_project_id": project_id,
+            "sibling_project_id": proposal_id,
+            "stage_history": [{"stage": 9, "at": now, "by": user.get("user_id"),
+                               "by_name": user.get("name"), "note": "Auto-spawned from Stage 5 split"}],
+            "created_at": now,
+            "start_date": now,
+            "build_status": "planning",
+            "build_comments": [],
+        }
+        proposal_doc["sibling_project_id"] = build_id
+        await db.projects.insert_one(proposal_doc)
+        await db.projects.insert_one(build_doc)
+        await db.projects.update_one({"id": project_id}, {"$set": {"split_done": True,
+                                                                    "sibling_project_id": proposal_id}})
+        await _audit("project", project_id, "split", user, {"proposal_id": proposal_id, "build_id": build_id})
+
+        # Email both tracks' next-stage roles
+        await _send_stage_email(6, proposal_doc, user)
+        await _send_stage_email(9, build_doc, user)
+
+        siblings = [{"id": proposal_id, "track": "proposal"}, {"id": build_id, "track": "build"}]
+    else:
+        await _send_stage_email(target, project, user)
+
+    result = _serialize_project(project)
+    if siblings:
+        result["siblings"] = siblings
+        result["split_done"] = True
+    return result
 
 
 @router.post("/projects/{project_id}/lose")
@@ -375,6 +526,64 @@ async def assign_owner(project_id: str, data: AssignOwner, request: Request):
     }})
     await _audit("project", project_id, "owner_assigned", user, {"owner": owner["name"]})
     return {"message": "Delivery owner assigned", "owner_name": owner["name"]}
+
+
+# ===========================================================================
+# BUILD TRACK — status + comment thread + daily standup
+# ===========================================================================
+class BuildUpdate(BaseModel):
+    status: Optional[str] = None      # planning | building | blocked | ready_for_qa
+    comment: Optional[str] = None     # free text comment to append to thread
+
+
+@router.post("/projects/{project_id}/build-update")
+async def build_update(project_id: str, data: BuildUpdate, request: Request):
+    """Engineer or Delivery Owner posts a build status / comment.
+    Status options: planning, building, blocked, ready_for_qa.
+    """
+    user = await _get_user(request)
+    project = await db.projects.find_one({"id": project_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if project.get("track") != "build":
+        raise HTTPException(status_code=400, detail="Build updates only allowed on build-track projects")
+
+    now = _now()
+    updates: Dict[str, Any] = {}
+
+    if data.status:
+        if data.status not in BUILD_STATUS_OPTIONS:
+            raise HTTPException(status_code=400, detail=f"status must be one of {BUILD_STATUS_OPTIONS}")
+        updates["build_status"] = data.status
+
+    if data.comment:
+        comments = project.get("build_comments", [])
+        comments.append({
+            "by": user.get("user_id"),
+            "by_name": user.get("name"),
+            "at": now,
+            "text": data.comment,
+        })
+        updates["build_comments"] = comments
+
+    if not updates:
+        raise HTTPException(status_code=400, detail="Provide status and/or comment")
+
+    await db.projects.update_one({"id": project_id}, {"$set": updates})
+    await _audit("project", project_id, "build_update", user, {"status": data.status, "has_comment": bool(data.comment)})
+    return {"message": "Build update saved", **updates}
+
+
+@router.get("/projects/{project_id}/build-comments")
+async def list_build_comments(project_id: str, request: Request):
+    await _get_user(request)
+    project = await db.projects.find_one({"id": project_id}, {"_id": 0, "build_comments": 1, "build_status": 1})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return {
+        "build_status": project.get("build_status"),
+        "build_comments": project.get("build_comments", []),
+    }
 
 
 # ===========================================================================
@@ -835,6 +1044,20 @@ async def list_audit(
 # ===========================================================================
 # ROLE ASSIGNMENT (admin UI for assigning users to flow roles)
 # ===========================================================================
+@router.get("/users-by-role/{flag}")
+async def users_by_role(flag: str, request: Request):
+    """List active users holding a given flow role flag (for assignment dropdowns)."""
+    await _get_user(request)
+    valid = {f for f, _ in FLOW_ROLE_FLAGS}
+    if flag not in valid:
+        raise HTTPException(status_code=400, detail="Invalid role flag")
+    users = await db.users.find(
+        {flag: True, "status": "active"},
+        {"_id": 0, "user_id": 1, "name": 1, "email": 1}
+    ).to_list(100)
+    return users
+
+
 @router.get("/roles")
 async def list_flow_roles(request: Request):
     """Return all flow role flags with assigned users."""
@@ -881,24 +1104,32 @@ async def my_dashboard(request: Request):
     user = await _get_user(request)
     user_id = user.get("user_id")
 
-    # Common: active projects where I am delivery owner or creator
+    # Common: active projects where I am delivery owner or creator (not completed)
     my_active = await db.projects.count_documents({
-        "$or": [{"delivery_owner_id": user_id}, {"created_by": user_id}],
-        "stage": {"$lt": 12},
+        "$or": [{"delivery_owner_id": user_id}, {"created_by": user_id}, {"assigned_engineer_id": user_id}, {"pricing_owner_id": user_id}],
+        "stage": {"$lt": 10},
     })
 
     pipeline_counts: Dict[int, int] = {}
     async for doc in db.projects.aggregate([{"$group": {"_id": "$stage", "count": {"$sum": 1}}}]):
         pipeline_counts[doc["_id"] or 1] = doc["count"]
 
-    # Approval queue (Stage 6 -> awaiting executive approver)
-    approval_queue = await db.projects.count_documents({"stage": 6})
+    # Approval queue (Stage 7 → awaiting Executive Approver)
+    approval_queue = await db.projects.count_documents({"stage": 7})
 
-    # Pending proposals (Stage 5 -> awaiting pricing owner)
-    pending_proposals = await db.projects.count_documents({"stage": 5})
+    # Pending proposals (Stage 6 → awaiting pricing owner / ops to write proposal)
+    pending_proposals = await db.projects.count_documents({"stage": 6})
 
-    # Pending contracts (Stage 9)
-    pending_contracts = await db.projects.count_documents({"stage": 9})
+    # In Build (Stage 9)
+    in_build_count = await db.projects.count_documents({"stage": 9})
+
+    # Build statuses for engineer dashboard
+    build_status_counts: Dict[str, int] = {}
+    async for doc in db.projects.aggregate([
+        {"$match": {"track": "build", "build_status": {"$ne": None}}},
+        {"$group": {"_id": "$build_status", "count": {"$sum": 1}}}
+    ]):
+        build_status_counts[doc["_id"]] = doc["count"]
 
     # Upcoming events (7 days)
     events = await list_events(request, days=7)
@@ -922,7 +1153,8 @@ async def my_dashboard(request: Request):
         "pipeline_counts": pipeline_counts,
         "approval_queue": approval_queue,
         "pending_proposals": pending_proposals,
-        "pending_contracts": pending_contracts,
+        "in_build_count": in_build_count,
+        "build_status_counts": build_status_counts,
         "upcoming_events_7d": len(events),
         "events": events[:10],
         "overdue_invoices": overdue_invoices,

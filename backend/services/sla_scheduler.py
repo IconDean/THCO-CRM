@@ -212,9 +212,76 @@ async def daily_standup_sweep():
                 await _send_template_email(standup_missed_2days, ctx, [escalation_email], cc=cc)
 
 
+async def flow_build_eod_reminder():
+    """End-of-day reminder for engineers on THCO Flow build-track projects.
+    Sends a Resend email to engineers who have no build_comments logged today
+    on projects where they are the assigned_engineer_id and stage == 9.
+    Sends only once per (engineer, project, day).
+    """
+    if not db:
+        return
+    from services import send_email
+    from services.email_templates import _base
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    cursor = db.projects.find({
+        "track": "build",
+        "stage": 9,
+        "assigned_engineer_id": {"$ne": None},
+    }, {"_id": 0})
+    projects = await cursor.to_list(500)
+
+    for project in projects:
+        engineer_id = project.get("assigned_engineer_id")
+        if not engineer_id:
+            continue
+        engineer = await db.users.find_one({"user_id": engineer_id}, {"_id": 0, "email": 1, "name": 1})
+        if not engineer:
+            continue
+
+        # Has the engineer commented today on this project?
+        comments = project.get("build_comments", [])
+        commented_today = any(
+            (c.get("by") == engineer_id and (c.get("at", "")[:10] == today_str))
+            for c in comments
+        )
+        if commented_today:
+            continue
+
+        # Have we already sent the reminder today?
+        already = await db.email_logs.find_one({
+            "template_name": "flow_build_eod_reminder",
+            "context.project_id": project["id"],
+            "context.engineer_id": engineer_id,
+            "sent_at": {"$gte": today_str},
+        })
+        if already:
+            continue
+
+        subject = f"[THCO Flow] EOD update needed: {project.get('name')}"
+        body = f"""
+          <h2 style="margin:0 0 16px;color:#1B4332;font-size:20px;">End-of-day build update needed</h2>
+          <p>Hi {engineer.get('name','')},</p>
+          <p>You haven't logged an update today on
+          <strong>{project.get('name')}</strong> ({project.get('client_name_snapshot')}).</p>
+          <p>Please drop a quick status (Planning / Building / Blocked / Ready for QA)
+          and a one-line comment so the Delivery Owner knows where you are.</p>
+        """
+        html = _base(subject, body, cta_url=f"/flow/projects/{project['id']}", cta_text="Post update")
+        await send_email(
+            to=[engineer["email"]],
+            subject=subject,
+            html=html,
+            template_name="flow_build_eod_reminder",
+            context={"project_id": project["id"], "engineer_id": engineer_id},
+        )
+
+
 def start_scheduler():
-    """Start the APScheduler with SLA and standup jobs."""
+    """Start the APScheduler with SLA, standup, and Flow EOD jobs."""
     scheduler.add_job(sla_reminder_sweep, "interval", minutes=5, id="sla_sweep", replace_existing=True)
     scheduler.add_job(daily_standup_sweep, "interval", hours=1, id="standup_sweep", replace_existing=True)
+    # Flow EOD reminder: run every hour after 17:00 UTC (covers global teams)
+    scheduler.add_job(flow_build_eod_reminder, "cron", hour="17-22", minute=0, id="flow_eod", replace_existing=True)
     scheduler.start()
-    logger.info("SLA Scheduler started: sla_sweep (5min), standup_sweep (1hr)")
+    logger.info("SLA Scheduler started: sla_sweep (5min), standup_sweep (1hr), flow_eod (cron 17-22h)")

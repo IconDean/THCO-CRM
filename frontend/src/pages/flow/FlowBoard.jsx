@@ -3,14 +3,9 @@ import { Link } from "react-router-dom";
 import FlowShell from "./FlowShell";
 import { flowAPI } from "../../lib/api";
 import { Button } from "../../components/ui/button";
-import { Loader2, Plus, Building2 } from "lucide-react";
+import { Loader2, Plus, Building2, GitBranch } from "lucide-react";
 import { toast } from "sonner";
-
-const STAGE_COLORS = {
-  1: "border-gray-300", 2: "border-blue-300", 3: "border-blue-400", 4: "border-cyan-400",
-  5: "border-indigo-400", 6: "border-amber-400", 7: "border-amber-500", 8: "border-orange-400",
-  9: "border-purple-400", 10: "border-green-400", 11: "border-emerald-500", 12: "border-gray-400",
-};
+import { STAGES, STAGE_BORDER } from "./stages";
 
 export default function FlowBoard() {
   const [data, setData] = useState(null);
@@ -34,6 +29,11 @@ export default function FlowBoard() {
   };
 
   const onDragOver = (e, stage) => {
+    if (!dragging) return;
+    // Track boundaries: card can only land in its own track or main
+    const fromTrack = dragging.project.track || STAGES[dragging.fromStage]?.track;
+    const toTrack = STAGES[stage]?.track;
+    if (fromTrack !== "main" && fromTrack !== toTrack) return; // disallow
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     if (hoverStage !== stage) setHoverStage(stage);
@@ -49,11 +49,25 @@ export default function FlowBoard() {
     setDragging(null);
     if (fromStage === targetStage) return;
 
+    const fromTrack = project.track || STAGES[fromStage]?.track;
+    const toTrack = STAGES[targetStage]?.track;
+    if (fromTrack !== "main" && fromTrack !== toTrack) {
+      toast.error("Cards can only move within their own track");
+      return;
+    }
+
+    // Stages with required structured input — open the detail page modal instead
+    if (targetStage === 2 || targetStage === 5) {
+      toast.info(`Stage ${targetStage} requires structured input — opening project…`);
+      window.location.href = `/flow/projects/${project.id}`;
+      return;
+    }
+
     // Optimistic update
     setData(prev => {
       const board = { ...prev.board };
       board[fromStage] = (board[fromStage] || []).filter(p => p.id !== project.id);
-      const updated = { ...project, stage: targetStage };
+      const updated = { ...project, stage: targetStage, track: toTrack };
       board[targetStage] = [updated, ...(board[targetStage] || [])];
       return { ...prev, board };
     });
@@ -62,10 +76,10 @@ export default function FlowBoard() {
     try {
       await flowAPI.transitionStage(project.id, targetStage, "Moved via Kanban drag-drop");
       toast.success(`Moved to Stage ${targetStage}`);
-      load(); // re-sync stage_history + audit
+      load();
     } catch (err) {
       toast.error(err.response?.data?.detail || "Move failed — reverting");
-      load(); // revert from server
+      load();
     } finally { setMoving(false); }
   };
 
@@ -86,7 +100,17 @@ export default function FlowBoard() {
         </Link>
       }
     >
-      <p className="text-xs text-gray-400 mb-3">Drag a card to a different column to advance or revert its stage. Stage transitions trigger automated emails to the role next-in-line.</p>
+      <p className="text-xs text-gray-400 mb-3">
+        Drag cards to advance/revert stages. Stage 2 & 5 require structured input — clicking them opens the project detail.
+        After Stage 5 a project SPLITS into a Proposal record (6–8) and a Build record (9–10).
+      </p>
+
+      {/* Track legend */}
+      <div className="flex gap-3 mb-4 text-[11px]">
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-gray-300"></span>Main (1–5)</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-indigo-400"></span>Proposal (6–8)</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-emerald-500"></span>Build (9–10)</span>
+      </div>
 
       <div className="overflow-x-auto pb-2" data-testid="kanban-board">
         <div className="flex gap-3 min-w-min">
@@ -99,14 +123,14 @@ export default function FlowBoard() {
                 onDragOver={(e) => onDragOver(e, s.stage)}
                 onDragLeave={onDragLeave}
                 onDrop={(e) => onDrop(e, s.stage)}
-                className={`min-w-[260px] w-[260px] bg-gray-50 rounded-xl border-t-4 ${STAGE_COLORS[s.stage]} p-3 transition ${
+                className={`min-w-[260px] w-[260px] bg-gray-50 rounded-xl border-t-4 ${STAGE_BORDER[s.stage]} p-3 transition ${
                   isHover ? "ring-2 ring-[#1B4332] bg-[#1B4332]/5" : ""
                 }`}
                 data-testid={`column-stage-${s.stage}`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-[10px] font-mono text-gray-400">STAGE {s.stage}</p>
+                    <p className="text-[10px] font-mono text-gray-400">STAGE {s.stage} · {s.track.toUpperCase()}</p>
                     <h3 className="text-sm font-semibold text-gray-900">{s.label}</h3>
                   </div>
                   <span className="text-xs bg-white px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 font-medium">
@@ -124,7 +148,7 @@ export default function FlowBoard() {
                       }`}
                       data-testid={`card-${c.id}`}
                     >
-                      <Link to={`/flow/projects/${c.id}`} onClick={(e) => e.stopPropagation()} className="block">
+                      <Link to={`/flow/projects/${c.id}`} className="block">
                         <p className="text-sm font-medium text-gray-900 line-clamp-2">{c.name}</p>
                         <div className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-500">
                           <Building2 className="w-3 h-3" />
@@ -135,6 +159,9 @@ export default function FlowBoard() {
                         )}
                         {c.delivery_owner_name && (
                           <p className="text-[10px] text-gray-500 mt-1">Owner: <span className="font-medium">{c.delivery_owner_name}</span></p>
+                        )}
+                        {c.parent_project_id && (
+                          <p className="text-[10px] text-amber-700 mt-1 flex items-center gap-1"><GitBranch className="w-2.5 h-2.5" />split from parent</p>
                         )}
                       </Link>
                     </div>

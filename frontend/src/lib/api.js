@@ -559,6 +559,16 @@ export const flowAPI = {
   assignOwner: async (id, delivery_owner_id) =>
     (await apiClient.post(`/flow/projects/${id}/assign-owner`, { delivery_owner_id })).data,
 
+  // Build track (status indicator + comment thread)
+  buildUpdate: async (id, status, comment) =>
+    (await apiClient.post(`/flow/projects/${id}/build-update`, { status, comment })).data,
+  buildComments: async (id) =>
+    (await apiClient.get(`/flow/projects/${id}/build-comments`)).data,
+
+  // Users by role flag (for assignment dropdowns)
+  usersByRole: async (flag) =>
+    (await apiClient.get(`/flow/users-by-role/${flag}`)).data,
+
   // Milestones
   createMilestone: async (data) => (await apiClient.post('/flow/milestones', data)).data,
   deliverMilestone: async (id) => (await apiClient.post(`/flow/milestones/${id}/deliver`)).data,

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FlowShell from "./FlowShell";
 import { flowAPI } from "../../lib/api";
-import { Briefcase, ClipboardCheck, FileText, Scale, Calendar, AlertCircle, Target, Ticket, Loader2 } from "lucide-react";
+import { Briefcase, ClipboardCheck, FileText, Hammer, Calendar, AlertCircle, Target, Ticket, Loader2 } from "lucide-react";
+import { STAGES, BUILD_STATUS_LABELS } from "./stages";
 
 const StatCard = ({ icon: Icon, label, value, color, link, testId }) => {
   const inner = (
@@ -37,19 +38,20 @@ export default function FlowDashboard() {
   }
 
   const pipeline = data.pipeline_counts || {};
-  const stages = data.stages_meta || {};
+  const stages = data.stages_meta || STAGES;
+  const buildStatuses = data.build_status_counts || {};
 
   return (
     <FlowShell title="Dashboard">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard testId="stat-active" icon={Briefcase} label="My active projects" value={data.my_active_projects} color="bg-[#1B4332]" link="/flow/projects" />
-        <StatCard testId="stat-approval" icon={ClipboardCheck} label="Awaiting executive approval" value={data.approval_queue} color="bg-amber-500" link="/flow/projects?stage=6" />
-        <StatCard testId="stat-proposals" icon={FileText} label="Pending proposals" value={data.pending_proposals} color="bg-indigo-600" link="/flow/projects?stage=5" />
-        <StatCard testId="stat-contracts" icon={Scale} label="Pending contracts" value={data.pending_contracts} color="bg-purple-600" link="/flow/projects?stage=9" />
+        <StatCard testId="stat-approval" icon={ClipboardCheck} label="Awaiting executive approval" value={data.approval_queue} color="bg-amber-500" link="/flow/projects?stage=7" />
+        <StatCard testId="stat-proposals" icon={FileText} label="Pending proposals" value={data.pending_proposals} color="bg-indigo-600" link="/flow/projects?stage=6" />
+        <StatCard testId="stat-build" icon={Hammer} label="In Build" value={data.in_build_count} color="bg-emerald-600" link="/flow/projects?stage=9" />
         <StatCard testId="stat-events" icon={Calendar} label="Events next 7 days" value={data.upcoming_events_7d} color="bg-pink-500" link="/flow/calendar" />
         <StatCard testId="stat-invoices" icon={AlertCircle} label="Overdue invoices" value={data.overdue_invoices} color="bg-red-500" />
         <StatCard testId="stat-tickets" icon={Ticket} label="My tickets" value={data.my_tickets} color="bg-cyan-600" link="/flow/tickets" />
-        <StatCard testId="stat-prospects" icon={Target} label="Prospects total" value={Object.values(data.prospect_counts || {}).reduce((a, b) => a + b, 0)} color="bg-emerald-600" link="/flow/prospects" />
+        <StatCard testId="stat-prospects" icon={Target} label="Prospects total" value={Object.values(data.prospect_counts || {}).reduce((a, b) => a + b, 0)} color="bg-purple-600" link="/flow/prospects" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
