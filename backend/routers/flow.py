@@ -92,6 +92,39 @@ async def _users_with_flag(flag: str) -> List[dict]:
     return await cursor.to_list(100)
 
 
+# ---------------------------------------------------------------------------
+# PII access control — client contact email/phone/whatsapp restricted to:
+#   • super_admin                       ("Myself" — Joshua / Executive Approver)
+#   • is_executive_approver
+#   • is_delivery_coordinator           ("Project Coordinator")
+#   • is_delivery_owner                 ("Delivery Owner")
+# Everyone else sees REDACTED placeholder.
+# ---------------------------------------------------------------------------
+PII_FIELDS = ("email", "phone", "whatsapp", "spouse_birthday", "spouse_name")
+PII_REDACT = "•••• restricted ••••"
+
+
+def _can_view_contact_pii(user: dict) -> bool:
+    return (
+        user.get("role") == "super_admin"
+        or user.get("is_executive_approver")
+        or user.get("is_delivery_coordinator")
+        or user.get("is_delivery_owner")
+    )
+
+
+def _redact_contact(contact: dict, user: dict) -> dict:
+    if _can_view_contact_pii(user):
+        contact["_pii_visible"] = True
+        return contact
+    redacted = dict(contact)
+    for f in PII_FIELDS:
+        if redacted.get(f):
+            redacted[f] = PII_REDACT
+    redacted["_pii_visible"] = False
+    return redacted
+
+
 async def _send_stage_email(stage: int, project: dict, actor: dict):
     """Send Resend email to users matching the role for the NEXT stage's role_next."""
     from services import send_email
@@ -537,7 +570,7 @@ async def assign_owner(project_id: str, data: AssignOwner, request: Request):
 @router.get("/projects/{project_id}/contacts")
 async def project_contacts(project_id: str, request: Request):
     """Return all contacts attached to the project's client, plus events."""
-    await _get_user(request)
+    user = await _get_user(request)
     project = await db.projects.find_one({"id": project_id}, {"_id": 0, "client_id": 1, "client_name_snapshot": 1})
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -565,8 +598,9 @@ async def project_contacts(project_id: str, request: Request):
 
     return {
         "client_name": client_name,
-        "contacts": contacts,
+        "contacts": [_redact_contact(c, user) for c in contacts],
         "events": events,
+        "pii_visible": _can_view_contact_pii(user),
     }
 
 
@@ -692,7 +726,7 @@ class ContactCreate(BaseModel):
 
 @router.get("/contacts")
 async def list_contacts(request: Request, client_id: Optional[str] = None, q: Optional[str] = None):
-    await _get_user(request)
+    user = await _get_user(request)
     query: Dict[str, Any] = {}
     if client_id:
         query["client_id"] = client_id
@@ -702,7 +736,8 @@ async def list_contacts(request: Request, client_id: Optional[str] = None, q: Op
             {"email": {"$regex": q, "$options": "i"}},
         ]
     cursor = db.contacts.find(query, {"_id": 0}).sort("full_name", 1)
-    return await cursor.to_list(500)
+    contacts = await cursor.to_list(500)
+    return [_redact_contact(c, user) for c in contacts]
 
 
 @router.post("/contacts")
@@ -737,11 +772,11 @@ async def create_contact(data: ContactCreate, request: Request):
 
 @router.get("/contacts/{contact_id}")
 async def get_contact(contact_id: str, request: Request):
-    await _get_user(request)
+    user = await _get_user(request)
     contact = await db.contacts.find_one({"contact_id": contact_id}, {"_id": 0})
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
-    return contact
+    return _redact_contact(contact, user)
 
 
 @router.put("/contacts/{contact_id}")
