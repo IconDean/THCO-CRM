@@ -57,7 +57,6 @@ FLOW_ROLE_FLAGS = [
     ("is_executive_approver",     "Executive Approver"),
     ("is_engineer",               "Engineer"),
     ("is_relationship_owner",     "Relationship Owner (touch plan)"),
-    ("is_invoicing_owner",        "Invoicing Owner"),
     ("is_prospect_owner",         "Prospect / Outbound Owner"),
 ]
 
