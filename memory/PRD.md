@@ -90,12 +90,44 @@ awaiting_delegation → delegated → under_review → revision_requested → ap
 5. At /admin/users, flag users: is_engineer, is_fulfillment, is_hr
 6. Test end-to-end flow with sample project
 
+## THCO Flow — Project Management System (NEW — May 2026)
+
+End-to-end 12-stage pipeline from Prospect → Completed, replacing the "Project Management" sidebar entry. Coexists with the older Project Delivery Workflow; legacy projects auto-backfill into the new stage system.
+
+**12 Stages:**
+1. Prospect → 2. Qualified & Assigned → 3. Discovery Scheduled → 4. Package Building → 5. Package Sent → 6. Pricing & Proposal → 7. Approved by Exec → 8. Sent to Client → 9. Contract Drafting → 10. Contract Signed → 11. In Delivery → 12. Completed (with `lost` sub-state).
+
+**Role-based routing** (9 new user flags): `is_qualifier`, `is_delivery_owner`, `is_pricing_owner`, `is_executive_approver`, `is_legal`, `is_engineering_coordinator`, `is_relationship_owner`, `is_invoicing_owner`, `is_prospect_owner`. Each stage transition emails the users holding the next-stage role.
+
+**New collections:** projects (extended), milestones, contacts, events, prospects, tickets, messages, audit_log, question_library.
+
+**New API:** `/api/flow/*` — 30+ endpoints in `/app/backend/routers/flow.py`.
+
+**New frontend pages** (`/flow/*`):
+- `/flow` Dashboard (role-aware KPIs + pipeline chart + upcoming events)
+- `/flow/board` Kanban (12 columns)
+- `/flow/projects` list + filters
+- `/flow/projects/new` create at Stage 1
+- `/flow/projects/:id` detail + 12-stage progression + history + milestones + tickets
+- `/flow/contacts` directory (strength tiers, birthdays auto-create events)
+- `/flow/calendar` upcoming events (7/30/90 days)
+- `/flow/prospects` Kanban (researched → handed_off creates a project)
+- `/flow/tickets` Kanban (queued → shipped)
+- `/flow/messages` draft / approve / send (Phase B: actual WhatsApp/Email)
+- `/flow/admin/roles` admin-only role assignment
+
+**Testing:** Iteration 29 — 17/17 backend tests + 12/12 frontend flows PASS. Security: role-assignment endpoint + admin page gated to super_admin/HR.
+
+**Phase B (deferred):** LLM proposal generation (Module 3 finish), contract e-signature (Module 4), WhatsApp/Email actual send, Stripe invoicing, engineering peer-review checklist.
+
 ## Upcoming Tasks (Priority Order)
+- **THCO Flow Phase B**: LLM proposal generation, contract e-signature, WhatsApp/Email send, Stripe invoicing
 - P2: Stable PDF download for proposals
 - P2: User-facing PDF download button on Realloc & Procure AI presentations
 - P2: FlowForge Phase 5 (Polish/White-Label) and Phase 6 (Rollout/Monitoring)
 - P2 (UX nit): Dedupe `clientDocs` by name in NewProjectForm so re-selecting same file doesn't append duplicates
 - P2 (copy nit): Either change "100MB" copy to clarify per-file vs. total, or sum sizes server-side
+- P2 (Flow polish): Move `_send_stage_email` to BackgroundTask; whitelist transition payload keys; contiguous-stage guard; sequential `project_id_display` counter; pagination on list endpoints; split flow.py into per-domain modules
 
 ## Future/Backlog
 - P2: FlowForge Phase 5 & 6

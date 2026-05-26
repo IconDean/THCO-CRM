@@ -858,6 +858,9 @@ class RoleAssign(BaseModel):
 @router.post("/roles/assign")
 async def assign_flow_role(data: RoleAssign, request: Request):
     user = await _get_user(request)
+    # Admin guard — only super_admin or HR can assign flow roles
+    if not (user.get("role") == "super_admin" or user.get("is_hr")):
+        raise HTTPException(status_code=403, detail="Only admins or HR can assign flow roles")
     valid_flags = [f for f, _ in FLOW_ROLE_FLAGS]
     if data.flag not in valid_flags:
         raise HTTPException(status_code=400, detail="Invalid role flag")

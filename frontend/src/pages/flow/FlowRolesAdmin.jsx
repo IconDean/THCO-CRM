@@ -1,26 +1,36 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FlowShell from "./FlowShell";
-import { flowAPI, usersAPI } from "../../lib/api";
+import { flowAPI, usersAPI, authAPI } from "../../lib/api";
 import { Button } from "../../components/ui/button";
 import { Loader2, Check, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 export default function FlowRolesAdmin() {
+  const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openRole, setOpenRole] = useState(null);
+  const [authorized, setAuthorized] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
+      const me = await authAPI.getMe();
+      if (!(me.role === "super_admin" || me.is_hr)) {
+        toast.error("Only admins or HR can manage flow roles");
+        navigate("/flow");
+        return;
+      }
+      setAuthorized(true);
       const [r, u] = await Promise.all([flowAPI.listRoles(), usersAPI.getAll()]);
       setRoles(r);
       setUsers(u);
     } catch (e) { toast.error("Failed to load"); }
     finally { setLoading(false); }
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
 
   const toggle = async (user_id, flag, value) => {
     try { await flowAPI.assignRole(user_id, flag, value); toast.success("Updated"); load(); }
@@ -29,6 +39,8 @@ export default function FlowRolesAdmin() {
 
   return (
     <FlowShell title="Flow role assignments">
+      {!authorized ? null : (
+      <>
       <p className="text-sm text-gray-500 mb-4">
         Map workflow stages to people. The system sends automated emails when a project enters a stage requiring action.
       </p>
@@ -90,6 +102,8 @@ export default function FlowRolesAdmin() {
             </div>
           </div>
         </div>
+      )}
+      </>
       )}
     </FlowShell>
   );
