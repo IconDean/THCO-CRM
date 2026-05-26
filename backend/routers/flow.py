@@ -13,7 +13,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 
 router = APIRouter(prefix="/flow", tags=["flow"])
@@ -569,7 +569,7 @@ async def assign_owner(project_id: str, data: AssignOwner, request: Request):
 # ===========================================================================
 @router.get("/projects/{project_id}/contacts")
 async def project_contacts(project_id: str, request: Request):
-    """Return all contacts attached to the project's client, plus events."""
+    """Return all contacts attached to the project's client, plus events + upcoming birthdays."""
     user = await _get_user(request)
     project = await db.projects.find_one({"id": project_id}, {"_id": 0, "client_id": 1, "client_name_snapshot": 1})
     if not project:
@@ -589,7 +589,48 @@ async def project_contacts(project_id: str, request: Request):
         cursor = db.contacts.find({"$or": or_conditions}, {"_id": 0}).sort("full_name", 1)
         contacts = await cursor.to_list(200)
 
-    # Pull upcoming events for these contacts
+    # Compute upcoming birthdays in the next 14 days from contact.birthday + spouse_birthday + work_anniversary
+    today = datetime.now(timezone.utc).date()
+    upcoming = []
+    for c in contacts:
+        for field, kind in (("birthday", "birthday"),
+                            ("work_anniversary", "work_anniversary"),
+                            ("spouse_birthday", "spouse_birthday")):
+            ds = c.get(field) or ""
+            if not ds:
+                continue
+            try:
+                parts = ds.split("-")
+                if len(parts) == 2:
+                    day, month = int(parts[0]), int(parts[1])
+                elif len(parts) == 3:
+                    day, month = int(parts[2]), int(parts[1])
+                else:
+                    continue
+                try:
+                    nxt = today.replace(year=today.year, month=month, day=day)
+                except ValueError:
+                    continue
+                if nxt < today:
+                    nxt = nxt.replace(year=today.year + 1)
+                delta = (nxt - today).days
+                if delta <= 14:
+                    label = c["full_name"] if kind == "birthday" else (
+                        f"{c.get('spouse_name','Spouse')} (spouse of {c['full_name']})" if kind == "spouse_birthday"
+                        else f"{c['full_name']} — work anniversary"
+                    )
+                    upcoming.append({
+                        "contact_id": c["contact_id"],
+                        "label": label,
+                        "kind": kind,
+                        "days_until": delta,
+                        "date": nxt.isoformat(),
+                    })
+            except Exception:
+                continue
+    upcoming.sort(key=lambda x: x["days_until"])
+
+    # Pull stored upcoming events for these contacts too
     contact_ids = [c["contact_id"] for c in contacts]
     events = []
     if contact_ids:
@@ -600,7 +641,53 @@ async def project_contacts(project_id: str, request: Request):
         "client_name": client_name,
         "contacts": [_redact_contact(c, user) for c in contacts],
         "events": events,
+        "upcoming_birthdays": upcoming,
         "pii_visible": _can_view_contact_pii(user),
+    }
+
+
+@router.get("/dashboard/email-health")
+async def email_health(request: Request):
+    """Email send health snapshot — today's count, failures, top templates."""
+    await _get_user(request)
+    today_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    week_ago_iso = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+
+    sent_today = await db.email_logs.count_documents({
+        "sent_at": {"$gte": today_iso},
+        "status": "sent",
+    })
+    failed_today = await db.email_logs.count_documents({
+        "sent_at": {"$gte": today_iso},
+        "status": {"$ne": "sent"},
+    })
+    total_week = await db.email_logs.count_documents({"sent_at": {"$gte": week_ago_iso}})
+
+    # Top templates fired this week
+    pipeline = [
+        {"$match": {"sent_at": {"$gte": week_ago_iso}}},
+        {"$group": {"_id": "$template_name", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 5},
+    ]
+    top_templates = []
+    async for doc in db.email_logs.aggregate(pipeline):
+        top_templates.append({"template": doc["_id"] or "unknown", "count": doc["count"]})
+
+    # Recent failures (last 5)
+    recent_failures = []
+    async for doc in db.email_logs.find(
+        {"status": {"$ne": "sent"}},
+        {"_id": 0, "to": 1, "subject": 1, "status": 1, "error": 1, "sent_at": 1, "template_name": 1},
+    ).sort("sent_at", -1).limit(5):
+        recent_failures.append(doc)
+
+    return {
+        "sent_today": sent_today,
+        "failed_today": failed_today,
+        "total_week": total_week,
+        "top_templates": top_templates,
+        "recent_failures": recent_failures,
     }
 
 

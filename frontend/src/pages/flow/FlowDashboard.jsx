@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FlowShell from "./FlowShell";
 import { flowAPI } from "../../lib/api";
-import { Briefcase, ClipboardCheck, FileText, Hammer, Calendar, AlertCircle, Target, Ticket, Loader2 } from "lucide-react";
+import { Briefcase, ClipboardCheck, FileText, Hammer, Calendar, AlertCircle, Target, Ticket, Loader2, Mail } from "lucide-react";
 import { STAGES, BUILD_STATUS_LABELS } from "./stages";
 
 const StatCard = ({ icon: Icon, label, value, color, link, testId }) => {
@@ -110,6 +110,78 @@ export default function FlowDashboard() {
           )}
         </div>
       </div>
+
+      <EmailHealthCard />
     </FlowShell>
   );
 }
+
+// ---------------------------------------------------------------------------
+// EMAIL HEALTH widget — shows Resend send activity for THCO Flow
+// ---------------------------------------------------------------------------
+const EmailHealthCard = () => {
+  const [data, setData] = useState(null);
+  useEffect(() => { flowAPI.emailHealth().then(setData).catch(() => {}); }, []);
+  if (!data) return null;
+
+  const failedColor = data.failed_today > 0 ? "text-red-600" : "text-gray-400";
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 p-5 mt-6" data-testid="email-health">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <Mail className="w-4 h-4" />Email health (Resend)
+        </h3>
+        <span className="text-[10px] text-gray-400 font-mono">last 7 days</span>
+      </div>
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="text-center" data-testid="email-sent-today">
+          <p className="text-2xl font-bold text-emerald-600">{data.sent_today}</p>
+          <p className="text-[11px] text-gray-500 uppercase tracking-wider">Sent today</p>
+        </div>
+        <div className="text-center" data-testid="email-failed-today">
+          <p className={`text-2xl font-bold ${failedColor}`}>{data.failed_today}</p>
+          <p className="text-[11px] text-gray-500 uppercase tracking-wider">Failed today</p>
+        </div>
+        <div className="text-center" data-testid="email-total-week">
+          <p className="text-2xl font-bold text-gray-900">{data.total_week}</p>
+          <p className="text-[11px] text-gray-500 uppercase tracking-wider">Last 7d</p>
+        </div>
+      </div>
+
+      {data.top_templates?.length > 0 && (
+        <div className="mb-3">
+          <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Top templates (7d)</p>
+          <ul className="space-y-1">
+            {data.top_templates.map((t, i) => {
+              const max = Math.max(...data.top_templates.map(x => x.count), 1);
+              return (
+                <li key={i} className="flex items-center gap-2 text-xs" data-testid={`template-${t.template}`}>
+                  <span className="text-gray-600 w-40 truncate font-mono">{t.template}</span>
+                  <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#1B4332] rounded-full" style={{ width: `${(t.count / max) * 100}%` }} />
+                  </div>
+                  <span className="text-gray-900 font-medium w-8 text-right">{t.count}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {data.recent_failures?.length > 0 && (
+        <div className="border-t border-gray-100 pt-3">
+          <p className="text-xs uppercase tracking-wider text-red-600 font-semibold mb-2">Recent failures</p>
+          <ul className="space-y-1">
+            {data.recent_failures.slice(0, 3).map((f, i) => (
+              <li key={i} className="text-[11px] text-gray-600" data-testid={`failure-${i}`}>
+                <span className="text-red-600 font-semibold">{f.status}:</span> {f.template_name || "—"}
+                {f.error && <span className="text-gray-400 italic"> · {f.error.slice(0, 80)}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};

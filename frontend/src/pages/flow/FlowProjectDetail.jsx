@@ -167,6 +167,9 @@ export default function FlowProjectDetail() {
       {/* PROPOSAL-TRACK PANEL */}
       {isProposal && <ProposalPanel project={project} stage={stage} />}
 
+      {/* BIRTHDAY TICKER — only renders if there's a birthday in next 14 days for any contact on this client */}
+      <BirthdayTicker projectId={project.id} contactId={project.id} />
+
       {/* CLIENT PROFILE — contacts + birthdays scoped to this project's client */}
       <ClientProfileSection projectId={project.id} clientName={project.client_name_snapshot} />
 
@@ -583,3 +586,41 @@ const Inp = ({ label, v, on, placeholder, testid }) => (
     <input value={v} onChange={(e) => on(e.target.value)} placeholder={placeholder} className={inputCls} data-testid={testid} />
   </div>
 );
+
+// ---------------------------------------------------------------------------
+// BIRTHDAY TICKER — shows at top of project when any client contact has a
+// birthday/anniversary in the next 14 days
+// ---------------------------------------------------------------------------
+const BirthdayTicker = ({ projectId }) => {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    flowAPI.projectContacts(projectId)
+      .then((d) => setItems(d.upcoming_birthdays || []))
+      .catch(() => {});
+  }, [projectId]);
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="bg-gradient-to-r from-pink-50 to-amber-50 border border-pink-200 rounded-xl p-4 mt-4 flex items-start gap-3" data-testid="birthday-ticker">
+      <span className="text-2xl">🎂</span>
+      <div className="flex-1">
+        <p className="font-semibold text-gray-900 text-sm">
+          {items.length === 1 ? "Upcoming birthday on this client" : `${items.length} upcoming events on this client (next 14 days)`}
+        </p>
+        <ul className="mt-1.5 space-y-1">
+          {items.map((it, i) => (
+            <li key={i} className="text-sm flex items-center gap-2" data-testid={`ticker-item-${i}`}>
+              <span className="text-pink-700 font-medium min-w-[60px]">
+                {it.days_until === 0 ? "Today" : `${it.days_until}d`}
+              </span>
+              <span className="text-gray-700">{it.label}</span>
+              <span className="text-xs text-gray-400">· {it.kind.replace("_", " ")}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};

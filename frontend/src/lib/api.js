@@ -569,6 +569,9 @@ export const flowAPI = {
   usersByRole: async (flag) =>
     (await apiClient.get(`/flow/users-by-role/${flag}`)).data,
 
+  // Add to flowAPI:
+  emailHealth: async () => (await apiClient.get('/flow/dashboard/email-health')).data,
+
   // Project-scoped contacts (Client Profile)
   projectContacts: async (id) => (await apiClient.get(`/flow/projects/${id}/contacts`)).data,
 
