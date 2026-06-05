@@ -272,6 +272,17 @@ const DashboardLayoutInner = ({ children, user }) => {
                 <Settings size={20} />
                 {sidebarOpen && <span className="text-sm">Settings</span>}
               </Link>
+            </>
+          )}
+
+          {/* Assessments — visible to super_admin AND HR users */}
+          {(user?.role === "super_admin" || user?.is_hr) && (
+            <>
+              {sidebarOpen && user?.role !== "super_admin" && (
+                <div className="mt-6 mb-3 px-3">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">HR</span>
+                </div>
+              )}
               <Link
                 to="/admin/assessments"
                 data-testid="nav-assessments"

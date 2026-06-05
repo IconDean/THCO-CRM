@@ -147,11 +147,11 @@ async def save_final_details(assessment_id: str, data: FinalDetails):
 # --- Admin Endpoints (protected) ---
 
 async def verify_admin(request: Request):
-    """Verify the request is from an authenticated admin."""
+    """Verify the request is from an authenticated admin or HR."""
     from server import get_current_user
     user = await get_current_user(request)
-    if user.get("role") != "super_admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
+    if not (user.get("role") == "super_admin" or user.get("is_hr")):
+        raise HTTPException(status_code=403, detail="Admin or HR access required")
     return user
 
 
