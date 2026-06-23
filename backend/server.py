@@ -2725,6 +2725,14 @@ set_sla_db(db)
 async def startup_scheduler():
     start_sla_scheduler()
 
+
+# ==================== SEED BUNDLED PROPOSALS ====================
+from seed_proposals import seed_bundled_proposals
+
+@app.on_event("startup")
+async def seed_proposals_on_boot():
+    await seed_bundled_proposals(db, ROOT_DIR)
+
 # CORS Middleware
 CORS_ORIGINS = [
     "https://thcoteam.com",
