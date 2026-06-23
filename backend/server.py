@@ -1913,15 +1913,20 @@ async def regenerate_share_link(proposal_id: str, request: Request):
 
 # Public endpoint - no auth required
 @api_router.get("/proposals/shared/{share_token}")
-async def get_shared_proposal(share_token: str):
+async def get_shared_proposal(share_token: str, request: Request):
     """Get proposal details by share token (public endpoint)"""
     proposal = await db.proposals.find_one({"share_token": share_token}, {"_id": 0})
     if not proposal:
         raise HTTPException(status_code=404, detail="Proposal not found or link has expired")
-    
-    # Get client info
-    client = await db.clients.find_one({"client_id": proposal["client_id"]}, {"_id": 0})
-    
+
+    # Check if a logged-in internal user is viewing (bypass email gate)
+    is_internal = False
+    try:
+        await get_current_user(request)
+        is_internal = True
+    except HTTPException:
+        is_internal = False
+
     return {
         "proposal_id": proposal["proposal_id"],
         "client_name": proposal["client_name"],
@@ -1929,7 +1934,8 @@ async def get_shared_proposal(share_token: str):
         "file_type": proposal["file_type"],
         "file_size": proposal["file_size"],
         "uploaded_at": proposal["created_at"],
-        "require_email": bool(proposal.get("require_email")),
+        "require_email": bool(proposal.get("require_email")) and not is_internal,
+        "is_internal_viewer": is_internal,
     }
 
 
@@ -2008,6 +2014,44 @@ async def register_share_token_viewer(share_token: str, data: ShareTokenViewerRe
         })
 
     return {"ok": True, "email": email}
+
+
+@api_router.get("/proposals/shared/{share_token}/stream")
+async def stream_shared_proposal(share_token: str, request: Request):
+    """Stream a proposal inline (Content-Disposition: inline) — for embedded viewing.
+    If require_email is set, an authenticated session OR a registered ?email= is required.
+    """
+    proposal = await db.proposals.find_one({"share_token": share_token}, {"_id": 0})
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found or link has expired")
+
+    if proposal.get("require_email"):
+        # Allow logged-in internal users to bypass the email gate
+        try:
+            await get_current_user(request)
+            authenticated = True
+        except HTTPException:
+            authenticated = False
+        if not authenticated:
+            email = request.query_params.get("email")
+            if not email:
+                raise HTTPException(status_code=403, detail="Email registration required")
+            registered = await db.proposal_viewers.find_one({
+                "email": email.strip().lower(),
+                "share_token": share_token,
+            }, {"_id": 0, "viewer_id": 1})
+            if not registered:
+                raise HTTPException(status_code=403, detail="Email not registered for this proposal")
+
+    file_path = Path(proposal.get("file_path", ""))
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found on server")
+
+    return FileResponse(
+        path=str(file_path),
+        media_type=proposal.get("mime_type") or "application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{proposal["original_filename"]}"'},
+    )
 
 
 # Public endpoint - no auth required

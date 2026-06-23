@@ -18,15 +18,17 @@ const ProposalView = () => {
   const [viewerCompany, setViewerCompany] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [gateError, setGateError] = useState(null);
+  const [isInternal, setIsInternal] = useState(false);
 
   useEffect(() => {
     const fetchProposal = async () => {
       try {
         const data = await proposalsAPI.getShared(shareToken);
         setProposal(data);
-        // Auto-unlock if email gate not required, OR if we already registered in this browser
+        setIsInternal(!!data.is_internal_viewer);
+        // Auto-unlock if email gate not required, OR if we already registered in this browser, OR if internal viewer
         const cached = localStorage.getItem(`proposal_viewer_${shareToken}`);
-        if (!data.require_email || cached) {
+        if (data.is_internal_viewer || !data.require_email || cached) {
           setEmailUnlocked(true);
           if (cached) setViewerEmail(cached);
         }
@@ -64,6 +66,34 @@ const ProposalView = () => {
       setSubmitting(false);
     }
   };
+
+  const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  // For internal viewers, fetch PDF via authenticated axios and create blob URL for iframe
+  useEffect(() => {
+    if (!isInternal || !proposal || proposal.file_type !== "PDF") return;
+    let cancelled = false;
+    let createdUrl = null;
+    setPdfLoading(true);
+    (async () => {
+      try {
+        const resp = await apiClient.get(`/proposals/shared/${shareToken}/stream`, { responseType: "blob" });
+        if (cancelled) return;
+        const blob = new Blob([resp.data], { type: "application/pdf" });
+        createdUrl = URL.createObjectURL(blob);
+        setPdfBlobUrl(createdUrl);
+      } catch (e) {
+        if (!cancelled) setError("Failed to load PDF stream.");
+      } finally {
+        if (!cancelled) setPdfLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+      if (createdUrl) URL.revokeObjectURL(createdUrl);
+    };
+  }, [isInternal, proposal, shareToken]);
 
   const handleDownload = () => {
     let downloadUrl = proposalsAPI.getDownloadUrl(shareToken);
@@ -143,6 +173,54 @@ const ProposalView = () => {
           <h1 className="text-xl font-bold text-white mb-2">Link Not Found</h1>
           <p className="text-gray-400">{error}</p>
         </div>
+      </div>
+    );
+  }
+
+  // Internal viewers (logged in) — render the document inline instead of asking to download
+  if (isInternal && proposal && proposal.file_type === "PDF") {
+    return (
+      <div className="min-h-screen bg-[#0f1219] flex flex-col" data-testid="proposal-inline-viewer">
+        <div className="flex items-center justify-between px-6 py-3 bg-[#1a1f36] border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <img
+              src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png"
+              alt="THCO"
+              className="h-7 brightness-0 invert"
+            />
+            <div>
+              <p className="text-xs font-mono uppercase tracking-wider text-purple-400">{proposal.client_name}</p>
+              <h2 className="text-sm font-semibold text-white">{proposal.filename}</h2>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleDownload}
+              variant="outline"
+              size="sm"
+              className="border-white/10 text-white hover:bg-white/5"
+              data-testid="inline-download-btn"
+            >
+              <Download className="w-3.5 h-3.5 mr-1.5" />
+              Download
+            </Button>
+          </div>
+        </div>
+        {pdfLoading || !pdfBlobUrl ? (
+          <div className="flex-1 flex items-center justify-center bg-white">
+            <div className="text-center">
+              <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-sm text-gray-500">Loading presentation...</p>
+            </div>
+          </div>
+        ) : (
+          <iframe
+            src={`${pdfBlobUrl}#toolbar=1&navpanes=0`}
+            title={proposal.filename}
+            className="flex-1 w-full border-0 bg-white"
+            data-testid="proposal-iframe"
+          />
+        )}
       </div>
     );
   }
