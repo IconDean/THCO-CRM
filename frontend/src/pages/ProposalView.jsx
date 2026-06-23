@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FileText, Presentation, File, Table2, Download, AlertCircle } from "lucide-react";
+import { FileText, Presentation, File, Table2, Download, AlertCircle, Mail, Lock } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { proposalsAPI } from "../lib/api";
+import apiClient from "../lib/api";
 
 const ProposalView = () => {
   const { shareToken } = useParams();
@@ -10,11 +11,25 @@ const ProposalView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Email gate state
+  const [emailUnlocked, setEmailUnlocked] = useState(false);
+  const [viewerEmail, setViewerEmail] = useState("");
+  const [viewerName, setViewerName] = useState("");
+  const [viewerCompany, setViewerCompany] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [gateError, setGateError] = useState(null);
+
   useEffect(() => {
     const fetchProposal = async () => {
       try {
         const data = await proposalsAPI.getShared(shareToken);
         setProposal(data);
+        // Auto-unlock if email gate not required, OR if we already registered in this browser
+        const cached = localStorage.getItem(`proposal_viewer_${shareToken}`);
+        if (!data.require_email || cached) {
+          setEmailUnlocked(true);
+          if (cached) setViewerEmail(cached);
+        }
       } catch (err) {
         setError("This proposal link is invalid or has expired.");
       } finally {
@@ -27,8 +42,35 @@ const ProposalView = () => {
     }
   }, [shareToken]);
 
+  const submitEmailGate = async (e) => {
+    e.preventDefault();
+    setGateError(null);
+    if (!viewerEmail || !viewerEmail.includes("@")) {
+      setGateError("Please enter a valid email address");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await apiClient.post(`/proposals/shared/${shareToken}/register`, {
+        email: viewerEmail.trim().toLowerCase(),
+        name: viewerName.trim(),
+        company: viewerCompany.trim(),
+      });
+      localStorage.setItem(`proposal_viewer_${shareToken}`, viewerEmail.trim().toLowerCase());
+      setEmailUnlocked(true);
+    } catch (err) {
+      setGateError(err.response?.data?.detail || "Could not register your email — please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleDownload = () => {
-    const downloadUrl = proposalsAPI.getDownloadUrl(shareToken);
+    let downloadUrl = proposalsAPI.getDownloadUrl(shareToken);
+    if (proposal?.require_email && viewerEmail) {
+      const sep = downloadUrl.includes("?") ? "&" : "?";
+      downloadUrl = `${downloadUrl}${sep}email=${encodeURIComponent(viewerEmail)}`;
+    }
     window.open(downloadUrl, '_blank');
   };
 
@@ -144,15 +186,68 @@ const ProposalView = () => {
           Shared on {formatDate(proposal.uploaded_at)}
         </p>
 
-        {/* Download Button */}
-        <Button
-          onClick={handleDownload}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-12 text-base"
-          data-testid="download-proposal-btn"
-        >
-          <Download className="w-5 h-5 mr-2" />
-          Download {proposal.file_type}
-        </Button>
+        {/* Download Button OR Email Gate */}
+        {emailUnlocked ? (
+          <Button
+            onClick={handleDownload}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-12 text-base"
+            data-testid="download-proposal-btn"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            Download {proposal.file_type}
+          </Button>
+        ) : (
+          <form onSubmit={submitEmailGate} className="space-y-3" data-testid="email-gate-form">
+            <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 flex items-start gap-2 mb-2">
+              <Lock className="w-4 h-4 text-purple-300 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-purple-200">Enter your details to access this document.</p>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-gray-300 uppercase tracking-wider">Email *</label>
+              <div className="relative mt-1">
+                <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input
+                  type="email"
+                  required
+                  value={viewerEmail}
+                  onChange={(e) => setViewerEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  className="w-full pl-10 pr-3 py-3 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                  data-testid="viewer-email-input"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                value={viewerName}
+                onChange={(e) => setViewerName(e.target.value)}
+                placeholder="Name (optional)"
+                className="px-3 py-2.5 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                data-testid="viewer-name-input"
+              />
+              <input
+                type="text"
+                value={viewerCompany}
+                onChange={(e) => setViewerCompany(e.target.value)}
+                placeholder="Company (optional)"
+                className="px-3 py-2.5 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                data-testid="viewer-company-input"
+              />
+            </div>
+            {gateError && (
+              <p className="text-xs text-red-400 text-center" data-testid="email-gate-error">{gateError}</p>
+            )}
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-12 text-base"
+              data-testid="email-gate-submit"
+            >
+              {submitting ? "Verifying..." : "Continue to Document"}
+            </Button>
+          </form>
+        )}
 
         {/* Footer */}
         <p className="text-center text-xs text-gray-600 mt-6">

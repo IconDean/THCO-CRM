@@ -1925,16 +1925,109 @@ async def get_shared_proposal(share_token: str):
         "filename": proposal["original_filename"],
         "file_type": proposal["file_type"],
         "file_size": proposal["file_size"],
-        "uploaded_at": proposal["created_at"]
+        "uploaded_at": proposal["created_at"],
+        "require_email": bool(proposal.get("require_email")),
     }
 
-# Public endpoint - no auth required
-@api_router.get("/proposals/shared/{share_token}/download")
-async def download_shared_proposal(share_token: str):
-    """Download a proposal file by share token (public endpoint)"""
+
+# Public endpoint — register a viewer's email for a share-token-protected proposal
+class ShareTokenViewerRegister(BaseModel):
+    email: str
+    name: Optional[str] = None
+    company: Optional[str] = None
+
+
+@api_router.post("/proposals/shared/{share_token}/register")
+async def register_share_token_viewer(share_token: str, data: ShareTokenViewerRegister, request: Request):
+    """Public — register a viewer email before they can download an email-gated proposal."""
     proposal = await db.proposals.find_one({"share_token": share_token}, {"_id": 0})
     if not proposal:
         raise HTTPException(status_code=404, detail="Proposal not found or link has expired")
+
+    email = (data.email or "").strip().lower()
+    if "@" not in email or "." not in email:
+        raise HTTPException(status_code=400, detail="Please enter a valid email address")
+
+    # Metadata for tracking
+    ip_address = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown")
+    if "," in ip_address:
+        ip_address = ip_address.split(",")[0].strip()
+    user_agent_str = request.headers.get("User-Agent", "")
+    ua = parse_user_agent(user_agent_str)
+    device_type = "Mobile" if ua.is_mobile else "Tablet" if ua.is_tablet else "Desktop"
+    browser = f"{ua.browser.family} {ua.browser.version_string}"
+    now = datetime.now(timezone.utc)
+
+    # Try to enrich location
+    location = None
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"http://ip-api.com/json/{ip_address}?fields=city,country", timeout=3)
+            if resp.status_code == 200:
+                loc_data = resp.json()
+                if loc_data.get("city") and loc_data.get("country"):
+                    location = f"{loc_data['city']}, {loc_data['country']}"
+    except Exception:
+        pass
+
+    existing = await db.proposal_viewers.find_one(
+        {"email": email, "share_token": share_token},
+        {"_id": 0}
+    )
+    if existing:
+        await db.proposal_viewers.update_one(
+            {"email": email, "share_token": share_token},
+            {"$set": {
+                "last_viewed_at": now,
+                "ip_address": ip_address,
+                "device_type": device_type,
+                "browser": browser,
+                "location": location,
+            }, "$inc": {"view_count": 1}}
+        )
+    else:
+        await db.proposal_viewers.insert_one({
+            "viewer_id": f"viewer_{uuid.uuid4().hex[:12]}",
+            "email": email,
+            "name": data.name or "",
+            "company": data.company or "",
+            "share_token": share_token,
+            "proposal_id": proposal["proposal_id"],
+            "proposal_slug": share_token,  # use share_token as slug for indexing
+            "proposal_name": proposal.get("original_filename") or "Proposal",
+            "first_viewed_at": now,
+            "last_viewed_at": now,
+            "view_count": 1,
+            "ip_address": ip_address,
+            "device_type": device_type,
+            "browser": browser,
+            "location": location,
+        })
+
+    return {"ok": True, "email": email}
+
+
+# Public endpoint - no auth required
+@api_router.get("/proposals/shared/{share_token}/download")
+async def download_shared_proposal(share_token: str, email: Optional[str] = None):
+    """Download a proposal file by share token (public endpoint).
+    If the proposal has require_email=true, a registered email must be passed as ?email=.
+    """
+    proposal = await db.proposals.find_one({"share_token": share_token}, {"_id": 0})
+    if not proposal:
+        raise HTTPException(status_code=404, detail="Proposal not found or link has expired")
+
+    # Enforce email gate
+    if proposal.get("require_email"):
+        if not email:
+            raise HTTPException(status_code=403, detail="Email registration required to download this proposal")
+        email_l = email.strip().lower()
+        registered = await db.proposal_viewers.find_one({
+            "email": email_l,
+            "share_token": share_token,
+        }, {"_id": 0, "viewer_id": 1})
+        if not registered:
+            raise HTTPException(status_code=403, detail="Email not registered for this proposal")
     
     file_path = Path(proposal.get("file_path", ""))
     if not file_path.exists():
