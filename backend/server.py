@@ -1598,9 +1598,12 @@ async def seed_initial_admin():
 # ==================== PROPOSAL MANAGEMENT ROUTES ====================
 
 def get_share_url(share_token: str) -> str:
-    """Generate the full share URL for a proposal"""
-    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
-    return f"{frontend_url}/proposals/view/{share_token}"
+    """Generate a share URL for a proposal.
+    Hard-coded to the canonical production domain (thcoteam.com) so that links
+    generated from any environment always send recipients to production.
+    """
+    return f"https://thcoteam.com/proposals/view/{share_token}"
+
 
 @api_router.get("/clients")
 async def get_clients(request: Request):
