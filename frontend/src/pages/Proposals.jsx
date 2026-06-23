@@ -511,6 +511,38 @@ const Proposals = () => {
               </div>
             </Link>
 
+            {/* AI Lab Venture — email-gated PDF */}
+            <Link
+              to="/proposals/view/JYLe33GgkcNbvIUcDLGTF3M7jOSxiV-kNkCOQy7w4eg"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-[#7C3AED] hover:shadow-lg transition-all"
+              data-testid="ai-lab-venture-link"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1E1B4B] to-[#312E81] opacity-95" />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#7C3AED]/30 flex items-center justify-center">
+                    <span className="text-[#C4B5FD] font-bold text-lg">AI</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-[#C4B5FD] bg-[#7C3AED]/30 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    NEW
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">AI Lab Venture</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  Venture Document — Email-gated PDF
+                </p>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>PDF</span>
+                  <span>•</span>
+                  <span>Email Required</span>
+                </div>
+                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-[#7C3AED]/40 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </Link>
+
             {/* THE FORGE Presentation */}
             <Link
               to="/proposals/the-forge"
