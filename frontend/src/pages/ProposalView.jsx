@@ -193,18 +193,6 @@ const ProposalView = () => {
               <h2 className="text-sm font-semibold text-white">{proposal.filename}</h2>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={handleDownload}
-              variant="outline"
-              size="sm"
-              className="border-white/10 text-white hover:bg-white/5"
-              data-testid="inline-download-btn"
-            >
-              <Download className="w-3.5 h-3.5 mr-1.5" />
-              Download
-            </Button>
-          </div>
         </div>
         {pdfLoading || !pdfBlobUrl ? (
           <div className="flex-1 flex items-center justify-center bg-white">
@@ -215,7 +203,7 @@ const ProposalView = () => {
           </div>
         ) : (
           <iframe
-            src={`${pdfBlobUrl}#toolbar=1&navpanes=0`}
+            src={`${pdfBlobUrl}#toolbar=0&navpanes=0&statusbar=0&messages=0`}
             title={proposal.filename}
             className="flex-1 w-full border-0 bg-white"
             data-testid="proposal-iframe"
