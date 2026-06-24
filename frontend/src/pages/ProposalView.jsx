@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { FileText, Presentation, File, Table2, Download, AlertCircle, Mail, Lock } from "lucide-react";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+import { AlertCircle, Mail, Lock } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { proposalsAPI } from "../lib/api";
 import apiClient from "../lib/api";
+
+// Use the worker bundled by react-pdf via CDN — matches installed pdfjs-dist version
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const ProposalView = () => {
   const { shareToken } = useParams();
@@ -20,13 +26,19 @@ const ProposalView = () => {
   const [gateError, setGateError] = useState(null);
   const [isInternal, setIsInternal] = useState(false);
 
+  // PDF state
+  const [pdfBlob, setPdfBlob] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [numPages, setNumPages] = useState(0);
+  const [pageWidth, setPageWidth] = useState(0);
+  const containerRef = useRef(null);
+
   useEffect(() => {
     const fetchProposal = async () => {
       try {
         const data = await proposalsAPI.getShared(shareToken);
         setProposal(data);
         setIsInternal(!!data.is_internal_viewer);
-        // Auto-unlock if email gate not required, OR if we already registered in this browser, OR if internal viewer
         const cached = localStorage.getItem(`proposal_viewer_${shareToken}`);
         if (data.is_internal_viewer || !data.require_email || cached) {
           setEmailUnlocked(true);
@@ -39,10 +51,55 @@ const ProposalView = () => {
       }
     };
 
-    if (shareToken) {
-      fetchProposal();
-    }
+    if (shareToken) fetchProposal();
   }, [shareToken]);
+
+  // Fetch PDF as blob once the viewer is unlocked (internal user OR email-gate passed)
+  useEffect(() => {
+    if (!emailUnlocked || !proposal || proposal.file_type !== "PDF") return;
+    let cancelled = false;
+    setPdfLoading(true);
+    (async () => {
+      try {
+        let blob;
+        if (isInternal) {
+          // Authenticated stream
+          const resp = await apiClient.get(`/proposals/shared/${shareToken}/stream`, { responseType: "blob" });
+          blob = new Blob([resp.data], { type: "application/pdf" });
+        } else {
+          // Public stream with ?email=
+          const url = `${process.env.REACT_APP_BACKEND_URL}/api/proposals/shared/${shareToken}/stream?email=${encodeURIComponent(viewerEmail)}`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          blob = await resp.blob();
+        }
+        if (cancelled) return;
+        setPdfBlob(blob);
+      } catch (e) {
+        if (!cancelled) setError("Failed to load presentation.");
+      } finally {
+        if (!cancelled) setPdfLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [emailUnlocked, isInternal, proposal, shareToken, viewerEmail]);
+
+  // Responsive page sizing
+  const measureWidth = useCallback(() => {
+    if (containerRef.current) {
+      const w = containerRef.current.clientWidth;
+      // Cap max width on large desktops; otherwise fit container with side padding
+      setPageWidth(Math.min(w - 24, 1100));
+    }
+  }, []);
+
+  useEffect(() => {
+    measureWidth();
+    window.addEventListener("resize", measureWidth);
+    return () => window.removeEventListener("resize", measureWidth);
+  }, [measureWidth]);
 
   const submitEmailGate = async (e) => {
     e.preventDefault();
@@ -67,89 +124,10 @@ const ProposalView = () => {
     }
   };
 
-  const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
-
-  // For internal viewers, fetch PDF via authenticated axios and create blob URL for iframe
-  useEffect(() => {
-    if (!isInternal || !proposal || proposal.file_type !== "PDF") return;
-    let cancelled = false;
-    let createdUrl = null;
-    setPdfLoading(true);
-    (async () => {
-      try {
-        const resp = await apiClient.get(`/proposals/shared/${shareToken}/stream`, { responseType: "blob" });
-        if (cancelled) return;
-        const blob = new Blob([resp.data], { type: "application/pdf" });
-        createdUrl = URL.createObjectURL(blob);
-        setPdfBlobUrl(createdUrl);
-      } catch (e) {
-        if (!cancelled) setError("Failed to load PDF stream.");
-      } finally {
-        if (!cancelled) setPdfLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-      if (createdUrl) URL.revokeObjectURL(createdUrl);
-    };
-  }, [isInternal, proposal, shareToken]);
-
-  const handleDownload = () => {
-    let downloadUrl = proposalsAPI.getDownloadUrl(shareToken);
-    if (proposal?.require_email && viewerEmail) {
-      const sep = downloadUrl.includes("?") ? "&" : "?";
-      downloadUrl = `${downloadUrl}${sep}email=${encodeURIComponent(viewerEmail)}`;
-    }
-    window.open(downloadUrl, '_blank');
-  };
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
-  };
-
-  const getFileIcon = (fileType) => {
-    const iconClass = "w-16 h-16";
-    switch (fileType) {
-      case 'PDF':
-        return <FileText className={`${iconClass} text-red-400`} />;
-      case 'PowerPoint':
-        return <Presentation className={`${iconClass} text-orange-400`} />;
-      case 'Excel':
-        return <Table2 className={`${iconClass} text-green-400`} />;
-      case 'Word':
-        return <File className={`${iconClass} text-blue-400`} />;
-      default:
-        return <File className={`${iconClass} text-gray-400`} />;
-    }
-  };
-
-  const getFileColor = (fileType) => {
-    switch (fileType) {
-      case 'PDF':
-        return 'bg-red-500/10 border-red-500/20';
-      case 'PowerPoint':
-        return 'bg-orange-500/10 border-orange-500/20';
-      case 'Excel':
-        return 'bg-green-500/10 border-green-500/20';
-      case 'Word':
-        return 'bg-blue-500/10 border-blue-500/20';
-      default:
-        return 'bg-gray-500/10 border-gray-500/20';
-    }
+  const onDocumentLoadSuccess = ({ numPages: n }) => {
+    setNumPages(n);
+    // Re-measure after document loads (in case container resized)
+    setTimeout(measureWidth, 50);
   };
 
   if (loading) {
@@ -177,96 +155,30 @@ const ProposalView = () => {
     );
   }
 
-  // Internal viewers (logged in) — render the document inline instead of asking to download
-  if (isInternal && proposal && proposal.file_type === "PDF") {
+  // Email gate (public viewers only — internal viewers skip this)
+  if (!emailUnlocked) {
     return (
-      <div className="min-h-screen bg-[#0f1219] flex flex-col" data-testid="proposal-inline-viewer">
-        <div className="flex items-center justify-between px-6 py-3 bg-[#1a1f36] border-b border-white/10">
-          <div className="flex items-center gap-3">
+      <div className="min-h-screen bg-[#0f1219] flex items-center justify-center p-4" data-testid="proposal-view-page">
+        <div className="bg-[#1a1f36] rounded-2xl border border-white/10 p-8 max-w-lg w-full">
+          <div className="flex justify-center mb-8">
             <img
               src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png"
               alt="THCO"
-              className="h-7 brightness-0 invert"
+              className="h-10 brightness-0 invert"
             />
-            <div>
-              <p className="text-xs font-mono uppercase tracking-wider text-purple-400">{proposal.client_name}</p>
-              <h2 className="text-sm font-semibold text-white">{proposal.filename}</h2>
-            </div>
           </div>
-        </div>
-        {pdfLoading || !pdfBlobUrl ? (
-          <div className="flex-1 flex items-center justify-center bg-white">
-            <div className="text-center">
-              <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-sm text-gray-500">Loading presentation...</p>
-            </div>
+
+          <div className="text-center mb-6">
+            <span className="text-xs font-mono uppercase tracking-wider text-purple-400 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-500/30">
+              {proposal.client_name}
+            </span>
+            <h2 className="text-lg font-semibold text-white mt-4 break-all">{proposal.filename}</h2>
           </div>
-        ) : (
-          <iframe
-            src={`${pdfBlobUrl}#toolbar=0&navpanes=0&statusbar=0&messages=0`}
-            title={proposal.filename}
-            className="flex-1 w-full border-0 bg-white"
-            data-testid="proposal-iframe"
-          />
-        )}
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-[#0f1219] flex items-center justify-center p-4" data-testid="proposal-view-page">
-      <div className="bg-[#1a1f36] rounded-2xl border border-white/10 p-8 max-w-lg w-full">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <img 
-            src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png" 
-            alt="THCO" 
-            className="h-10 brightness-0 invert"
-          />
-        </div>
-
-        {/* Client Name */}
-        <div className="text-center mb-6">
-          <span className="text-xs font-mono uppercase tracking-wider text-purple-400 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-500/30">
-            {proposal.client_name}
-          </span>
-        </div>
-
-        {/* File Preview */}
-        <div className={`rounded-2xl border p-8 mb-6 ${getFileColor(proposal.file_type)}`}>
-          <div className="flex flex-col items-center">
-            {getFileIcon(proposal.file_type)}
-            <h2 className="text-lg font-semibold text-white mt-4 text-center break-all">
-              {proposal.filename}
-            </h2>
-            <div className="flex items-center gap-3 mt-2 text-sm text-gray-400">
-              <span>{proposal.file_type}</span>
-              <span>•</span>
-              <span>{formatFileSize(proposal.file_size)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Upload Date */}
-        <p className="text-center text-sm text-gray-500 mb-6">
-          Shared on {formatDate(proposal.uploaded_at)}
-        </p>
-
-        {/* Download Button OR Email Gate */}
-        {emailUnlocked ? (
-          <Button
-            onClick={handleDownload}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-12 text-base"
-            data-testid="download-proposal-btn"
-          >
-            <Download className="w-5 h-5 mr-2" />
-            Download {proposal.file_type}
-          </Button>
-        ) : (
           <form onSubmit={submitEmailGate} className="space-y-3" data-testid="email-gate-form">
             <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 flex items-start gap-2 mb-2">
               <Lock className="w-4 h-4 text-purple-300 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-purple-200">Enter your details to access this document.</p>
+              <p className="text-xs text-purple-200">Enter your details to view this document.</p>
             </div>
             <div>
               <label className="text-xs font-medium text-gray-300 uppercase tracking-wider">Email *</label>
@@ -313,12 +225,70 @@ const ProposalView = () => {
               {submitting ? "Verifying..." : "Continue to Document"}
             </Button>
           </form>
-        )}
 
-        {/* Footer */}
-        <p className="text-center text-xs text-gray-600 mt-6">
-          Powered by THCO Group
-        </p>
+          <p className="text-center text-xs text-gray-600 mt-6">Powered by THCO Group</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Inline PDF viewer (internal users and post-gate external users — no download UI)
+  return (
+    <div className="min-h-screen bg-[#0f1219] flex flex-col" data-testid="proposal-inline-viewer">
+      <div className="flex items-center gap-3 px-4 sm:px-6 py-3 bg-[#1a1f36] border-b border-white/10">
+        <img
+          src="https://customer-assets.emergentagent.com/job_internal-thco/artifacts/bvr2l293_THCO%20Logo_Navy%20soft%20purple.png"
+          alt="THCO"
+          className="h-6 sm:h-7 brightness-0 invert flex-shrink-0"
+        />
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-purple-400 truncate">{proposal.client_name}</p>
+          <h2 className="text-xs sm:text-sm font-semibold text-white truncate">{proposal.filename}</h2>
+        </div>
+      </div>
+
+      <div
+        ref={containerRef}
+        className="flex-1 overflow-auto bg-[#1a1a1a] py-3 px-2 sm:px-4"
+        data-testid="pdf-scroll-container"
+      >
+        {pdfLoading || !pdfBlob ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="text-center">
+              <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-sm text-gray-400">Loading presentation...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3" data-testid="pdf-pages">
+            <Document
+              file={pdfBlob}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={
+                <div className="text-center py-12">
+                  <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                  <p className="text-sm text-gray-400">Rendering...</p>
+                </div>
+              }
+              error={
+                <div className="text-center py-12 text-red-400">
+                  <p>Could not render PDF.</p>
+                </div>
+              }
+            >
+              {Array.from({ length: numPages }, (_, i) => (
+                <div key={`page_${i + 1}`} className="shadow-lg shadow-black/40 mb-1">
+                  <Page
+                    pageNumber={i + 1}
+                    width={pageWidth || undefined}
+                    renderAnnotationLayer={false}
+                    renderTextLayer={false}
+                  />
+                </div>
+              ))}
+            </Document>
+          </div>
+        )}
       </div>
     </div>
   );
