@@ -98,7 +98,7 @@ export default function ProjectTracker() {
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
           <p className="text-sm text-gray-500">{project.client_name_snapshot}</p>
         </div>
-        <span className={`text-xs font-medium px-3 py-1.5 rounded-full ${project.status === "in_build" ? "bg-purple-100 text-purple-700" : project.status === "approved_for_build" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+        <span className={`text-xs font-medium px-3 py-1.5 rounded-full ${project.status === "in_build" ? "bg-emerald-100 text-emerald-700" : project.status === "approved_for_build" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
           {project.status === "in_build" ? "In Build" : project.status === "approved_for_build" ? "Approved" : project.status}
         </span>
       </div>

@@ -95,7 +95,7 @@ const TOOLS = [
     slug: "certification-manager",
     icon: Award,
     description: "Issue and track professional certifications",
-    gradient: "from-purple-500 to-violet-600",
+    gradient: "from-emerald-500 to-emerald-600",
     active: false
   }
 ];
@@ -109,7 +109,7 @@ const LEARNING_TRACKS = [
     enrolled: 24,
     completed: 18,
     modules: 8,
-    color: "from-violet-500 to-purple-600"
+    color: "from-emerald-500 to-emerald-600"
   },
   {
     id: "brand_architect",
@@ -236,7 +236,7 @@ const AcademyAndLearning = () => {
           </div>
           <div className="flex gap-3">
             <Link to="/academy/build/new">
-              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+              <Button className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] text-white hover:opacity-90 shadow-lg shadow-emerald-500/20" data-testid="build-new-tool-btn">
                 <Zap className="w-4 h-4 mr-2" />
                 Build New Tool
               </Button>
@@ -325,8 +325,8 @@ const AcademyAndLearning = () => {
           className="bg-white rounded-xl border border-gray-200 p-5"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.avgProgress}%</p>

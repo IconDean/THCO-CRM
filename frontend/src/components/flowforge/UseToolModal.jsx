@@ -122,7 +122,7 @@ const UseToolModal = ({
     if (loading) {
       return (
         <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-[#7C64FF] mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1FB58A] mb-4" />
           <p className="text-gray-500">Loading tool configuration...</p>
         </div>
       );
@@ -192,7 +192,7 @@ const UseToolModal = ({
                 <Button variant="outline" onClick={handleRunAgain}>
                   Run Again
                 </Button>
-                <Button onClick={onClose} className="bg-[#7C64FF] hover:bg-[#6B54EE]">
+                <Button onClick={onClose} className="bg-[#1FB58A] hover:bg-[#6B54EE]">
                   Done
                 </Button>
               </div>
@@ -241,7 +241,7 @@ const UseToolModal = ({
       >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7C64FF] to-[#9C8CFF] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1FB58A] to-[#9C8CFF] flex items-center justify-center">
               <Zap className="w-4 h-4 text-white" />
             </div>
             {toolName}

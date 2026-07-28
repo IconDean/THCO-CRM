@@ -108,7 +108,7 @@ const ToolExecutionForm = ({
               {field.required && <span className="text-red-500">*</span>}
             </Label>
             <textarea
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#7C64FF] focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1FB58A] focus:border-transparent resize-none"
               rows={4}
               placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
               value={formData[field.name] || ""}
@@ -130,7 +130,7 @@ const ToolExecutionForm = ({
               {field.required && <span className="text-red-500">*</span>}
             </Label>
             <select
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#7C64FF] focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1FB58A] focus:border-transparent"
               value={formData[field.name] || ""}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
               required={field.required}
@@ -205,7 +205,7 @@ const ToolExecutionForm = ({
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-lg w-full">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] px-6 py-4">
+      <div className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -271,7 +271,7 @@ const ToolExecutionForm = ({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#7C64FF] hover:bg-[#6B54EE] text-white py-3"
+          className="w-full bg-[#1FB58A] hover:bg-[#6B54EE] text-white py-3"
         >
           {isSubmitting ? (
             <>

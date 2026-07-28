@@ -182,9 +182,9 @@ const Analytics = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-100">
+        <div className="bg-gradient-to-br from-emerald-50 to-pink-50 rounded-xl p-5 border border-emerald-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center">
               <Activity className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -265,8 +265,8 @@ const Analytics = () => {
                   <tr key={user.user_id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-purple-700">
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                          <span className="text-sm font-medium text-emerald-700">
                             {user.name?.charAt(0)?.toUpperCase() || "?"}
                           </span>
                         </div>
@@ -290,7 +290,7 @@ const Analytics = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => viewUserDetails(user.user_id)}
-                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                       >
                         View
                         <ChevronRight className="w-4 h-4 ml-1" />
@@ -408,8 +408,8 @@ const Analytics = () => {
         <DialogContent className="bg-white border-gray-200 max-w-2xl rounded-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-gray-900 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <User className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                <User className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
                 <p>{userDetails?.user?.name}</p>

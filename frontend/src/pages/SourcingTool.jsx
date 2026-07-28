@@ -79,7 +79,7 @@ const SourcingTool = () => {
   const getStatusBadge = (status) => {
     const styles = {
       submitted: "bg-amber-50 text-amber-600 border-amber-200",
-      processing: "bg-purple-50 text-purple-600 border-purple-200",
+      processing: "bg-emerald-50 text-emerald-600 border-emerald-200",
       completed: "bg-emerald-50 text-emerald-600 border-emerald-200",
       failed: "bg-red-50 text-red-600 border-red-200",
     };
@@ -125,7 +125,7 @@ const SourcingTool = () => {
 
       {/* Tool Header */}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
           <Search className="w-6 h-6 text-white" />
         </div>
         <div>
@@ -164,7 +164,7 @@ const SourcingTool = () => {
                   <Label className="text-gray-700 font-medium">Job Title *</Label>
                   <Input
                     placeholder="e.g., Senior Investment Associate"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("job_title")}
                     data-testid="job-title-input"
                   />
@@ -175,7 +175,7 @@ const SourcingTool = () => {
                   <Label className="text-gray-700 font-medium">Hiring Locations *</Label>
                   <Input
                     placeholder="e.g., Lagos, Nairobi, Remote"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("hiring_locations")}
                     data-testid="hiring-locations-input"
                   />
@@ -187,7 +187,7 @@ const SourcingTool = () => {
                   <Textarea
                     placeholder="Paste the full job description here"
                     rows={6}
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 resize-none rounded-xl"
                     {...register("job_description")}
                     data-testid="job-description-input"
                   />
@@ -198,7 +198,7 @@ const SourcingTool = () => {
                   <Label className="text-gray-700 font-medium">Salary Budget</Label>
                   <Input
                     placeholder="e.g., $80,000 - $120,000 USD"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("salary_budget")}
                     data-testid="salary-budget-input"
                   />
@@ -232,7 +232,7 @@ const SourcingTool = () => {
                   <Label className="text-gray-700 font-medium">Company Name *</Label>
                   <Input
                     placeholder="e.g., Aruwa Capital"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("company_name")}
                     data-testid="company-name-input"
                   />
@@ -243,7 +243,7 @@ const SourcingTool = () => {
                   <Label className="text-gray-700 font-medium">Company Website *</Label>
                   <Input
                     placeholder="e.g., https://aruwacapital.com"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("company_website")}
                     data-testid="company-website-input"
                   />
@@ -254,7 +254,7 @@ const SourcingTool = () => {
                   <Label className="text-gray-700 font-medium">Company Location *</Label>
                   <Input
                     placeholder="e.g., Lagos, Nigeria"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("company_location")}
                     data-testid="company-location-input"
                   />
@@ -272,7 +272,7 @@ const SourcingTool = () => {
                   <Textarea
                     placeholder="Companies to actively target. One per line or comma-separated."
                     rows={3}
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 resize-none rounded-xl"
                     {...register("target_companies")}
                     data-testid="target-companies-input"
                   />
@@ -283,7 +283,7 @@ const SourcingTool = () => {
                   <Textarea
                     placeholder="Companies we should NOT source from"
                     rows={3}
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 resize-none rounded-xl"
                     {...register("companies_to_exclude")}
                     data-testid="exclude-companies-input"
                   />
@@ -294,7 +294,7 @@ const SourcingTool = () => {
                   <Textarea
                     placeholder="e.g., Include: private equity, venture capital. Exclude: commercial banking"
                     rows={2}
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 resize-none rounded-xl"
                     {...register("industry_segments")}
                     data-testid="industry-segments-input"
                   />
@@ -310,7 +310,7 @@ const SourcingTool = () => {
                   <Label className="text-gray-700 font-medium">Assigned Recruiter *</Label>
                   <Input
                     placeholder="Recruiter name"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("assigned_recruiter")}
                     data-testid="assigned-recruiter-input"
                   />
@@ -332,7 +332,7 @@ const SourcingTool = () => {
                   <Textarea
                     placeholder="Any additional context or requirements"
                     rows={3}
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 resize-none rounded-xl"
                     {...register("additional_notes")}
                     data-testid="additional-notes-input"
                   />
@@ -344,7 +344,7 @@ const SourcingTool = () => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 h-12 font-medium rounded-xl shadow-sm hover:shadow-md transition-all"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 h-12 font-medium rounded-xl shadow-sm hover:shadow-md transition-all"
                 disabled={isLoading}
                 data-testid="submit-sourcing-btn"
               >
@@ -369,7 +369,7 @@ const SourcingTool = () => {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             {loadingHistory ? (
               <div className="p-8 text-center">
-                <Loader2 className="w-8 h-8 text-purple-600 animate-spin mx-auto mb-3" />
+                <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mx-auto mb-3" />
                 <p className="text-gray-500">Loading history...</p>
               </div>
             ) : requests.length > 0 ? (

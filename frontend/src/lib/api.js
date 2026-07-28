@@ -663,4 +663,61 @@ export const assessmentAPI = {
   adminExportSingle: (id) => `${process.env.REACT_APP_BACKEND_URL}/api/assessments/admin/${id}/export`,
 };
 
+// Feedback & IT Support API
+export const feedbackAPI = {
+  create: async (data) => {
+    const response = await apiClient.post('/feedback', data);
+    return response.data;
+  },
+  getMine: async () => {
+    const response = await apiClient.get('/feedback/mine');
+    return response.data;
+  },
+  getAll: async () => {
+    const response = await apiClient.get('/feedback/all');
+    return response.data;
+  },
+  getOne: async (id) => {
+    const response = await apiClient.get(`/feedback/${id}`);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await apiClient.patch(`/feedback/${id}`, data);
+    return response.data;
+  },
+  getStatuses: async () => {
+    const response = await apiClient.get('/feedback/meta/statuses');
+    return response.data;
+  },
+};
+
+// Business Units API
+export const unitsAPI = {
+  list: async () => {
+    const response = await apiClient.get('/units');
+    return response.data;
+  },
+  get: async (slug) => {
+    const response = await apiClient.get(`/units/${slug}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await apiClient.post('/units', data);
+    return response.data;
+  },
+  update: async (slug, data) => {
+    const response = await apiClient.patch(`/units/${slug}`, data);
+    return response.data;
+  },
+  remove: async (slug) => {
+    const response = await apiClient.delete(`/units/${slug}`);
+    return response.data;
+  },
+  invite: async (slug, data) => {
+    const response = await apiClient.post(`/units/${slug}/invite`, data);
+    return response.data;
+  },
+};
+
 export default apiClient;
+

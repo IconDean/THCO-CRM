@@ -477,7 +477,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
           <div
             key={idx}
             className={`w-1 rounded-full transition-all duration-75 ${
-              isRecording ? 'bg-red-500' : audioBlob ? 'bg-[#7C64FF]' : 'bg-gray-300'
+              isRecording ? 'bg-red-500' : audioBlob ? 'bg-[#1FB58A]' : 'bg-gray-300'
             }`}
             style={{ height: `${Math.max(4, height * 0.5)}px` }}
           />
@@ -489,7 +489,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden" data-testid="problem-brief-form">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] px-6 py-4">
+      <div className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] px-6 py-4">
         <div className="flex items-center gap-2">
           <Zap className="w-6 h-6 text-white" />
           <span className="font-semibold text-white text-lg">New Tool Brief — {unitDisplayName}</span>
@@ -534,7 +534,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
             onChange={(e) => handleChange('problem', e.target.value)}
             onBlur={() => handleBlur('problem')}
             placeholder={placeholders.problem}
-            className={`mt-1 w-full px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] min-h-[100px] ${
+            className={`mt-1 w-full px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] min-h-[100px] ${
               errors.problem && touched.problem ? 'border-red-500' : 'border-gray-200'
             }`}
             data-testid="field-problem"
@@ -557,7 +557,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
               value={formData.triggerType}
               onChange={(e) => handleChange('triggerType', e.target.value)}
               onBlur={() => handleBlur('triggerType')}
-              className={`w-full px-3 py-2 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] bg-white ${
+              className={`w-full px-3 py-2 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] bg-white ${
                 errors.triggerType && touched.triggerType ? 'border-red-500' : 'border-gray-200'
               }`}
               data-testid="field-trigger-type"
@@ -608,7 +608,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
             onChange={(e) => handleChange('steps', e.target.value)}
             onBlur={() => handleBlur('steps')}
             placeholder={"Walk through what should happen from start to finish, e.g.:\n1. Check database for candidates with no response in 3+ days\n2. Filter out anyone with an interview scheduled\n3. Generate a personalized follow-up email\n4. Send the email via Gmail\n5. Update their status in the database\n6. Post a summary to Slack"}
-            className={`mt-1 w-full px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] min-h-[150px] ${
+            className={`mt-1 w-full px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] min-h-[150px] ${
               errors.steps && touched.steps ? 'border-red-500' : 'border-gray-200'
             }`}
             data-testid="field-steps"
@@ -631,7 +631,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
             onChange={(e) => handleChange('outcome', e.target.value)}
             onBlur={() => handleBlur('outcome')}
             placeholder="e.g., All cold candidates get a follow-up email within 24 hours, their status is updated automatically, and I get a daily Slack summary"
-            className={`mt-1 w-full px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] min-h-[80px] ${
+            className={`mt-1 w-full px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] min-h-[80px] ${
               errors.outcome && touched.outcome ? 'border-red-500' : 'border-gray-200'
             }`}
             data-testid="field-outcome"
@@ -654,7 +654,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
             value={formData.whoInvolved}
             onChange={(e) => handleChange('whoInvolved', e.target.value)}
             placeholder="e.g., I trigger it, candidates receive the emails, the #talent Slack channel gets a summary"
-            className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] min-h-[60px]"
+            className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] min-h-[60px]"
             data-testid="field-who-involved"
           />
         </div>
@@ -669,7 +669,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
               value={formData.frequency}
               onChange={(e) => handleChange('frequency', e.target.value)}
               onBlur={() => handleBlur('frequency')}
-              className={`w-full px-3 py-2 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] bg-white ${
+              className={`w-full px-3 py-2 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] bg-white ${
                 errors.frequency && touched.frequency ? 'border-red-500' : 'border-gray-200'
               }`}
               data-testid="field-frequency"
@@ -722,7 +722,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
                 onClick={() => toggleSystem(sys.value)}
                 className={`px-3 py-1.5 rounded-full text-sm transition-all ${
                   formData.systems.includes(sys.value)
-                    ? 'bg-[#7C64FF] text-white'
+                    ? 'bg-[#1FB58A] text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
                 data-testid={`system-${sys.value}`}
@@ -752,7 +752,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
             value={formData.exceptions}
             onChange={(e) => handleChange('exceptions', e.target.value)}
             placeholder={placeholders.exceptions}
-            className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] min-h-[80px]"
+            className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] min-h-[80px]"
             data-testid="field-exceptions"
           />
           <p className="text-xs text-gray-500 mt-1">What should be skipped, handled differently, or avoided?</p>
@@ -768,7 +768,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
             value={formData.anythingElse}
             onChange={(e) => handleChange('anythingElse', e.target.value)}
             placeholder="Any other context — tone preferences, deadlines, similar tools you've seen, constraints"
-            className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] min-h-[80px]"
+            className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] min-h-[80px]"
             data-testid="field-anything-else"
           />
         </div>
@@ -776,7 +776,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
         {/* 11. Voice Note (Required) */}
         <div className="bg-gray-50 -mx-6 px-6 py-5 border-t border-b border-gray-100" data-error={!!errors.voice}>
           <div className="flex items-center gap-2 mb-2">
-            <Mic className="w-5 h-5 text-[#7C64FF]" />
+            <Mic className="w-5 h-5 text-[#1FB58A]" />
             <Label className="text-sm font-medium text-gray-800">
               Voice Note <span className="text-red-500">*</span>
             </Label>
@@ -804,7 +804,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
                 <>
                   <button
                     onClick={startRecording}
-                    className="w-20 h-20 rounded-full bg-[#7C64FF] hover:bg-[#6B55E0] text-white flex items-center justify-center mx-auto transition-all shadow-lg hover:shadow-xl"
+                    className="w-20 h-20 rounded-full bg-[#1FB58A] hover:bg-[#179C76] text-white flex items-center justify-center mx-auto transition-all shadow-lg hover:shadow-xl"
                     data-testid="start-recording-btn"
                   >
                     <Mic className="w-8 h-8" />
@@ -832,14 +832,14 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
               <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-3">
                 <button
                   onClick={togglePlayback}
-                  className="w-10 h-10 rounded-full bg-[#7C64FF] text-white flex items-center justify-center"
+                  className="w-10 h-10 rounded-full bg-[#1FB58A] text-white flex items-center justify-center"
                   data-testid="play-pause-btn"
                 >
                   {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
                 </button>
                 <div className="flex-1">
                   <div className="h-1 bg-gray-200 rounded-full">
-                    <div className="h-1 bg-[#7C64FF] rounded-full w-0" />
+                    <div className="h-1 bg-[#1FB58A] rounded-full w-0" />
                   </div>
                 </div>
                 <span className="text-sm text-gray-500 font-mono">{formatTime(recordingTime)}</span>
@@ -849,7 +849,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
               {/* Transcription */}
               {isTranscribing ? (
                 <div className="flex items-center justify-center gap-2 py-4">
-                  <Loader2 className="w-5 h-5 animate-spin text-[#7C64FF]" />
+                  <Loader2 className="w-5 h-5 animate-spin text-[#1FB58A]" />
                   <span className="text-sm text-gray-600">Transcribing...</span>
                 </div>
               ) : transcription ? (
@@ -858,7 +858,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
                     <span className="text-xs font-medium text-gray-700">📝 Transcription Preview</span>
                     <button
                       onClick={() => setIsEditingTranscription(!isEditingTranscription)}
-                      className="text-xs text-[#7C64FF] hover:underline"
+                      className="text-xs text-[#1FB58A] hover:underline"
                     >
                       {isEditingTranscription ? 'Done editing' : 'Edit transcription'}
                     </button>
@@ -906,7 +906,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
                   <Button
                     onClick={handleConfirmVoice}
                     disabled={voiceConfirmed}
-                    className={`flex-1 ${voiceConfirmed ? 'bg-green-500' : 'bg-[#7C64FF] hover:bg-[#6B55E0]'} text-white`}
+                    className={`flex-1 ${voiceConfirmed ? 'bg-green-500' : 'bg-[#1FB58A] hover:bg-[#179C76]'} text-white`}
                     data-testid="confirm-voice-btn"
                   >
                     {voiceConfirmed ? (
@@ -935,7 +935,7 @@ const ProblemBriefForm = ({ unit, unitDisplayName, onSubmit, onCancel }) => {
           disabled={!canSubmit || isSubmitting}
           className={`w-full h-12 text-base font-medium ${
             canSubmit && !isSubmitting
-              ? 'bg-[#7C64FF] hover:bg-[#6B55E0] text-white'
+              ? 'bg-[#1FB58A] hover:bg-[#179C76] text-white'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
           data-testid="submit-brief-btn"

@@ -60,7 +60,7 @@ const formatRelativeTime = (dateString) => {
 // Workflow Card Component
 const WorkflowCard = ({ workflow }) => {
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-4 hover:border-[#7C64FF]/30 hover:shadow-md transition-all">
+    <div className="bg-white border border-gray-100 rounded-xl p-4 hover:border-[#1FB58A]/30 hover:shadow-md transition-all">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
@@ -73,7 +73,7 @@ const WorkflowCard = ({ workflow }) => {
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-gray-900">{workflow.name}</h3>
               {workflow.is_flowforge_created && (
-                <span className="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">
+                <span className="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded">
                   FlowForge
                 </span>
               )}
@@ -230,7 +230,7 @@ const WorkflowInventory = () => {
         <Button
           onClick={handleSync}
           disabled={isSyncing}
-          className="bg-[#7C64FF] hover:bg-[#6B55E0]"
+          className="bg-[#1FB58A] hover:bg-[#179C76]"
           data-testid="sync-btn"
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
@@ -264,8 +264,8 @@ const WorkflowInventory = () => {
         </div>
         <div className="bg-white border border-gray-100 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Zap className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <Zap className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.flowforge}</p>
@@ -302,7 +302,7 @@ const WorkflowInventory = () => {
       {/* Workflow List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-[#7C64FF]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1FB58A]" />
         </div>
       ) : filteredWorkflows.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-xl">

@@ -324,7 +324,7 @@ const Proposals = () => {
                 placeholder={selectedClient ? "Search proposals..." : "Search clients..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl focus:bg-white focus:border-purple-500"
+                className="w-64 pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl focus:bg-white focus:border-emerald-500"
                 data-testid="search-input"
               />
             </div>
@@ -342,7 +342,7 @@ const Proposals = () => {
                 <Button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
                   data-testid="upload-proposal-btn"
                 >
                   <Upload size={18} className="mr-2" />
@@ -352,7 +352,7 @@ const Proposals = () => {
             ) : (
               <Button
                 onClick={() => setCreateClientModal(true)}
-                className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
                 data-testid="create-client-btn"
               >
                 <FolderPlus size={18} className="mr-2" />
@@ -364,11 +364,11 @@ const Proposals = () => {
 
         {/* Upload Progress */}
         {isUploading && (
-          <div className="mt-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
+          <div className="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
             <div className="flex items-center gap-3 mb-2">
-              <Upload className="w-5 h-5 text-purple-600 animate-pulse" />
-              <span className="text-sm font-medium text-purple-700">Uploading...</span>
-              <span className="text-sm text-purple-600 ml-auto">{uploadProgress}%</span>
+              <Upload className="w-5 h-5 text-emerald-600 animate-pulse" />
+              <span className="text-sm font-medium text-emerald-700">Uploading...</span>
+              <span className="text-sm text-emerald-600 ml-auto">{uploadProgress}%</span>
             </div>
             <Progress value={uploadProgress} className="h-2" />
           </div>
@@ -379,7 +379,7 @@ const Proposals = () => {
       {!selectedClient && (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 text-purple-500" />
+            <Sparkles className="w-5 h-5 text-emerald-500" />
             <h2 className="text-lg font-semibold text-gray-900">Interactive Presentations</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -934,7 +934,7 @@ const Proposals = () => {
             {/* THCO Town Hall 2026 - Internal Presentation */}
             <Link
               to="/proposals/town-hall-2026"
-              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-lg transition-all"
               data-testid="thco-town-hall-2026-link"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#0B0620] to-[#7C3AED] opacity-90" />
@@ -1062,7 +1062,7 @@ const Proposals = () => {
             {/* Procure AI Executive Pack V3 - Previous Version */}
             <Link
               to="/proposals/procure-ai-executive-v3"
-              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all"
+              className="group relative overflow-hidden rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-lg transition-all"
               data-testid="procure-ai-executive-v3-presentation-link"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#7C3AED] to-[#1E2761] opacity-90" />
@@ -1237,7 +1237,7 @@ const Proposals = () => {
             <p className="text-gray-500 mb-6">Upload your first proposal to share with this client</p>
             <Button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
             >
               <Upload size={18} className="mr-2" />
               Upload Proposal
@@ -1256,8 +1256,8 @@ const Proposals = () => {
                 data-testid={`client-card-${client.client_id}`}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                    <FolderOpen className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+                    <FolderOpen className="w-6 h-6 text-emerald-600" />
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -1284,7 +1284,7 @@ const Proposals = () => {
                   </DropdownMenu>
                 </div>
                 
-                <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors">
+                <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-emerald-700 transition-colors">
                   {client.name}
                 </h3>
                 <p className="text-sm text-gray-500 line-clamp-2 mb-4">
@@ -1295,7 +1295,7 @@ const Proposals = () => {
                   <span className="text-xs text-gray-400">
                     {client.proposal_count || 0} proposal{(client.proposal_count || 0) !== 1 ? 's' : ''}
                   </span>
-                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
             ))}
@@ -1309,7 +1309,7 @@ const Proposals = () => {
             <p className="text-gray-500 mb-6">Create your first client folder to organize proposals</p>
             <Button
               onClick={() => setCreateClientModal(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
             >
               <FolderPlus size={18} className="mr-2" />
               New Client
@@ -1336,7 +1336,7 @@ const Proposals = () => {
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
                 placeholder="e.g., Acme Corporation"
-                className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl focus:bg-white focus:border-purple-500"
+                className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl focus:bg-white focus:border-emerald-500"
                 data-testid="client-name-input"
               />
             </div>
@@ -1349,7 +1349,7 @@ const Proposals = () => {
                 onChange={(e) => setNewClientDescription(e.target.value)}
                 placeholder="Brief description of the client..."
                 rows={3}
-                className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl resize-none focus:bg-white focus:border-purple-500"
+                className="bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl resize-none focus:bg-white focus:border-emerald-500"
                 data-testid="client-description-input"
               />
             </div>
@@ -1365,7 +1365,7 @@ const Proposals = () => {
             </Button>
             <Button 
               onClick={handleCreateClient}
-              className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
               data-testid="create-client-submit-btn"
             >
               Create Client

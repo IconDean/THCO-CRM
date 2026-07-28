@@ -35,7 +35,7 @@ async def _send_template_email(template_func, ctx, to, cc=None):
 
 async def sla_reminder_sweep():
     """Check all active reviews and send SLA reminders as needed."""
-    if not db:
+    if db is None:
         return
     from services.email_templates import (
         window1_60min, window1_30min, window1_breach,
@@ -124,7 +124,7 @@ async def sla_reminder_sweep():
 
 async def daily_standup_sweep():
     """Send standup reminders at 5PM WAT and escalate missed standups."""
-    if not db:
+    if db is None:
         return
     from services.email_templates import standup_reminder, standup_missed_2days
     import pytz
@@ -218,7 +218,7 @@ async def flow_build_eod_reminder():
     on projects where they are the assigned_engineer_id and stage == 9.
     Sends only once per (engineer, project, day).
     """
-    if not db:
+    if db is None:
         return
     from services import send_email
     from services.email_templates import _base

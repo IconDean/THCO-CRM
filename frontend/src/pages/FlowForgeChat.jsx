@@ -54,7 +54,7 @@ const UNIT_NAMES = {
 const StatusBadge = ({ status }) => {
   const statusConfig = {
     building: { color: "bg-blue-500", label: "Building", icon: Edit3 },
-    ready: { color: "bg-purple-500", label: "Ready", icon: Check },
+    ready: { color: "bg-emerald-500", label: "Ready", icon: Check },
     pending_approval: { color: "bg-yellow-500", label: "Pending Approval", icon: Clock },
     changes_requested: { color: "bg-orange-500", label: "Changes Requested", icon: AlertCircle },
     deployed: { color: "bg-green-500", label: "Deployed", icon: CheckCircle2 },
@@ -123,7 +123,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
     <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : ""} mb-4`} data-testid={`chat-message-${message.role}`}>
       {/* Avatar */}
       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-        isUser ? "bg-gradient-to-br from-[#7C64FF] to-[#9D8AFF]" : "bg-gradient-to-br from-[#38D190] to-[#53E1A3]"
+        isUser ? "bg-gradient-to-br from-[#1FB58A] to-[#3DDC97]" : "bg-gradient-to-br from-[#38D190] to-[#53E1A3]"
       }`}>
         {isUser ? (
           <User className="w-4 h-4 text-white" />
@@ -137,7 +137,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
         {isWelcomeTemplate ? (
           // Styled Welcome Template
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden w-full" data-testid="welcome-template">
-            <div className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] px-4 py-3">
+            <div className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] px-4 py-3">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-white" />
                 <span className="font-medium text-white">FlowForge</span>
@@ -150,7 +150,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
                   __html: message.content
                     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
                     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-                    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-[#7C64FF] mt-4 mb-2">$1</h2>')
+                    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-[#1FB58A] mt-4 mb-2">$1</h2>')
                     .replace(/^---$/gm, '<hr class="my-4 border-gray-200"/>')
                     .replace(/✅/g, '<span class="text-green-500">✅</span>')
                     .replace(/📝/g, '<span class="text-2xl">📝</span>')
@@ -165,7 +165,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
           // Regular message
           <div className={`rounded-2xl px-4 py-3 ${
             isUser 
-              ? "bg-[#7C64FF] text-white rounded-tr-sm" 
+              ? "bg-[#1FB58A] text-white rounded-tr-sm" 
               : "bg-gray-100 text-gray-800 rounded-tl-sm"
           }`}>
             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -185,13 +185,13 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
           <div className="mt-2 bg-white border border-gray-200 rounded-xl p-4 shadow-sm w-full" data-testid="workflow-preview">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <FileCode className="w-5 h-5 text-[#7C64FF]" />
+                <FileCode className="w-5 h-5 text-[#1FB58A]" />
                 <span className="font-medium text-gray-800">
                   {message.workflow_data.suggested_name || "Workflow Preview"}
                 </span>
               </div>
               {message.workflow_data.trigger_type && (
-                <span className="text-xs px-2 py-1 bg-[#7C64FF]/10 text-[#7C64FF] rounded-full capitalize">
+                <span className="text-xs px-2 py-1 bg-[#1FB58A]/10 text-[#1FB58A] rounded-full capitalize">
                   {message.workflow_data.trigger_type}
                 </span>
               )}
@@ -207,7 +207,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
               <div className="space-y-2 mb-3">
                 {message.workflow_steps.slice(0, 6).map((step, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-sm">
-                    <span className="w-6 h-6 bg-[#7C64FF]/10 text-[#7C64FF] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                    <span className="w-6 h-6 bg-[#1FB58A]/10 text-[#1FB58A] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
                       {step.step_number || idx + 1}
                     </span>
                     <div>
@@ -251,14 +251,14 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
         {message.has_workflow_preview && message.workflow_preview_json && !message.workflow_data && (
           <div className="mt-2 bg-white border border-gray-200 rounded-xl p-4 shadow-sm w-full">
             <div className="flex items-center gap-2 mb-3">
-              <FileCode className="w-5 h-5 text-[#7C64FF]" />
+              <FileCode className="w-5 h-5 text-[#1FB58A]" />
               <span className="font-medium text-gray-800">Workflow Preview</span>
               <span className="text-xs text-gray-500">v{message.workflow_version || 1}</span>
             </div>
             <div className="space-y-2">
               {message.workflow_preview_json.steps?.map((step, idx) => (
                 <div key={idx} className="flex items-center gap-2 text-sm">
-                  <span className="w-6 h-6 bg-[#7C64FF]/10 text-[#7C64FF] rounded-full flex items-center justify-center text-xs font-medium">
+                  <span className="w-6 h-6 bg-[#1FB58A]/10 text-[#1FB58A] rounded-full flex items-center justify-center text-xs font-medium">
                     {idx + 1}
                   </span>
                   <span className="text-gray-700">{step.name || step}</span>
@@ -314,7 +314,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
                   variant={btn.primary ? "default" : "outline"}
                   size="sm"
                   onClick={() => onActionClick && onActionClick(btn.action, message)}
-                  className={btn.primary ? "bg-[#7C64FF] text-white hover:bg-[#6B55E0]" : ""}
+                  className={btn.primary ? "bg-[#1FB58A] text-white hover:bg-[#179C76]" : ""}
                   data-testid={`duplicate-action-${btn.action}`}
                 >
                   {btn.label}
@@ -328,7 +328,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
         {message.has_integration_check && message.integration_check_data && (
           <div className="mt-2 bg-white border border-gray-200 rounded-xl p-4 shadow-sm w-full">
             <div className="flex items-center gap-2 mb-3">
-              <PlugZap className="w-5 h-5 text-[#7C64FF]" />
+              <PlugZap className="w-5 h-5 text-[#1FB58A]" />
               <span className="font-medium text-gray-800">Required Integrations</span>
             </div>
             <div className="space-y-2">
@@ -363,7 +363,7 @@ const ChatMessage = ({ message, isLastMessage, onActionClick }) => {
                 variant={btn.variant || "outline"}
                 size="sm"
                 onClick={() => onActionClick && onActionClick(btn.action, message)}
-                className={btn.primary ? "bg-[#7C64FF] text-white hover:bg-[#6B55E0]" : ""}
+                className={btn.primary ? "bg-[#1FB58A] text-white hover:bg-[#179C76]" : ""}
                 data-testid={`action-btn-${btn.action}`}
               >
                 {btn.icon && <span className="mr-1">{btn.icon}</span>}
@@ -969,7 +969,7 @@ const FlowForgeChat = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#7C64FF] mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1FB58A] mx-auto mb-4" />
           <p className="text-gray-500">Loading FlowForge...</p>
         </div>
       </div>
@@ -1010,7 +1010,7 @@ const FlowForgeChat = () => {
             ) : (
               <button
                 onClick={() => setIsEditingName(true)}
-                className="font-medium text-gray-800 hover:text-[#7C64FF] transition-colors flex items-center gap-1"
+                className="font-medium text-gray-800 hover:text-[#1FB58A] transition-colors flex items-center gap-1"
                 data-testid="tool-name-display"
               >
                 {toolName}
@@ -1091,7 +1091,7 @@ const FlowForgeChat = () => {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message or click the mic to record..."
-                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] transition-all min-h-[48px] max-h-[200px]"
+                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] transition-all min-h-[48px] max-h-[200px]"
                 rows={1}
                 disabled={isSending || showVoiceRecorder}
                 data-testid="chat-input"
@@ -1105,7 +1105,7 @@ const FlowForgeChat = () => {
               className={`h-12 w-12 rounded-xl transition-all ${
                 showVoiceRecorder 
                   ? "bg-red-50 border-red-200 text-red-500" 
-                  : "hover:bg-[#7C64FF]/10 hover:border-[#7C64FF]/50"
+                  : "hover:bg-[#1FB58A]/10 hover:border-[#1FB58A]/50"
               }`}
               onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
               disabled={isSending}
@@ -1134,7 +1134,7 @@ const FlowForgeChat = () => {
             <Button
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isSending || showVoiceRecorder}
-              className="h-12 px-6 rounded-xl bg-[#7C64FF] hover:bg-[#6B55E0] text-white"
+              className="h-12 px-6 rounded-xl bg-[#1FB58A] hover:bg-[#179C76] text-white"
               data-testid="send-message-btn"
             >
               {isSending ? (

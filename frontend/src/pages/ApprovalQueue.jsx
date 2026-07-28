@@ -58,7 +58,7 @@ const STATUS_CONFIG = {
 
 // Request type icons
 const REQUEST_TYPE_CONFIG = {
-  new_tool: { icon: Zap, label: "New Tool", color: "text-purple-600" },
+  new_tool: { icon: Zap, label: "New Tool", color: "text-emerald-600" },
   update: { icon: Edit3, label: "Update", color: "text-blue-600" },
   activate: { icon: CheckCircle2, label: "Activate", color: "text-green-600" },
   delete: { icon: Trash2, label: "Delete", color: "text-red-600" },
@@ -90,7 +90,7 @@ const ApprovalCard = ({ approval, onAction, onViewDetails }) => {
 
   return (
     <div 
-      className="bg-white border border-gray-100 rounded-xl p-5 hover:border-[#7C64FF]/30 hover:shadow-md transition-all"
+      className="bg-white border border-gray-100 rounded-xl p-5 hover:border-[#1FB58A]/30 hover:shadow-md transition-all"
       data-testid={`approval-card-${approval.id}`}
     >
       <div className="flex items-start justify-between">
@@ -199,7 +199,7 @@ const ApprovalCard = ({ approval, onAction, onViewDetails }) => {
           </div>
           <Link
             to={`/${approval.unit}/build/${approval.conversation_id}`}
-            className="text-sm text-[#7C64FF] hover:underline flex items-center gap-1"
+            className="text-sm text-[#1FB58A] hover:underline flex items-center gap-1"
           >
             View Conversation
             <ChevronRight className="w-4 h-4" />
@@ -430,7 +430,7 @@ const ApprovalQueue = () => {
       {/* Approval List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-[#7C64FF]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1FB58A]" />
         </div>
       ) : approvals.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-xl">
@@ -469,7 +469,7 @@ const ApprovalQueue = () => {
               value={actionNote}
               onChange={(e) => setActionNote(e.target.value)}
               placeholder={selectedApproval.pendingAction === 'reject' ? 'Reason for rejection...' : 'Describe the changes needed...'}
-              className="w-full h-32 px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF]"
+              className="w-full h-32 px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A]"
               data-testid="action-note-input"
             />
             <div className="flex justify-end gap-3 mt-4">

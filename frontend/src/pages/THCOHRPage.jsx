@@ -55,7 +55,7 @@ const TOOLS = [
     slug: "employee-directory",
     icon: Users,
     description: "View and manage all THCO team members, roles, and departments",
-    gradient: "from-violet-500 to-purple-600",
+    gradient: "from-emerald-500 to-emerald-600",
     active: true
   },
   {
@@ -140,7 +140,7 @@ const THCOHRPage = () => {
       <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
               <UserCog className="w-8 h-8 text-white" />
             </div>
             <div>
@@ -153,12 +153,12 @@ const THCOHRPage = () => {
           </div>
           <div className="flex gap-3">
             <Link to="/thco-hr/build/new">
-              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+              <Button className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] text-white hover:opacity-90 shadow-lg shadow-emerald-500/20" data-testid="build-new-tool-btn">
                 <Zap className="w-4 h-4 mr-2" />
                 Build New Tool
               </Button>
             </Link>
-            <Button className="bg-violet-600 hover:bg-violet-700">
+            <Button className="bg-emerald-600 hover:bg-emerald-700">
               <Plus className="w-4 h-4 mr-2" />
               Add Employee
             </Button>
@@ -192,8 +192,8 @@ const THCOHRPage = () => {
           className="bg-white rounded-xl border border-gray-200 p-5"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-              <Users className="w-5 h-5 text-violet-600" />
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <Users className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{SAMPLE_EMPLOYEES.length}</p>
@@ -266,16 +266,16 @@ const THCOHRPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="group bg-white rounded-xl border border-gray-200 p-4 hover:border-violet-300 hover:shadow-md transition-all cursor-pointer"
+                className="group bg-white rounded-xl border border-gray-200 p-4 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer"
                 data-testid={`agent-card-${agent.id}`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-sm group-hover:text-violet-600 transition-colors">
+                      <h3 className="font-semibold text-gray-900 text-sm group-hover:text-emerald-600 transition-colors">
                         {agent.name}
                       </h3>
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${PRIORITY_COLORS[agent.priority]}`}>
@@ -325,7 +325,7 @@ const THCOHRPage = () => {
                       </span>
                     </div>
                     
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-violet-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
                       {tool.name}
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">
@@ -333,7 +333,7 @@ const THCOHRPage = () => {
                     </p>
                     
                     <div className="flex items-center justify-end pt-4 border-t border-gray-100">
-                      <span className="text-sm text-violet-600 flex items-center gap-1 group-hover:gap-2 transition-all font-medium">
+                      <span className="text-sm text-emerald-600 flex items-center gap-1 group-hover:gap-2 transition-all font-medium">
                         Open Tool
                         <ChevronRight className="w-4 h-4" />
                       </span>
@@ -398,7 +398,7 @@ const THCOHRPage = () => {
             <select 
               value={selectedDepartment}
               onChange={(e) => setSelectedDepartment(e.target.value)}
-              className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               data-testid="department-filter"
             >
               <option value="all">All Departments</option>
@@ -420,13 +420,13 @@ const THCOHRPage = () => {
                 className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all cursor-pointer"
                 data-testid={`employee-card-${employee.id}`}
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center text-white font-semibold">
                   {employee.name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 truncate">{employee.name}</p>
                   <p className="text-sm text-gray-500 truncate">{employee.role}</p>
-                  <span className="text-xs text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
                     {employee.department}
                   </span>
                 </div>

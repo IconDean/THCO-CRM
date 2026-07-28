@@ -75,9 +75,9 @@ const INTAKE_PATHS = [
     name: "Referrals",
     icon: Users,
     description: "Happy clients tell others → Direct introductions",
-    color: "from-purple-500 to-violet-600",
-    bgColor: "bg-purple-50",
-    textColor: "text-purple-700",
+    color: "from-emerald-500 to-emerald-600",
+    bgColor: "bg-emerald-50",
+    textColor: "text-emerald-700",
     leads: 15,
     conversion: "35%"
   },
@@ -256,7 +256,7 @@ const PRIORITY_COLORS = {
 const LEAD_STATUSES = {
   new: { label: "New", color: "bg-gray-100 text-gray-700", icon: Clock },
   contacted: { label: "Contacted", color: "bg-blue-100 text-blue-700", icon: Phone },
-  qualified: { label: "Qualified", color: "bg-purple-100 text-purple-700", icon: Target },
+  qualified: { label: "Qualified", color: "bg-emerald-100 text-emerald-700", icon: Target },
   proposal: { label: "Proposal Sent", color: "bg-amber-100 text-amber-700", icon: MessageSquare },
   won: { label: "Won", color: "bg-green-100 text-green-700", icon: CheckCircle2 },
   lost: { label: "Lost", color: "bg-red-100 text-red-700", icon: AlertCircle }
@@ -317,7 +317,7 @@ const SalesAndBD = () => {
           </div>
           <div className="flex gap-3">
             <Link to="/sales/build/new">
-              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+              <Button className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] text-white hover:opacity-90 shadow-lg shadow-emerald-500/20" data-testid="build-new-tool-btn">
                 <Zap className="w-4 h-4 mr-2" />
                 Build New Tool
               </Button>
@@ -421,8 +421,8 @@ const SalesAndBD = () => {
           className="bg-white rounded-xl border border-gray-200 p-5"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-              <Users className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <Users className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">320</p>

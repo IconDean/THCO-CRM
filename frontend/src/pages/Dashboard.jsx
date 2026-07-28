@@ -1,149 +1,149 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { 
-  Users, 
-  TrendingUp, 
-  Megaphone, 
-  Briefcase, 
-  Code, 
-  Building2, 
-  GraduationCap, 
+import {
+  Users,
+  TrendingUp,
+  Megaphone,
+  Briefcase,
+  Code,
+  Building2,
+  GraduationCap,
   Truck,
   Wrench,
   Activity,
   Clock,
   Lock,
-  ChevronRight,
-  Sparkles,
+  ArrowUpRight,
   UserCog,
-  FolderKanban
+  FolderKanban,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
-import { dashboardAPI, activityAPI, authAPI } from "../lib/api";
+import { dashboardAPI, activityAPI, authAPI, unitsAPI } from "../lib/api";
 import { useAnalytics } from "../context/AnalyticsContext";
+import { hasFullAccess } from "../context/UserContext";
 
 const UNITS = [
-  { 
-    name: "Talent & Human Capital", 
-    slug: "talent", 
-    icon: Users, 
-    path: "/talent", 
+  {
+    name: "Talent & Human Capital",
+    slug: "talent",
+    icon: Users,
+    path: "/talent",
     active: true,
     description: "AI-powered recruiting, sourcing, screening, placement, and workforce planning",
     toolCount: 2,
-    gradient: "bg-gradient-to-br from-[#B855E8] to-[#DA67E4]",
-    lead: "Amalina"
+    accent: "#B855E8",
+    lead: "Amalina",
   },
-  { 
-    name: "THCO HR", 
-    slug: "thco-hr", 
-    icon: UserCog, 
-    path: "/thco-hr", 
+  {
+    name: "THCO HR",
+    slug: "thco-hr",
+    icon: UserCog,
+    path: "/thco-hr",
     active: true,
     description: "Internal HR, employee records, people operations, performance & incentives",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA]",
-    lead: "Victoria"
+    accent: "#8B5CF6",
+    lead: "Victoria",
   },
-  { 
-    name: "Project Management", 
-    slug: "project-management", 
-    icon: FolderKanban, 
-    path: "/project-management", 
+  {
+    name: "THCO Flow",
+    slug: "flow",
+    icon: FolderKanban,
+    path: "/flow",
     active: true,
-    description: "Project tracking, Friday demos, handoff enforcement, task management",
+    description: "The 12-stage client pipeline — from first contact to completed build",
     toolCount: 2,
-    gradient: "bg-gradient-to-br from-[#14B8A6] to-[#2DD4BF]",
-    lead: "Victoria"
+    accent: "#1B4332",
+    lead: "Victoria",
   },
-  { 
-    name: "IT & THCO Tools", 
-    slug: "it-tools", 
-    icon: Wrench, 
-    path: "/it-tools", 
+  {
+    name: "IT & THCO Tools",
+    slug: "it-tools",
+    icon: Wrench,
+    path: "/it-tools",
     active: true,
     description: "IT infrastructure, outbound tooling, email warming, AI agent management",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#F97316] to-[#FB923C]",
-    lead: "Emmanuel"
+    accent: "#F97316",
+    lead: "Emmanuel",
   },
-  { 
-    name: "Sales & Business Development", 
-    slug: "sales", 
-    icon: TrendingUp, 
-    path: "/sales", 
+  {
+    name: "Sales & Business Development",
+    slug: "sales",
+    icon: TrendingUp,
+    path: "/sales",
     active: true,
     description: "4 intake paths: Outbound, Inbound, Referrals, Reactivation across 5 pillars",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#38D190] to-[#53E1A3]",
-    lead: "Rebecca"
+    accent: "#38D190",
+    lead: "Rebecca",
   },
-  { 
-    name: "Marketing & Brand", 
-    slug: "marketing", 
-    icon: Megaphone, 
-    path: "/marketing", 
+  {
+    name: "Marketing & Brand",
+    slug: "marketing",
+    icon: Megaphone,
+    path: "/marketing",
     active: true,
     description: "Content engine: 20 articles/mo, 130+ LinkedIn posts, 4 newsletters, case studies",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#FF3D8D] to-[#FF7F7F]",
-    lead: "Havilah"
+    accent: "#FF3D8D",
+    lead: "Havilah",
   },
-  { 
-    name: "Advisory & Consulting", 
-    slug: "advisory", 
-    icon: Briefcase, 
-    path: "/advisory", 
+  {
+    name: "Advisory & Consulting",
+    slug: "advisory",
+    icon: Briefcase,
+    path: "/advisory",
     active: true,
     description: "Client advisory, scoping, HR consulting, workforce assessments, pricing",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#3B82F6] to-[#60A5FA]",
-    lead: "Christiana"
+    accent: "#3B82F6",
+    lead: "Christiana",
   },
-  { 
-    name: "Technology & Build", 
-    slug: "technology", 
-    icon: Code, 
-    path: "/technology", 
+  {
+    name: "Technology & Build",
+    slug: "technology",
+    icon: Code,
+    path: "/technology",
     active: true,
     description: "3 engineering pods, AI tools, software delivery, product development",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#06B6D4] to-[#22D3EE]",
-    lead: "James"
+    accent: "#06B6D4",
+    lead: "James",
   },
-  { 
-    name: "Operations & Finance", 
-    slug: "operations", 
-    icon: Building2, 
-    path: "/operations", 
+  {
+    name: "Operations & Finance",
+    slug: "operations",
+    icon: Building2,
+    path: "/operations",
     active: true,
     description: "Invoicing, contracts, financial tracking, office admin, logistics",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#EF4444] to-[#F87171]",
-    lead: "Victoria"
+    accent: "#EF4444",
+    lead: "Victoria",
   },
-  { 
-    name: "Academy & Learning", 
-    slug: "academy", 
-    icon: GraduationCap, 
-    path: "/academy", 
+  {
+    name: "Academy & Learning",
+    slug: "academy",
+    icon: GraduationCap,
+    path: "/academy",
     active: true,
     description: "Day Learning platform, AI Engineer tracks, brand architects training",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#F59E0B] to-[#FBBF24]",
-    lead: "Babatunde"
+    accent: "#F59E0B",
+    lead: "Babatunde",
   },
-  { 
-    name: "Client Delivery", 
-    slug: "client-delivery", 
-    icon: Truck, 
-    path: "/client-delivery", 
+  {
+    name: "Client Delivery",
+    slug: "client-delivery",
+    icon: Truck,
+    path: "/client-delivery",
     active: true,
     description: "Managed services, SLA tracking, deployed staff at client sites",
     toolCount: 1,
-    gradient: "bg-gradient-to-br from-[#EC4899] to-[#F472B6]",
-    lead: "Isaiah"
+    accent: "#EC4899",
+    lead: "Isaiah",
   },
 ];
 
@@ -152,6 +152,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState({ total_tools: 0, pending_requests: 0, recent_activity: 0 });
   const [activities, setActivities] = useState([]);
   const [accessModal, setAccessModal] = useState({ open: false, unitName: "" });
+  const [dynamicUnits, setDynamicUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const { trackAction } = useAnalytics();
 
@@ -161,11 +162,17 @@ const Dashboard = () => {
         const [userData, statsData, activityData] = await Promise.all([
           authAPI.getMe(),
           dashboardAPI.getStats(),
-          activityAPI.getLogs({ limit: 10 })
+          activityAPI.getLogs({ limit: 10 }),
         ]);
         setUser(userData);
         setStats(statsData);
         setActivities(activityData);
+        try {
+          const du = await unitsAPI.list();
+          setDynamicUnits(du || []);
+        } catch (e) {
+          // non-fatal
+        }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -176,7 +183,8 @@ const Dashboard = () => {
   }, []);
 
   const hasUnitAccess = (slug) => {
-    if (user?.role === "super_admin") return true;
+    if (hasFullAccess(user)) return true;
+    if (slug === "flow") return true;
     return user?.accessible_units?.includes(slug);
   };
 
@@ -198,49 +206,62 @@ const Dashboard = () => {
 
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins} min ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   };
 
-  const getRoleBadge = (role) => {
-    const styles = {
-      super_admin: "bg-gray-100 text-gray-600",
-      mini_admin: "bg-emerald-100 text-emerald-700",
-      team_member: "bg-gray-100 text-gray-600",
-    };
-    const labels = {
-      super_admin: "SUPER ADMIN",
-      mini_admin: "MINI ADMIN",
-      team_member: "TEAM MEMBER",
-    };
-    return (
-      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded ${styles[role] || styles.team_member}`}>
-        {labels[role] || "MEMBER"}
-      </span>
-    );
+  const getRoleLabel = (u) => {
+    if (u?.role === "super_admin") return "Super Admin";
+    if (u?.role === "mini_admin") return "Admin";
+    if (u?.is_hr) return "HR";
+    return "Team Member";
   };
 
   const getCurrentDate = () => {
-    return new Date().toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
+
+  const ICON_MAP = {
+    "layers": Building2, "building-2": Building2, "users": Users, "briefcase": Briefcase,
+    "wrench": Wrench, "trending-up": TrendingUp, "megaphone": Megaphone, "graduation-cap": GraduationCap,
+    "code": Code, "truck": Truck, "clipboard-list": Users, "headphones": Wrench,
+    "folder-kanban": FolderKanban, "lightbulb": Wrench,
+  };
+  const dynamicNavUnits = dynamicUnits
+    .filter((u) => hasUnitAccess(u.slug))
+    .map((u) => ({
+      name: u.name,
+      slug: u.slug,
+      icon: ICON_MAP[u.icon] || Building2,
+      path: `/unit/${u.slug}`,
+      active: true,
+      description: u.description || "",
+      toolCount: u.member_count || 0,
+      accent: u.accent || "#1FB58A",
+      lead: u.lead || "—",
+    }));
+  const accessibleUnits = [
+    ...UNITS.filter((u) => hasUnitAccess(u.slug)),
+    ...dynamicNavUnits,
+  ];
 
   if (loading) {
     return (
       <div className="space-y-8 animate-pulse">
-        <div className="h-32 bg-gray-100 rounded-2xl"></div>
+        <div className="h-28 bg-[#EFEDE8] rounded-2xl"></div>
         <div className="grid grid-cols-3 gap-4">
-          <div className="h-24 bg-gray-100 rounded-2xl"></div>
-          <div className="h-24 bg-gray-100 rounded-2xl"></div>
-          <div className="h-24 bg-gray-100 rounded-2xl"></div>
+          <div className="h-24 bg-[#EFEDE8] rounded-2xl"></div>
+          <div className="h-24 bg-[#EFEDE8] rounded-2xl"></div>
+          <div className="h-24 bg-[#EFEDE8] rounded-2xl"></div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1,2,3,4,5,6].map(i => (
-            <div key={i} className="h-48 bg-gray-100 rounded-2xl"></div>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-48 bg-[#EFEDE8] rounded-2xl"></div>
           ))}
         </div>
       </div>
@@ -248,115 +269,80 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-8" data-testid="dashboard-page">
+    <div className="max-w-[1400px] mx-auto space-y-10" data-testid="dashboard-page">
       {/* Welcome Section */}
-      <div>
-        <p className="text-gray-500 text-sm mb-1">{getCurrentDate()}</p>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user?.name?.split(" ")[0]}
+      <div className="pt-2">
+        <p className="lux-eyebrow mb-3">{getCurrentDate()}</p>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-4xl lg:text-[42px] text-gray-900 leading-[1.1]">
+              Welcome back, <em className="lux-gold-text not-italic">{user?.name?.split(" ")[0]}</em>
             </h1>
-            {getRoleBadge(user?.role)}
-          </div>
-          <div className="flex items-center gap-2 text-gray-500">
-            <Sparkles className="w-4 h-4 text-purple-500" />
-            <span className="text-sm">AI-powered tools at your fingertips</span>
+            <p className="text-sm text-gray-500 mt-3">
+              Signed in as {getRoleLabel(user)} · {accessibleUnits.length} unit{accessibleUnits.length !== 1 ? "s" : ""} in your portfolio
+            </p>
           </div>
         </div>
+        <div className="lux-divider mt-8" />
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-5 border border-gray-100">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
-              <Wrench className="w-6 h-6 text-gray-600" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { label: "Tools Available", value: stats.total_tools, icon: Wrench },
+          { label: "Pending Requests", value: stats.pending_requests, icon: Clock },
+          { label: "Recent Activity", value: stats.recent_activity, icon: Activity },
+        ].map(({ label, value, icon: Icon }) => (
+          <div key={label} className="lux-card p-6 flex items-center gap-5">
+            <div className="w-11 h-11 rounded-full border border-[#E5D9C3] bg-[#FBF8F1] flex items-center justify-center shrink-0">
+              <Icon className="w-[18px] h-[18px] text-[#A9834E]" strokeWidth={1.6} />
             </div>
             <div>
-              <p className="text-3xl font-bold text-gray-900">{stats.total_tools}</p>
-              <p className="text-sm text-gray-500">Tools Available</p>
+              <p className="font-display text-[32px] leading-none text-gray-900">{value}</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-gray-400 mt-2">{label}</p>
             </div>
           </div>
-        </div>
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-200 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-amber-700" />
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-gray-900">{stats.pending_requests}</p>
-              <p className="text-sm text-gray-500">Pending Requests</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-green-200 flex items-center justify-center">
-              <Activity className="w-6 h-6 text-green-700" />
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-gray-900">{stats.recent_activity}</p>
-              <p className="text-sm text-gray-500">Recent Activity</p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Units Section */}
       <div>
-        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-4">Business Units</h2>
+        <div className="flex items-baseline justify-between mb-5">
+          <h2 className="font-display text-[22px] text-gray-900">Your Business Units</h2>
+          <span className="lux-eyebrow">The Control Room</span>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {UNITS.map((unit) => {
+          {accessibleUnits.map((unit) => {
             const Icon = unit.icon;
-            const hasAccess = hasUnitAccess(unit.slug);
-            
             return (
               <Link
                 key={unit.slug}
                 to={unit.path}
                 onClick={(e) => handleUnitClick(unit, e)}
-                className={`group rounded-2xl transition-all duration-300 overflow-hidden shadow-md ${
-                  hasAccess 
-                    ? "hover:scale-[1.02] hover:shadow-xl" 
-                    : "opacity-60 cursor-pointer"
-                } ${unit.gradient}`}
+                className="group lux-card lux-card-hover overflow-hidden"
                 data-testid={`unit-card-${unit.slug}`}
               >
-                <div className="p-6 h-full flex flex-col min-h-[200px]">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-white" />
+                <div className="p-6 h-full flex flex-col min-h-[196px]">
+                  <div className="flex items-start justify-between mb-5">
+                    <div
+                      className="w-11 h-11 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${unit.accent}14`, border: `1px solid ${unit.accent}33` }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: unit.accent }} strokeWidth={1.7} />
                     </div>
-                    {hasAccess ? (
-                      unit.active ? (
-                        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-white/25 text-white">
-                          ACTIVE
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-black/20 text-white/90">
-                          COMING SOON
-                        </span>
-                      )
-                    ) : (
-                      <Lock className="w-4 h-4 text-white/50" />
-                    )}
+                    <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-[#A9834E] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </div>
-                  
-                  <h3 className="text-xl font-semibold text-white mb-2">
-                    {unit.name}
-                  </h3>
-                  <p className="text-sm text-white/80 mb-4 flex-grow">
-                    {unit.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between pt-4 border-t border-white/20">
-                    <span className="text-xs text-white/70">
-                      {unit.toolCount} tool{unit.toolCount !== 1 ? 's' : ''}
+
+                  <h3 className="font-display text-[19px] text-gray-900 mb-2 leading-snug">{unit.name}</h3>
+                  <p className="text-[13px] text-gray-500 leading-relaxed mb-4 flex-grow">{unit.description}</p>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-[#F0EEE9]">
+                    <span className="text-[11px] uppercase tracking-[0.15em] text-gray-400">
+                      {unit.toolCount} tool{unit.toolCount !== 1 ? "s" : ""}
                     </span>
-                    {hasAccess && (
-                      <ChevronRight className="w-4 h-4 text-white/70 group-hover:translate-x-1 transition-transform" />
-                    )}
+                    <span className="text-[11px] text-gray-400">
+                      Lead · <span className="text-gray-600 font-medium">{unit.lead}</span>
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -365,28 +351,53 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Recent Activity */}
+      {activities.length > 0 && (
+        <div>
+          <div className="flex items-baseline justify-between mb-5">
+            <h2 className="font-display text-[22px] text-gray-900">Recent Activity</h2>
+          </div>
+          <div className="lux-card divide-y divide-[#F0EEE9]">
+            {activities.slice(0, 6).map((a, i) => (
+              <div key={a.log_id || i} className="flex items-center gap-4 px-6 py-4">
+                <div className="w-8 h-8 rounded-full bg-[#F7F6F3] border border-[#EAE7E0] flex items-center justify-center shrink-0">
+                  <Activity className="w-3.5 h-3.5 text-[#A9834E]" strokeWidth={1.6} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] text-gray-800 truncate">
+                    <span className="font-medium">{a.user_name}</span> — {a.action}
+                  </p>
+                  {a.details && <p className="text-[12px] text-gray-400 truncate">{a.details}</p>}
+                </div>
+                <span className="text-[11px] text-gray-400 shrink-0">{formatTimeAgo(a.timestamp || a.created_at)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Access Restricted Modal */}
       <Dialog open={accessModal.open} onOpenChange={(open) => setAccessModal({ ...accessModal, open })}>
-        <DialogContent className="bg-white border-gray-200 max-w-md rounded-2xl">
+        <DialogContent className="bg-white border-[#EAE7E0] max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-gray-900 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-red-600" />
+            <DialogTitle className="text-gray-900 flex items-center gap-3 font-display text-xl">
+              <div className="w-10 h-10 rounded-full border border-[#C6A15B]/40 flex items-center justify-center">
+                <Lock className="w-4 h-4 text-[#A9834E]" />
               </div>
               Access Restricted
             </DialogTitle>
-            <DialogDescription className="text-gray-500 pt-4">
-              You don't have access to <span className="text-gray-900 font-medium">{accessModal.unitName}</span>. 
-              Contact your administrator to request access.
+            <DialogDescription className="text-gray-500 pt-4 leading-relaxed">
+              You don't have access to <span className="text-gray-900 font-medium">{accessModal.unitName}</span>.
+              Ask your administrator or HR to extend your permissions.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end mt-4">
-            <Button 
+            <Button
               onClick={() => setAccessModal({ open: false, unitName: "" })}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl"
+              className="bg-[#14181D] hover:bg-[#252b33] text-white rounded-full px-6"
               data-testid="access-modal-dismiss-btn"
             >
-              Dismiss
+              Understood
             </Button>
           </div>
         </DialogContent>

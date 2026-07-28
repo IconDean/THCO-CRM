@@ -94,8 +94,8 @@ const UnitSelectionModal = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white border-[#EAE7E0] text-gray-900">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100 bg-white">
           <DialogTitle className="text-xl font-semibold text-gray-800">
             Which unit is this tool for?
           </DialogTitle>
@@ -111,13 +111,13 @@ const UnitSelectionModal = ({ isOpen, onClose }) => {
               <button
                 key={unit.slug}
                 onClick={() => handleUnitSelect(unit)}
-                className="flex flex-col items-center p-4 rounded-xl border border-gray-100 hover:border-[#7C64FF]/30 hover:shadow-md transition-all group"
+                className="flex flex-col items-center p-4 rounded-xl border border-gray-100 hover:border-[#1FB58A]/30 hover:shadow-md transition-all group"
                 data-testid={`unit-select-${unit.slug}`}
               >
                 <div className={`w-12 h-12 rounded-xl ${unit.gradient} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-sm font-medium text-gray-700 text-center group-hover:text-[#7C64FF] transition-colors">
+                <span className="text-sm font-medium text-gray-700 text-center group-hover:text-[#1FB58A] transition-colors">
                   {unit.name}
                 </span>
               </button>

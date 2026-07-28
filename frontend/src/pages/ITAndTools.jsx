@@ -98,7 +98,7 @@ const TOOLS = [
     slug: "ai-agents",
     icon: Bot,
     description: "Monitor and manage all 22 AI agents across departments",
-    gradient: "from-violet-500 to-purple-600",
+    gradient: "from-emerald-500 to-emerald-600",
     active: true,
     stats: { total: 22, active: 9, idle: 13 }
   },
@@ -179,7 +179,7 @@ const ITAndTools = () => {
           </div>
           <div className="flex gap-3">
             <Link to="/it-tools/build/new">
-              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+              <Button className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] text-white hover:opacity-90 shadow-lg shadow-emerald-500/20" data-testid="build-new-tool-btn">
                 <Zap className="w-4 h-4 mr-2" />
                 Build New Tool
               </Button>
@@ -217,8 +217,8 @@ const ITAndTools = () => {
           className="bg-white rounded-xl border border-gray-200 p-5"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-violet-600" />
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <Bot className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{ALL_AGENTS.length}</p>

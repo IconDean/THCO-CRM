@@ -134,7 +134,7 @@ const ProposalView = () => {
     return (
       <div className="min-h-screen bg-[#0f1219] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-400">Loading proposal...</p>
         </div>
       </div>
@@ -169,16 +169,16 @@ const ProposalView = () => {
           </div>
 
           <div className="text-center mb-6">
-            <span className="text-xs font-mono uppercase tracking-wider text-purple-400 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-500/30">
+            <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/30">
               {proposal.client_name}
             </span>
             <h2 className="text-lg font-semibold text-white mt-4 break-all">{proposal.filename}</h2>
           </div>
 
           <form onSubmit={submitEmailGate} className="space-y-3" data-testid="email-gate-form">
-            <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 flex items-start gap-2 mb-2">
-              <Lock className="w-4 h-4 text-purple-300 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-purple-200">Enter your details to view this document.</p>
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 flex items-start gap-2 mb-2">
+              <Lock className="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-emerald-200">Enter your details to view this document.</p>
             </div>
             <div>
               <label className="text-xs font-medium text-gray-300 uppercase tracking-wider">Email *</label>
@@ -190,7 +190,7 @@ const ProposalView = () => {
                   value={viewerEmail}
                   onChange={(e) => setViewerEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="w-full pl-10 pr-3 py-3 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                  className="w-full pl-10 pr-3 py-3 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   data-testid="viewer-email-input"
                 />
               </div>
@@ -201,7 +201,7 @@ const ProposalView = () => {
                 value={viewerName}
                 onChange={(e) => setViewerName(e.target.value)}
                 placeholder="Name (optional)"
-                className="px-3 py-2.5 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                className="px-3 py-2.5 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 data-testid="viewer-name-input"
               />
               <input
@@ -209,7 +209,7 @@ const ProposalView = () => {
                 value={viewerCompany}
                 onChange={(e) => setViewerCompany(e.target.value)}
                 placeholder="Company (optional)"
-                className="px-3 py-2.5 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                className="px-3 py-2.5 bg-[#0f1219] border border-white/10 rounded-lg text-white text-sm placeholder-gray-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 data-testid="viewer-company-input"
               />
             </div>
@@ -219,7 +219,7 @@ const ProposalView = () => {
             <Button
               type="submit"
               disabled={submitting}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-12 text-base"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-12 text-base"
               data-testid="email-gate-submit"
             >
               {submitting ? "Verifying..." : "Continue to Document"}
@@ -242,7 +242,7 @@ const ProposalView = () => {
           className="h-6 sm:h-7 brightness-0 invert flex-shrink-0"
         />
         <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-purple-400 truncate">{proposal.client_name}</p>
+          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-emerald-400 truncate">{proposal.client_name}</p>
           <h2 className="text-xs sm:text-sm font-semibold text-white truncate">{proposal.filename}</h2>
         </div>
       </div>
@@ -255,7 +255,7 @@ const ProposalView = () => {
         {pdfLoading || !pdfBlob ? (
           <div className="flex items-center justify-center py-24">
             <div className="text-center">
-              <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
               <p className="text-sm text-gray-400">Loading presentation...</p>
             </div>
           </div>
@@ -266,7 +266,7 @@ const ProposalView = () => {
               onLoadSuccess={onDocumentLoadSuccess}
               loading={
                 <div className="text-center py-12">
-                  <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                  <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
                   <p className="text-sm text-gray-400">Rendering...</p>
                 </div>
               }

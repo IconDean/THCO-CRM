@@ -107,7 +107,7 @@ const ENGINEERING_PODS = [
     members: 3,
     activeProjects: 1,
     status: "active",
-    color: "from-violet-500 to-purple-600"
+    color: "from-emerald-500 to-emerald-600"
   },
   {
     id: "pod_c",
@@ -135,7 +135,7 @@ const TOOLS = [
     slug: "pod-assignment",
     icon: Users,
     description: "Assign projects to engineering pods and manage capacity",
-    gradient: "from-violet-500 to-purple-600",
+    gradient: "from-emerald-500 to-emerald-600",
     active: true
   },
   {
@@ -213,7 +213,7 @@ const SAMPLE_PROJECTS = [
 const STATUS_CONFIG = {
   planning: { label: "Planning", color: "bg-gray-100 text-gray-700", icon: Clock },
   in_progress: { label: "In Progress", color: "bg-blue-100 text-blue-700", icon: GitBranch },
-  review: { label: "Review", color: "bg-purple-100 text-purple-700", icon: CheckCircle2 },
+  review: { label: "Review", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
   completed: { label: "Completed", color: "bg-green-100 text-green-700", icon: CheckCircle2 },
   blocked: { label: "Blocked", color: "bg-red-100 text-red-700", icon: AlertCircle }
 };
@@ -267,7 +267,7 @@ const TechnologyAndBuild = () => {
           </div>
           <div className="flex gap-3">
             <Link to="/technology/build/new">
-              <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+              <Button className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] text-white hover:opacity-90 shadow-lg shadow-emerald-500/20" data-testid="build-new-tool-btn">
                 <Zap className="w-4 h-4 mr-2" />
                 Build New Tool
               </Button>
@@ -379,8 +379,8 @@ const TechnologyAndBuild = () => {
           className="bg-white rounded-xl border border-gray-200 p-5"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.inReview}</p>

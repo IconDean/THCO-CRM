@@ -7,7 +7,7 @@ import { toast } from "sonner";
 const STATUS_GROUPS = [
   { key: "pending_review", label: "Pending Review", statuses: ["delegated", "under_review"], icon: FileSearch, color: "text-yellow-600" },
   { key: "approved", label: "Approved - Ready to Start", statuses: ["approved_for_build"], icon: CheckCircle, color: "text-green-600" },
-  { key: "in_build", label: "In Build", statuses: ["in_build"], icon: Hammer, color: "text-purple-600" },
+  { key: "in_build", label: "In Build", statuses: ["in_build"], icon: Hammer, color: "text-emerald-600" },
   { key: "completed", label: "Completed", statuses: ["completed"], icon: CheckCircle, color: "text-emerald-700" },
 ];
 
@@ -15,7 +15,7 @@ const STATUS_STYLES = {
   delegated: { label: "Delegated", bg: "bg-blue-100 text-blue-700" },
   under_review: { label: "Under Review", bg: "bg-yellow-100 text-yellow-700" },
   approved_for_build: { label: "Approved", bg: "bg-green-100 text-green-700" },
-  in_build: { label: "In Build", bg: "bg-purple-100 text-purple-700" },
+  in_build: { label: "In Build", bg: "bg-emerald-100 text-emerald-700" },
   completed: { label: "Completed", bg: "bg-emerald-100 text-emerald-800" },
 };
 

@@ -22,8 +22,8 @@ const UnitComingSoon = ({ unitName }) => {
 
       {/* Coming Soon Content */}
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center mb-8 animate-pulse">
-          <Construction className="w-12 h-12 text-purple-600" />
+        <div className="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center mb-8 animate-pulse">
+          <Construction className="w-12 h-12 text-emerald-600" />
         </div>
         
         <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">{unitName}</h1>

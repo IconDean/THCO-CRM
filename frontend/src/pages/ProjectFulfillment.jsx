@@ -12,7 +12,7 @@ const STATUS_STYLES = {
   under_review: { label: "Under Review", bg: "bg-yellow-100 text-yellow-700" },
   revision_requested: { label: "Revision Requested", bg: "bg-orange-100 text-orange-700" },
   approved_for_build: { label: "Approved for Build", bg: "bg-green-100 text-green-700" },
-  in_build: { label: "In Build", bg: "bg-purple-100 text-purple-700" },
+  in_build: { label: "In Build", bg: "bg-emerald-100 text-emerald-700" },
   completed: { label: "Completed", bg: "bg-emerald-100 text-emerald-800" },
 };
 

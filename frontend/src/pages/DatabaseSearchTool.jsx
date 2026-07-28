@@ -66,7 +66,7 @@ const DatabaseSearchTool = () => {
   const getStatusBadge = (status) => {
     const styles = {
       submitted: "bg-amber-50 text-amber-600 border-amber-200",
-      processing: "bg-purple-50 text-purple-600 border-purple-200",
+      processing: "bg-emerald-50 text-emerald-600 border-emerald-200",
       completed: "bg-emerald-50 text-emerald-600 border-emerald-200",
       failed: "bg-red-50 text-red-600 border-red-200",
     };
@@ -151,7 +151,7 @@ const DatabaseSearchTool = () => {
                   <Label className="text-gray-700 font-medium">Job Title *</Label>
                   <Input
                     placeholder="e.g., Senior Data Engineer"
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 rounded-xl h-11"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 rounded-xl h-11"
                     {...register("job_title")}
                     data-testid="search-job-title-input"
                   />
@@ -180,7 +180,7 @@ const DatabaseSearchTool = () => {
                   <Textarea
                     placeholder="Paste the full JD here — responsibilities, requirements, qualifications..."
                     rows={6}
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 resize-none rounded-xl"
                     {...register("job_description")}
                     data-testid="search-job-description-input"
                   />
@@ -192,7 +192,7 @@ const DatabaseSearchTool = () => {
                   <Textarea
                     placeholder="Industry, team size, culture, budget range, location requirements..."
                     rows={3}
-                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 resize-none rounded-xl"
+                    className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 resize-none rounded-xl"
                     {...register("company_context")}
                     data-testid="company-context-input"
                   />
@@ -219,7 +219,7 @@ const DatabaseSearchTool = () => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 h-12 font-medium rounded-xl shadow-sm hover:shadow-md transition-all"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 h-12 font-medium rounded-xl shadow-sm hover:shadow-md transition-all"
                 disabled={isLoading}
                 data-testid="submit-search-btn"
               >
@@ -244,7 +244,7 @@ const DatabaseSearchTool = () => {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             {loadingHistory ? (
               <div className="p-8 text-center">
-                <Loader2 className="w-8 h-8 text-purple-600 animate-spin mx-auto mb-3" />
+                <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mx-auto mb-3" />
                 <p className="text-gray-500">Loading history...</p>
               </div>
             ) : searches.length > 0 ? (

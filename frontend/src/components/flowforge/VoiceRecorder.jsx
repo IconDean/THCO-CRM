@@ -209,7 +209,7 @@ const VoiceRecorder = ({ onTranscriptionComplete, onCancel, disabled }) => {
           <div
             key={index}
             className={`w-1 rounded-full transition-all duration-75 ${
-              isRecording ? 'bg-red-500' : audioBlob ? 'bg-[#7C64FF]' : 'bg-gray-300'
+              isRecording ? 'bg-red-500' : audioBlob ? 'bg-[#1FB58A]' : 'bg-gray-300'
             }`}
             style={{ height: `${Math.max(4, height * 0.4)}px` }}
           />
@@ -230,7 +230,7 @@ const VoiceRecorder = ({ onTranscriptionComplete, onCancel, disabled }) => {
         <textarea
           value={transcription}
           onChange={(e) => setTranscription(e.target.value)}
-          className="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7C64FF]/20 focus:border-[#7C64FF] text-sm"
+          className="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1FB58A]/20 focus:border-[#1FB58A] text-sm"
           rows={3}
           placeholder="Transcribed text will appear here..."
           data-testid="transcription-textarea"
@@ -250,7 +250,7 @@ const VoiceRecorder = ({ onTranscriptionComplete, onCancel, disabled }) => {
             size="sm"
             onClick={useTranscription}
             disabled={!transcription.trim()}
-            className="bg-[#7C64FF] hover:bg-[#6B55E0] text-white"
+            className="bg-[#1FB58A] hover:bg-[#179C76] text-white"
             data-testid="use-transcription-btn"
           >
             <Check className="w-4 h-4 mr-1" />
@@ -267,7 +267,7 @@ const VoiceRecorder = ({ onTranscriptionComplete, onCancel, disabled }) => {
       <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-lg" data-testid="voice-recorded">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-gray-700">Recording Complete</span>
-          <span className="text-sm font-mono text-[#7C64FF]">{formatTime(recordingTime)}</span>
+          <span className="text-sm font-mono text-[#1FB58A]">{formatTime(recordingTime)}</span>
         </div>
         
         {renderWaveform()}
@@ -285,7 +285,7 @@ const VoiceRecorder = ({ onTranscriptionComplete, onCancel, disabled }) => {
           <Button
             size="sm"
             onClick={transcribeAudio}
-            className="bg-[#7C64FF] hover:bg-[#6B55E0] text-white"
+            className="bg-[#1FB58A] hover:bg-[#179C76] text-white"
             data-testid="transcribe-recording-btn"
           >
             <Check className="w-4 h-4 mr-1" />
@@ -301,7 +301,7 @@ const VoiceRecorder = ({ onTranscriptionComplete, onCancel, disabled }) => {
     return (
       <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-lg" data-testid="voice-transcribing">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-[#7C64FF]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1FB58A]" />
           <span className="text-sm text-gray-600">Processing your voice...</span>
         </div>
       </div>

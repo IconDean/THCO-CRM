@@ -48,8 +48,8 @@ const ApprovalDetailModal = ({ approval, onClose, onAction }) => {
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100 sticky top-0 bg-white z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
                 <DialogTitle className="text-lg font-semibold text-gray-900">
@@ -91,7 +91,7 @@ const ApprovalDetailModal = ({ approval, onClose, onAction }) => {
           {/* Tool Details */}
           <div className="bg-gray-50 rounded-xl p-4 space-y-3">
             <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-              <FileCode className="w-5 h-5 text-[#7C64FF]" />
+              <FileCode className="w-5 h-5 text-[#1FB58A]" />
               Tool Details
             </h3>
             
@@ -112,7 +112,7 @@ const ApprovalDetailModal = ({ approval, onClose, onAction }) => {
           {requestDetails.integrations && requestDetails.integrations.length > 0 && (
             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
               <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                <PlugZap className="w-5 h-5 text-[#7C64FF]" />
+                <PlugZap className="w-5 h-5 text-[#1FB58A]" />
                 Integrations Required
               </h3>
               
@@ -147,7 +147,7 @@ const ApprovalDetailModal = ({ approval, onClose, onAction }) => {
               <div className="space-y-2">
                 {requestDetails.steps.map((step, idx) => (
                   <div key={idx} className="flex items-start gap-3">
-                    <span className="w-6 h-6 bg-[#7C64FF]/10 text-[#7C64FF] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                    <span className="w-6 h-6 bg-[#1FB58A]/10 text-[#1FB58A] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
                       {step.step_number || idx + 1}
                     </span>
                     <div>
@@ -214,7 +214,7 @@ const ApprovalDetailModal = ({ approval, onClose, onAction }) => {
           {/* View Conversation Link */}
           <Link
             to={`/${approval.unit}/build/${approval.conversation_id}`}
-            className="flex items-center justify-center gap-2 py-3 text-[#7C64FF] hover:bg-purple-50 rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 py-3 text-[#1FB58A] hover:bg-emerald-50 rounded-lg transition-colors"
             onClick={onClose}
           >
             <MessageSquare className="w-4 h-4" />

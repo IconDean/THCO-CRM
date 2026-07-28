@@ -18,7 +18,7 @@ import { flowforgeAPI } from "../lib/api";
 // Status configuration
 const STATUS_CONFIG = {
   building: { color: "bg-blue-500", textColor: "text-blue-600", bgColor: "bg-blue-50", label: "Building", icon: Edit3 },
-  ready: { color: "bg-purple-500", textColor: "text-purple-600", bgColor: "bg-purple-50", label: "Ready", icon: FileCode },
+  ready: { color: "bg-emerald-500", textColor: "text-emerald-600", bgColor: "bg-emerald-50", label: "Ready", icon: FileCode },
   pending_approval: { color: "bg-yellow-500", textColor: "text-yellow-600", bgColor: "bg-yellow-50", label: "Pending", icon: Clock },
   changes_requested: { color: "bg-orange-500", textColor: "text-orange-600", bgColor: "bg-orange-50", label: "Changes Requested", icon: AlertCircle },
   deployed: { color: "bg-green-500", textColor: "text-green-600", bgColor: "bg-green-50", label: "Deployed", icon: CheckCircle2 },
@@ -51,7 +51,7 @@ const BuildHistoryItem = ({ conversation, unit }) => {
   return (
     <Link 
       to={`/${unit}/build/${conversation.id}`}
-      className="block bg-white border border-gray-100 rounded-xl p-4 hover:border-[#7C64FF]/30 hover:shadow-md transition-all group"
+      className="block bg-white border border-gray-100 rounded-xl p-4 hover:border-[#1FB58A]/30 hover:shadow-md transition-all group"
       data-testid={`build-history-item-${conversation.id}`}
     >
       <div className="flex items-start justify-between">
@@ -62,7 +62,7 @@ const BuildHistoryItem = ({ conversation, unit }) => {
           
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-medium text-gray-800 group-hover:text-[#7C64FF] transition-colors">
+              <h3 className="font-medium text-gray-800 group-hover:text-[#1FB58A] transition-colors">
                 {conversation.tool_name || "Untitled Tool"}
               </h3>
               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${config.bgColor} ${config.textColor}`}>
@@ -90,7 +90,7 @@ const BuildHistoryItem = ({ conversation, unit }) => {
           </div>
         </div>
 
-        <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#7C64FF] transition-colors" />
+        <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#1FB58A] transition-colors" />
       </div>
     </Link>
   );
@@ -127,7 +127,7 @@ const BuildHistory = ({ unit }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-[#7C64FF]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#1FB58A]" />
       </div>
     );
   }
@@ -151,7 +151,7 @@ const BuildHistory = ({ unit }) => {
         </p>
         <Link
           to={`/${unit}/build/new`}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#7C64FF] text-white rounded-lg hover:bg-[#6B55E0] transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#1FB58A] text-white rounded-lg hover:bg-[#179C76] transition-colors"
           data-testid="start-first-build"
         >
           <Zap className="w-4 h-4" />

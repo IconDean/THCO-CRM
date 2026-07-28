@@ -63,6 +63,7 @@ class UserBase(BaseModel):
     role: str = "team_member"  # super_admin, mini_admin, team_member
     accessible_units: List[str] = []
     status: str = "active"  # active, disabled
+    is_it: bool = False
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -97,16 +98,20 @@ class UserResponse(BaseModel):
     is_relationship_owner: Optional[bool] = False
     is_invoicing_owner: Optional[bool] = False
     is_prospect_owner: Optional[bool] = False
+    is_legal: Optional[bool] = False
+    is_it: Optional[bool] = False
     engineer_capacity_override: Optional[int] = None
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
+    password: Optional[str] = None
     role: Optional[str] = None
     accessible_units: Optional[List[str]] = None
     status: Optional[str] = None
     is_engineer: Optional[bool] = None
     is_fulfillment: Optional[bool] = None
     is_hr: Optional[bool] = None
+    is_it: Optional[bool] = None
     engineer_capacity_override: Optional[int] = None
     device_lock_enabled: Optional[bool] = None
     allowed_device_fingerprint: Optional[str] = None
@@ -617,7 +622,7 @@ async def register(user_data: UserCreate, response: Response):
     role = "super_admin" if user_count == 0 else "team_member"
     
     # All units for reference
-    all_units = ["talent", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
+    all_units = ["talent", "thco-hr", "flow", "it-tools", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
     accessible_units = all_units if role == "super_admin" else []
     
     user_id = f"user_{uuid.uuid4().hex[:12]}"
@@ -836,7 +841,7 @@ async def exchange_session(request: Request, response: Response):
         # Check if first user
         user_count = await db.users.count_documents({})
         role = "super_admin" if user_count == 0 else "team_member"
-        all_units = ["talent", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
+        all_units = ["talent", "thco-hr", "flow", "it-tools", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
         accessible_units = all_units if role == "super_admin" else []
         
         user_id = f"user_{uuid.uuid4().hex[:12]}"
@@ -927,6 +932,7 @@ async def get_me(request: Request):
         "is_relationship_owner": user.get("is_relationship_owner", False),
         "is_invoicing_owner": user.get("is_invoicing_owner", False),
         "is_prospect_owner": user.get("is_prospect_owner", False),
+        "is_it": user.get("is_it", False),
     }
 
 @api_router.post("/auth/logout")
@@ -1011,10 +1017,15 @@ async def reset_password(data: PasswordResetConfirm):
 
 # ==================== USER MANAGEMENT ROUTES ====================
 
+def can_manage_users(user: dict) -> bool:
+    """Super admins, mini admins, and HR users can manage the user directory."""
+    return user["role"] in ["super_admin", "mini_admin"] or bool(user.get("is_hr"))
+
+
 @api_router.get("/users", response_model=List[UserResponse])
 async def get_users(request: Request):
     current_user = await get_current_user(request)
-    if current_user["role"] not in ["super_admin", "mini_admin"]:
+    if not can_manage_users(current_user):
         raise HTTPException(status_code=403, detail="Not authorized")
     
     users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
@@ -1029,31 +1040,41 @@ async def get_users(request: Request):
 @api_router.post("/users")
 async def create_user(user_data: dict, request: Request):
     current_user = await get_current_user(request)
-    if current_user["role"] not in ["super_admin", "mini_admin"]:
+    if not can_manage_users(current_user):
         raise HTTPException(status_code=403, detail="Not authorized")
-    
-    # Mini admins can only create team members
-    if current_user["role"] == "mini_admin" and user_data.get("role") != "team_member":
-        raise HTTPException(status_code=403, detail="Mini admins can only create team members")
-    
+
+    requested_role = user_data.get("role", "team_member")
+    if requested_role not in ["super_admin", "mini_admin", "team_member"]:
+        raise HTTPException(status_code=400, detail="Invalid role")
+
+    # Only super admins can create other super admins
+    if current_user["role"] != "super_admin" and requested_role == "super_admin":
+        raise HTTPException(status_code=403, detail="Only super admins can create super admins")
+
     # Check if email exists
     existing = await db.users.find_one({"email": user_data["email"]}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email already exists")
-    
-    # Generate temp password
-    temp_password = f"temp_{uuid.uuid4().hex[:8]}"
-    
+
+    # Use the admin-supplied password, or generate a temporary one
+    provided_password = (user_data.get("password") or "").strip()
+    if provided_password and len(provided_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    temp_password = provided_password or f"temp_{uuid.uuid4().hex[:8]}"
+
     user_id = f"user_{uuid.uuid4().hex[:12]}"
     new_user = {
         "user_id": user_id,
         "email": user_data["email"],
         "password_hash": hash_password(temp_password),
         "name": user_data["name"],
-        "role": user_data.get("role", "team_member"),
+        "role": requested_role,
         "accessible_units": user_data.get("accessible_units", []),
         "status": "active",
         "picture": None,
+        "is_hr": bool(user_data.get("is_hr", False)),
+        "is_engineer": bool(user_data.get("is_engineer", False)),
+        "is_fulfillment": bool(user_data.get("is_fulfillment", False)),
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
@@ -1065,7 +1086,34 @@ async def create_user(user_data: dict, request: Request):
         f"Created user {user_data['name']}", 
         details=f"Role: {new_user['role']}"
     )
-    
+
+    # Email the new user their login details + platform link (best-effort)
+    email_sent = False
+    try:
+        from services import send_email
+        login_link = f"{os.environ.get('FRONTEND_URL', 'http://localhost:5178')}/login"
+        html = f"""
+        <div style="font-family:Inter,Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#0C0F13;border-radius:12px;color:#E8E6F0">
+          <div style="font-size:22px;font-weight:700;color:#C6A15B;margin-bottom:4px">THCO Control Room</div>
+          <p style="color:#9AA0AB;margin:0 0 18px">Welcome, <strong style="color:#fff">{user_data['name']}</strong></p>
+          <p style="color:#E8E6F0">Your account has been created. Use the details below to sign in and start operating:</p>
+          <div style="background:#161B22;border:1px solid #2a2f38;border-radius:10px;padding:16px;margin:16px 0">
+            <p style="margin:4px 0;color:#9AA0AB">Email<br><strong style="color:#fff">{user_data['email']}</strong></p>
+            <p style="margin:12px 0 4px;color:#9AA0AB">Password<br><strong style="color:#fff">{temp_password}</strong></p>
+          </div>
+          <a href="{login_link}" style="display:inline-block;background:#1FB58A;color:#0C0F13;font-weight:700;padding:12px 22px;border-radius:8px;text-decoration:none">Open the platform &amp; sign in</a>
+          <p style="color:#6B7280;font-size:12px;margin-top:18px">Or copy this link into your browser: {login_link}<br>We recommend changing your password after your first login (Profile &gt; Change Password).</p>
+        </div>
+        """
+        await send_email(
+            to=[user_data["email"]],
+            subject="Your THCO Control Room login details",
+            html=html,
+        )
+        email_sent = True
+    except Exception as e:
+        logger.warning(f"Credentials email to {user_data['email']} not sent: {e}")
+
     return {
         "user_id": user_id,
         "email": user_data["email"],
@@ -1073,33 +1121,40 @@ async def create_user(user_data: dict, request: Request):
         "role": new_user["role"],
         "accessible_units": new_user["accessible_units"],
         "status": "active",
-        "temp_password": temp_password
+        "temp_password": temp_password,
+        "email_sent": email_sent
     }
 
 @api_router.put("/users/{user_id}")
 async def update_user(user_id: str, updates: UserUpdate, request: Request):
     current_user = await get_current_user(request)
-    if current_user["role"] not in ["super_admin", "mini_admin"]:
+    if not can_manage_users(current_user):
         raise HTTPException(status_code=403, detail="Not authorized")
-    
+
     target_user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
     if not target_user:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    # Mini admins can't change roles or manage other admins
-    if current_user["role"] == "mini_admin":
-        if updates.role is not None:
-            raise HTTPException(status_code=403, detail="Mini admins cannot change roles")
-        if target_user["role"] in ["super_admin", "mini_admin"]:
-            raise HTTPException(status_code=403, detail="Cannot manage admin users")
+
+    # Mini admins / HR can't manage super admins or promote anyone to super admin
+    if current_user["role"] != "super_admin":
+        if target_user["role"] == "super_admin":
+            raise HTTPException(status_code=403, detail="Cannot manage super admin users")
+        if updates.role == "super_admin":
+            raise HTTPException(status_code=403, detail="Only super admins can grant super admin")
     
     # Super admins can't demote themselves
     if current_user["user_id"] == user_id and updates.role and updates.role != "super_admin":
         raise HTTPException(status_code=403, detail="Cannot change your own role")
     
     update_dict = {k: v for k, v in updates.model_dump().items() if v is not None}
+    new_password = update_dict.pop("password", None)
+    if new_password:
+        if len(new_password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        update_dict["password_hash"] = hash_password(new_password)
     if update_dict:
         await db.users.update_one({"user_id": user_id}, {"$set": update_dict})
+        update_dict.pop("password_hash", None)
     
     await log_activity(
         current_user["user_id"],
@@ -1550,7 +1605,7 @@ async def get_dashboard_stats(request: Request):
     # Count accessible tools
     accessible_units = user.get("accessible_units", [])
     if user["role"] == "super_admin":
-        accessible_units = ["talent", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
+        accessible_units = ["talent", "thco-hr", "flow", "it-tools", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
     
     # Currently only talent has active tools (2 tools)
     total_tools = 2 if "talent" in accessible_units else 0
@@ -1580,7 +1635,7 @@ async def seed_initial_admin():
     """Seed the initial super admin user if no users exist"""
     user_count = await db.users.count_documents({})
     if user_count == 0:
-        all_units = ["talent", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
+        all_units = ["talent", "thco-hr", "flow", "it-tools", "sales", "marketing", "advisory", "technology", "operations", "academy", "client-delivery"]
         admin_doc = {
             "user_id": f"user_{uuid.uuid4().hex[:12]}",
             "email": "joshua@thcohq.com",
@@ -2756,6 +2811,16 @@ api_router.include_router(projects_router)
 from routers.flow import router as flow_router, set_db as set_flow_db
 set_flow_db(db)
 api_router.include_router(flow_router)
+
+# Include Business Units router (admin-created units + member invites)
+from routers.units import router as units_router, set_db as set_units_db
+set_units_db(db)
+api_router.include_router(units_router)
+
+# Include Feedback / IT Support router
+from routers.feedback import router as feedback_router, set_db as set_feedback_db
+set_feedback_db(db)
+api_router.include_router(feedback_router)
 
 # Email service DB
 from services import set_db as set_email_db

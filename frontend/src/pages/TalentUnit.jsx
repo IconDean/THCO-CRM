@@ -62,7 +62,7 @@ const TOOLS = [
     path: "/talent/sourcing",
     active: true,
     description: "Source candidates from the open web using AI. Generates 50-100+ scored candidates from LinkedIn and professional networks.",
-    gradient: "from-purple-500 to-indigo-600"
+    gradient: "from-emerald-500 to-indigo-600"
   },
   {
     name: "Database Search",
@@ -126,7 +126,7 @@ const TalentUnit = () => {
       <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
               <Users className="w-8 h-8 text-white" />
             </div>
             <div>
@@ -139,7 +139,7 @@ const TalentUnit = () => {
           
           {/* Build New Tool Button */}
           <Link to="/talent/build/new">
-            <Button className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] text-white hover:opacity-90 shadow-lg shadow-purple-500/20" data-testid="build-new-tool-btn">
+            <Button className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] text-white hover:opacity-90 shadow-lg shadow-emerald-500/20" data-testid="build-new-tool-btn">
               <Zap className="w-4 h-4 mr-2" />
               Build New Tool
             </Button>
@@ -224,7 +224,7 @@ const TalentUnit = () => {
                       </span>
                     </div>
                     
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
                       {tool.name}
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">
@@ -232,7 +232,7 @@ const TalentUnit = () => {
                     </p>
                     
                     <div className="flex items-center justify-end pt-4 border-t border-gray-100">
-                      <span className="text-sm text-purple-600 flex items-center gap-1 group-hover:gap-2 transition-all font-medium">
+                      <span className="text-sm text-emerald-600 flex items-center gap-1 group-hover:gap-2 transition-all font-medium">
                         Open Tool
                         <ChevronRight className="w-4 h-4" />
                       </span>
@@ -292,7 +292,7 @@ const TalentUnit = () => {
                 transition={{ delay: index * 0.05 }}
                 className={`group bg-white rounded-xl border p-4 transition-all cursor-pointer ${
                   agent.status === 'active' 
-                    ? 'border-purple-200 hover:border-purple-400 hover:shadow-md' 
+                    ? 'border-emerald-200 hover:border-emerald-400 hover:shadow-md' 
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 data-testid={`agent-card-${agent.id}`}
@@ -301,7 +301,7 @@ const TalentUnit = () => {
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       agent.status === 'active' 
-                        ? 'bg-gradient-to-br from-purple-500 to-indigo-600' 
+                        ? 'bg-gradient-to-br from-emerald-500 to-indigo-600' 
                         : 'bg-gray-200'
                     }`}>
                       <Icon className={`w-5 h-5 ${agent.status === 'active' ? 'text-white' : 'text-gray-400'}`} />
@@ -309,7 +309,7 @@ const TalentUnit = () => {
                     <div>
                       <h3 className={`font-semibold text-sm ${
                         agent.status === 'active' 
-                          ? 'text-gray-900 group-hover:text-purple-600' 
+                          ? 'text-gray-900 group-hover:text-emerald-600' 
                           : 'text-gray-700'
                       } transition-colors`}>
                         {agent.name}

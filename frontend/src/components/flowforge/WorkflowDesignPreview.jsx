@@ -61,9 +61,9 @@ const WorkflowDesignPreview = ({
   const { name, description, trigger_type, form_fields, steps, integrations_needed } = workflow_design;
 
   return (
-    <div className="bg-white border-2 border-[#7C64FF]/20 rounded-2xl overflow-hidden shadow-lg" data-testid="workflow-design-preview">
+    <div className="bg-white border-2 border-[#1FB58A]/20 rounded-2xl overflow-hidden shadow-lg" data-testid="workflow-design-preview">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] px-6 py-4">
+      <div className="bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
             <Zap className="w-5 h-5 text-white" />
@@ -77,7 +77,7 @@ const WorkflowDesignPreview = ({
 
       {/* AI Message */}
       {user_message && (
-        <div className="px-6 py-4 bg-[#7C64FF]/5 border-b border-[#7C64FF]/10">
+        <div className="px-6 py-4 bg-[#1FB58A]/5 border-b border-[#1FB58A]/10">
           <p className="text-sm text-gray-700">{user_message}</p>
         </div>
       )}
@@ -86,7 +86,7 @@ const WorkflowDesignPreview = ({
         {/* Integrations Needed */}
         <div>
           <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-            <Globe className="w-4 h-4 text-[#7C64FF]" />
+            <Globe className="w-4 h-4 text-[#1FB58A]" />
             Integrations
           </h4>
           <div className="flex flex-wrap gap-2">
@@ -118,7 +118,7 @@ const WorkflowDesignPreview = ({
         {form_fields && form_fields.length > 0 && (
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-[#7C64FF]" />
+              <FileText className="w-4 h-4 text-[#1FB58A]" />
               Form Fields ({form_fields.length})
             </h4>
             <div className="space-y-2">
@@ -143,7 +143,7 @@ const WorkflowDesignPreview = ({
               {form_fields.length > 4 && (
                 <button
                   onClick={() => setShowAllFields(!showAllFields)}
-                  className="text-sm text-[#7C64FF] hover:underline flex items-center gap-1"
+                  className="text-sm text-[#1FB58A] hover:underline flex items-center gap-1"
                 >
                   {showAllFields ? (
                     <>Show less <ChevronUp className="w-4 h-4" /></>
@@ -160,7 +160,7 @@ const WorkflowDesignPreview = ({
         {steps && steps.length > 0 && (
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <Play className="w-4 h-4 text-[#7C64FF]" />
+              <Play className="w-4 h-4 text-[#1FB58A]" />
               Workflow Steps ({steps.length})
             </h4>
             <div className="space-y-2">
@@ -171,14 +171,14 @@ const WorkflowDesignPreview = ({
                     key={idx}
                     className="flex items-start gap-3 px-3 py-2 bg-gray-50 rounded-lg"
                   >
-                    <div className="w-6 h-6 bg-[#7C64FF] text-white rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                    <div className="w-6 h-6 bg-[#1FB58A] text-white rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
                       {step.step_number}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-gray-700">{step.name}</span>
                         {step.integration && (
-                          <span className="text-xs px-2 py-0.5 bg-[#7C64FF]/10 text-[#7C64FF] rounded">
+                          <span className="text-xs px-2 py-0.5 bg-[#1FB58A]/10 text-[#1FB58A] rounded">
                             {step.integration.replace('_', ' ')}
                           </span>
                         )}
@@ -191,7 +191,7 @@ const WorkflowDesignPreview = ({
               {steps.length > 4 && (
                 <button
                   onClick={() => setShowAllSteps(!showAllSteps)}
-                  className="text-sm text-[#7C64FF] hover:underline flex items-center gap-1"
+                  className="text-sm text-[#1FB58A] hover:underline flex items-center gap-1"
                 >
                   {showAllSteps ? (
                     <>Show less <ChevronUp className="w-4 h-4" /></>
@@ -233,7 +233,7 @@ const WorkflowDesignPreview = ({
             variant="outline"
             size="sm"
             onClick={onEdit}
-            className="text-[#7C64FF] border-[#7C64FF] hover:bg-[#7C64FF]/5"
+            className="text-[#1FB58A] border-[#1FB58A] hover:bg-[#1FB58A]/5"
             data-testid="edit-design-btn"
           >
             <Edit3 className="w-4 h-4 mr-1" />
@@ -244,7 +244,7 @@ const WorkflowDesignPreview = ({
             size="sm"
             onClick={onApprove}
             disabled={isApproving}
-            className="bg-[#7C64FF] hover:bg-[#6B54EE] text-white"
+            className="bg-[#1FB58A] hover:bg-[#6B54EE] text-white"
             data-testid="approve-design-btn"
           >
             {isApproving ? (

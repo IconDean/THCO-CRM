@@ -258,7 +258,7 @@ const DynamicFormRenderer = ({
           <Button 
             onClick={() => onSubmit({})}
             disabled={isSubmitting}
-            className="bg-[#7C64FF] hover:bg-[#6B54EE]"
+            className="bg-[#1FB58A] hover:bg-[#6B54EE]"
           >
             {isSubmitting ? (
               <>
@@ -292,7 +292,7 @@ const DynamicFormRenderer = ({
         <Button 
           type="submit" 
           disabled={isSubmitting}
-          className="bg-[#7C64FF] hover:bg-[#6B54EE]"
+          className="bg-[#1FB58A] hover:bg-[#6B54EE]"
           data-testid="form-submit-btn"
         >
           {isSubmitting ? (

@@ -331,7 +331,7 @@ const ProcureAITWGSession = () => {
             <div className="absolute top-20 left-20 w-72 h-72 rounded-full border border-teal-500/20 animate-pulse" />
             <div className="absolute bottom-32 right-32 w-96 h-96 rounded-full border border-teal-500/10" />
             <div className="absolute top-1/2 left-1/4 w-48 h-48 rounded-full bg-teal-500/5 blur-3xl" />
-            <div className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-purple-500/5 blur-3xl" />
+            <div className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-emerald-500/5 blur-3xl" />
           </div>
           
           <div className="text-center z-10 px-8 max-w-4xl">
@@ -649,8 +649,8 @@ const ProcureAITWGSession = () => {
 
               <div className="mt-8 pt-8 border-t border-white/10">
                 <div className="flex items-center justify-center gap-3 text-center">
-                  <div className="px-4 py-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
-                    <Zap className="w-5 h-5 text-purple-400 mx-auto mb-1" />
+                  <div className="px-4 py-2 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
+                    <Zap className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
                     <span className="text-xs">Azure OpenAI GPT-4</span>
                   </div>
                   <span className="text-gray-500">powers</span>
@@ -941,7 +941,7 @@ const ProcureAITWGSession = () => {
                           <td className="py-2 text-gray-800">{row.activity}</td>
                           <td className="py-2"><span className="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs">{row.tn}</span></td>
                           <td className="py-2"><span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">{row.it}</span></td>
-                          <td className="py-2"><span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">{row.proc}</span></td>
+                          <td className="py-2"><span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs">{row.proc}</span></td>
                         </tr>
                       ))}
                     </tbody>
@@ -1011,7 +1011,7 @@ const ProcureAITWGSession = () => {
                   </div>
                   <div className="flex-1 grid grid-cols-13 gap-1">
                     {[0,0,0,0,0,0,0,0,0,1,1,1,1].map((active, i) => (
-                      <div key={i} className={`h-8 rounded ${active ? 'bg-purple-500' : 'bg-gray-100'}`} />
+                      <div key={i} className={`h-8 rounded ${active ? 'bg-emerald-500' : 'bg-gray-100'}`} />
                     ))}
                   </div>
                 </div>

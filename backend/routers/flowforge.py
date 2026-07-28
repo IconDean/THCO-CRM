@@ -550,8 +550,11 @@ async def create_approval(data: ApprovalCreate, request: Request):
 async def get_approval_stats(request: Request):
     """Get approval queue statistics"""
     await get_current_user_from_request(request)  # Ensure authenticated
+    if not supabase:
+        # FlowForge store not configured (e.g. local dev) — report an empty queue
+        return {"pending": 0, "approved": 0, "rejected": 0, "changes_requested": 0, "total": 0}
     sb = ensure_supabase()
-    
+
     # Count by status
     pending = sb.table('flowforge_approvals').select('id', count='exact').eq('status', 'pending').execute()
     approved = sb.table('flowforge_approvals').select('id', count='exact').eq('status', 'approved').execute()

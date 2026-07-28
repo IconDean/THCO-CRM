@@ -978,7 +978,7 @@ const ArchitectureSection = () => {
     <div className="min-h-[calc(100vh-56px)] p-6 bg-slate-50">
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium mb-3">
             03 Target Architecture
           </div>
           <h2 className="text-3xl font-bold text-slate-900">Target Architecture & Technical Design</h2>
@@ -1037,14 +1037,14 @@ const ArchitectureSection = () => {
           {/* Arrow */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
             className="flex flex-col items-center">
-            <div className="w-8 h-0.5 bg-gradient-to-r from-teal-400 to-purple-400" />
+            <div className="w-8 h-0.5 bg-gradient-to-r from-teal-400 to-emerald-400" />
           </motion.div>
 
           {/* External */}
           <motion.div variants={fadeInRight} initial="hidden" animate="visible"
             className="bg-white rounded-xl p-4 shadow-lg border border-slate-200">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-lg bg-purple-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
                 <Globe className="w-4 h-4 text-white" />
               </div>
               <h3 className="text-sm font-bold text-slate-900">EXTERNAL</h3>
@@ -1052,7 +1052,7 @@ const ArchitectureSection = () => {
             <div className="space-y-2">
               {external.map((ext, i) => (
                 <motion.div key={ext} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 + i * 0.05 }}
-                  className="p-2 rounded-lg bg-purple-50 text-xs text-slate-700">{ext}</motion.div>
+                  className="p-2 rounded-lg bg-emerald-50 text-xs text-slate-700">{ext}</motion.div>
               ))}
             </div>
           </motion.div>
@@ -1107,7 +1107,7 @@ const GovernanceSection = () => {
           className="mt-6 bg-slate-900 rounded-xl p-4 flex items-center justify-center gap-8 text-white">
           <span className="flex items-center gap-2"><span className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center text-xs font-bold">R</span> Responsible</span>
           <span className="flex items-center gap-2"><span className="w-6 h-6 rounded bg-blue-500 flex items-center justify-center text-xs font-bold">A</span> Accountable</span>
-          <span className="flex items-center gap-2"><span className="w-6 h-6 rounded bg-purple-500 flex items-center justify-center text-xs font-bold">C</span> Consulted</span>
+          <span className="flex items-center gap-2"><span className="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-xs font-bold">C</span> Consulted</span>
           <span className="flex items-center gap-2"><span className="w-6 h-6 rounded bg-slate-600 flex items-center justify-center text-xs font-bold">I</span> Informed</span>
         </motion.div>
       </div>
@@ -1206,7 +1206,7 @@ const RoadmapSection = () => {
               initial={{ width: 0 }}
               animate={{ width: "100%" }}
               transition={{ duration: 1.5, delay: 0.5 }}
-              className="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-teal-500 rounded"
+              className="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-500 via-emerald-500 to-teal-500 rounded"
             />
 
             <div className="grid grid-cols-6 gap-2">
@@ -1312,7 +1312,7 @@ const ResourcesSection = () => {
           {/* IHS Team */}
           <motion.div variants={fadeInRight} initial="hidden" animate="visible"
             className="bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
-            <div className="p-4 bg-gradient-to-r from-blue-500 to-purple-500">
+            <div className="p-4 bg-gradient-to-r from-blue-500 to-emerald-500">
               <h3 className="text-lg font-bold text-white">IHS Towers Resources</h3>
               <p className="text-blue-100 text-sm">3,380 total hours</p>
             </div>

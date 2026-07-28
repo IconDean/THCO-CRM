@@ -62,6 +62,12 @@ import MyProjects from "./pages/MyProjects";
 import ProjectReview from "./pages/ProjectReview";
 import ProjectTracker from "./pages/ProjectTracker";
 import UserManagement from "./pages/UserManagement";
+import Profile from "./pages/Profile";
+import Feedback from "./pages/Feedback";
+import ITFeedbackConsole from "./pages/ITFeedbackConsole";
+import BusinessUnitsAdmin from "./pages/BusinessUnitsAdmin";
+import UnitPage from "./pages/UnitPage";
+import { ThemeProvider } from "./context/ThemeContext";
 
 // Presentations
 import WinstonDukePresentation from "./pages/WinstonDukePresentation";
@@ -114,6 +120,7 @@ import DashboardLayout from "./components/DashboardLayout";
 
 // API
 import { authAPI } from "./lib/api";
+import { UserProvider, hasUnitAccess, canManageUsers } from "./context/UserContext";
 
 // Auth Callback Component - handles OAuth redirect
 const AuthCallback = () => {
@@ -153,15 +160,40 @@ const AuthCallback = () => {
   return (
     <div className="min-h-screen bg-[#0D0F1A] flex items-center justify-center">
       <div className="text-center">
-        <div className="w-12 h-12 border-4 border-[#7C64FF] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <div className="w-12 h-12 border-4 border-[#1FB58A] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <p className="text-[#8B8AA0]">Authenticating...</p>
       </div>
     </div>
   );
 };
 
+// Elegant access-restricted screen (rendered inside the layout shell)
+const AccessRestricted = () => (
+  <div className="min-h-[60vh] flex items-center justify-center" data-testid="access-restricted">
+    <div className="text-center max-w-md">
+      <div className="w-14 h-14 mx-auto mb-6 rounded-full border border-[#C6A15B]/40 flex items-center justify-center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C6A15B" strokeWidth="1.5">
+          <rect x="4" y="10" width="16" height="10" rx="2" />
+          <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+        </svg>
+      </div>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C6A15B] mb-3">Restricted</p>
+      <h2 className="font-display text-2xl text-gray-900 mb-3">This area is not part of your access</h2>
+      <p className="text-sm text-gray-500 mb-8 leading-relaxed">
+        Your account has not been granted access to this unit. If you believe you need it,
+        ask your administrator or HR to extend your permissions.
+      </p>
+      <a href="/dashboard" className="inline-flex items-center gap-2 text-sm font-medium text-gray-900 border-b border-[#C6A15B] pb-0.5 hover:text-[#C6A15B] transition-colors">
+        Return to Dashboard
+      </a>
+    </div>
+  </div>
+);
+
 // Protected Route Component
-const ProtectedRoute = ({ children }) => {
+// `unit`   — restrict to users with access to that unit slug
+// `access` — "admin" (super_admin only) or "user-admin" (super_admin | mini_admin | HR)
+const ProtectedRoute = ({ children, unit, access }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -191,10 +223,10 @@ const ProtectedRoute = ({ children }) => {
 
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-[#0D0F1A] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0C0F13] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#7C64FF] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#8B8AA0]">Loading...</p>
+          <div className="w-10 h-10 border-2 border-[#C6A15B] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[11px] uppercase tracking-[0.3em] text-[#8a8f98]">THCO &middot; Loading</p>
         </div>
       </div>
     );
@@ -204,7 +236,18 @@ const ProtectedRoute = ({ children }) => {
     return null;
   }
 
-  return <DashboardLayout user={user}>{children}</DashboardLayout>;
+  let allowed = true;
+  if (unit) allowed = hasUnitAccess(user, unit);
+  if (access === "admin") allowed = user?.role === "super_admin";
+  if (access === "user-admin") allowed = canManageUsers(user);
+  if (access === "hr") allowed = user?.role === "super_admin" || Boolean(user?.is_hr);
+  if (access === "it") allowed = user?.role === "super_admin" || Boolean(user?.is_it) || (user?.accessible_units || []).includes("it-tools");
+
+  return (
+    <UserProvider user={user}>
+      <DashboardLayout user={user}>{allowed ? children : <AccessRestricted />}</DashboardLayout>
+    </UserProvider>
+  );
 };
 
 // App Router Component
@@ -233,58 +276,58 @@ const AppRouter = () => {
       } />
       
       <Route path="/talent" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="talent">
           <TalentUnit />
         </ProtectedRoute>
       } />
       
       <Route path="/talent/sourcing" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="talent">
           <SourcingTool />
         </ProtectedRoute>
       } />
       
       <Route path="/talent/database-search" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="talent">
           <DatabaseSearchTool />
         </ProtectedRoute>
       } />
 
       <Route path="/talent/projects" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="talent">
           <ProjectFulfillment />
         </ProtectedRoute>
       } />
       <Route path="/talent/projects/new" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="talent">
           <NewProjectForm />
         </ProtectedRoute>
       } />
 
       <Route path="/thco-hr/delegation" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="thco-hr">
           <DelegationBoard />
         </ProtectedRoute>
       } />
 
       <Route path="/technology/my-projects" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="technology">
           <MyProjects />
         </ProtectedRoute>
       } />
       <Route path="/technology/my-projects/:id/review" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="technology">
           <ProjectReview />
         </ProtectedRoute>
       } />
       <Route path="/technology/my-projects/:id/tracker" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="technology">
           <ProjectTracker />
         </ProtectedRoute>
       } />
 
       <Route path="/admin/users" element={
-        <ProtectedRoute>
+        <ProtectedRoute access="user-admin">
           <UserManagement />
         </ProtectedRoute>
       } />
@@ -292,6 +335,36 @@ const AppRouter = () => {
       <Route path="/settings" element={
         <ProtectedRoute>
           <Settings />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/feedback" element={
+        <ProtectedRoute>
+          <Feedback />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/it-feedback" element={
+        <ProtectedRoute access="it">
+          <ITFeedbackConsole />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/business-units" element={
+        <ProtectedRoute access="admin">
+          <BusinessUnitsAdmin />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/unit/:slug" element={
+        <ProtectedRoute>
+          <UnitPage />
         </ProtectedRoute>
       } />
       
@@ -360,42 +433,42 @@ const AppRouter = () => {
       
       {/* Business Unit Routes */}
       <Route path="/sales" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="sales">
           <SalesAndBD />
         </ProtectedRoute>
       } />
       <Route path="/marketing" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="marketing">
           <MarketingAndBrand />
         </ProtectedRoute>
       } />
       <Route path="/advisory" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="advisory">
           <AdvisoryAndConsulting />
         </ProtectedRoute>
       } />
       <Route path="/technology" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="technology">
           <TechnologyAndBuild />
         </ProtectedRoute>
       } />
       <Route path="/operations" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="operations">
           <OperationsAndFinance />
         </ProtectedRoute>
       } />
       <Route path="/academy" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="academy">
           <AcademyAndLearning />
         </ProtectedRoute>
       } />
       <Route path="/client-delivery" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="client-delivery">
           <ClientDelivery />
         </ProtectedRoute>
       } />
       <Route path="/thco-hr" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="thco-hr">
           <THCOHRPage />
         </ProtectedRoute>
       } />
@@ -418,7 +491,7 @@ const AppRouter = () => {
       <Route path="/flow/messages" element={<ProtectedRoute><FlowMessages /></ProtectedRoute>} />
       <Route path="/flow/admin/roles" element={<ProtectedRoute><FlowRolesAdmin /></ProtectedRoute>} />
       <Route path="/it-tools" element={
-        <ProtectedRoute>
+        <ProtectedRoute unit="it-tools">
           <ITAndTools />
         </ProtectedRoute>
       } />
@@ -437,12 +510,12 @@ const AppRouter = () => {
       
       {/* Admin Routes */}
       <Route path="/admin/approvals" element={
-        <ProtectedRoute>
+        <ProtectedRoute access="admin">
           <ApprovalQueue />
         </ProtectedRoute>
       } />
       <Route path="/admin/assessments" element={
-        <ProtectedRoute>
+        <ProtectedRoute access="hr">
           <AdminAssessments />
         </ProtectedRoute>
       } />
@@ -455,19 +528,21 @@ const AppRouter = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Toaster 
-        position="top-right" 
-        toastOptions={{
-          style: {
-            background: '#151828',
-            color: '#E8E6F0',
-            border: '1px solid rgba(255,255,255,0.07)',
-          },
-        }}
-      />
-      <AppRouter />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Toaster 
+          position="top-right" 
+          toastOptions={{
+            style: {
+              background: '#151828',
+              color: '#E8E6F0',
+              border: '1px solid rgba(255,255,255,0.07)',
+            },
+          }}
+        />
+        <AppRouter />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

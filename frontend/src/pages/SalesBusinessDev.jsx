@@ -66,7 +66,7 @@ const INTAKE_PATHS = [
     id: "referrals", 
     name: "Referrals", 
     icon: UserPlus, 
-    color: "bg-purple-500",
+    color: "bg-emerald-500",
     description: "Happy clients tell others → Warm introductions",
     team: ["Rebecca", "Marketing"]
   },
@@ -93,7 +93,7 @@ const STATUSES = {
   new: { label: "New Lead", color: "bg-gray-100 text-gray-700" },
   qualified: { label: "Qualified", color: "bg-blue-100 text-blue-700" },
   proposal: { label: "Proposal Sent", color: "bg-yellow-100 text-yellow-700" },
-  negotiation: { label: "Negotiation", color: "bg-purple-100 text-purple-700" },
+  negotiation: { label: "Negotiation", color: "bg-emerald-100 text-emerald-700" },
   won: { label: "Won", color: "bg-green-100 text-green-700" },
   lost: { label: "Lost", color: "bg-red-100 text-red-700" }
 };

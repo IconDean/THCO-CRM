@@ -921,7 +921,7 @@ const ArchitectureSection = () => {
             className="bg-white rounded-2xl p-5 shadow-lg border border-slate-200"
           >
             <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Globe className="w-4 h-4 text-purple-500" />
+              <Globe className="w-4 h-4 text-emerald-500" />
               External APIs
             </h4>
             <div className="flex gap-3">
@@ -931,9 +931,9 @@ const ArchitectureSection = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 1.3 + i * 0.1, duration: 0.4 }}
-                  className="flex-1 p-3 rounded-xl bg-purple-50 text-center"
+                  className="flex-1 p-3 rounded-xl bg-emerald-50 text-center"
                 >
-                  <Link className="w-5 h-5 text-purple-500 mx-auto mb-2" />
+                  <Link className="w-5 h-5 text-emerald-500 mx-auto mb-2" />
                   <span className="text-xs font-medium text-slate-600">{api.name}</span>
                 </motion.div>
               ))}
@@ -1101,7 +1101,7 @@ const RFQFlowSection = () => {
             className="bg-white rounded-2xl p-5 shadow-lg border border-slate-200"
           >
             <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Link className="w-4 h-4 text-purple-500" />
+              <Link className="w-4 h-4 text-emerald-500" />
               Integration Points
             </h4>
             <div className="space-y-2">
@@ -1113,7 +1113,7 @@ const RFQFlowSection = () => {
                   transition={{ delay: 1.8 + i * 0.1, duration: 0.3 }}
                   className="flex items-center gap-2 text-xs"
                 >
-                  <span className="font-bold text-purple-600 w-28">{int.system}</span>
+                  <span className="font-bold text-emerald-600 w-28">{int.system}</span>
                   <ArrowRight className="w-3 h-3 text-slate-400" />
                   <span className="text-slate-600">{int.action}</span>
                 </motion.div>
@@ -1265,7 +1265,7 @@ const VendorOnboardingSection = () => {
             className="p-6"
           >
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
                 <Building2 className="w-5 h-5 text-white" />
               </div>
               <h3 className="text-lg font-bold text-slate-900">IHS PROCUREMENT</h3>
@@ -1278,12 +1278,12 @@ const VendorOnboardingSection = () => {
                   variants={scaleIn}
                   initial="hidden"
                   animate="visible"
-                  className="flex flex-col items-center text-center p-4 rounded-xl bg-purple-50 relative"
+                  className="flex flex-col items-center text-center p-4 rounded-xl bg-emerald-50 relative"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center mb-3">
                     <step.icon className="w-5 h-5 text-white" />
                   </div>
-                  <div className="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center mb-2">
+                  <div className="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center mb-2">
                     {step.num}
                   </div>
                   <p className="text-xs font-semibold text-slate-800">{step.title}</p>
@@ -1292,7 +1292,7 @@ const VendorOnboardingSection = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1.5 + i * 0.1 }}
-                      className="absolute top-1/2 -right-2 w-4 h-0.5 bg-purple-400"
+                      className="absolute top-1/2 -right-2 w-4 h-0.5 bg-emerald-400"
                     />
                   )}
                 </motion.div>
@@ -1687,7 +1687,7 @@ const DataUploadSection = () => {
           >
             <div className="p-5 border-b border-slate-100 bg-slate-50">
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-purple-500" />
+                <FileText className="w-5 h-5 text-emerald-500" />
                 File Format Specs
               </h3>
             </div>

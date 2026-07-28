@@ -19,9 +19,9 @@ const FlowForgeFAB = () => {
         {/* Button with gradient and animation */}
         <div className={`
           flex items-center gap-2 
-          bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF] 
+          bg-gradient-to-r from-[#1FB58A] to-[#3DDC97] 
           text-white font-medium 
-          rounded-full shadow-lg 
+          rounded-full shadow-lg shadow-[#1FB58A]/30
           hover:shadow-xl hover:scale-105
           transition-all duration-300 ease-out
           ${isHovered ? "pr-5 pl-4" : "p-4"}
@@ -43,7 +43,7 @@ const FlowForgeFAB = () => {
         {/* Ripple effect on hover */}
         <div className={`
           absolute inset-0 rounded-full
-          bg-gradient-to-r from-[#7C64FF] to-[#9D8AFF]
+          bg-gradient-to-r from-[#1FB58A] to-[#3DDC97]
           opacity-0 group-hover:opacity-30
           animate-ping
           transition-opacity duration-300

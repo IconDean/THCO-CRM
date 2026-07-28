@@ -78,7 +78,7 @@ const DeployedTools = ({ unit, limit = 10 }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-[#7C64FF]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#1FB58A]" />
       </div>
     );
   }
@@ -192,7 +192,7 @@ const DeployedTools = ({ unit, limit = 10 }) => {
               {(tool.status === 'deployed' || tool.status === 'active') && (
                 <Button
                   size="sm"
-                  className="bg-[#7C64FF] hover:bg-[#6B54EE] text-white"
+                  className="bg-[#1FB58A] hover:bg-[#6B54EE] text-white"
                   onClick={() => setUseToolModal({ 
                     open: true, 
                     toolId: tool.id, 
