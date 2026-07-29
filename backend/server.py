@@ -2847,6 +2847,10 @@ async def seed_proposals_on_boot():
 
 # CORS Middleware
 CORS_ORIGINS = [
+    "http://localhost:5178",
+    "http://127.0.0.1:5178",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "https://thcoteam.com",
     "https://www.thcoteam.com",
     "https://thcotools.emergent.host",

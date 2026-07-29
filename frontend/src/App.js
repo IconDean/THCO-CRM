@@ -373,6 +373,16 @@ const AppRouter = () => {
           <Proposals />
         </ProtectedRoute>
       } />
+      <Route path="/proposals/presentations" element={
+        <ProtectedRoute>
+          <Proposals />
+        </ProtectedRoute>
+      } />
+      <Route path="/proposals/clients" element={
+        <ProtectedRoute>
+          <Proposals />
+        </ProtectedRoute>
+      } />
       
       {/* Public Proposal View - No Auth Required */}
       <Route path="/proposals/view/:shareToken" element={<ProposalView />} />
