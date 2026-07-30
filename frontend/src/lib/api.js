@@ -623,6 +623,28 @@ export const flowAPI = {
   getDashboard: async () => (await apiClient.get('/flow/dashboard')).data,
 };
 
+// Task Board API (Trello-like boards + cards)
+export const tasksAPI = {
+  listBoards: async () => (await apiClient.get('/tasks/boards')).data,
+  createBoard: async (title) => (await apiClient.post('/tasks/boards', { title })).data,
+  updateBoard: async (boardId, data) => (await apiClient.patch(`/tasks/boards/${boardId}`, data)).data,
+  deleteBoard: async (boardId) => (await apiClient.delete(`/tasks/boards/${boardId}`)).data,
+  createCard: async (boardId, data) => (await apiClient.post(`/tasks/boards/${boardId}/cards`, data)).data,
+  updateCard: async (cardId, data) => (await apiClient.patch(`/tasks/cards/${cardId}`, data)).data,
+  deleteCard: async (cardId) => (await apiClient.delete(`/tasks/cards/${cardId}`)).data,
+  reorder: async (boardOrder, cards) =>
+    (await apiClient.post('/tasks/reorder', { board_order: boardOrder, cards })).data,
+
+  // Team Members (for assignee dropdown)
+  listTeamMembers: async () => (await apiClient.get('/tasks/team-members')).data,
+
+  // Labels (persistent, reusable)
+  listLabels: async () => (await apiClient.get('/tasks/labels')).data,
+  createLabel: async (data) => (await apiClient.post('/tasks/labels', data)).data,
+  updateLabel: async (labelId, data) => (await apiClient.patch(`/tasks/labels/${labelId}`, data)).data,
+  deleteLabel: async (labelId) => (await apiClient.delete(`/tasks/labels/${labelId}`)).data,
+};
+
 // Assessment API (public endpoints - no auth needed)
 export const assessmentAPI = {
   start: async (data) => {

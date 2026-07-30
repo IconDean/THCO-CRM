@@ -13,6 +13,7 @@ import SourcingTool from "./pages/SourcingTool";
 import DatabaseSearchTool from "./pages/DatabaseSearchTool";
 import Settings from "./pages/Settings";
 import Proposals from "./pages/Proposals";
+import Tasks from "./pages/Tasks";
 import ProposalView from "./pages/ProposalView";
 import ProcureAIProposal from "./pages/ProcureAIProposal";
 import ProcureAIProposalV2 from "./pages/ProcureAIProposalV2";
@@ -381,6 +382,12 @@ const AppRouter = () => {
       <Route path="/proposals/clients" element={
         <ProtectedRoute>
           <Proposals />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/tasks" element={
+        <ProtectedRoute>
+          <Tasks />
         </ProtectedRoute>
       } />
       

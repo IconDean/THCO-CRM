@@ -2822,6 +2822,11 @@ from routers.feedback import router as feedback_router, set_db as set_feedback_d
 set_feedback_db(db)
 api_router.include_router(feedback_router)
 
+# Include Task Board router (Trello-like boards + cards)
+from routers.taskboard import router as taskboard_router, set_db as set_taskboard_db
+set_taskboard_db(db)
+api_router.include_router(taskboard_router)
+
 # Email service DB
 from services import set_db as set_email_db
 set_email_db(db)

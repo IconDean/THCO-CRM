@@ -30,6 +30,7 @@ import {
   PanelLeftOpen,
   Sun,
   Moon,
+  KanbanSquare,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -154,6 +155,7 @@ const DashboardLayoutInner = ({ children, user }) => {
     if (path === "/dashboard") return "Dashboard";
     if (path === "/settings") return "Settings";
     if (path === "/proposals") return "Proposals";
+    if (path === "/tasks") return "Tasks";
     if (path === "/admin/approvals") return "Approval Queue";
     if (path === "/admin/users") return "User Management";
     if (path.startsWith("/admin/assessments")) return "Candidate Assessments";
@@ -211,6 +213,7 @@ const DashboardLayoutInner = ({ children, user }) => {
   const searchIndex = [
     { label: "Dashboard", path: "/dashboard", group: "Portal" },
     { label: "Proposals & Clients", path: "/proposals", group: "Portal" },
+    { label: "Tasks", path: "/tasks", group: "Portal" },
     ...visibleUnits.map((u) => ({ label: u.name, path: u.path, group: "Units" })),
     { label: "Flow · Pipeline Board", path: "/flow/board", group: "THCO Flow" },
     { label: "Flow · Projects", path: "/flow/projects", group: "THCO Flow" },
@@ -309,6 +312,9 @@ const DashboardLayoutInner = ({ children, user }) => {
           </div>
           <div className="mt-1">
             <NavItem to="/feedback" icon={MessageSquare} label="Feedback" active={isActive("/feedback")} collapsed={!sidebarOpen} testId="nav-feedback" />
+          </div>
+          <div className="mt-1">
+            <NavItem to="/tasks" icon={KanbanSquare} label="Tasks" active={isActive("/tasks")} collapsed={!sidebarOpen} testId="nav-tasks" />
           </div>
 
           <SectionLabel collapsed={!sidebarOpen}>Business Units</SectionLabel>
