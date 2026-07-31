@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Proposals from "./pages/Proposals";
 import Tasks from "./pages/Tasks";
 import ProposalView from "./pages/ProposalView";
+import TaskBoardSharedView from "./pages/TaskBoardSharedView";
 import ProcureAIProposal from "./pages/ProcureAIProposal";
 import ProcureAIProposalV2 from "./pages/ProcureAIProposalV2";
 import ProcureAIExecutivePack from "./pages/ProcureAIExecutivePack";
@@ -393,6 +394,9 @@ const AppRouter = () => {
       
       {/* Public Proposal View - No Auth Required */}
       <Route path="/proposals/view/:shareToken" element={<ProposalView />} />
+
+      {/* Public Task Board Share View - No Auth Required */}
+      <Route path="/tasks/shared/:shareToken" element={<TaskBoardSharedView />} />
       
       {/* Public Email-Gated Presentations */}
       <Route path="/proposals/procure-ai" element={<ProcureAIProposalPublic />} />

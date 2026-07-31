@@ -9,10 +9,19 @@ import {
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { AlignLeft, Tag, Users2, CalendarClock } from "lucide-react";
+import { AlignLeft, Tag, Users2, CalendarClock, Flag } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import AssigneeSelect from "./AssigneeSelect";
 import LabelManager from "./LabelManager";
 import DateTimePicker from "./DateTimePicker";
+import { FULL_PERMISSIONS } from "./permissions";
+
+export const PRIORITIES = [
+  { value: "low", label: "Low", color: "#4C6B5B" },
+  { value: "medium", label: "Medium", color: "#C6A15B" },
+  { value: "high", label: "High", color: "#A94E5B" },
+  { value: "urgent", label: "Urgent", color: "#DC2626" },
+];
 
 /**
  * Edit Task modal — redesigned for premium UX and full theming.
@@ -27,9 +36,10 @@ import DateTimePicker from "./DateTimePicker";
  *     we normalize them into the richer object shape; the parent looks up
  *     colors for labels where possible.
  */
-export default function TaskCardEditor({ card, open, onClose, onSave }) {
+export default function TaskCardEditor({ card, open, onClose, onSave, permissions = FULL_PERMISSIONS }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("medium");
   const [labels, setLabels] = useState([]); // [{label_id, name, color}]
   const [assignees, setAssignees] = useState([]); // [{user_id, name, email, ...}]
   const [dueDate, setDueDate] = useState(null); // ISO datetime
@@ -39,6 +49,7 @@ export default function TaskCardEditor({ card, open, onClose, onSave }) {
     if (card) {
       setTitle(card.title || "");
       setDescription(card.description || "");
+      setPriority(card.priority || "medium");
       setLabels(normalizeLabels(card.labels));
       setAssignees(normalizeAssignees(card.assignees));
       setDueDate(card.due_date || null);
@@ -48,15 +59,22 @@ export default function TaskCardEditor({ card, open, onClose, onSave }) {
   if (!card) return null;
 
   const save = () => {
-    onSave(card.card_id, {
+    const data = {
       title: title.trim() || card.title,
       description,
+      priority,
       labels: labels.map(({ label_id, name, color }) => ({ label_id, name, color })),
-      assignees: assignees.map(({ user_id, name, email, picture, role }) => ({
-        user_id, name, email, picture, role,
-      })),
       due_date: dueDate,
-    });
+    };
+    // Assignment stays an internal, coordinator-only concept — a public
+    // "Editable" share link never sends it (the backend wouldn't accept it
+    // either; see SharedCardUpdate in taskboard.py).
+    if (permissions.assignTasks) {
+      data.assignees = assignees.map(({ user_id, name, email, picture, role }) => ({
+        user_id, name, email, picture, role,
+      }));
+    }
+    onSave(card.card_id, data);
     onClose();
   };
 
@@ -94,9 +112,57 @@ export default function TaskCardEditor({ card, open, onClose, onSave }) {
             />
           </Field>
 
-          {/* Assignees */}
+          {/* Priority */}
+          <Field icon={Flag} label="Priority">
+            <div className="flex flex-wrap gap-1.5" data-testid="editor-priority">
+              {PRIORITIES.map((p) => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setPriority(p.value)}
+                  data-testid={`editor-priority-${p.value}`}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                    priority === p.value
+                      ? "text-white border-transparent"
+                      : "bg-white dark:bg-[#10141A] border-[#EAE7E0] dark:border-[#2A303B] text-gray-600 dark:text-[#B0AEA8] hover:border-[#C6A15B] dark:hover:border-[#1FB58A]"
+                  }`}
+                  style={priority === p.value ? { backgroundColor: p.color } : undefined}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: priority === p.value ? "rgba(255,255,255,0.85)" : p.color }}
+                  />
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          {/* Assignees — read-only outside the internal app (assignment stays
+              a coordinator-managed concept even on an "Editable" share link) */}
           <Field icon={Users2} label="Assignees">
-            <AssigneeSelect assignees={assignees} onChange={setAssignees} />
+            {permissions.assignTasks ? (
+              <AssigneeSelect assignees={assignees} onChange={setAssignees} />
+            ) : assignees.length > 0 ? (
+              <div className="flex flex-wrap gap-2" data-testid="editor-assignees-readonly">
+                {assignees.map((a) => (
+                  <span
+                    key={a.user_id}
+                    className="inline-flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.06] text-gray-600 dark:text-[#B0AEA8] text-xs"
+                  >
+                    <Avatar className="w-4 h-4 rounded-full">
+                      {a.picture ? <AvatarImage src={a.picture} /> : null}
+                      <AvatarFallback className="bg-[#1B4332] text-white text-[8px]">
+                        {(a.name || "?").split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {a.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 italic">Unassigned</p>
+            )}
           </Field>
 
           {/* Labels */}

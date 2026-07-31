@@ -8,10 +8,11 @@ import {
 
 /**
  * Three-dot context menu for a task card.
- * Actions: Edit (open editor modal), Delete.
+ * Actions: Edit (open editor modal), Delete — independently gated, since a
+ * public "Editable" share link may edit tasks but never delete them.
  * Trigger is hidden until the card is hovered (handled by parent styling).
  */
-export default function TaskMenu({ onEdit, onDelete }) {
+export default function TaskMenu({ canEdit = true, canDelete = true, onEdit, onDelete }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,22 +27,26 @@ export default function TaskMenu({ onEdit, onDelete }) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuItem
-          onClick={onEdit}
-          data-testid="task-menu-edit"
-          className="text-sm cursor-pointer"
-        >
-          <Pencil className="w-3.5 h-3.5 mr-2" />
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={onDelete}
-          data-testid="task-menu-delete"
-          className="text-sm cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
-        >
-          <Trash2 className="w-3.5 h-3.5 mr-2" />
-          Delete
-        </DropdownMenuItem>
+        {canEdit && (
+          <DropdownMenuItem
+            onClick={onEdit}
+            data-testid="task-menu-edit"
+            className="text-sm cursor-pointer"
+          >
+            <Pencil className="w-3.5 h-3.5 mr-2" />
+            Edit
+          </DropdownMenuItem>
+        )}
+        {canDelete && (
+          <DropdownMenuItem
+            onClick={onDelete}
+            data-testid="task-menu-delete"
+            className="text-sm cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

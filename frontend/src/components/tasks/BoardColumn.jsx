@@ -8,6 +8,7 @@ import BoardMenu from "./BoardMenu";
 import TaskCard from "./TaskCard";
 import AddTask from "./AddTask";
 import TaskCardEditor from "./TaskCardEditor";
+import { READ_ONLY_PERMISSIONS } from "./permissions";
 
 /**
  * A single Trello "list" / column. Horizontally sortable (reorder boards)
@@ -18,6 +19,7 @@ import TaskCardEditor from "./TaskCardEditor";
  */
 export default function BoardColumn({
   board,
+  permissions = READ_ONLY_PERMISSIONS,
   onRenameBoard,
   onDeleteBoard,
   onRenameCard,
@@ -30,7 +32,7 @@ export default function BoardColumn({
   const [editorCard, setEditorCard] = useState(null);
 
   const { setNodeRef: setColumnRef, attributes, listeners, transform, transition, isDragging } =
-    useSortable({ id: board.board_id, data: { type: "board", boardId: board.board_id } });
+    useSortable({ id: board.board_id, data: { type: "board", boardId: board.board_id }, disabled: !permissions.manageBoards });
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -51,14 +53,16 @@ export default function BoardColumn({
     >
       {/* Header: drag handle + title + count + menu */}
       <div className="flex items-center gap-1 px-2.5 pt-2.5 pb-2">
-        <button
-          aria-label="Drag board"
-          className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing touch-none rounded p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A15B]/40"
-          {...attributes}
-          {...listeners}
-        >
-          <GripVertical className="w-4 h-4" />
-        </button>
+        {permissions.manageBoards && (
+          <button
+            aria-label="Drag board"
+            className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing touch-none rounded p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A15B]/40"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
+        )}
 
         {editingTitle ? (
           <EditableTitle
@@ -71,9 +75,11 @@ export default function BoardColumn({
           />
         ) : (
           <button
-            onClick={() => setEditingTitle(true)}
+            onClick={() => permissions.manageBoards && setEditingTitle(true)}
             data-testid={`board-title-${board.board_id}`}
-            className="flex-1 text-left text-sm font-semibold text-gray-900 hover:text-[#8F7340] truncate px-2 py-0.5 rounded transition-colors"
+            className={`flex-1 text-left text-sm font-semibold text-gray-900 ${
+              permissions.manageBoards ? "hover:text-[#8F7340] cursor-pointer" : "cursor-default"
+            } truncate px-2 py-0.5 rounded transition-colors`}
           >
             {board.title}
           </button>
@@ -82,10 +88,12 @@ export default function BoardColumn({
         <span className="text-[11px] font-medium text-gray-500 bg-white border border-gray-200 rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
           {cardIds.length}
         </span>
-        <BoardMenu
-          onRename={() => setEditingTitle(true)}
-          onDelete={() => onDeleteBoard(board.board_id)}
-        />
+        {permissions.manageBoards && (
+          <BoardMenu
+            onRename={() => setEditingTitle(true)}
+            onDelete={() => onDeleteBoard(board.board_id)}
+          />
+        )}
       </div>
 
       {/* Cards */}
@@ -97,7 +105,8 @@ export default function BoardColumn({
                 key={card.card_id}
                 card={renamingCardId === card.card_id ? { ...card, _renaming: true } : card}
                 boardId={board.board_id}
-                onRename={() => setRenamingCardId(card.card_id)}
+                permissions={permissions}
+                onRename={() => permissions.editTasks && setRenamingCardId(card.card_id)}
                 onEdit={(c) => setEditorCard(c)}
                 onDelete={onDeleteCard}
               />
@@ -129,9 +138,11 @@ export default function BoardColumn({
       </div>
 
       {/* Add task */}
-      <div className="px-2 pb-2.5">
-        <AddTask onCreate={(title) => onAddCard(board.board_id, { title })} />
-      </div>
+      {permissions.createTasks && (
+        <div className="px-2 pb-2.5">
+          <AddTask onCreate={(title) => onAddCard(board.board_id, { title })} />
+        </div>
+      )}
 
       {/* Editor modal */}
       <TaskCardEditor
@@ -139,6 +150,7 @@ export default function BoardColumn({
         open={!!editorCard}
         onClose={() => setEditorCard(null)}
         onSave={onEditCard}
+        permissions={permissions}
       />
     </div>
   );
