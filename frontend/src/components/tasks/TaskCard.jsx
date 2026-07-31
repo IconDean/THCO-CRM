@@ -1,8 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Calendar, AlignLeft, GripVertical } from "lucide-react";
+import { Calendar, AlignLeft, GripVertical, Flag } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import TaskMenu from "./TaskMenu";
+import { PRIORITIES } from "./TaskCardEditor";
+import { READ_ONLY_PERMISSIONS } from "./permissions";
 
 /**
  * A single Trello-like task card. Sortable within its board and draggable
@@ -12,13 +14,13 @@ import TaskMenu from "./TaskMenu";
  * `isOverlay` renders a non-sortable, elevated copy used as the drag preview
  * (so the original slot can remain as a placeholder -> no flicker).
  */
-export default function TaskCard({ card, boardId, onRename, onEdit, onDelete, isOverlay }) {
+export default function TaskCard({ card, boardId, permissions = READ_ONLY_PERMISSIONS, onRename, onEdit, onDelete, isOverlay }) {
   const id = card.card_id;
 
   const sortable = useSortable({
     id,
     data: { type: "card", cardId: id, boardId },
-    disabled: isOverlay,
+    disabled: isOverlay || !permissions.moveTasks,
   });
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = sortable;
@@ -37,6 +39,7 @@ export default function TaskCard({ card, boardId, onRename, onEdit, onDelete, is
     ? due.toLocaleDateString(undefined, { month: "short", day: "numeric" })
     : null;
   const overdue = due && due < new Date(new Date().toDateString());
+  const priority = PRIORITIES.find((p) => p.value === card.priority) || PRIORITIES[1];
 
   // The drag handle is the grip icon; the whole card is NOT draggable to
   // avoid hijacking clicks on the title/menu (matches Trello's handle option).
@@ -75,7 +78,7 @@ export default function TaskCard({ card, boardId, onRename, onEdit, onDelete, is
 
       <div className="flex items-start gap-1.5 p-3">
         {/* Drag handle */}
-        {!isOverlay && (
+        {!isOverlay && permissions.moveTasks && (
           <button
             type="button"
             aria-label="Drag task"
@@ -96,9 +99,20 @@ export default function TaskCard({ card, boardId, onRename, onEdit, onDelete, is
             {card.title}
           </button>
 
-          {/* Meta row: description indicator, assignees, due date */}
-          {(card.description || card.assignees?.length || dueLabel) && (
+          {/* Meta row: priority, description indicator, assignees, due date */}
+          {(card.description || card.assignees?.length || dueLabel || (card.priority && card.priority !== "medium")) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-gray-500">
+              {card.priority && card.priority !== "medium" && (
+                <span
+                  className="flex items-center gap-1 font-medium"
+                  style={{ color: priority.color }}
+                  title={`${priority.label} priority`}
+                  data-testid={`task-priority-${id}`}
+                >
+                  <Flag className="w-3 h-3" fill={priority.color} strokeWidth={0} />
+                  {priority.label}
+                </span>
+              )}
               {card.description && (
                 <span className="flex items-center gap-1" title="Has description">
                   <AlignLeft className="w-3 h-3" />
@@ -141,9 +155,14 @@ export default function TaskCard({ card, boardId, onRename, onEdit, onDelete, is
         </div>
 
         {/* Context menu (revealed on hover) */}
-        {!isOverlay && (
+        {!isOverlay && (permissions.editTasks || permissions.deleteTasks) && (
           <div className="shrink-0">
-            <TaskMenu onEdit={() => onEdit(card)} onDelete={() => onDelete(card.card_id)} />
+            <TaskMenu
+              canEdit={permissions.editTasks}
+              canDelete={permissions.deleteTasks}
+              onEdit={() => onEdit(card)}
+              onDelete={() => onDelete(card.card_id)}
+            />
           </div>
         )}
       </div>

@@ -1,8 +1,15 @@
+import AddBoard from "./AddBoard";
+import { READ_ONLY_PERMISSIONS } from "./permissions";
+
 /**
- * Elegant empty state shown when no boards exist yet.
- * Matches the spec's copy and the CRM's gold-accented design language.
+ * Empty state shown when a project has no boards yet.
+ * `permissions.manageBoards` toggles whether the "create board" CTA is
+ * offered; everyone else (including an "Editable" share link, which never
+ * grants board management) sees a read-only message. The CTA reuses the
+ * AddBoard dropdown (predefined templates + custom) so the flow is
+ * identical whether or not the project already has boards.
  */
-export default function EmptyState({ onAdd }) {
+export default function EmptyState({ onCreateBoard, permissions = READ_ONLY_PERMISSIONS }) {
   return (
     <div
       className="flex flex-col items-center justify-center text-center py-20 px-6 select-none"
@@ -20,20 +27,19 @@ export default function EmptyState({ onAdd }) {
         Task Board
       </p>
       <h3 className="font-display text-2xl text-gray-900 mb-3">No boards have been created yet.</h3>
-      <p className="text-sm text-gray-500 max-w-sm leading-relaxed mb-7">
-        Click <span className="font-medium text-gray-700">Add another board</span> to begin
-        organizing project tasks.
-      </p>
-      <button
-        onClick={onAdd}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#C6A15B] hover:bg-[#8F7340] text-white text-sm font-medium transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A15B] focus-visible:ring-offset-2"
-        data-testid="empty-add-board"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        Add another board
-      </button>
+      {permissions.manageBoards ? (
+        <>
+          <p className="text-sm text-gray-500 max-w-sm leading-relaxed mb-7">
+            Click <span className="font-medium text-gray-700">Add another board</span> to begin
+            organizing project tasks.
+          </p>
+          <AddBoard onCreate={onCreateBoard} existingTitles={[]} permissions={permissions} variant="cta" />
+        </>
+      ) : (
+        <p className="text-sm text-gray-500 max-w-sm leading-relaxed">
+          This project doesn't have any boards yet. A Project Coordinator can add them.
+        </p>
+      )}
     </div>
   );
 }

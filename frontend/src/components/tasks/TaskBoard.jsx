@@ -17,11 +17,11 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { tasksAPI } from "../../lib/api";
 import BoardColumn from "./BoardColumn";
 import TaskCard from "./TaskCard";
 import EmptyState from "./EmptyState";
 import AddBoard from "./AddBoard";
+import { READ_ONLY_PERMISSIONS } from "./permissions";
 
 /**
  * Top-level Trello-like board.
@@ -29,12 +29,20 @@ import AddBoard from "./AddBoard";
  * State: boards[] where each board holds its own cards[] in display order.
  * Drag operations (reorder card within a board, move card between boards,
  * reorder boards) update local state optimistically, then persist the whole
- * layout to the backend in a single /tasks/reorder call.
+ * layout to the backend in a single reorder call.
+ *
+ * Persistence is fully injected via `api` ({ load, createBoard, renameBoard,
+ * deleteBoard, createCard, editCard, deleteCard, reorder }) so this same
+ * component backs both the internal authenticated workspace and the public
+ * share-link view — only the wiring differs, none of the rendering or
+ * drag-and-drop logic is duplicated.
  */
-export default function TaskBoard() {
+export default function TaskBoard({ permissions = READ_ONLY_PERMISSIONS, api }) {
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCard, setActiveCard] = useState(null); // card being dragged (for overlay)
+
+  const canDrag = permissions.manageBoards || permissions.moveTasks;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -43,7 +51,7 @@ export default function TaskBoard() {
 
   const load = useCallback(async () => {
     try {
-      const data = await tasksAPI.listBoards();
+      const data = await api.load();
       setBoards(
         (data || []).map((b) => ({
           board_id: b.board_id,
@@ -57,7 +65,7 @@ export default function TaskBoard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [api]);
 
   useEffect(() => {
     load();
@@ -73,7 +81,7 @@ export default function TaskBoard() {
   // ---- persist the current layout (board order + card positions) ----
   const persist = async (nextBoards) => {
     try {
-      await tasksAPI.reorder(
+      await api.reorder(
         nextBoards.map((b) => b.board_id),
         nextBoards.flatMap((b) =>
           b.cards.map((c, i) => ({
@@ -186,14 +194,14 @@ export default function TaskBoard() {
   // ===================== Mutations =====================
   const createBoard = async (title) => {
     try {
-      const board = await tasksAPI.createBoard(title);
+      const board = await api.createBoard(title);
       setBoards((prev) => [
         ...prev,
         { board_id: board.board_id, title: board.title, position: board.position, cards: [] },
       ]);
       toast.success(`Board "${title}" created`);
-    } catch {
-      toast.error("Failed to create board");
+    } catch (e) {
+      toast.error(e.response?.data?.detail || "Failed to create board");
     }
   };
 
@@ -201,7 +209,7 @@ export default function TaskBoard() {
     const prev = boards;
     setBoards((bs) => bs.map((b) => (b.board_id === boardId ? { ...b, title } : b)));
     try {
-      await tasksAPI.updateBoard(boardId, { title });
+      await api.renameBoard(boardId, title);
     } catch {
       setBoards(prev);
       toast.error("Failed to rename board");
@@ -213,7 +221,7 @@ export default function TaskBoard() {
     const board = boards.find((b) => b.board_id === boardId);
     setBoards((bs) => bs.filter((b) => b.board_id !== boardId));
     try {
-      await tasksAPI.deleteBoard(boardId);
+      await api.deleteBoard(boardId);
       toast.success(`Deleted board "${board?.title || ""}"`);
     } catch {
       setBoards(prev);
@@ -223,7 +231,7 @@ export default function TaskBoard() {
 
   const addCard = async (boardId, data) => {
     try {
-      const card = await tasksAPI.createCard(boardId, data);
+      const card = await api.createCard(boardId, data);
       setBoards((bs) =>
         bs.map((b) =>
           b.board_id === boardId ? { ...b, cards: [...b.cards, card] } : b
@@ -243,7 +251,7 @@ export default function TaskBoard() {
       }))
     );
     try {
-      await tasksAPI.updateCard(cardId, { title });
+      await api.editCard(cardId, { title });
     } catch {
       setBoards(prev);
       toast.error("Failed to rename task");
@@ -259,7 +267,7 @@ export default function TaskBoard() {
       }))
     );
     try {
-      await tasksAPI.updateCard(cardId, data);
+      await api.editCard(cardId, data);
       toast.success("Task updated");
     } catch {
       setBoards(prev);
@@ -273,7 +281,7 @@ export default function TaskBoard() {
       bs.map((b) => ({ ...b, cards: b.cards.filter((c) => c.card_id !== cardId) }))
     );
     try {
-      await tasksAPI.deleteCard(cardId);
+      await api.deleteCard(cardId);
       toast.success("Task deleted");
     } catch {
       setBoards(prev);
@@ -291,12 +299,12 @@ export default function TaskBoard() {
   }
 
   if (boards.length === 0) {
-    return <EmptyState onAdd={() => createBoard("New Board").then(() => {})} />;
+    return <EmptyState onCreateBoard={createBoard} permissions={permissions} />;
   }
 
   return (
     <DndContext
-      sensors={sensors}
+      sensors={canDrag ? sensors : []}
       collisionDetection={closestCorners}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
@@ -315,6 +323,7 @@ export default function TaskBoard() {
             <BoardColumn
               key={board.board_id}
               board={board}
+              permissions={permissions}
               onRenameBoard={renameBoard}
               onDeleteBoard={deleteBoard}
               onRenameCard={renameCard}
@@ -325,13 +334,17 @@ export default function TaskBoard() {
           ))}
         </SortableContext>
 
-        <AddBoard onCreate={createBoard} />
+        <AddBoard
+          onCreate={createBoard}
+          existingTitles={boards.map((b) => b.title)}
+          permissions={permissions}
+        />
       </div>
 
       {/* Drag overlay — elevated preview so the source slot can stay as placeholder (no flicker) */}
       <DragOverlay dropAnimation={{ duration: 180, easing: "cubic-bezier(0.18,0.67,0.6,1.22)" }}>
         {activeCard ? (
-          <TaskCard card={activeCard} boardId="" isOverlay />
+          <TaskCard card={activeCard} boardId="" permissions={permissions} isOverlay />
         ) : null}
       </DragOverlay>
     </DndContext>

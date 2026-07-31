@@ -625,24 +625,49 @@ export const flowAPI = {
 
 // Task Board API (Trello-like boards + cards)
 export const tasksAPI = {
-  listBoards: async () => (await apiClient.get('/tasks/boards')).data,
-  createBoard: async (title) => (await apiClient.post('/tasks/boards', { title })).data,
+  // Projects — reuse Flow projects, annotated with board/task counts
+  listProjectSummary: async () => (await apiClient.get('/tasks/projects/summary')).data,
+
+  // Boards — always scoped to a project
+  listBoards: async (projectId) =>
+    (await apiClient.get('/tasks/boards', { params: { project_id: projectId } })).data,
+  createBoard: async (projectId, title) =>
+    (await apiClient.post('/tasks/boards', { project_id: projectId, title })).data,
   updateBoard: async (boardId, data) => (await apiClient.patch(`/tasks/boards/${boardId}`, data)).data,
   deleteBoard: async (boardId) => (await apiClient.delete(`/tasks/boards/${boardId}`)).data,
+
+  // Cards
   createCard: async (boardId, data) => (await apiClient.post(`/tasks/boards/${boardId}/cards`, data)).data,
   updateCard: async (cardId, data) => (await apiClient.patch(`/tasks/cards/${cardId}`, data)).data,
   deleteCard: async (cardId) => (await apiClient.delete(`/tasks/cards/${cardId}`)).data,
+
   reorder: async (boardOrder, cards) =>
     (await apiClient.post('/tasks/reorder', { board_order: boardOrder, cards })).data,
 
-  // Team Members (for assignee dropdown)
-  listTeamMembers: async () => (await apiClient.get('/tasks/team-members')).data,
+  // Team Members (optionally scoped to a project's own members)
+  listTeamMembers: async (projectId) =>
+    (await apiClient.get('/tasks/team-members', { params: projectId ? { project_id: projectId } : {} })).data,
 
   // Labels (persistent, reusable)
   listLabels: async () => (await apiClient.get('/tasks/labels')).data,
   createLabel: async (data) => (await apiClient.post('/tasks/labels', data)).data,
   updateLabel: async (labelId, data) => (await apiClient.patch(`/tasks/labels/${labelId}`, data)).data,
   deleteLabel: async (labelId) => (await apiClient.delete(`/tasks/labels/${labelId}`)).data,
+
+  // Sharing — one Google-Docs-style link per project (coordinator-managed)
+  getShare: async (projectId) => (await apiClient.get(`/tasks/projects/${projectId}/share`)).data,
+  generateShare: async (projectId) => (await apiClient.post(`/tasks/projects/${projectId}/share`)).data,
+  regenerateShare: async (projectId) => (await apiClient.post(`/tasks/projects/${projectId}/share/regenerate`)).data,
+  updateShare: async (projectId, data) => (await apiClient.patch(`/tasks/projects/${projectId}/share`, data)).data,
+
+  // Public shared board — consumed anonymously via the share token
+  getSharedBoard: async (token) => (await apiClient.get(`/tasks/shared/${token}`)).data,
+  createSharedCard: async (token, boardId, data) =>
+    (await apiClient.post(`/tasks/shared/${token}/boards/${boardId}/cards`, data)).data,
+  updateSharedCard: async (token, cardId, data) =>
+    (await apiClient.patch(`/tasks/shared/${token}/cards/${cardId}`, data)).data,
+  reorderShared: async (token, cards) =>
+    (await apiClient.post(`/tasks/shared/${token}/reorder`, { cards })).data,
 };
 
 // Assessment API (public endpoints - no auth needed)
