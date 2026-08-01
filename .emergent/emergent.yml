@@ -11,7 +11,7 @@
     ],
     "start_command": "cd THCO-CRM && ./start_preview.sh",
     "healthcheck": {
-      "url": "http://localhost:3000/",
+      "url": "http://localhost:8000/",
       "timeout_seconds": 10,
       "retries": 6
     }
