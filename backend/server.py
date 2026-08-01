@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, Response, Request, status, UploadFile, File, Form
 from fastapi.security import HTTPBearer
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -2833,6 +2834,37 @@ set_email_db(db)
 
 # Include the main router
 app.include_router(api_router)
+
+# Serve the Create-React-App production build (frontend)
+# Mount static assets under /static and provide SPA fallback for non-/api routes.
+FRONTEND_BUILD_DIR = ROOT_DIR.parent / "frontend" / "build"
+if FRONTEND_BUILD_DIR.exists():
+    # Serve static assets (js/css/media) from /static
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_BUILD_DIR / "static")), name="static")
+
+    @app.get("/", include_in_schema=False)
+    async def serve_spa_index():
+        index_file = FRONTEND_BUILD_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+        raise HTTPException(status_code=404, detail="Index not found")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str, request: Request):
+        # Let API routes continue to their handlers
+        if full_path.startswith("api/") or request.url.path.startswith("/api/"):
+            raise HTTPException(status_code=404)
+
+        # If the requested file exists in build, serve it directly
+        candidate = FRONTEND_BUILD_DIR / full_path
+        if candidate.exists() and candidate.is_file():
+            return FileResponse(str(candidate))
+
+        # Otherwise serve index.html for SPA routing
+        index_file = FRONTEND_BUILD_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+        raise HTTPException(status_code=404, detail="Index not found")
 
 # Start SLA scheduler
 from services.sla_scheduler import set_db as set_sla_db, start_scheduler as start_sla_scheduler
