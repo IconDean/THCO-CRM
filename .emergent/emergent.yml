@@ -6,12 +6,13 @@
   "preview": {
     "description": "Build frontend and start backend for Emergent preview environments",
     "build_commands": [
-      "cd THCO-CRM/frontend && yarn install --silent",
-      "cd THCO-CRM/frontend && yarn build --silent"
+      "cd frontend && yarn install --silent",
+      "cd frontend && yarn build --silent",
+      "cd backend && python -m pip install --quiet -r requirements.txt"
     ],
-    "start_command": "cd THCO-CRM && ./start_preview.sh",
+    "start_command": "./start_preview.sh",
     "healthcheck": {
-      "url": "http://localhost:8000/",
+      "url": "http://localhost:8000/healthz",
       "timeout_seconds": 10,
       "retries": 6
     }
