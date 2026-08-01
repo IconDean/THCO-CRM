@@ -1,5 +1,19 @@
 {
   "env_image_name": "fastapi_react_mongo_shadcn_base_image_cloud_arm:release-05022026-1",
   "job_id": "1431d080-4958-4d71-9d27-aa332d752599",
-  "created_at": "2026-04-01T07:14:46.884434+00:00Z"
+  "created_at": "2026-04-01T07:14:46.884434+00:00Z",
+
+  "preview": {
+    "description": "Build frontend and start backend for Emergent preview environments",
+    "build_commands": [
+      "cd THCO-CRM/frontend && yarn install --silent",
+      "cd THCO-CRM/frontend && yarn build --silent"
+    ],
+    "start_command": "cd THCO-CRM && ./start_preview.sh",
+    "healthcheck": {
+      "url": "http://localhost:3000/",
+      "timeout_seconds": 10,
+      "retries": 6
+    }
+  }
 }
