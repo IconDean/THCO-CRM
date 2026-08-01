@@ -27,6 +27,11 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
+### `yarn preview`
+
+After running `yarn build`, use `yarn preview` to serve the production build locally on port `3000`.
+This uses the locally installed `serve` package and avoids `npx` install prompts.
+
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### `npm run eject`
