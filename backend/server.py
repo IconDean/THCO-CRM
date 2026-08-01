@@ -29,10 +29,21 @@ load_dotenv(ROOT_DIR / '.env')
 UPLOADS_DIR = ROOT_DIR / "uploads" / "proposals"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# MongoDB connection (tolerant in preview environments)
+mongo_url = os.environ.get('MONGO_URL')
+db = None
+client = None
+if mongo_url:
+    try:
+        client = AsyncIOMotorClient(mongo_url)
+        db_name = os.environ.get('DB_NAME', 'thco')
+        db = client[db_name]
+    except Exception as e:
+        logger.warning(f"Could not connect to MongoDB: {e}")
+        client = None
+        db = None
+else:
+    logger.warning('MONGO_URL not set; running without database connection (preview mode).')
 
 # Resend setup
 resend.api_key = os.environ.get('RESEND_API_KEY', '')
