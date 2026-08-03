@@ -1,6 +1,14 @@
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+// In a production build the backend serves this bundle, so the API lives on the
+// same origin and the base URL must be relative. Hardcoding localhost:8000 sent
+// every deployed request to the visitor's own machine, which failed silently and
+// bounced the user back to the login screen.
+// In development the CRA dev server (3000) and the API (8000) are separate
+// origins, so fall back to localhost there. An explicit env var always wins.
+const BACKEND_URL =
+  process.env.REACT_APP_BACKEND_URL ??
+  (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000');
 const API = `${BACKEND_URL}/api`;
 
 // Configure axios defaults
@@ -137,6 +145,157 @@ export const databaseSearchAPI = {
 };
 
 // Settings API
+export const talentAPI = {
+  // Candidate CRUD
+  uploadCV: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post('/talent/candidates/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  uploadBulkCV: async (files) => {
+    const formData = new FormData();
+    files.forEach(f => formData.append('files', f));
+    const response = await apiClient.post('/talent/candidates/upload-bulk', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 300000,
+    });
+    return response.data;
+  },
+
+  listCandidates: async (params = {}) => {
+    const response = await apiClient.get('/talent/candidates', { params });
+    return response.data;
+  },
+
+  getCandidate: async (candidateId) => {
+    const response = await apiClient.get(`/talent/candidates/${candidateId}`);
+    return response.data;
+  },
+
+  updateCandidate: async (candidateId, data) => {
+    const response = await apiClient.put(`/talent/candidates/${candidateId}`, data);
+    return response.data;
+  },
+
+  deleteCandidate: async (candidateId) => {
+    const response = await apiClient.delete(`/talent/candidates/${candidateId}`);
+    return response.data;
+  },
+
+  searchBySkills: async (skills) => {
+    const response = await apiClient.post('/talent/candidates/search-by-skills', skills);
+    return response.data;
+  },
+
+  // Google Drive
+  listDriveFiles: async (params = {}) => {
+    const response = await apiClient.get('/talent/drive/files', { params });
+    return response.data;
+  },
+
+  importFromDrive: async (data) => {
+    const response = await apiClient.post('/talent/drive/import', data, { timeout: 600000 });
+    return response.data;
+  },
+
+  // External Sourcing (Google Search)
+  searchExternal: async (data) => {
+    const response = await apiClient.post('/talent/sourcing/search', data, { timeout: 60000 });
+    return response.data;
+  },
+
+  buildBooleanPack: async (data) => {
+    const response = await apiClient.post('/talent/sourcing/boolean-pack', data);
+    return response.data;
+  },
+
+  importExternal: async (data) => {
+    const response = await apiClient.post('/talent/sourcing/import', data);
+    return response.data;
+  },
+
+  // AI-enhanced CV parsing
+  aiParseCv: async (rawText) => {
+    const response = await apiClient.post('/talent/candidates/ai-parse', { raw_text: rawText }, { timeout: 30000 });
+    return response.data;
+  },
+
+  // JD Analysis
+  analyzeJd: async (data) => {
+    const response = await apiClient.post('/talent/sourcing/analyze-jd', data, { timeout: 60000 });
+    return response.data;
+  },
+
+  // Full-text search
+  textSearch: async (q, params = {}) => {
+    const response = await apiClient.get('/talent/candidates/text-search', { params: { q, ...params } });
+    return response.data;
+  },
+
+  // Unified search (internal + external)
+  unifiedSearch: async (data) => {
+    const response = await apiClient.post('/talent/unified-search', data, { timeout: 120000 });
+    return response.data;
+  },
+
+  // Talent Intelligence Network
+  listNetworkCandidates: async (params = {}) => {
+    const response = await apiClient.get('/talent/network/candidates', { params });
+    return response.data;
+  },
+
+  getNetworkCandidate: async (candidateId) => {
+    const response = await apiClient.get(`/talent/network/candidates/${candidateId}`);
+    return response.data;
+  },
+
+  enrichNetworkCandidate: async (candidateId) => {
+    const response = await apiClient.post(`/talent/network/candidates/${candidateId}/enrich`);
+    return response.data;
+  },
+
+  refreshNetworkCandidate: async (candidateId) => {
+    const response = await apiClient.post(`/talent/network/candidates/${candidateId}/refresh`);
+    return response.data;
+  },
+
+  importNetworkCandidate: async (candidateId) => {
+    const response = await apiClient.post(`/talent/network/candidates/${candidateId}/import`);
+    return response.data;
+  },
+
+  deleteNetworkCandidate: async (candidateId) => {
+    const response = await apiClient.delete(`/talent/network/candidates/${candidateId}`);
+    return response.data;
+  },
+
+  // `provider` and `queryInfo` drive the credit/analytics record, so the
+  // search that produced these candidates must pass them through.
+  saveDiscovered: async (candidates, provider, queryInfo, durationMs) => {
+    const response = await apiClient.post('/talent/network/save-discovered', {
+      candidates,
+      provider: provider || 'duckduckgo',
+      query_info: queryInfo || null,
+      duration_ms: durationMs || null,
+    });
+    return response.data;
+  },
+
+  getNetworkStats: async () => {
+    const response = await apiClient.get('/talent/network/stats');
+    return response.data;
+  },
+
+  // Stats
+  getStats: async () => {
+    const response = await apiClient.get('/talent/stats');
+    return response.data;
+  },
+};
 export const settingsAPI = {
   getWebhooks: async () => {
     const response = await apiClient.get('/settings/webhooks');

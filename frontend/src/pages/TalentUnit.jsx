@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft, Bot, UserCheck, Send, FileText, Zap, History, Rocket, FolderOpen } from "lucide-react";
+import { Users, Search, Database, Mail, Calendar, GitBranch, ChevronRight, ArrowLeft, Bot, UserCheck, Send, FileText, Zap, History, Rocket, FolderOpen, Globe, Upload, Wand2 } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../components/ui/breadcrumb";
 import { Button } from "../components/ui/button";
 import BuildHistory from "../components/BuildHistory";
@@ -56,49 +56,67 @@ const PRIORITY_COLORS = {
 
 const TOOLS = [
   {
-    name: "AI Candidate Sourcing",
+    name: "Discover Candidates (Web)",
+    slug: "external-sourcing",
+    icon: Globe,
+    path: "/talent/sourcing/external",
+    active: true,
+    description: "Search Google via SerpAPI for real candidates on LinkedIn, GitHub, and the web. Results save automatically to your Talent Network.",
+    gradient: "from-[#1FB58A] to-emerald-600"
+  },
+  {
+    name: "Network (External DB)",
+    slug: "network",
+    icon: Users,
+    path: "/talent/network",
+    active: true,
+    description: "Browse all discovered external candidates. Filter by skills, location, seniority. Enrich with AI.",
+    gradient: "from-purple-500 to-indigo-600"
+  },
+  {
+    name: "Find Candidates (Both DBs)",
+    slug: "find",
+    icon: Wand2,
+    path: "/talent/find",
+    active: true,
+    description: "Search across internal CV database and external Talent Network. No web search — databases only.",
+    gradient: "from-blue-500 to-cyan-600"
+  },
+  {
+    name: "Internal CV Database",
+    slug: "candidates",
+    icon: Database,
+    path: "/talent/candidates",
+    active: true,
+    description: "Your uploaded CVs and imported candidates. Upload, search by skills, track status.",
+    gradient: "from-emerald-500 to-green-600"
+  },
+  {
+    name: "Upload CVs",
+    slug: "cv-upload",
+    icon: Upload,
+    path: "/talent/candidates/upload",
+    active: true,
+    description: "Upload resumes or import from Google Drive. Auto-parses skills, experience, and contact info.",
+    gradient: "from-purple-500 to-indigo-600"
+  },
+  {
+    name: "AI Sourcing Strategy",
     slug: "sourcing",
     icon: Search,
     path: "/talent/sourcing",
     active: true,
-    description: "Source candidates from the open web using AI. Generates 50-100+ scored candidates from LinkedIn and professional networks.",
-    gradient: "from-emerald-500 to-indigo-600"
+    description: "Generate Boolean search packs for LinkedIn, Google X-Ray, and GitHub.",
+    gradient: "from-amber-500 to-orange-600"
   },
   {
-    name: "Database Search",
+    name: "Database Search (Legacy)",
     slug: "database-search",
-    icon: Database,
+    icon: Search,
     path: "/talent/database-search",
     active: true,
-    description: "Search our internal candidate database for matching profiles using AI-powered resume analysis.",
-    gradient: "from-blue-500 to-cyan-600"
-  },
-  {
-    name: "Email & Outreach Templates",
-    slug: "email-templates",
-    icon: Mail,
-    path: "/talent/email-templates",
-    active: false,
-    description: "Create and manage personalized email templates for candidate outreach.",
-    gradient: "from-pink-500 to-rose-600"
-  },
-  {
-    name: "Interview Scheduling",
-    slug: "interview-scheduling",
-    icon: Calendar,
-    path: "/talent/interview-scheduling",
-    active: false,
-    description: "Automate interview scheduling with calendar integration.",
-    gradient: "from-emerald-500 to-teal-600"
-  },
-  {
-    name: "Candidate Pipeline",
-    slug: "candidate-pipeline",
-    icon: GitBranch,
-    path: "/talent/candidate-pipeline",
-    active: false,
-    description: "Track candidates through your hiring pipeline with visual Kanban boards.",
-    gradient: "from-amber-500 to-orange-600"
+    description: "Legacy database search tool.",
+    gradient: "from-gray-400 to-gray-500"
   },
 ];
 

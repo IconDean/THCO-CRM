@@ -163,6 +163,11 @@ const DashboardLayoutInner = ({ children, user }) => {
       if (path === "/talent") return "Talent & Human Capital";
       if (path === "/talent/sourcing") return "AI Candidate Sourcing";
       if (path === "/talent/database-search") return "Database Search";
+      if (path === "/talent/candidates") return "Candidate Database";
+      if (path === "/talent/candidates/upload") return "Upload CVs";
+      if (path === "/talent/sourcing/external") return "External Sourcing";
+      if (path === "/talent/find") return "Find Candidates";
+      if (path === "/talent/network") return "Talent Network";
     }
     if (path === "/thco-hr") return "THCO HR";
     if (path === "/project-management") return "Project Management";
@@ -227,6 +232,11 @@ const DashboardLayoutInner = ({ children, user }) => {
           { label: "AI Candidate Sourcing", path: "/talent/sourcing", group: "Talent Tools" },
           { label: "Database Search", path: "/talent/database-search", group: "Talent Tools" },
           { label: "Talent Projects", path: "/talent/projects", group: "Talent Tools" },
+          { label: "Candidate Database", path: "/talent/candidates", group: "Talent Tools" },
+          { label: "Upload CVs", path: "/talent/candidates/upload", group: "Talent Tools" },
+          { label: "Find Candidates", path: "/talent/find", group: "Talent Tools" },
+          { label: "External Sourcing", path: "/talent/sourcing/external", group: "Talent Tools" },
+          { label: "Talent Network", path: "/talent/network", group: "Talent Tools" },
         ]
       : []),
     ...(canManageUsers(user) ? [{ label: "User Management", path: "/admin/users", group: "Admin" }] : []),

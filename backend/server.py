@@ -2776,6 +2776,16 @@ async def get_single_user_analytics(user_id: str, request: Request, days: int = 
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
+
+# Unprefixed liveness probe. Deploy platforms poll /healthz at the root, not
+# under /api -- emergent.yml already pointed here while the only route was
+# /api/health, so every healthcheck 404'd and the deploy was marked failed.
+# Deliberately does not touch the database: this answers "is the process up",
+# which must stay true in preview environments that boot without MONGO_URL.
+@app.get("/healthz")
+async def healthz():
+    return {"status": "ok"}
+
 @api_router.get("/notifications/badge")
 async def get_notification_badge(request: Request):
     """Get notification badge counts for the logged-in user's role."""
@@ -2839,6 +2849,11 @@ from routers.taskboard import router as taskboard_router, set_db as set_taskboar
 set_taskboard_db(db)
 api_router.include_router(taskboard_router)
 
+# Include Talent router (candidate database, CV parsing, external sourcing)
+from routers.talent import router as talent_router, set_db as set_talent_db, ensure_indexes as ensure_talent_indexes
+set_talent_db(db)
+api_router.include_router(talent_router)
+
 # Email service DB
 from services import set_db as set_email_db
 set_email_db(db)
@@ -2884,6 +2899,10 @@ set_sla_db(db)
 @app.on_event("startup")
 async def startup_scheduler():
     start_sla_scheduler()
+    # Talent/candidate indexes. Guarded because preview environments boot
+    # without MONGO_URL, in which case `db` is None.
+    if db is not None:
+        await ensure_talent_indexes()
 
 
 # ==================== SEED BUNDLED PROPOSALS ====================

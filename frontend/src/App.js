@@ -9,6 +9,11 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import TalentUnit from "./pages/TalentUnit";
+import CandidateDatabase from "./pages/CandidateDatabase";
+import CVUpload from "./pages/CVUpload";
+import ExternalSourcing from "./pages/ExternalSourcing";
+import FindCandidates from "./pages/FindCandidates";
+import TalentNetwork from "./pages/TalentNetwork";
 import SourcingTool from "./pages/SourcingTool";
 import DatabaseSearchTool from "./pages/DatabaseSearchTool";
 import Settings from "./pages/Settings";
@@ -282,7 +287,37 @@ const AppRouter = () => {
           <TalentUnit />
         </ProtectedRoute>
       } />
-      
+
+      <Route path="/talent/candidates" element={
+        <ProtectedRoute unit="talent">
+          <CandidateDatabase />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/talent/candidates/upload" element={
+        <ProtectedRoute unit="talent">
+          <CVUpload />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/talent/sourcing/external" element={
+        <ProtectedRoute unit="talent">
+          <ExternalSourcing />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/talent/find" element={
+        <ProtectedRoute unit="talent">
+          <FindCandidates />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/talent/network" element={
+        <ProtectedRoute unit="talent">
+          <TalentNetwork />
+        </ProtectedRoute>
+      } />
+
       <Route path="/talent/sourcing" element={
         <ProtectedRoute unit="talent">
           <SourcingTool />
