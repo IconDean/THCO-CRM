@@ -1,0 +1,26 @@
+# Build artefacts and dependencies are produced inside the image.
+**/node_modules
+frontend/build
+**/__pycache__
+**/*.pyc
+backend/venv
+venv
+
+# Never copy secrets into the image. Configuration comes from the platform's
+# environment settings.
+**/.env
+**/.env.*
+cookies.txt
+
+# Local-only material
+.git
+.github
+.vscode
+.screenshots
+test_reports
+tests
+backend/tests
+backend/uploads
+backend/static_assets
+*.md
+!README.md

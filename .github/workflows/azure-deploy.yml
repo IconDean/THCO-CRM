@@ -1,0 +1,77 @@
+name: Build and deploy to Azure
+
+# Builds the container and deploys it to Azure Web App for Containers.
+#
+# Required repository secrets:
+#   AZURE_CREDENTIALS   output of `az ad sp create-for-rbac --sdk-auth`
+#   ACR_NAME            Azure Container Registry name, without .azurecr.io
+#   AZURE_WEBAPP_NAME   name of the Web App
+#
+# Application settings (MONGO_URL, JWT_SECRET, SERPER_KEY, ...) are configured
+# on the Web App itself, not here -- they must never enter the image or logs.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.vscode/**'
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: thco-crm
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to container registry
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          # Tag with the commit SHA so a deploy is traceable to a revision and
+          # a rollback is a matter of pointing the Web App at an earlier tag.
+          tags: |
+            ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          images: ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Wait for the app to report healthy
+        run: |
+          url="https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/healthz"
+          echo "Polling $url"
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$url" || true)
+            if [ "$code" = "200" ]; then
+              echo "Healthy after ${i} attempt(s)."
+              exit 0
+            fi
+            echo "  attempt $i: HTTP ${code:-none}"
+            sleep 10
+          done
+          echo "App did not become healthy within 5 minutes."
+          exit 1

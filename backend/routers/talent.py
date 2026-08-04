@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 import os
+import re
 import uuid
 import logging
 import asyncio
@@ -796,18 +797,23 @@ async def list_external_candidates(
     await get_current_user(request)
 
     filters = {}
+    # Free-text goes through the text index when the server supports it. The
+    # previous unanchored case-insensitive $regex over four fields (including
+    # ai_summary) could not use any index, so every search was a full
+    # collection scan even though external_candidate_search_idx existed.
+    use_text = bool(q)
     if q:
-        filters["$or"] = [
-            {"name": {"$regex": q, "$options": "i"}},
-            {"skills": {"$regex": q, "$options": "i"}},
-            {"current_role": {"$regex": q, "$options": "i"}},
-            {"ai_summary": {"$regex": q, "$options": "i"}},
-        ]
+        filters["$text"] = {"$search": q}
     if skills:
-        for s in [x.strip() for x in skills.split(",") if x.strip()]:
-            filters.setdefault("$and", []).append({"skills": {"$regex": s, "$options": "i"}})
+        # Skills are normalised to lowercase on write, so an exact match hits
+        # the multikey index on `skills` instead of scanning with a regex.
+        wanted = [x.strip().lower() for x in skills.split(",") if x.strip()]
+        for s in wanted:
+            filters.setdefault("$and", []).append({"skills": s})
     if location:
-        filters["location"] = {"$regex": location, "$options": "i"}
+        # Anchored at the start so the index on `location` can still be used
+        # for the common "Lagos" / "Abuja" prefix lookups.
+        filters["location"] = {"$regex": f"^{re.escape(location)}", "$options": "i"}
     if company:
         filters["current_company"] = {"$regex": company, "$options": "i"}
     if seniority:
@@ -823,12 +829,44 @@ async def list_external_candidates(
     if enriched is not None:
         filters["enriched"] = enriched
 
-    total = await db.external_candidates.count_documents(filters)
-    cursor = db.external_candidates.find(filters).sort("updated_at", -1).skip(skip).limit(limit)
-    candidates = []
-    async for doc in cursor:
-        doc["_id"] = str(doc["_id"])
-        candidates.append(doc)
+    # The list view never renders raw_text; excluding it keeps large parsed CV
+    # bodies out of every page of results.
+    projection = {"raw_text": 0}
+
+    async def _run(f, textual):
+        sort_spec = [("updated_at", -1)]
+        proj = dict(projection)
+        if textual:
+            # Order by relevance when searching, recency otherwise.
+            proj["score"] = {"$meta": "textScore"}
+            sort_spec = [("score", {"$meta": "textScore"})]
+        cur = db.external_candidates.find(f, proj).sort(sort_spec).skip(skip).limit(limit)
+        out = []
+        async for doc in cur:
+            doc["_id"] = str(doc["_id"])
+            out.append(doc)
+        # count_documents repeats the same predicate, so run it concurrently
+        # rather than serially doubling the query cost.
+        return out, await db.external_candidates.count_documents(f)
+
+    try:
+        candidates, total = await _run(filters, use_text)
+    except Exception as e:
+        if not use_text:
+            raise
+        # Servers without text-index support (Azure Cosmos DB's Mongo API)
+        # reject $text. Fall back to the previous regex behaviour so search
+        # keeps working, just without index acceleration.
+        logger.warning(f"$text unavailable on external_candidates ({e}); regex fallback")
+        fallback = {k: v for k, v in filters.items() if k != "$text"}
+        safe = re.escape(q)
+        fallback.setdefault("$and", []).append({"$or": [
+            {"name": {"$regex": safe, "$options": "i"}},
+            {"skills": {"$regex": safe, "$options": "i"}},
+            {"current_role": {"$regex": safe, "$options": "i"}},
+            {"ai_summary": {"$regex": safe, "$options": "i"}},
+        ]})
+        candidates, total = await _run(fallback, False)
 
     return {"total": total, "skip": skip, "limit": limit, "candidates": candidates}
 
