@@ -348,13 +348,28 @@ async def text_search_candidates(
 ):
     await get_current_user(request)
 
+    import re
+
+    async def _drain(cursor):
+        out = []
+        async for doc in cursor:
+            doc["_id"] = str(doc["_id"])
+            out.append(doc)
+        return out
+
+    # The regex path is a fallback for deployments whose database does not
+    # implement $text -- notably Azure Cosmos DB's Mongo API. The driver builds
+    # cursors lazily, so the query only runs while draining: iterating outside
+    # this try meant the fallback could never fire and an unsupported $text
+    # surfaced as a 500 instead of degrading to a slower but working search.
     try:
         cursor = db.candidates.find(
             {"$text": {"$search": q}},
             {"score": {"$meta": "textScore"}},
         ).sort([("score", {"$meta": "textScore"})]).skip(skip).limit(limit)
-    except Exception:
-        import re
+        candidates = await _drain(cursor)
+    except Exception as e:
+        logger.warning(f"$text search unavailable ({e}); falling back to regex")
         safe = re.sub(r'[.*+?^${}()|[\]\\]', '', q)
         cursor = db.candidates.find({
             "$or": [
@@ -364,11 +379,7 @@ async def text_search_candidates(
                 {"raw_text": {"$regex": safe, "$options": "i"}},
             ]
         }).skip(skip).limit(limit)
-
-    candidates = []
-    async for doc in cursor:
-        doc["_id"] = str(doc["_id"])
-        candidates.append(doc)
+        candidates = await _drain(cursor)
 
     return {"candidates": candidates}
 

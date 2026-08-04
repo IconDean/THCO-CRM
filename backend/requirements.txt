@@ -164,6 +164,14 @@ pypdf==6.14.2
 python-docx==1.2.0
 olefile==0.47
 pytesseract==0.3.13
+pdf2image==1.17.0
 ddgs==9.14.4
 serpapi==1.0.2
 groq==1.6.0
+
+# System packages required by the OCR fallback above, which pip cannot supply:
+#   tesseract-ocr   (pytesseract)
+#   poppler-utils   (pdf2image)
+# Without them CV parsing still works for text-based PDFs and DOCX; only
+# scanned/image PDFs fall back to empty. On Azure App Service install them via
+# a custom startup command or deploy as a container.

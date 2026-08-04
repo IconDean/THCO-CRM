@@ -1,4 +1,5 @@
 import io
+import os
 import re
 import logging
 from typing import Optional, Dict, Any, List
@@ -91,7 +92,16 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
     # Strategy 4: OCR with Tesseract (for scanned PDFs/images)
     try:
         import pytesseract
-        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+        # Only pin the Windows install path when running on Windows. On Linux
+        # hosts (Azure App Service, containers) tesseract is on PATH, and
+        # forcing a C:\ path made this strategy raise and be swallowed by the
+        # except below -- OCR appeared to work but silently never ran, so
+        # scanned PDFs parsed as empty. TESSERACT_CMD overrides either way.
+        _tess = os.environ.get('TESSERACT_CMD')
+        if not _tess and os.name == 'nt':
+            _tess = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+        if _tess:
+            pytesseract.pytesseract.tesseract_cmd = _tess
         from pdf2image import convert_from_bytes
         images = convert_from_bytes(file_bytes, first_page=1, last_page=3)
         text_parts = []
